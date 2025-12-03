@@ -7,8 +7,7 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'baylink-secret-key-2025'; 
 
 app.use(cors());
-
-// 允许最大 50MB 的请求体（用于图片上传）
+// 允许最大 50MB，确保能上传头像图片
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -22,40 +21,31 @@ const db = {
   messages: [],     
   ads: [],
   contactMarks: [],
-  // 新增：用于存储公共文案（关于我们、联系客服）
   content: {
-    'baylink_about': 'BayLink 助手是一个面向旧金山湾区本地居民的信息平台。\n\n我们致力于连接邻里，提供互助便利。',
-    'baylink_support': '如有问题，请联系客服邮箱：\nsupport@baylink.com'
+    'baylink_support': '如有问题，请联系客服邮箱：\nsupport@baylink.com',
+    'baylink_about': 'BayLink 助手是一个面向旧金山湾区本地居民的信息平台。\n\n我们致力于连接邻里，提供互助便利。'
   }
 };
 
-// --- 初始化数据：默认管理员 ---
+// --- 初始化 Admin ---
 if (db.users.length === 0) {
     db.users.push({
-      id: 'admin', 
-      email: 'admin', 
-      password: 'Archangel24!', // ✅ 密码已更新
-      nickname: 'BayLink管理员', 
-      role: 'admin',
-      contactType: 'email', 
-      contactValue: 'admin@baylink.com', 
-      isBanned: false
+      id: 'admin', email: 'admin', password: 'Archangel24!', nickname: 'BayLink管理员', role: 'admin',
+      contactType: 'email', contactValue: 'admin@baylink.com', isBanned: false,
+      bio: '我是官方管理员，负责维护社区秩序。', avatar: null
     });
-    
-    // 默认广告
     db.ads.push({
       id: 'ad1', title: '湾区安心搬家', content: '10年老牌 · 百万保险 · 损坏包赔', isVerified: true,
       imageUrl: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=400&q=80'
     });
-    console.log('System initialized. Admin Password updated.');
+    console.log('System initialized.');
 }
 
-// --- 中间件 ---
+// --- Middleware ---
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
-
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
@@ -65,13 +55,16 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// --- 基础接口 ---
+// --- Routes ---
 
 // Auth
 app.post('/api/auth/register', (req, res) => {
   const { email, password, nickname, contactType, contactValue } = req.body;
   if (db.users.find(u => u.email === email)) return res.status(400).json({ error: 'User exists' });
-  const newUser = { id: Date.now().toString(), email, password, nickname, role: 'user', contactType, contactValue, isBanned: false };
+  const newUser = { 
+    id: Date.now().toString(), email, password, nickname, role: 'user', 
+    contactType, contactValue, isBanned: false, bio: '这个邻居很懒，什么也没写~', avatar: null 
+  };
   if (email === 'admin') newUser.role = 'admin';
   db.users.push(newUser);
   const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET);
@@ -86,6 +79,36 @@ app.post('/api/auth/login', (req, res) => {
   res.json({ ...user, token });
 });
 
+// ✅ User Profile (新增)
+app.get('/api/users/:id', (req, res) => {
+  const user = db.users.find(u => u.id === req.params.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  // 只返回公开信息
+  res.json({
+    id: user.id,
+    nickname: user.nickname,
+    role: user.role,
+    avatar: user.avatar,
+    bio: user.bio,
+    isBanned: user.isBanned
+  });
+});
+
+// ✅ Update Profile (新增)
+app.patch('/api/users/me', authenticateToken, (req, res) => {
+  const user = db.users.find(u => u.id === req.user.id);
+  if (!user) return res.sendStatus(404);
+  
+  const { nickname, contactType, contactValue, bio, avatar } = req.body;
+  if (nickname) user.nickname = nickname;
+  if (contactType) user.contactType = contactType;
+  if (contactValue) user.contactValue = contactValue;
+  if (bio !== undefined) user.bio = bio;
+  if (avatar !== undefined) user.avatar = avatar;
+
+  res.json(user);
+});
+
 // Posts
 app.get('/api/posts', (req, res) => {
   const { type, keyword } = req.query;
@@ -93,27 +116,28 @@ app.get('/api/posts', (req, res) => {
   if (type) result = result.filter(p => p.type === type);
   if (keyword) {
     const kw = keyword.toLowerCase();
-    result = result.filter(p => p.title.toLowerCase().includes(kw) || p.description.toLowerCase().includes(kw) || p.city.toLowerCase().includes(kw) || p.category.toLowerCase().includes(kw));
+    result = result.filter(p => p.title.toLowerCase().includes(kw) || p.description.toLowerCase().includes(kw) || p.city.toLowerCase().includes(kw));
   }
   const formatted = result.map(p => {
     const author = db.users.find(u => u.id === p.authorId);
     const allComments = db.comments.filter(c => c.postId === p.id);
     let isContacted = false;
-    // Check contacted status
     const authHeader = req.headers['authorization'];
     if (authHeader) {
         try {
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.verify(token, JWT_SECRET);
+            const decoded = jwt.verify(token = authHeader.split(' ')[1], JWT_SECRET);
             isContacted = db.contactMarks.some(m => m.userId === decoded.id && m.postId === p.id);
         } catch(e) {}
     }
     return {
       ...p,
-      author: { nickname: author?.nickname || 'Unknown', avatarUrl: author?.avatarUrl },
+      author: { 
+        nickname: author?.nickname || 'Unknown', 
+        avatar: author?.avatar, // 返回最新的头像
+        isBanned: author?.isBanned 
+      },
       likesCount: db.likes.filter(l => l.postId === p.id).length,
       commentsCount: allComments.length,
-      comments: allComments.map(c => ({ ...c, replies: [] })),
       isContacted,
       contactInfo: null
     };
@@ -125,17 +149,10 @@ app.get('/api/posts', (req, res) => {
 app.post('/api/posts', authenticateToken, (req, res) => {
   const todayStart = new Date().setHours(0,0,0,0);
   const todayPosts = db.posts.filter(p => p.authorId === req.user.id && !p.isDeleted && p.createdAt >= todayStart);
-  if (todayPosts.length >= 1) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' });
+  if (todayPosts.length >= 3) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' }); // 稍微放宽限制方便测试
   const newPost = { id: Date.now().toString(), authorId: req.user.id, ...req.body, createdAt: Date.now(), isDeleted: false };
   db.posts.push(newPost);
   res.json(newPost);
-});
-
-app.post('/api/posts/:id/like', authenticateToken, (req, res) => {
-  const { id } = req.params;
-  const idx = db.likes.findIndex(l => l.userId === req.user.id && l.postId === id);
-  if (idx > -1) db.likes.splice(idx, 1); else db.likes.push({ userId: req.user.id, postId: id });
-  res.json({ success: true });
 });
 
 app.post('/api/posts/:id/contact-mark', authenticateToken, (req, res) => {
@@ -154,14 +171,14 @@ app.delete('/api/posts/:id', authenticateToken, (req, res) => {
 });
 
 app.post('/api/posts/:id/comments', authenticateToken, (req, res) => {
-  const { content, parentId } = req.body;
+  const { content } = req.body;
   const user = db.users.find(u => u.id === req.user.id);
-  const comment = { id: Date.now().toString(), postId: req.params.id, authorId: req.user.id, authorName: user.nickname, content, parentId, createdAt: Date.now() };
+  const comment = { id: Date.now().toString(), postId: req.params.id, authorId: req.user.id, authorName: user.nickname, content, createdAt: Date.now() };
   db.comments.push(comment);
   res.json(comment);
 });
 
-// Ads
+// Ads & Content
 app.get('/api/ads', (req, res) => res.json(db.ads));
 app.post('/api/ads', authenticateToken, (req, res) => {
     if (req.user.role !== 'admin') return res.sendStatus(403);
@@ -174,6 +191,12 @@ app.delete('/api/ads/:id', authenticateToken, (req, res) => {
     db.ads = db.ads.filter(a => a.id !== req.params.id);
     res.json({ success: true });
 });
+app.get('/api/content/:key', (req, res) => res.json({ value: db.content[req.params.key] || '' }));
+app.post('/api/content', authenticateToken, (req, res) => {
+    if (req.user.role !== 'admin') return res.sendStatus(403);
+    db.content[req.body.key] = req.body.value;
+    res.json({ success: true });
+});
 
 // Conversations
 app.get('/api/conversations', authenticateToken, (req, res) => {
@@ -182,7 +205,10 @@ app.get('/api/conversations', authenticateToken, (req, res) => {
     const otherId = c.userIds.find(uid => uid !== req.user.id);
     const otherUser = db.users.find(u => u.id === otherId);
     const lastMsg = db.messages.filter(m => m.conversationId === c.id).pop();
-    return { id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', otherUser: { id: otherUser?.id, nickname: otherUser?.nickname } };
+    return { 
+      id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', 
+      otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar } // Include avatar
+    };
   }).sort((a, b) => b.updatedAt - a.updatedAt);
   res.json(result);
 });
@@ -211,20 +237,6 @@ app.post('/api/conversations/:id/messages', authenticateToken, (req, res) => {
   const conv = db.conversations.find(c => c.id === req.params.id);
   if (conv) conv.updatedAt = Date.now();
   res.json(msg);
-});
-
-// --- ✅ 新增：公共内容管理接口 (About/Support) ---
-app.get('/api/content/:key', (req, res) => {
-    const key = req.params.key;
-    const content = db.content[key] || '';
-    res.json({ value: content });
-});
-
-app.post('/api/content', authenticateToken, (req, res) => {
-    if (req.user.role !== 'admin') return res.sendStatus(403);
-    const { key, value } = req.body;
-    db.content[key] = value;
-    res.json({ success: true, value });
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
