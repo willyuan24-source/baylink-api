@@ -1,242 +1,421 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = 'baylink-secret-key-2025'; 
+
+// 从环境变量获取配置，如果没有则使用默认值（仅供测试）
+const JWT_SECRET = process.env.JWT_SECRET || 'baylink-secret-key-2025'; 
+const MONGO_URI = process.env.MONGO_URI; 
 
 app.use(cors());
-// 允许最大 50MB，确保能上传头像图片
+// 增加上传限制，防止图片上传失败
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// --- 内存数据库 ---
-const db = {
-  users: [],       
-  posts: [],       
-  likes: [],       
-  comments: [], 
-  conversations: [], 
-  messages: [],     
-  ads: [],
-  contactMarks: [],
-  content: {
-    'baylink_support': '如有问题，请联系客服邮箱：\nsupport@baylink.com',
-    'baylink_about': 'BayLink 助手是一个面向旧金山湾区本地居民的信息平台。\n\n我们致力于连接邻里，提供互助便利。'
-  }
-};
-
-// --- 初始化 Admin ---
-if (db.users.length === 0) {
-    db.users.push({
-      id: 'admin', email: 'admin', password: 'Archangel24!', nickname: 'BayLink管理员', role: 'admin',
-      contactType: 'email', contactValue: 'admin@baylink.com', isBanned: false,
-      bio: '我是官方管理员，负责维护社区秩序。', avatar: null
-    });
-    db.ads.push({
-      id: 'ad1', title: '湾区安心搬家', content: '10年老牌 · 百万保险 · 损坏包赔', isVerified: true,
-      imageUrl: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=400&q=80'
-    });
-    console.log('System initialized.');
+// --- 连接 MongoDB ---
+if (!MONGO_URI) {
+  console.error("❌ 错误: 未设置 MONGO_URI 环境变量。请在 Render 后台配置数据库连接字符串。");
+} else {
+  mongoose.connect(MONGO_URI)
+    .then(() => console.log('✅ 成功连接到 MongoDB Atlas'))
+    .catch(err => console.error('❌ MongoDB 连接失败:', err));
 }
 
-// --- Middleware ---
+// --- 定义数据模型 (Schema) ---
+
+const UserSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  nickname: String,
+  role: { type: String, default: 'user' },
+  contactType: String,
+  contactValue: String,
+  isBanned: { type: Boolean, default: false },
+  bio: String,
+  avatar: String, 
+  createdAt: { type: Number, default: Date.now }
+});
+
+const PostSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  authorId: String,
+  authorNickname: String,
+  authorAvatar: String,
+  type: String,
+  title: String,
+  city: String,
+  category: String,
+  timeInfo: String,
+  budget: String,
+  description: String,
+  imageUrls: [String],
+  likes: [String],
+  contactMarks: [String],
+  comments: [{
+    id: String,
+    authorId: String,
+    authorName: String,
+    content: String,
+    createdAt: Number
+  }],
+  isDeleted: { type: Boolean, default: false },
+  createdAt: { type: Number, default: Date.now }
+});
+
+const AdSchema = new mongoose.Schema({
+  id: String,
+  title: String,
+  content: String,
+  imageUrl: String,
+  isVerified: { type: Boolean, default: true }
+});
+
+const ConversationSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  userIds: [String],
+  updatedAt: { type: Number, default: Date.now }
+});
+
+const MessageSchema = new mongoose.Schema({
+  id: String,
+  conversationId: String,
+  senderId: String,
+  type: String,
+  content: String,
+  createdAt: { type: Number, default: Date.now }
+});
+
+const ContentSchema = new mongoose.Schema({
+  key: { type: String, unique: true },
+  value: String
+});
+
+// --- Models ---
+const User = mongoose.model('User', UserSchema);
+const Post = mongoose.model('Post', PostSchema);
+const Ad = mongoose.model('Ad', AdSchema);
+const Conversation = mongoose.model('Conversation', ConversationSchema);
+const Message = mongoose.model('Message', MessageSchema);
+const Content = mongoose.model('Content', ContentSchema);
+
+// --- 初始化管理员 ---
+const initAdmin = async () => {
+  try {
+    const adminExists = await User.findOne({ email: 'admin' });
+    if (!adminExists) {
+      await User.create({
+        id: 'admin', email: 'admin', password: 'Archangel24!', nickname: 'BayLink管理员',
+        role: 'admin', contactType: 'email', contactValue: 'admin@baylink.com', bio: '官方管理员'
+      });
+      console.log('👑 管理员账号已自动创建');
+    }
+    // 初始化默认文案
+    const aboutExists = await Content.findOne({ key: 'baylink_about' });
+    if (!aboutExists) {
+        await Content.create({ key: 'baylink_about', value: 'BayLink 助手是一个面向旧金山湾区本地居民的信息平台。\n\n我们致力于连接邻里，提供互助便利。' });
+        await Content.create({ key: 'baylink_support', value: '如有问题，请联系客服邮箱：\nsupport@baylink.com' });
+    }
+  } catch (e) {
+    console.log('Init check skipped:', e.message);
+  }
+};
+// 连接成功后尝试初始化
+mongoose.connection.once('open', initAdmin);
+
+
+// --- 中间件 ---
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+
+  jwt.verify(token, JWT_SECRET, async (err, userPayload) => {
     if (err) return res.sendStatus(403);
-    req.user = user;
-    const dbUser = db.users.find(u => u.id === user.id);
-    if (dbUser && dbUser.isBanned) return res.status(403).json({ error: 'Account Banned' });
-    next();
+    try {
+        const dbUser = await User.findOne({ id: userPayload.id });
+        if (!dbUser) return res.sendStatus(403);
+        if (dbUser.isBanned) return res.status(403).json({ error: 'Account Banned' });
+        req.user = dbUser; 
+        next();
+    } catch (e) {
+        return res.sendStatus(500);
+    }
   });
 };
 
-// --- Routes ---
+// --- 接口定义 ---
 
-// Auth
-app.post('/api/auth/register', (req, res) => {
-  const { email, password, nickname, contactType, contactValue } = req.body;
-  if (db.users.find(u => u.email === email)) return res.status(400).json({ error: 'User exists' });
-  const newUser = { 
-    id: Date.now().toString(), email, password, nickname, role: 'user', 
-    contactType, contactValue, isBanned: false, bio: '这个邻居很懒，什么也没写~', avatar: null 
-  };
-  if (email === 'admin') newUser.role = 'admin';
-  db.users.push(newUser);
-  const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET);
-  res.json({ ...newUser, token });
+// 注册
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, nickname, contactType, contactValue } = req.body;
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ error: 'User exists' });
+
+    const newUser = await User.create({
+      id: Date.now().toString(), email, password, nickname,
+      role: email === 'admin' ? 'admin' : 'user',
+      contactType, contactValue, bio: '这个邻居很懒，什么也没写~'
+    });
+
+    const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET);
+    res.json({ ...newUser.toObject(), token });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = db.users.find(u => u.email === email && u.password === password);
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-  const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
-  res.json({ ...user, token });
+// 登录
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
+    res.json({ ...user.toObject(), token });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ✅ User Profile (新增)
-app.get('/api/users/:id', (req, res) => {
-  const user = db.users.find(u => u.id === req.params.id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  // 只返回公开信息
-  res.json({
-    id: user.id,
-    nickname: user.nickname,
-    role: user.role,
-    avatar: user.avatar,
-    bio: user.bio,
-    isBanned: user.isBanned
-  });
+// 获取用户信息
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    const user = await User.findOne({ id: req.params.id });
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    res.json({ id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio, isBanned: user.isBanned });
+  } catch (e) { res.status(500).json({ error: 'Server Error' }); }
 });
 
-// ✅ Update Profile (新增)
-app.patch('/api/users/me', authenticateToken, (req, res) => {
-  const user = db.users.find(u => u.id === req.user.id);
-  if (!user) return res.sendStatus(404);
-  
-  const { nickname, contactType, contactValue, bio, avatar } = req.body;
-  if (nickname) user.nickname = nickname;
-  if (contactType) user.contactType = contactType;
-  if (contactValue) user.contactValue = contactValue;
-  if (bio !== undefined) user.bio = bio;
-  if (avatar !== undefined) user.avatar = avatar;
-
-  res.json(user);
+// 更新个人资料
+app.patch('/api/users/me', authenticateToken, async (req, res) => {
+  try {
+    const { nickname, bio, avatar } = req.body;
+    const user = req.user;
+    if (nickname) user.nickname = nickname;
+    if (bio !== undefined) user.bio = bio;
+    if (avatar !== undefined) user.avatar = avatar;
+    await user.save();
+    
+    // 同步更新帖子作者信息
+    if (avatar || nickname) {
+        await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
+    }
+    res.json(user);
+  } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
-// Posts
-app.get('/api/posts', (req, res) => {
-  const { type, keyword } = req.query;
-  let result = db.posts.filter(p => !p.isDeleted);
-  if (type) result = result.filter(p => p.type === type);
-  if (keyword) {
-    const kw = keyword.toLowerCase();
-    result = result.filter(p => p.title.toLowerCase().includes(kw) || p.description.toLowerCase().includes(kw) || p.city.toLowerCase().includes(kw));
-  }
-  const formatted = result.map(p => {
-    const author = db.users.find(u => u.id === p.authorId);
-    const allComments = db.comments.filter(c => c.postId === p.id);
-    let isContacted = false;
+// 获取帖子列表
+app.get('/api/posts', async (req, res) => {
+  try {
+    const { type, keyword } = req.query;
+    let query = { isDeleted: false };
+    if (type) query.type = type;
+    if (keyword) {
+        const regex = new RegExp(keyword, 'i');
+        query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
+    }
+
+    const posts = await Post.find(query).sort({ createdAt: -1 }).lean();
+    
+    let currentUserId = null;
     const authHeader = req.headers['authorization'];
     if (authHeader) {
         try {
-            const decoded = jwt.verify(token = authHeader.split(' ')[1], JWT_SECRET);
-            isContacted = db.contactMarks.some(m => m.userId === decoded.id && m.postId === p.id);
+            const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+            currentUserId = decoded.id;
         } catch(e) {}
     }
-    return {
-      ...p,
-      author: { 
-        nickname: author?.nickname || 'Unknown', 
-        avatar: author?.avatar, // 返回最新的头像
-        isBanned: author?.isBanned 
-      },
-      likesCount: db.likes.filter(l => l.postId === p.id).length,
-      commentsCount: allComments.length,
-      isContacted,
-      contactInfo: null
+
+    const formatted = posts.map(p => ({
+        ...p,
+        author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar },
+        likesCount: p.likes ? p.likes.length : 0,
+        commentsCount: p.comments ? p.comments.length : 0,
+        hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
+        isContacted: currentUserId ? (p.contactMarks || []).includes(currentUserId) : false,
+        contactInfo: null
+    }));
+    
+    res.json(formatted);
+  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+});
+
+// 发布帖子
+app.post('/api/posts', authenticateToken, async (req, res) => {
+  try {
+    const todayStart = new Date().setHours(0,0,0,0);
+    const count = await Post.countDocuments({ 
+        authorId: req.user.id, 
+        isDeleted: false, 
+        createdAt: { $gte: todayStart } 
+    });
+    
+    if (count >= 3) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' });
+
+    const newPost = await Post.create({
+        id: Date.now().toString(),
+        authorId: req.user.id,
+        authorNickname: req.user.nickname,
+        authorAvatar: req.user.avatar,
+        ...req.body,
+        isDeleted: false
+    });
+    res.json(newPost);
+  } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
+});
+
+// 点赞
+app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+    
+    const idx = post.likes.indexOf(req.user.id);
+    if (idx === -1) post.likes.push(req.user.id);
+    else post.likes.splice(idx, 1);
+    
+    await post.save();
+    res.json({ success: true });
+  } catch (e) { res.sendStatus(500); }
+});
+
+// 标记已联系
+app.post('/api/posts/:id/contact-mark', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+    if (!post.contactMarks.includes(req.user.id)) {
+        post.contactMarks.push(req.user.id);
+        await post.save();
+    }
+    res.json({ success: true });
+  } catch (e) { res.sendStatus(500); }
+});
+
+// 删除帖子
+app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+    if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+    
+    post.isDeleted = true;
+    await post.save();
+    res.json({ success: true });
+  } catch (e) { res.sendStatus(500); }
+});
+
+// 评论
+app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+
+    const comment = {
+        id: Date.now().toString(),
+        authorId: req.user.id,
+        authorName: req.user.nickname,
+        content: req.body.content,
+        createdAt: Date.now()
     };
-  });
-  formatted.sort((a, b) => b.createdAt - a.createdAt);
-  res.json(formatted);
+    post.comments.push(comment);
+    await post.save();
+    res.json(comment);
+  } catch (e) { res.sendStatus(500); }
 });
 
-app.post('/api/posts', authenticateToken, (req, res) => {
-  const todayStart = new Date().setHours(0,0,0,0);
-  const todayPosts = db.posts.filter(p => p.authorId === req.user.id && !p.isDeleted && p.createdAt >= todayStart);
-  if (todayPosts.length >= 3) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' }); // 稍微放宽限制方便测试
-  const newPost = { id: Date.now().toString(), authorId: req.user.id, ...req.body, createdAt: Date.now(), isDeleted: false };
-  db.posts.push(newPost);
-  res.json(newPost);
+// 广告
+app.get('/api/ads', async (req, res) => {
+    const ads = await Ad.find({});
+    res.json(ads);
 });
-
-app.post('/api/posts/:id/contact-mark', authenticateToken, (req, res) => {
-  const { id } = req.params;
-  if (!db.contactMarks.some(m => m.userId === req.user.id && m.postId === id)) db.contactMarks.push({ userId: req.user.id, postId: id });
-  res.json({ success: true });
-});
-
-app.delete('/api/posts/:id', authenticateToken, (req, res) => {
-  const user = db.users.find(u => u.id === req.user.id);
-  const post = db.posts.find(p => p.id === req.params.id);
-  if (!post) return res.sendStatus(404);
-  if (user.role !== 'admin' && post.authorId !== user.id) return res.sendStatus(403);
-  post.isDeleted = true;
-  res.json({ success: true });
-});
-
-app.post('/api/posts/:id/comments', authenticateToken, (req, res) => {
-  const { content } = req.body;
-  const user = db.users.find(u => u.id === req.user.id);
-  const comment = { id: Date.now().toString(), postId: req.params.id, authorId: req.user.id, authorName: user.nickname, content, createdAt: Date.now() };
-  db.comments.push(comment);
-  res.json(comment);
-});
-
-// Ads & Content
-app.get('/api/ads', (req, res) => res.json(db.ads));
-app.post('/api/ads', authenticateToken, (req, res) => {
+app.post('/api/ads', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin') return res.sendStatus(403);
-    const ad = { ...req.body, id: Date.now().toString(), isVerified: true };
-    db.ads.push(ad);
+    const ad = await Ad.create({ ...req.body, id: Date.now().toString(), isVerified: true });
     res.json(ad);
 });
-app.delete('/api/ads/:id', authenticateToken, (req, res) => {
+app.delete('/api/ads/:id', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin') return res.sendStatus(403);
-    db.ads = db.ads.filter(a => a.id !== req.params.id);
-    res.json({ success: true });
-});
-app.get('/api/content/:key', (req, res) => res.json({ value: db.content[req.params.key] || '' }));
-app.post('/api/content', authenticateToken, (req, res) => {
-    if (req.user.role !== 'admin') return res.sendStatus(403);
-    db.content[req.body.key] = req.body.value;
+    await Ad.deleteOne({ id: req.params.id });
     res.json({ success: true });
 });
 
-// Conversations
-app.get('/api/conversations', authenticateToken, (req, res) => {
-  const convs = db.conversations.filter(c => c.userIds.includes(req.user.id));
-  const result = convs.map(c => {
-    const otherId = c.userIds.find(uid => uid !== req.user.id);
-    const otherUser = db.users.find(u => u.id === otherId);
-    const lastMsg = db.messages.filter(m => m.conversationId === c.id).pop();
-    return { 
-      id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', 
-      otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar } // Include avatar
-    };
-  }).sort((a, b) => b.updatedAt - a.updatedAt);
-  res.json(result);
+// 公共内容
+app.get('/api/content/:key', async (req, res) => {
+    const content = await Content.findOne({ key: req.params.key });
+    res.json({ value: content ? content.value : '' });
 });
-app.post('/api/conversations/open-or-create', authenticateToken, (req, res) => {
-  const { targetUserId } = req.body;
-  let conv = db.conversations.find(c => c.userIds.includes(req.user.id) && c.userIds.includes(targetUserId));
-  if (!conv) {
-    conv = { id: Date.now().toString(), userIds: [req.user.id, targetUserId], createdAt: Date.now(), updatedAt: Date.now() };
-    db.conversations.push(conv);
-  }
-  res.json(conv);
+app.post('/api/content', authenticateToken, async (req, res) => {
+    if (req.user.role !== 'admin') return res.sendStatus(403);
+    await Content.findOneAndUpdate(
+        { key: req.body.key }, 
+        { value: req.body.value }, 
+        { upsert: true, new: true }
+    );
+    res.json({ success: true });
 });
-app.get('/api/conversations/:id/messages', authenticateToken, (req, res) => {
-  const msgs = db.messages.filter(m => m.conversationId === req.params.id).sort((a, b) => a.createdAt - b.createdAt);
-  res.json(msgs);
+
+// 会话列表
+app.get('/api/conversations', authenticateToken, async (req, res) => {
+    try {
+        const convs = await Conversation.find({ userIds: req.user.id });
+        const result = await Promise.all(convs.map(async c => {
+            const otherId = c.userIds.find(uid => uid !== req.user.id);
+            const otherUser = await User.findOne({ id: otherId });
+            const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 });
+            return {
+                id: c.id,
+                updatedAt: c.updatedAt,
+                lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '',
+                otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar }
+            };
+        }));
+        result.sort((a, b) => b.updatedAt - a.updatedAt);
+        res.json(result);
+    } catch (e) { res.status(500).json([]); }
 });
-app.post('/api/conversations/:id/messages', authenticateToken, (req, res) => {
-  const { type, content } = req.body;
-  let finalContent = content;
-  if (type === 'contact-share') {
-    const user = db.users.find(u => u.id === req.user.id);
-    finalContent = `我的联系方式：${user.contactType.toUpperCase()} ${user.contactValue}`;
-  }
-  const msg = { id: Date.now().toString(), conversationId: req.params.id, senderId: req.user.id, type, content: finalContent, createdAt: Date.now() };
-  db.messages.push(msg);
-  const conv = db.conversations.find(c => c.id === req.params.id);
-  if (conv) conv.updatedAt = Date.now();
-  res.json(msg);
+
+// 开启会话
+app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => {
+    try {
+        const { targetUserId } = req.body;
+        let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } });
+        if (!conv) {
+            conv = await Conversation.create({
+                id: Date.now().toString(),
+                userIds: [req.user.id, targetUserId]
+            });
+        }
+        res.json(conv);
+    } catch (e) { res.status(500).json({error: 'Error'}); }
+});
+
+// 获取消息
+app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) => {
+    const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 });
+    res.json(msgs);
+});
+
+// 发送消息
+app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => {
+    const { type, content } = req.body;
+    let finalContent = content;
+    if (type === 'contact-share') {
+        finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`;
+    }
+    const msg = await Message.create({
+        id: Date.now().toString(),
+        conversationId: req.params.id,
+        senderId: req.user.id,
+        type,
+        content: finalContent
+    });
+    
+    await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() });
+    res.json(msg);
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
