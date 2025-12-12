@@ -4,15 +4,28 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const cloudinary = require('cloudinary').v2;
+// ✨ 核心升级：引入 HTTP 和 Socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✨ 核心升级：创建 HTTP 服务器并绑定 Socket.io
+// 这一步是为了让服务器既能处理 API 请求，也能维持长连接
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // 允许所有来源连接 (生产环境建议限制为你的前端域名)
+    methods: ["GET", "POST"]
+  }
+});
+
 // --- Cloudinary 配置 ---
 cloudinary.config({ 
-  cloud_name: 'dpugh4vfy', 
-  api_key: '653341452655839', 
-  api_secret: 'k3LlWbnU32JnancGX_C_9osYnEk' 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dpugh4vfy', 
+  api_key: process.env.CLOUDINARY_API_KEY || '653341452655839', 
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'k3LlWbnU32JnancGX_C_9osYnEk' 
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'baylink-secret-key-2025'; 
@@ -25,7 +38,24 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 if (!MONGO_URI) { console.error("❌ 错误: 未设置 MONGO_URI。"); } 
 else { mongoose.connect(MONGO_URI).then(() => console.log('✅ MongoDB Connected')).catch(err => console.error(err)); }
 
-// --- Schemas (已更新：支持社交链接 & 举报) ---
+// --- Socket.io 实时逻辑 ---
+io.on('connection', (socket) => {
+  console.log(`🔌 新连接: ${socket.id}`);
+
+  // 用户登录后，加入以自己 User ID 命名的房间，方便接收私信
+  socket.on('join_room', (userId) => {
+    if (userId) {
+      socket.join(userId);
+      console.log(`👤 用户 ${userId} 已上线`);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // 这里可以处理用户下线逻辑
+  });
+});
+
+// --- Schemas ---
 const UserSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   email: { type: String, required: true, unique: true },
@@ -37,11 +67,7 @@ const UserSchema = new mongoose.Schema({
   isBanned: { type: Boolean, default: false },
   bio: String,
   avatar: String,
-  // ✨ 新增：社交链接
-  socialLinks: {
-    linkedin: String,
-    instagram: String
-  },
+  socialLinks: { linkedin: String, instagram: String },
   createdAt: { type: Number, default: Date.now }
 });
 
@@ -61,7 +87,6 @@ const PostSchema = new mongoose.Schema({
   likes: [String],
   contactMarks: [String],
   comments: [{ id: String, authorId: String, authorName: String, content: String, createdAt: Number }],
-  // ✨ 新增：举报记录
   reports: [{ reporterId: String, reason: String, createdAt: Number }],
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Number, default: Date.now }
@@ -130,7 +155,6 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/users/:id', async (req, res) => {
   const user = await User.findOne({ id: req.params.id });
   if (!user) return res.status(404).json({ error: 'Not found' });
-  // ✨ 返回社交链接
   res.json({ 
     id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio,
     socialLinks: user.socialLinks || { linkedin: '', instagram: '' } 
@@ -143,7 +167,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     const user = req.user;
     if (nickname) user.nickname = nickname;
     if (bio !== undefined) user.bio = bio;
-    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; // ✨ 更新社交链接
+    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; 
     if (avatar && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
@@ -179,7 +203,7 @@ app.get('/api/posts', async (req, res) => {
         likesCount: p.likes ? p.likes.length : 0,
         commentsCount: p.comments ? p.comments.length : 0,
         hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
-        isReported: currentUserId ? (p.reports || []).some(r => r.reporterId === currentUserId) : false // ✨ 是否已举报
+        isReported: currentUserId ? (p.reports || []).some(r => r.reporterId === currentUserId) : false 
     }));
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
@@ -204,7 +228,6 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
 });
 
-// ✨ 举报接口
 app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id });
@@ -218,7 +241,6 @@ app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Report Failed' }); }
 });
 
-// 其他接口保持不变
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
@@ -227,9 +249,41 @@ app.post('/api/ads', authenticateToken, async (req, res) => { if (req.user.role 
 app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
 app.get('/api/content/:key', async (req, res) => { const content = await Content.findOne({ key: req.params.key }); res.json({ value: content ? content.value : '' }); });
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
+
+// --- 聊天接口 (Socket.io 增强版) ---
+
 app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
 app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => { const { targetUserId } = req.body; let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } }); if (!conv) { conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] }); } res.json(conv); });
 app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) => { const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 }); res.json(msgs); });
-app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => { const { type, content } = req.body; let finalContent = content; if (type === 'contact-share') { finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`; } const msg = await Message.create({ id: Date.now().toString(), conversationId: req.params.id, senderId: req.user.id, type, content: finalContent }); await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() }); res.json(msg); });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ✨ 发送消息接口 - 实时推送
+app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => { 
+  const { type, content } = req.body; 
+  let finalContent = content; 
+  if (type === 'contact-share') { finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`; } 
+  
+  // 1. 存入数据库
+  const msg = await Message.create({ 
+    id: Date.now().toString(), 
+    conversationId: req.params.id, 
+    senderId: req.user.id, 
+    type, 
+    content: finalContent 
+  }); 
+  await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() }); 
+  
+  // 2. ✨ Socket.io 推送逻辑
+  const conv = await Conversation.findOne({ id: req.params.id });
+  if (conv) {
+    const receiverId = conv.userIds.find(uid => uid !== req.user.id);
+    if (receiverId) {
+        // 直接向对方的“房间”广播消息 -> 对方的前端会立即收到
+        io.to(receiverId).emit('new_message', msg);
+    }
+  }
+
+  res.json(msg); 
+});
+
+// ✨ 重要修改：使用 server.listen 启动，而不是 app.listen
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
