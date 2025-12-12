@@ -11,9 +11,9 @@ const PORT = process.env.PORT || 3000;
 // --- ⚠️ 配置区域 (请替换为你自己的 Cloudinary 信息) ---
 // 为了安全，生产环境建议把这些放入 Render 的环境变量，但在代码里填入也能运行
 cloudinary.config({ 
-  cloud_name: process.env.dpugh4vfy || '你的CloudName', 
-  api_key: process.env.653341452655839 || '你的ApiKey', 
-  api_secret: process.env.k3LlWbnU32JnancGX_C_9osYnEk || '你的ApiSecret' 
+ cloud_name: 'dpugh4vfy', 
+  api_key: '653341452655839', 
+  api_secret: 'k3LlWbnU32JnancGX_C_9osYnEk' 
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'baylink-secret-key-2025'; 
