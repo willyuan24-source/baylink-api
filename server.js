@@ -3,15 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const cloudinary = require('cloudinary').v2; // 引入 Cloudinary
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// --- ⚠️ 配置区域 (请替换为你自己的 Cloudinary 信息) ---
-// 为了安全，生产环境建议把这些放入 Render 的环境变量，但在代码里填入也能运行
+// --- Cloudinary 配置 ---
 cloudinary.config({ 
- cloud_name: 'dpugh4vfy', 
+  cloud_name: 'dpugh4vfy', 
   api_key: '653341452655839', 
   api_secret: 'k3LlWbnU32JnancGX_C_9osYnEk' 
 });
@@ -23,16 +22,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// --- MongoDB 连接 ---
-if (!MONGO_URI) {
-  console.error("❌ 错误: 未设置 MONGO_URI。");
-} else {
-  mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ Connected to MongoDB Atlas'))
-    .catch(err => console.error('❌ MongoDB Connection Error:', err));
-}
+if (!MONGO_URI) { console.error("❌ 错误: 未设置 MONGO_URI。"); } 
+else { mongoose.connect(MONGO_URI).then(() => console.log('✅ MongoDB Connected')).catch(err => console.error(err)); }
 
-// --- Schemas ---
+// --- Schemas (已更新：支持社交链接 & 举报) ---
 const UserSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   email: { type: String, required: true, unique: true },
@@ -43,7 +36,12 @@ const UserSchema = new mongoose.Schema({
   contactValue: String,
   isBanned: { type: Boolean, default: false },
   bio: String,
-  avatar: String, 
+  avatar: String,
+  // ✨ 新增：社交链接
+  socialLinks: {
+    linkedin: String,
+    instagram: String
+  },
   createdAt: { type: Number, default: Date.now }
 });
 
@@ -59,47 +57,20 @@ const PostSchema = new mongoose.Schema({
   timeInfo: String,
   budget: String,
   description: String,
-  imageUrls: [String], // 这里现在存的是 http 链接，而不是 base64
+  imageUrls: [String],
   likes: [String],
   contactMarks: [String],
-  comments: [{
-    id: String,
-    authorId: String,
-    authorName: String,
-    content: String,
-    createdAt: Number
-  }],
+  comments: [{ id: String, authorId: String, authorName: String, content: String, createdAt: Number }],
+  // ✨ 新增：举报记录
+  reports: [{ reporterId: String, reason: String, createdAt: Number }],
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Number, default: Date.now }
 });
 
-const AdSchema = new mongoose.Schema({
-  id: String,
-  title: String,
-  content: String,
-  imageUrl: String,
-  isVerified: { type: Boolean, default: true }
-});
-
-const ConversationSchema = new mongoose.Schema({
-  id: { type: String, unique: true },
-  userIds: [String],
-  updatedAt: { type: Number, default: Date.now }
-});
-
-const MessageSchema = new mongoose.Schema({
-  id: String,
-  conversationId: String,
-  senderId: String,
-  type: String,
-  content: String,
-  createdAt: { type: Number, default: Date.now }
-});
-
-const ContentSchema = new mongoose.Schema({
-  key: { type: String, unique: true },
-  value: String
-});
+const AdSchema = new mongoose.Schema({ id: String, title: String, content: String, imageUrl: String, isVerified: { type: Boolean, default: true } });
+const ConversationSchema = new mongoose.Schema({ id: { type: String, unique: true }, userIds: [String], updatedAt: { type: Number, default: Date.now } });
+const MessageSchema = new mongoose.Schema({ id: String, conversationId: String, senderId: String, type: String, content: String, createdAt: { type: Number, default: Date.now } });
+const ContentSchema = new mongoose.Schema({ key: { type: String, unique: true }, value: String });
 
 const User = mongoose.model('User', UserSchema);
 const Post = mongoose.model('Post', PostSchema);
@@ -108,54 +79,40 @@ const Conversation = mongoose.model('Conversation', ConversationSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
 
-// --- Helper: 上传图片到 Cloudinary ---
 const uploadToCloudinary = async (base64Image) => {
     if (!base64Image || !base64Image.startsWith('data:image')) return null;
     try {
-        const result = await cloudinary.uploader.upload(base64Image, {
-            folder: "baylink_posts", // 在 Cloudinary 中的文件夹名
-        });
-        return result.secure_url; // 返回 https 链接
-    } catch (error) {
-        console.error("Cloudinary upload failed:", error);
-        return null;
-    }
+        const result = await cloudinary.uploader.upload(base64Image, { folder: "baylink_posts" });
+        return result.secure_url;
+    } catch (error) { return null; }
 };
 
-// --- Auth Middleware ---
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
-
   jwt.verify(token, JWT_SECRET, async (err, userPayload) => {
     if (err) return res.sendStatus(403);
-    try {
-        const dbUser = await User.findOne({ id: userPayload.id });
-        if (!dbUser) return res.sendStatus(403);
-        if (dbUser.isBanned) return res.status(403).json({ error: 'Account Banned' });
-        req.user = dbUser; 
-        next();
-    } catch (e) {
-        return res.sendStatus(500);
-    }
+    const dbUser = await User.findOne({ id: userPayload.id });
+    if (!dbUser || dbUser.isBanned) return res.sendStatus(403);
+    req.user = dbUser; 
+    next();
   });
 };
 
 // --- Routes ---
 
-// Auth
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, nickname, contactType, contactValue } = req.body;
-    const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ error: 'User exists' });
+    if (await User.findOne({ email })) return res.status(400).json({ error: 'User exists' });
     const newUser = await User.create({
       id: Date.now().toString(), email, password, nickname,
       role: email === 'admin' ? 'admin' : 'user',
-      contactType, contactValue, bio: '这个邻居很懒，什么也没写~'
+      contactType, contactValue, bio: '这个邻居很懒，什么也没写~',
+      socialLinks: { linkedin: '', instagram: '' }
     });
-    const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET);
+    const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
     res.json({ ...newUser.toObject(), token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -165,7 +122,7 @@ app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email, password });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
+    const token = jwt.sign({ id: user.id }, JWT_SECRET);
     res.json({ ...user.toObject(), token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -173,62 +130,47 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/users/:id', async (req, res) => {
   const user = await User.findOne({ id: req.params.id });
   if (!user) return res.status(404).json({ error: 'Not found' });
-  res.json({ id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio });
+  // ✨ 返回社交链接
+  res.json({ 
+    id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio,
+    socialLinks: user.socialLinks || { linkedin: '', instagram: '' } 
+  });
 });
 
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
   try {
-    const { nickname, bio, avatar } = req.body; // avatar 此时还是 base64
+    const { nickname, bio, avatar, socialLinks } = req.body;
     const user = req.user;
     if (nickname) user.nickname = nickname;
     if (bio !== undefined) user.bio = bio;
-    
-    // 处理头像上传
+    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; // ✨ 更新社交链接
     if (avatar && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
     }
-
     await user.save();
-    // 更新帖子作者信息
-    if (avatar || nickname) {
-        await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
-    }
+    if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
     res.json(user);
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
-// ✅ 帖子列表 (包含分页)
 app.get('/api/posts', async (req, res) => {
   try {
-    const { type, keyword, page = 1, limit = 10 } = req.query; // 默认第1页，每页10条
+    const { type, keyword, page = 1, limit = 10 } = req.query;
     let query = { isDeleted: false };
-    
     if (type) query.type = type;
     if (keyword) {
         const regex = new RegExp(keyword, 'i');
         query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
     }
-
-    // 分页逻辑
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    const posts = await Post.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .lean();
-    
-    // 检查是否还有更多
+    const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
     const totalCount = await Post.countDocuments(query);
-    const hasMore = totalCount > skip + posts.length;
-
+    
     let currentUserId = null;
     const authHeader = req.headers['authorization'];
     if (authHeader) {
-        try {
-            const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
-            currentUserId = decoded.id;
-        } catch(e) {}
+        try { currentUserId = jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch(e) {}
     }
 
     const formatted = posts.map(p => ({
@@ -237,52 +179,49 @@ app.get('/api/posts', async (req, res) => {
         likesCount: p.likes ? p.likes.length : 0,
         commentsCount: p.comments ? p.comments.length : 0,
         hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
-        isContacted: currentUserId ? (p.contactMarks || []).includes(currentUserId) : false,
-        contactInfo: null
+        isReported: currentUserId ? (p.reports || []).some(r => r.reporterId === currentUserId) : false // ✨ 是否已举报
     }));
-    
-    res.json({ posts: formatted, hasMore }); // 返回结构变化：{ posts: [], hasMore: boolean }
+    res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
 
-// ✅ 发布帖子 (上传图片到图床)
 app.post('/api/posts', authenticateToken, async (req, res) => {
   try {
     const todayStart = new Date().setHours(0,0,0,0);
     const count = await Post.countDocuments({ authorId: req.user.id, isDeleted: false, createdAt: { $gte: todayStart } });
-    if (count >= 5) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' }); // 放宽到5条
+    if (count >= 5) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' });
 
     const { imageUrls, ...postData } = req.body;
-    
-    // 处理图片上传 (并发上传)
     let uploadedUrls = [];
     if (imageUrls && imageUrls.length > 0) {
-        const uploadPromises = imageUrls.map(img => uploadToCloudinary(img));
-        const results = await Promise.all(uploadPromises);
-        uploadedUrls = results.filter(url => url !== null);
+        uploadedUrls = (await Promise.all(imageUrls.map(img => uploadToCloudinary(img)))).filter(u => u !== null);
     }
-
     const newPost = await Post.create({
-        id: Date.now().toString(),
-        authorId: req.user.id,
-        authorNickname: req.user.nickname,
-        authorAvatar: req.user.avatar,
-        ...postData,
-        imageUrls: uploadedUrls, // 存入的是 URL 数组
-        isDeleted: false
+        id: Date.now().toString(), authorId: req.user.id, authorNickname: req.user.nickname, authorAvatar: req.user.avatar,
+        ...postData, imageUrls: uploadedUrls, isDeleted: false
     });
     res.json(newPost);
-  } catch (e) { 
-      console.error(e);
-      res.status(500).json({ error: 'Post Failed' }); 
-  }
+  } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
 });
 
-// 其他操作 (点赞/删除/评论/广告/私信) 保持不变，因为它们不涉及大量数据传输
-app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { /* ...同前... */ const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
-app.post('/api/posts/:id/contact-mark', authenticateToken, async (req, res) => { /* ...同前... */ const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (!post.contactMarks.includes(req.user.id)) { post.contactMarks.push(req.user.id); await post.save(); } res.json({ success: true }); });
-app.delete('/api/posts/:id', authenticateToken, async (req, res) => { /* ...同前... */ const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
-app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { /* ...同前... */ const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
+// ✨ 举报接口
+app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+    const hasReported = post.reports.some(r => r.reporterId === req.user.id);
+    if (!hasReported) {
+      post.reports.push({ reporterId: req.user.id, reason: req.body.reason || 'spam', createdAt: Date.now() });
+      await post.save();
+    }
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: 'Report Failed' }); }
+});
+
+// 其他接口保持不变
+app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
+app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
+app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
 app.get('/api/ads', async (req, res) => { const ads = await Ad.find({}); res.json(ads); });
 app.post('/api/ads', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); const ad = await Ad.create({ ...req.body, id: Date.now().toString(), isVerified: true }); res.json(ad); });
 app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
