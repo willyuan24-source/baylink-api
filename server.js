@@ -7,6 +7,7 @@ const cloudinary = require('cloudinary').v2;
 const http = require('http');
 const { Server } = require('socket.io');
 const twilio = require('twilio');
+const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -76,6 +77,18 @@ const UserSchema = new mongoose.Schema({
   avatar: String,
   socialLinks: { linkedin: String, instagram: String },
   createdAt: { type: Number, default: Date.now }
+});
+
+// ✨ 新增：在儲存用戶資料前，自動攔截密碼並進行 Bcrypt Hash 加密
+UserSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (e) {
+    next(e);
+  }
 });
 
 const PostSchema = new mongoose.Schema({
@@ -214,17 +227,35 @@ app.post('/api/auth/register', async (req, res) => {
       socialLinks: { linkedin: '', instagram: '' }
     });
     const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
-    res.json({ ...newUser.toObject(), token });
+    
+    // ✨ 安全優化：回傳時移除 password 與 verifyCode 等敏感欄位，防 Hash 被窺探
+    const userResponse = newUser.toObject();
+    delete userResponse.password;
+    delete userResponse.verifyCode;
+    
+    res.json({ ...userResponse, token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
+    // ✨ 修改：不再直接查 password，改用單純的 email 尋找使用者
+    const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    
+    // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
-    res.json({ ...user.toObject(), token });
+    
+    // ✨ 安全優化：回傳時移除密碼與驗證碼敏感資料
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse.verifyCode;
+    
+    res.json({ ...userResponse, token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -252,7 +283,11 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     }
     await user.save();
     if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
-    res.json(user);
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse.verifyCode;
+    delete userResponse.verifyCodeExpires;
+    res.json(userResponse);
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
