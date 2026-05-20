@@ -12,6 +12,20 @@ const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const ALLOWED_ORIGINS = [
+  'https://www.baylink.us',
+  'https://baylink.us',
+  'http://localhost:5173',
+];
+
+const corsOriginCheck = (origin, callback) => {
+  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 // --- 生产环境安全检查 ---
 const requiredEnvs = ['MONGO_URI', 'JWT_SECRET', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
 const missingEnvs = requiredEnvs.filter(key => !process.env[key]);
@@ -22,7 +36,11 @@ if (missingEnvs.length > 0) {
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] } // 建议上线后将 "*" 改为前端域名
+  cors: {
+    origin: ALLOWED_ORIGINS,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 });
 
 // --- 配置区域 ---
@@ -43,7 +61,7 @@ if (!twilioClient) console.warn("⚠️ 警告: 未配置 Twilio，手机验证�
 const JWT_SECRET = process.env.JWT_SECRET; 
 const MONGO_URI = process.env.MONGO_URI; 
 
-app.use(cors());
+app.use(cors({ origin: corsOriginCheck, credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
