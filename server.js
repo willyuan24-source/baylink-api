@@ -149,6 +149,43 @@ const validatePasswordStrength = (password) =>
   /[a-z]/.test(password) &&
   /[0-9]/.test(password);
 
+const isValidHttpUrl = (value) => {
+  try {
+    const url = new URL(String(value).trim());
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+const sanitizeOptionalImageUrl = (value) => {
+  const imageUrl = String(value || '').trim();
+  if (!imageUrl) return '';
+  if (!isValidHttpUrl(imageUrl)) {
+    const err = new Error('Invalid image URL');
+    err.statusCode = 400;
+    throw err;
+  }
+  return imageUrl;
+};
+
+const buildAdPayload = (body) => {
+  const { title, content, description, imageUrl } = body || {};
+  const finalTitle = String(title || '').trim();
+  const finalContent = String(content || description || '').trim();
+  if (!finalTitle) {
+    const err = new Error('Title is required');
+    err.statusCode = 400;
+    throw err;
+  }
+  return {
+    title: finalTitle,
+    content: finalContent,
+    imageUrl: sanitizeOptionalImageUrl(imageUrl),
+    isVerified: true,
+  };
+};
+
 const uploadToCloudinary = async (base64Image) => {
     if (!base64Image || !base64Image.startsWith('data:image')) return null;
     try {
@@ -393,7 +430,35 @@ app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const p
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
 app.get('/api/ads', async (req, res) => { const ads = await Ad.find({}); res.json(ads); });
-app.post('/api/ads', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); const ad = await Ad.create({ ...req.body, id: Date.now().toString(), isVerified: true }); res.json(ad); });
+app.post('/api/ads', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const payload = buildAdPayload(req.body);
+    const ad = await Ad.create({ ...payload, id: Date.now().toString() });
+    res.json(ad);
+  } catch (e) {
+    if (e.statusCode === 400) return res.status(400).json({ error: e.message });
+    console.error('POST /api/ads error:', e);
+    res.status(500).json({ error: e.message || 'Failed to create ad' });
+  }
+});
+app.put('/api/ads/:id', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const payload = buildAdPayload(req.body);
+    const ad = await Ad.findOneAndUpdate(
+      { id: req.params.id },
+      { $set: payload },
+      { new: true }
+    );
+    if (!ad) return res.status(404).json({ error: 'Not found' });
+    res.json(ad);
+  } catch (e) {
+    if (e.statusCode === 400) return res.status(400).json({ error: e.message });
+    console.error('PUT /api/ads error:', e);
+    res.status(500).json({ error: e.message || 'Failed to update ad' });
+  }
+});
 app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
 app.get('/api/content/:key', async (req, res) => { const content = await Content.findOne({ key: req.params.key }); res.json({ value: content ? content.value : '' }); });
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
