@@ -126,7 +126,8 @@ const PostSchema = new mongoose.Schema({
   comments: [{ id: String, authorId: String, authorName: String, content: String, createdAt: Number }],
   reports: [{ reporterId: String, reason: String, createdAt: Number }],
   isDeleted: { type: Boolean, default: false },
-  createdAt: { type: Number, default: Date.now }
+  createdAt: { type: Number, default: Date.now },
+  updatedAt: { type: Number }
 });
 
 const AdSchema = new mongoose.Schema({ id: String, title: String, content: String, imageUrl: String, isVerified: { type: Boolean, default: true } });
@@ -403,17 +404,91 @@ app.get('/api/posts', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
 
+const validatePostBody = (body) => {
+  const title = String(body.title || '').trim();
+  const description = String(body.description || '').trim();
+  const budget = String(body.budget || '').trim();
+  if (title.length < 5) return { status: 400, error: 'Title must be at least 5 characters' };
+  if (title.length > 80) return { status: 400, error: 'Title must be at most 80 characters' };
+  if (description.length < 10) return { status: 400, error: 'Description must be at least 10 characters' };
+  if (description.length > 2000) return { status: 400, error: 'Description must be at most 2000 characters' };
+  if (budget.length > 30) return { status: 400, error: 'Budget must be at most 30 characters' };
+  if (!body.category) return { status: 400, error: 'Category is required' };
+  if (!body.city) return { status: 400, error: 'City/area is required' };
+  return null;
+};
+
+const checkCreatePostRateLimit = async (user) => {
+  const todayStart = new Date().setHours(0, 0, 0, 0);
+  const dailyLimit = user.role === 'admin' ? 100 : 10;
+  const count = await Post.countDocuments({ authorId: user.id, isDeleted: false, createdAt: { $gte: todayStart } });
+  if (count >= dailyLimit) return { status: 429, error: 'Daily post limit reached.' };
+  if (user.role !== 'admin') {
+    const latest = await Post.findOne({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).lean();
+    if (latest && Date.now() - latest.createdAt < 60000) {
+      return { status: 429, error: 'Posting too frequently. Please try again later.' };
+    }
+  }
+  return null;
+};
+
+const processPostImageUrls = async (imageUrls) => {
+  if (!imageUrls || !Array.isArray(imageUrls)) return [];
+  const results = await Promise.all(imageUrls.map(async (img) => {
+    if (typeof img !== 'string' || !img) return null;
+    if (img.startsWith('http://') || img.startsWith('https://')) return img;
+    if (img.startsWith('data:image')) return uploadToCloudinary(img);
+    return null;
+  }));
+  return results.filter(Boolean);
+};
+
 app.post('/api/posts', authenticateToken, async (req, res) => {
   try {
-    const todayStart = new Date().setHours(0,0,0,0);
-    const count = await Post.countDocuments({ authorId: req.user.id, isDeleted: false, createdAt: { $gte: todayStart } });
-    if (count >= 5) return res.status(403).json({ error: 'TODAY_LIMIT_REACHED' });
-    const { imageUrls, ...postData } = req.body;
-    let uploadedUrls = [];
-    if (imageUrls && imageUrls.length > 0) uploadedUrls = (await Promise.all(imageUrls.map(img => uploadToCloudinary(img)))).filter(u => u !== null);
-    const newPost = await Post.create({ id: Date.now().toString(), authorId: req.user.id, authorNickname: req.user.nickname, authorAvatar: req.user.avatar, ...postData, imageUrls: uploadedUrls, isDeleted: false });
+    const rateErr = await checkCreatePostRateLimit(req.user);
+    if (rateErr) return res.status(rateErr.status).json({ error: rateErr.error });
+    const validationErr = validatePostBody(req.body);
+    if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
+    const { imageUrls, id: _id, authorId: _authorId, createdAt: _createdAt, updatedAt: _updatedAt, ...postData } = req.body;
+    const uploadedUrls = await processPostImageUrls(imageUrls);
+    const newPost = await Post.create({
+      id: Date.now().toString(),
+      authorId: req.user.id,
+      authorNickname: req.user.nickname,
+      authorAvatar: req.user.avatar,
+      ...postData,
+      imageUrls: uploadedUrls,
+      isDeleted: false,
+      createdAt: Date.now(),
+    });
     res.json(newPost);
   } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
+});
+
+app.put('/api/posts/:id', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.sendStatus(404);
+    if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+    const validationErr = validatePostBody(req.body);
+    if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
+    const allowed = ['title', 'description', 'category', 'city', 'budget', 'type', 'timeInfo'];
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) post[key] = req.body[key];
+    }
+    if (req.body.imageUrls !== undefined) {
+      post.imageUrls = await processPostImageUrls(req.body.imageUrls);
+    }
+    post.updatedAt = Date.now();
+    await post.save();
+    const p = post.toObject();
+    res.json({
+      ...p,
+      author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar },
+      likesCount: p.likes ? p.likes.length : 0,
+      commentsCount: p.comments ? p.comments.length : 0,
+    });
+  } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
 app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
