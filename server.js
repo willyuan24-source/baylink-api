@@ -141,6 +141,14 @@ const Conversation = mongoose.model('Conversation', ConversationSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validatePasswordStrength = (password) =>
+  typeof password === 'string' &&
+  password.length >= 8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[0-9]/.test(password);
+
 const uploadToCloudinary = async (base64Image) => {
     if (!base64Image || !base64Image.startsWith('data:image')) return null;
     try {
@@ -237,9 +245,20 @@ app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, nickname, contactType, contactValue } = req.body;
-    if (await User.findOne({ email })) return res.status(400).json({ error: 'User exists' });
+    if (!email || !EMAIL_REGEX.test(String(email).trim())) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    if (!validatePasswordStrength(password)) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters and include uppercase, lowercase, and a number' });
+    }
+    if (!nickname || !contactValue) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    if (await User.findOne({ email: String(email).trim().toLowerCase() })) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
     const newUser = await User.create({
-      id: Date.now().toString(), email, password, nickname,
+      id: Date.now().toString(), email: String(email).trim().toLowerCase(), password, nickname,
       role: email === 'admin' ? 'admin' : 'user',
       contactType, contactValue, bio: '这个邻居很懒，什么也没写~',
       socialLinks: { linkedin: '', instagram: '' }
@@ -258,8 +277,17 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    // ✨ 修改：不再直接查 password，改用單純的 email 尋找使用者
-    const user = await User.findOne({ email });
+    const trimmedEmail = String(email || '').trim();
+    let user = null;
+    if (trimmedEmail === 'admin') {
+      user = await User.findOne({ email: 'admin' });
+    } else {
+      const lowerEmail = trimmedEmail.toLowerCase();
+      user = await User.findOne({ email: lowerEmail });
+      if (!user && lowerEmail !== trimmedEmail) {
+        user = await User.findOne({ email: trimmedEmail });
+      }
+    }
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     
     // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
