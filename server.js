@@ -127,7 +127,10 @@ const PostSchema = new mongoose.Schema({
   reports: [{ reporterId: String, reason: String, createdAt: Number }],
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Number, default: Date.now },
-  updatedAt: { type: Number }
+  updatedAt: { type: Number },
+  isFeatured: { type: Boolean, default: false },
+  featuredAt: { type: Date },
+  featuredBy: { type: String }
 });
 
 const AdSchema = new mongoose.Schema({ id: String, title: String, content: String, imageUrl: String, isVerified: { type: Boolean, default: true } });
@@ -353,6 +356,37 @@ app.get('/api/users/:id', async (req, res) => {
   });
 });
 
+app.get('/api/users/:id/public', async (req, res) => {
+  try {
+    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType');
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    const postCount = await Post.countDocuments({ authorId: user.id, isDeleted: false });
+    const recent = await Post.find({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).limit(3).lean();
+    res.json({
+      id: user.id,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      bio: user.bio,
+      role: user.role,
+      createdAt: user.createdAt,
+      isPhoneVerified: user.isPhoneVerified,
+      isOfficialVerified: user.isOfficialVerified,
+      postCount,
+      recentPosts: recent.map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        city: p.city,
+        type: p.type,
+        budget: p.budget,
+        imageUrls: p.imageUrls || [],
+        createdAt: p.createdAt,
+      })),
+    });
+  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+});
+
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
   try {
     const { nickname, bio, avatar, socialLinks, isOfficialVerified } = req.body;
@@ -375,6 +409,32 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
+const getCurrentUserIdFromRequest = (req) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return null;
+  try { return jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch (e) { return null; }
+};
+
+const formatPostResponse = (p, currentUserId) => ({
+  ...p,
+  author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar },
+  likesCount: p.likes ? p.likes.length : 0,
+  commentsCount: p.comments ? p.comments.length : 0,
+  hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
+  isReported: currentUserId ? (p.reports || []).some((r) => r.reporterId === currentUserId) : false,
+});
+
+app.get('/api/posts/featured', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit, 10);
+    const currentUserId = getCurrentUserIdFromRequest(req);
+    let q = Post.find({ isDeleted: false, isFeatured: true }).sort({ featuredAt: -1, createdAt: -1 });
+    if (limit > 0) q = q.limit(limit);
+    const posts = await q.lean();
+    res.json({ posts: posts.map((p) => formatPostResponse(p, currentUserId)) });
+  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+});
+
 app.get('/api/posts', async (req, res) => {
   try {
     const { type, keyword, page = 1, limit = 10 } = req.query;
@@ -387,19 +447,8 @@ app.get('/api/posts', async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
     const totalCount = await Post.countDocuments(query);
-    
-    let currentUserId = null;
-    const authHeader = req.headers['authorization'];
-    if (authHeader) { try { currentUserId = jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch(e) {} }
-
-    const formatted = posts.map(p => ({
-        ...p,
-        author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar }, 
-        likesCount: p.likes ? p.likes.length : 0,
-        commentsCount: p.comments ? p.comments.length : 0,
-        hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
-        isReported: currentUserId ? (p.reports || []).some(r => r.reporterId === currentUserId) : false 
-    }));
+    const currentUserId = getCurrentUserIdFromRequest(req);
+    const formatted = posts.map((p) => formatPostResponse(p, currentUserId));
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
@@ -470,6 +519,32 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
 });
 
+app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.sendStatus(403);
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.sendStatus(404);
+    post.isFeatured = true;
+    post.featuredAt = new Date();
+    post.featuredBy = req.user.id;
+    await post.save();
+    res.json(formatPostResponse(post.toObject(), req.user.id));
+  } catch (e) { res.status(500).json({ error: 'Feature Failed' }); }
+});
+
+app.patch('/api/posts/:id/unfeature', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.sendStatus(403);
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.sendStatus(404);
+    post.isFeatured = false;
+    post.featuredAt = null;
+    post.featuredBy = null;
+    await post.save();
+    res.json(formatPostResponse(post.toObject(), req.user.id));
+  } catch (e) { res.status(500).json({ error: 'Unfeature Failed' }); }
+});
+
 app.put('/api/posts/:id', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
@@ -487,12 +562,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     post.updatedAt = Date.now();
     await post.save();
     const p = post.toObject();
-    res.json({
-      ...p,
-      author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar },
-      likesCount: p.likes ? p.likes.length : 0,
-      commentsCount: p.comments ? p.comments.length : 0,
-    });
+    res.json(formatPostResponse(p, req.user.id));
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
