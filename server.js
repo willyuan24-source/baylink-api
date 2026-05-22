@@ -373,7 +373,8 @@ app.get('/api/users/:id/public', async (req, res) => {
       isOfficialVerified: user.isOfficialVerified,
       postCount,
       recentPosts: recent.map((p) => ({
-        id: p.id,
+        id: p.id || String(p._id),
+        _id: p._id,
         title: p.title,
         description: p.description,
         category: p.category,
@@ -382,6 +383,7 @@ app.get('/api/users/:id/public', async (req, res) => {
         budget: p.budget,
         imageUrls: p.imageUrls || [],
         createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
       })),
     });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
