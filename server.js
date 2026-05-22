@@ -432,12 +432,17 @@ const checkCreatePostRateLimit = async (user) => {
   return null;
 };
 
+const isDefaultCoverUrl = (value) =>
+  typeof value === 'string' && value.startsWith('/default-covers/');
+
 const processPostImageUrls = async (imageUrls) => {
   if (!imageUrls || !Array.isArray(imageUrls)) return [];
   const results = await Promise.all(imageUrls.map(async (img) => {
-    if (typeof img !== 'string' || !img) return null;
-    if (img.startsWith('http://') || img.startsWith('https://')) return img;
-    if (img.startsWith('data:image')) return uploadToCloudinary(img);
+    if (typeof img !== 'string' || !img.trim()) return null;
+    const url = img.trim();
+    if (isDefaultCoverUrl(url)) return url;
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith('data:image')) return uploadToCloudinary(url);
     return null;
   }));
   return results.filter(Boolean);
