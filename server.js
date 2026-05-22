@@ -435,6 +435,16 @@ app.get('/api/posts/featured', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
 
+app.get('/api/posts/:id', async (req, res) => {
+  try {
+    if (req.params.id === 'featured') return res.sendStatus(404);
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    const currentUserId = getCurrentUserIdFromRequest(req);
+    res.json(formatPostResponse(post, currentUserId));
+  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+});
+
 app.get('/api/posts', async (req, res) => {
   try {
     const { type, keyword, page = 1, limit = 10 } = req.query;
