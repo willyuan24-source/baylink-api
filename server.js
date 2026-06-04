@@ -10,6 +10,7 @@ const twilio = require('twilio');
 const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 const ALLOWED_ORIGINS = [
@@ -637,6 +638,262 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
   const conv = await Conversation.findOne({ id: req.params.id });
   if (conv) { const receiverId = conv.userIds.find(uid => uid !== req.user.id); if (receiverId) { io.to(receiverId).emit('new_message', msg); } }
   res.json(msg); 
+});
+
+// --- BayBay AI 发帖助手（仅生成草稿，不改发帖逻辑）---
+const AI_POST_ASSIST_CATEGORIES = new Set([
+  'rent', 'used', 'moving', 'cleaning', 'ride', 'repair', 'translation', 'part-time', 'other',
+]);
+
+const AI_DEFAULT_COVERS = [
+  '/default-covers/01_求租屋.png',
+  '/default-covers/02_找室友.png',
+  '/default-covers/03_求帮助.png',
+  '/default-covers/04_找搬家.png',
+  '/default-covers/05_找清洁.png',
+  '/default-covers/06_求接送.png',
+  '/default-covers/07_求购二手.png',
+  '/default-covers/08_房源出租.png',
+  '/default-covers/09_提供服务.png',
+  '/default-covers/10_可接单.png',
+  '/default-covers/11_搬家服务.png',
+  '/default-covers/12_清洁服务.png',
+  '/default-covers/13_接送服务.png',
+  '/default-covers/14_维修服务.png',
+  '/default-covers/15_二手出售.png',
+  '/default-covers/16_湾区生活.png',
+];
+
+const AI_POST_ASSIST_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
+
+规则：
+- 中文优先（除非用户明确要求英文）。
+- 标题 5-80 字，正文 80-600 字，语气亲切务实。
+- 不要编造联系方式、电话、微信、邮箱。
+- 不要编造不存在的房源、服务商、价格承诺或政府规定。
+- 不要输出法律、财务、移民等专业结论。
+- 涉及租房、押金、合同、政府规定时，用提醒语气，并建议以合同/官方信息/专业意见为准。
+- category 只能是：rent, used, moving, cleaning, ride, repair, translation, part-time, other
+- type 只能是 client（求帮助/求服务）或 provider（提供服务/出租）
+- coverSuggestion 必须从以下路径中选一：${AI_DEFAULT_COVERS.join(', ')}
+- quickTags 为 2-5 个短标签（字符串数组）
+- 只输出一个 JSON 对象，不要 Markdown，不要解释
+
+必须严格返回以下 JSON 字段（键名不可改）：
+{"title":"","description":"","category":"","type":"","area":"","budget":"","timeInfo":"","quickTags":[],"safetyTip":"","coverSuggestion":""}`;
+
+const aiPostAssistRateByIp = new Map();
+
+const getClientIp = (req) => {
+  const xf = req.headers['x-forwarded-for'];
+  if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
+  return req.ip || req.socket?.remoteAddress || 'unknown';
+};
+
+const checkAiPostAssistRateLimit = (ip) => {
+  const now = Date.now();
+  const windowMs = 60000;
+  const maxRequests = 5;
+  let entry = aiPostAssistRateByIp.get(ip);
+  if (!entry || now - entry.windowStart >= windowMs) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  aiPostAssistRateByIp.set(ip, entry);
+  if (aiPostAssistRateByIp.size > 5000) {
+    for (const [key, val] of aiPostAssistRateByIp) {
+      if (now - val.windowStart >= windowMs) aiPostAssistRateByIp.delete(key);
+    }
+  }
+  return entry.count <= maxRequests;
+};
+
+const extractJsonFromAiText = (text) => {
+  const trimmed = String(text || '').trim();
+  if (!trimmed) return null;
+  try {
+    return JSON.parse(trimmed);
+  } catch (_) { /* continue */ }
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) {
+    try {
+      return JSON.parse(fenced[1].trim());
+    } catch (_) { /* continue */ }
+  }
+  const start = trimmed.indexOf('{');
+  const end = trimmed.lastIndexOf('}');
+  if (start !== -1 && end > start) {
+    try {
+      return JSON.parse(trimmed.slice(start, end + 1));
+    } catch (_) { /* continue */ }
+  }
+  return null;
+};
+
+const clampStr = (value, maxLen, fallback = '') => {
+  const s = String(value ?? '').trim();
+  if (!s) return fallback;
+  return s.length > maxLen ? s.slice(0, maxLen) : s;
+};
+
+const normalizeAiPostDraft = (raw, defaults) => {
+  let category = String(raw?.category || '').trim();
+  if (!AI_POST_ASSIST_CATEGORIES.has(category)) category = defaults.category || 'other';
+
+  let type = String(raw?.type || '').trim();
+  if (type !== 'client' && type !== 'provider') type = defaults.type || 'client';
+
+  let coverSuggestion = String(raw?.coverSuggestion || '').trim();
+  if (!AI_DEFAULT_COVERS.includes(coverSuggestion)) {
+    const byCategoryClient = {
+      rent: '/default-covers/01_求租屋.png',
+      used: '/default-covers/07_求购二手.png',
+      moving: '/default-covers/04_找搬家.png',
+      cleaning: '/default-covers/05_找清洁.png',
+      ride: '/default-covers/06_求接送.png',
+      repair: '/default-covers/14_维修服务.png',
+      translation: '/default-covers/16_湾区生活.png',
+      'part-time': '/default-covers/10_可接单.png',
+      other: '/default-covers/03_求帮助.png',
+    };
+    const byCategoryProvider = {
+      rent: '/default-covers/08_房源出租.png',
+      used: '/default-covers/15_二手出售.png',
+      moving: '/default-covers/11_搬家服务.png',
+      cleaning: '/default-covers/12_清洁服务.png',
+      ride: '/default-covers/13_接送服务.png',
+      repair: '/default-covers/14_维修服务.png',
+      translation: '/default-covers/09_提供服务.png',
+      'part-time': '/default-covers/10_可接单.png',
+      other: '/default-covers/09_提供服务.png',
+    };
+    const map = type === 'provider' ? byCategoryProvider : byCategoryClient;
+    coverSuggestion = map[category] || '/default-covers/16_湾区生活.png';
+  }
+
+  let title = clampStr(raw?.title, 80);
+  if (title.length < 5) title = clampStr(defaults.intent, 80, '湾区生活信息').slice(0, 80) || '湾区生活信息';
+
+  let description = clampStr(raw?.description, 600);
+  if (description.length < 80) {
+    description = `${description}\n\n${defaults.intent}`.trim();
+    if (description.length < 80) {
+      description = `${description}\n\n欢迎邻居留言或私信联系，具体细节可进一步沟通。`.slice(0, 600);
+    }
+    description = description.slice(0, 600);
+  }
+
+  const quickTags = Array.isArray(raw?.quickTags)
+    ? raw.quickTags.map((t) => clampStr(t, 20)).filter(Boolean).slice(0, 5)
+    : [];
+
+  return {
+    title,
+    description,
+    category,
+    type,
+    area: clampStr(raw?.area || defaults.areaHint, 80),
+    budget: clampStr(raw?.budget, 30),
+    timeInfo: clampStr(raw?.timeInfo, 120),
+    quickTags,
+    safetyTip: clampStr(raw?.safetyTip, 200, '线下交易与签约请注意核实信息，重要事项以合同与官方信息为准。'),
+    coverSuggestion,
+  };
+};
+
+const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, language }) => {
+  const model = process.env.OPENAI_MODEL || 'gpt-5.4-mini';
+  const userPayload = {
+    intent,
+    type,
+    categoryHint: categoryHint || null,
+    areaHint: areaHint || null,
+    language: language || 'zh',
+  };
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.5,
+      max_tokens: 900,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: AI_POST_ASSIST_SYSTEM },
+        {
+          role: 'user',
+          content: `请根据以下需求生成发帖草稿 JSON：\n${JSON.stringify(userPayload)}`,
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    const brief = errText.slice(0, 120);
+    throw new Error(`OpenAI HTTP ${res.status}${brief ? `: ${brief}` : ''}`);
+  }
+
+  const data = await res.json();
+  const content = data?.choices?.[0]?.message?.content;
+  const parsed = extractJsonFromAiText(content);
+  if (!parsed) throw new Error('Invalid JSON from model');
+  return parsed;
+};
+
+app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
+  try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ ok: false, error: 'AI 服务暂未配置，请稍后再试' });
+    }
+
+    const intent = String(req.body?.intent ?? '').trim();
+    if (intent.length < 5) {
+      return res.status(400).json({ ok: false, error: '请至少用 5 个字描述你的需求' });
+    }
+    if (intent.length > 1000) {
+      return res.status(400).json({ ok: false, error: '需求描述不能超过 1000 字' });
+    }
+
+    const ip = getClientIp(req);
+    if (!checkAiPostAssistRateLimit(ip)) {
+      return res.status(429).json({ ok: false, error: '请求过于频繁，请 60 秒后再试' });
+    }
+
+    let type = req.body?.type;
+    if (type !== 'client' && type !== 'provider') type = 'client';
+
+    let categoryHint;
+    const hint = String(req.body?.categoryHint ?? '').trim();
+    if (hint && AI_POST_ASSIST_CATEGORIES.has(hint)) categoryHint = hint;
+
+    const areaHint = clampStr(req.body?.areaHint, 80);
+    const language = req.body?.language === 'en' ? 'en' : 'zh';
+
+    const rawDraft = await callOpenAiPostAssist({
+      intent,
+      type,
+      categoryHint,
+      areaHint,
+      language,
+    });
+
+    const draft = normalizeAiPostDraft(rawDraft, {
+      intent,
+      type,
+      categoryHint: categoryHint || 'other',
+      areaHint,
+    });
+
+    return res.json({ ok: true, draft });
+  } catch (e) {
+    console.error('POST /api/ai/post-assist error:', e.message);
+    return res.status(502).json({ ok: false, error: 'AI 整理失败，请稍后再试' });
+  }
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
