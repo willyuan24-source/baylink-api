@@ -664,23 +664,90 @@ const AI_DEFAULT_COVERS = [
   '/default-covers/16_湾区生活.png',
 ];
 
-const AI_POST_ASSIST_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
+const AI_POST_ASSIST_TONES = new Set(['clear', 'natural', 'concise', 'detailed', 'urgent']);
+const AI_POST_ASSIST_REWRITE_MODES = new Set(['shorter', 'moreDetailed', 'moreNatural']);
 
-规则：
+const normalizeAiTone = (value) => {
+  const tone = String(value ?? '').trim();
+  return AI_POST_ASSIST_TONES.has(tone) ? tone : 'clear';
+};
+
+const normalizeAiRewriteMode = (value) => {
+  const mode = String(value ?? '').trim();
+  return AI_POST_ASSIST_REWRITE_MODES.has(mode) ? mode : undefined;
+};
+
+const getAiDescriptionLengthGuide = (tone, rewriteMode) => {
+  if (rewriteMode === 'shorter') return { min: 80, max: 180 };
+  if (rewriteMode === 'moreDetailed') return { min: 180, max: 450 };
+  switch (tone) {
+    case 'concise': return { min: 80, max: 180 };
+    case 'natural': return { min: 120, max: 300 };
+    case 'detailed': return { min: 180, max: 450 };
+    case 'urgent': return { min: 100, max: 260 };
+    case 'clear':
+    default: return { min: 120, max: 300 };
+  }
+};
+
+const AI_POST_ASSIST_TONE_GUIDE = {
+  clear: '清楚实用、信息完整，适合 BAYLINK 普通帖子；标题和正文都要直接、具体。',
+  natural: '更像真实湾区华人用户发帖；不要太像广告或 AI 模板；语气自然、礼貌、有人味。',
+  concise: '更简洁；标题短一点；正文重点突出地点、价格、时间、需求。',
+  detailed: '更详细；主动补充用户可能需要说明的信息结构；但不要编造不存在的事实。',
+  urgent: '可稍作急迫感，表达“希望尽快联系/最近需要”；不要夸张、不要制造恐慌、不要过度营销。',
+};
+
+const AI_POST_ASSIST_REWRITE_GUIDE = {
+  shorter: '输出更短（覆盖 tone 长度设定）；标题更简短；正文只保留必要信息即可。',
+  moreDetailed: '输出更完整（覆盖 tone 长度设定）；帮用户补充结构；不可编造联系方式、具体承诺、房源真实性。',
+  moreNatural: '更像真人；减少模板感；避免“本人现需求如下”等生硬表达；更像湾区本地社区发帖语气。',
+};
+
+const buildAiPostAssistSystem = () => `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
+
+通用规则：
 - 中文优先（除非用户明确要求英文）。
-- 标题 5-80 字，正文 80-600 字，语气亲切务实。
-- 不要编造联系方式、电话、微信、邮箱。
-- 不要编造不存在的房源、服务商、价格承诺或政府规定。
-- 不要输出法律、财务、移民等专业结论。
-- 涉及租房、押金、合同、政府规定时，用提醒语气，并建议以合同/官方信息/专业意见为准。
+- 标题 5-80 字。
+- 必须根据用户提供的 tone 和 rewriteMode（如有）调整标题与正文风格与长度。
 - category 只能是：rent, used, moving, cleaning, ride, repair, translation, part-time, other
 - type 只能是 client（求帮助/求服务）或 provider（提供服务/出租）
 - coverSuggestion 必须从以下路径中选一：${AI_DEFAULT_COVERS.join(', ')}
 - quickTags 为 2-5 个短标签（字符串数组）
 - 只输出一个 JSON 对象，不要 Markdown，不要解释
 
+严禁编造（必须遵守）：
+- 不要编造任何联系方式（电话、微信、邮箱、Line 等）。
+- 不要编造房源真实性、可租状态或具体地址门牌。
+- 不要编造服务商资质、执照或“官方认证”。
+- 不要承诺价格一定准确；预算/价格只能基于用户原意合理整理，缺信息可留空或写“面议/待沟通”。
+- 不要输出法律、财务、移民等专业结论。
+- 涉及租房押金、合同、法律政策时，只能提醒用户确认合同、官方信息或咨询专业人士；safetyTip 用提醒语气。
+
 必须严格返回以下 JSON 字段（键名不可改）：
 {"title":"","description":"","category":"","type":"","area":"","budget":"","timeInfo":"","quickTags":[],"safetyTip":"","coverSuggestion":""}`;
+
+const buildAiPostAssistUserMessage = ({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) => {
+  const toneGuide = AI_POST_ASSIST_TONE_GUIDE[tone] || AI_POST_ASSIST_TONE_GUIDE.clear;
+  const rewriteGuide = rewriteMode ? AI_POST_ASSIST_REWRITE_GUIDE[rewriteMode] : null;
+
+  const styleLines = [
+    `【语气 tone=${tone}】${toneGuide}`,
+    rewriteGuide ? `【重写 rewriteMode=${rewriteMode}】${rewriteGuide}` : null,
+    `【正文长度】description 控制在 ${lengthGuide.min}-${lengthGuide.max} 字（中文字符计）；rewriteMode 若与 tone 冲突，以 rewriteMode 为准。`,
+    '请根据 tone 与 rewriteMode 调整 title 和 description 的写法，其他字段照常填写。',
+  ].filter(Boolean);
+
+  return [
+    '请根据以下需求生成发帖草稿 JSON。',
+    '',
+    '用户需求：',
+    JSON.stringify({ intent, type, categoryHint: categoryHint || null, areaHint: areaHint || null, language, tone, rewriteMode: rewriteMode || null }),
+    '',
+    '风格与长度要求：',
+    ...styleLines,
+  ].join('\n');
+};
 
 const aiPostAssistRateByIp = new Map();
 
@@ -774,13 +841,17 @@ const normalizeAiPostDraft = (raw, defaults) => {
   let title = clampStr(raw?.title, 80);
   if (title.length < 5) title = clampStr(defaults.intent, 80, '湾区生活信息').slice(0, 80) || '湾区生活信息';
 
-  let description = clampStr(raw?.description, 600);
-  if (description.length < 80) {
+  const descMin = defaults.descMin ?? 80;
+  const descMax = defaults.descMax ?? 600;
+  let description = clampStr(raw?.description, descMax);
+  if (description.length < descMin) {
     description = `${description}\n\n${defaults.intent}`.trim();
-    if (description.length < 80) {
-      description = `${description}\n\n欢迎邻居留言或私信联系，具体细节可进一步沟通。`.slice(0, 600);
+    if (description.length < descMin) {
+      description = `${description}\n\n欢迎邻居留言或私信联系，具体细节可进一步沟通。`.slice(0, descMax);
     }
-    description = description.slice(0, 600);
+    description = description.slice(0, descMax);
+  } else {
+    description = description.slice(0, descMax);
   }
 
   const quickTags = Array.isArray(raw?.quickTags)
@@ -801,15 +872,9 @@ const normalizeAiPostDraft = (raw, defaults) => {
   };
 };
 
-const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, language }) => {
+const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) => {
   const model = process.env.OPENAI_MODEL || 'gpt-5.4-mini';
-  const userPayload = {
-    intent,
-    type,
-    categoryHint: categoryHint || null,
-    areaHint: areaHint || null,
-    language: language || 'zh',
-  };
+  const maxTokens = lengthGuide.max >= 350 ? 1100 : 900;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -820,13 +885,22 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
     body: JSON.stringify({
       model,
       temperature: 0.5,
-      max_tokens: 900,
+      max_tokens: maxTokens,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: AI_POST_ASSIST_SYSTEM },
+        { role: 'system', content: buildAiPostAssistSystem() },
         {
           role: 'user',
-          content: `请根据以下需求生成发帖草稿 JSON：\n${JSON.stringify(userPayload)}`,
+          content: buildAiPostAssistUserMessage({
+            intent,
+            type,
+            categoryHint,
+            areaHint,
+            language,
+            tone,
+            rewriteMode,
+            lengthGuide,
+          }),
         },
       ],
     }),
@@ -873,6 +947,9 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
 
     const areaHint = clampStr(req.body?.areaHint, 80);
     const language = req.body?.language === 'en' ? 'en' : 'zh';
+    const tone = normalizeAiTone(req.body?.tone);
+    const rewriteMode = normalizeAiRewriteMode(req.body?.rewriteMode);
+    const lengthGuide = getAiDescriptionLengthGuide(tone, rewriteMode);
 
     const rawDraft = await callOpenAiPostAssist({
       intent,
@@ -880,6 +957,9 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
       categoryHint,
       areaHint,
       language,
+      tone,
+      rewriteMode,
+      lengthGuide,
     });
 
     const draft = normalizeAiPostDraft(rawDraft, {
@@ -887,6 +967,8 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
       type,
       categoryHint: categoryHint || 'other',
       areaHint,
+      descMin: lengthGuide.min,
+      descMax: lengthGuide.max,
     });
 
     return res.json({ ok: true, draft });
