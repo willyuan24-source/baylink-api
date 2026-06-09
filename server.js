@@ -94,6 +94,12 @@ const UserSchema = new mongoose.Schema({
 
   bio: String,
   avatar: String,
+  area: String,
+  city: String,
+  profileTags: [String],
+  interests: [String],
+  website: String,
+  xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
   createdAt: { type: Number, default: Date.now }
 });
@@ -279,6 +285,34 @@ const sanitizeOptionalImageUrl = (value) => {
   return imageUrl;
 };
 
+const sanitizeProfileText = (value, maxLen) => {
+  const cleaned = String(value ?? '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/javascript:/gi, '')
+    .trim();
+  if (!cleaned) return '';
+  return cleaned.length > maxLen ? cleaned.slice(0, maxLen) : cleaned;
+};
+
+const normalizeProfileStringArray = (value) => {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  const items = [];
+  for (const item of value) {
+    const tag = sanitizeProfileText(item, 20);
+    if (!tag || seen.has(tag)) continue;
+    seen.add(tag);
+    items.push(tag);
+    if (items.length >= 12) break;
+  }
+  return items;
+};
+
+const formatPublicSocialLinks = (socialLinks) => ({
+  linkedin: socialLinks?.linkedin || '',
+  instagram: socialLinks?.instagram || '',
+});
+
 const buildAdPayload = (body) => {
   const { title, content, description, imageUrl } = body || {};
   const finalTitle = String(title || '').trim();
@@ -453,18 +487,29 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/users/:id', async (req, res) => {
-  const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode'); // ✨ 安全：排除敏感字段
+  const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode');
   if (!user) return res.status(404).json({ error: 'Not found' });
-  res.json({ 
-    id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio,
-    isPhoneVerified: user.isPhoneVerified, isOfficialVerified: user.isOfficialVerified, 
-    socialLinks: user.socialLinks || { linkedin: '', instagram: '' } 
+  res.json({
+    id: user.id,
+    nickname: user.nickname,
+    role: user.role,
+    avatar: user.avatar,
+    bio: user.bio,
+    area: user.area || '',
+    city: user.city || '',
+    profileTags: user.profileTags || [],
+    interests: user.interests || [],
+    website: user.website || '',
+    xiaohongshu: user.xiaohongshu || '',
+    isPhoneVerified: user.isPhoneVerified,
+    isOfficialVerified: user.isOfficialVerified,
+    socialLinks: formatPublicSocialLinks(user.socialLinks),
   });
 });
 
 app.get('/api/users/:id/public', async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType');
+    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -verifyCodeExpires -lastSmsSentAt -verifyAttempts');
     if (!user) return res.status(404).json({ error: 'Not found' });
     const postCount = await Post.countDocuments({ authorId: user.id, isDeleted: false });
     const recent = await Post.find({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).limit(3).lean();
@@ -473,6 +518,13 @@ app.get('/api/users/:id/public', async (req, res) => {
       nickname: user.nickname,
       avatar: user.avatar,
       bio: user.bio,
+      area: user.area || '',
+      city: user.city || '',
+      profileTags: user.profileTags || [],
+      interests: user.interests || [],
+      website: user.website || '',
+      xiaohongshu: user.xiaohongshu || '',
+      socialLinks: formatPublicSocialLinks(user.socialLinks),
       role: user.role,
       createdAt: user.createdAt,
       isPhoneVerified: user.isPhoneVerified,
@@ -497,18 +549,49 @@ app.get('/api/users/:id/public', async (req, res) => {
 
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
   try {
-    const { nickname, bio, avatar, socialLinks, isOfficialVerified } = req.body;
+    const {
+      nickname,
+      bio,
+      avatar,
+      area,
+      city,
+      profileTags,
+      interests,
+      website,
+      xiaohongshu,
+      socialLinks,
+      isOfficialVerified,
+    } = req.body;
     const user = req.user;
-    if (nickname) user.nickname = nickname;
-    if (bio !== undefined) user.bio = bio;
-    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; 
+
+    if (nickname !== undefined) {
+      const nextNickname = sanitizeProfileText(nickname, 30);
+      if (nextNickname) user.nickname = nextNickname;
+    }
+    if (bio !== undefined) user.bio = sanitizeProfileText(bio, 240);
+    if (area !== undefined) user.area = sanitizeProfileText(area, 30);
+    if (city !== undefined) user.city = sanitizeProfileText(city, 40);
+    if (website !== undefined) user.website = sanitizeProfileText(website, 120);
+    if (xiaohongshu !== undefined) user.xiaohongshu = sanitizeProfileText(xiaohongshu, 80);
+    if (profileTags !== undefined) user.profileTags = normalizeProfileStringArray(profileTags);
+    if (interests !== undefined) user.interests = normalizeProfileStringArray(interests);
+
+    if (socialLinks) {
+      const next = { ...(user.socialLinks || {}) };
+      if (socialLinks.linkedin !== undefined) next.linkedin = sanitizeProfileText(socialLinks.linkedin, 120);
+      if (socialLinks.instagram !== undefined) next.instagram = sanitizeProfileText(socialLinks.instagram, 80);
+      user.socialLinks = next;
+    }
+
     if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
     if (avatar && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
     }
     await user.save();
-    if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
+    if (avatar || nickname !== undefined) {
+      await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
+    }
     const userResponse = user.toObject();
     delete userResponse.password;
     delete userResponse.verifyCode;
