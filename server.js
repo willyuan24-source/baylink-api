@@ -139,12 +139,117 @@ const ConversationSchema = new mongoose.Schema({ id: { type: String, unique: tru
 const MessageSchema = new mongoose.Schema({ id: String, conversationId: String, senderId: String, type: String, content: String, createdAt: { type: Number, default: Date.now } });
 const ContentSchema = new mongoose.Schema({ key: { type: String, unique: true }, value: String });
 
+const ReportSchema = new mongoose.Schema({
+  reporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  targetType: { type: String, enum: ['post', 'user', 'message'], required: true },
+  targetId: { type: String, required: true },
+  reason: { type: String, enum: ['scam', 'false_info', 'harassment', 'spam', 'other'], required: true },
+  note: { type: String, maxlength: 500, default: '' },
+  status: { type: String, enum: ['open', 'reviewed', 'dismissed'], default: 'open' },
+  createdAt: { type: Date, default: Date.now },
+  reviewedAt: { type: Date },
+  reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+});
+ReportSchema.index({ reporter: 1, targetType: 1, targetId: 1 });
+ReportSchema.index({ status: 1, createdAt: -1 });
+
+const BlockSchema = new mongoose.Schema({
+  blocker: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  blockedUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+BlockSchema.index({ blocker: 1, blockedUser: 1 }, { unique: true });
+
 const User = mongoose.model('User', UserSchema);
 const Post = mongoose.model('Post', PostSchema);
 const Ad = mongoose.model('Ad', AdSchema);
 const Conversation = mongoose.model('Conversation', ConversationSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
+const Report = mongoose.model('Report', ReportSchema);
+const Block = mongoose.model('Block', BlockSchema);
+
+const REPORT_TARGET_TYPES = new Set(['post', 'user', 'message']);
+const REPORT_REASONS = new Set(['scam', 'false_info', 'harassment', 'spam', 'other']);
+const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
+const REPORT_ADMIN_STATUSES = new Set(['reviewed', 'dismissed']);
+
+const reportRateByUser = new Map();
+
+const checkReportRateLimit = (userId) => {
+  const key = String(userId);
+  const now = Date.now();
+  const windowMs = 60000;
+  const maxRequests = 5;
+  let entry = reportRateByUser.get(key);
+  if (!entry || now - entry.windowStart >= windowMs) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  reportRateByUser.set(key, entry);
+  if (reportRateByUser.size > 5000) {
+    for (const [k, val] of reportRateByUser) {
+      if (now - val.windowStart >= windowMs) reportRateByUser.delete(k);
+    }
+  }
+  return entry.count <= maxRequests;
+};
+
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ ok: false, error: '需要管理员权限' });
+  }
+  next();
+};
+
+const clampReportNote = (value) => {
+  const note = String(value ?? '').trim();
+  return note.length > 500 ? note.slice(0, 500) : note;
+};
+
+const getBlockedAuthorIdsForUser = async (userDoc) => {
+  if (!userDoc?._id) return [];
+  const blocks = await Block.find({ blocker: userDoc._id }).populate('blockedUser', 'id').lean();
+  return blocks.map((b) => b.blockedUser?.id).filter(Boolean);
+};
+
+const resolveReportTarget = async (targetType, targetId) => {
+  const id = String(targetId ?? '').trim();
+  if (!id) return { ok: false, error: '举报目标无效' };
+  try {
+    if (targetType === 'post') {
+      const post = await Post.findOne({ id, isDeleted: false }).select('id').lean();
+      if (!post) return { ok: false, error: '帖子不存在或已删除' };
+      return { ok: true, targetId: id };
+    }
+    if (targetType === 'user') {
+      const user = await User.findOne({ id }).select('id').lean();
+      if (!user) return { ok: false, error: '用户不存在' };
+      return { ok: true, targetId: id };
+    }
+    if (targetType === 'message') {
+      const msg = await Message.findOne({ id }).select('id').lean();
+      if (!msg) return { ok: false, error: '消息不存在' };
+      return { ok: true, targetId: id };
+    }
+  } catch (_) {
+    return { ok: false, error: '举报目标无效' };
+  }
+  return { ok: false, error: '举报目标无效' };
+};
+
+const formatAdminReport = (doc) => ({
+  id: doc._id.toString(),
+  reporter: doc.reporter
+    ? { id: doc.reporter.id, nickname: doc.reporter.nickname }
+    : null,
+  targetType: doc.targetType,
+  targetId: doc.targetId,
+  reason: doc.reason,
+  note: doc.note || '',
+  status: doc.status,
+  createdAt: doc.createdAt,
+});
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validatePasswordStrength = (password) =>
@@ -431,7 +536,15 @@ app.get('/api/posts/featured', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit, 10);
     const currentUserId = getCurrentUserIdFromRequest(req);
-    let q = Post.find({ isDeleted: false, isFeatured: true }).sort({ featuredAt: -1, createdAt: -1 });
+    let query = { isDeleted: false, isFeatured: true };
+    if (currentUserId) {
+      const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
+      if (viewer) {
+        const blockedIds = await getBlockedAuthorIdsForUser(viewer);
+        if (blockedIds.length) query.authorId = { $nin: blockedIds };
+      }
+    }
+    let q = Post.find(query).sort({ featuredAt: -1, createdAt: -1 });
     if (limit > 0) q = q.limit(limit);
     const posts = await q.lean();
     res.json({ posts: posts.map((p) => formatPostResponse(p, currentUserId)) });
@@ -457,10 +570,17 @@ app.get('/api/posts', async (req, res) => {
         const regex = new RegExp(keyword, 'i');
         query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
     }
+    const currentUserId = getCurrentUserIdFromRequest(req);
+    if (currentUserId) {
+      const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
+      if (viewer) {
+        const blockedIds = await getBlockedAuthorIdsForUser(viewer);
+        if (blockedIds.length) query.authorId = { $nin: blockedIds };
+      }
+    }
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
     const totalCount = await Post.countDocuments(query);
-    const currentUserId = getCurrentUserIdFromRequest(req);
     const formatted = posts.map((p) => formatPostResponse(p, currentUserId));
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
@@ -638,6 +758,177 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
   const conv = await Conversation.findOne({ id: req.params.id });
   if (conv) { const receiverId = conv.userIds.find(uid => uid !== req.user.id); if (receiverId) { io.to(receiverId).emit('new_message', msg); } }
   res.json(msg); 
+});
+
+// --- 举报 / 屏蔽（社区安全轻量版）---
+app.post('/api/reports', authenticateToken, async (req, res) => {
+  try {
+    if (!checkReportRateLimit(req.user.id)) {
+      return res.status(429).json({ ok: false, error: '举报过于频繁，请 60 秒后再试' });
+    }
+
+    const targetType = String(req.body?.targetType ?? '').trim();
+    const reason = String(req.body?.reason ?? '').trim();
+    const note = clampReportNote(req.body?.note);
+
+    if (!REPORT_TARGET_TYPES.has(targetType)) {
+      return res.status(400).json({ ok: false, error: '举报类型无效' });
+    }
+    if (!REPORT_REASONS.has(reason)) {
+      return res.status(400).json({ ok: false, error: '举报原因无效' });
+    }
+
+    const targetCheck = await resolveReportTarget(targetType, req.body?.targetId);
+    if (!targetCheck.ok) {
+      return res.status(404).json({ ok: false, error: targetCheck.error });
+    }
+
+    const existingOpen = await Report.findOne({
+      reporter: req.user._id,
+      targetType,
+      targetId: targetCheck.targetId,
+      status: 'open',
+    }).select('_id').lean();
+
+    if (existingOpen) {
+      return res.json({ ok: true, reportId: existingOpen._id.toString(), message: '你已举报过' });
+    }
+
+    const report = await Report.create({
+      reporter: req.user._id,
+      targetType,
+      targetId: targetCheck.targetId,
+      reason,
+      note,
+      status: 'open',
+    });
+
+    return res.json({ ok: true, reportId: report._id.toString() });
+  } catch (e) {
+    console.error('POST /api/reports error:', e.message);
+    return res.status(500).json({ ok: false, error: '举报提交失败，请稍后再试' });
+  }
+});
+
+app.post('/api/blocks', authenticateToken, async (req, res) => {
+  try {
+    const blockedUserId = String(req.body?.blockedUserId ?? '').trim();
+    if (!blockedUserId) {
+      return res.status(400).json({ ok: false, error: '请提供要屏蔽的用户' });
+    }
+    if (blockedUserId === req.user.id) {
+      return res.status(400).json({ ok: false, error: '不能屏蔽自己' });
+    }
+
+    const blockedUser = await User.findOne({ id: blockedUserId }).select('_id id').lean();
+    if (!blockedUser) {
+      return res.status(404).json({ ok: false, error: '用户不存在' });
+    }
+
+    const existing = await Block.findOne({
+      blocker: req.user._id,
+      blockedUser: blockedUser._id,
+    }).select('_id').lean();
+
+    if (existing) {
+      return res.json({ ok: true });
+    }
+
+    await Block.create({
+      blocker: req.user._id,
+      blockedUser: blockedUser._id,
+    });
+
+    return res.json({ ok: true });
+  } catch (e) {
+    if (e?.code === 11000) return res.json({ ok: true });
+    console.error('POST /api/blocks error:', e.message);
+    return res.status(500).json({ ok: false, error: '屏蔽失败，请稍后再试' });
+  }
+});
+
+app.delete('/api/blocks/:blockedUserId', authenticateToken, async (req, res) => {
+  try {
+    const blockedUserId = String(req.params.blockedUserId ?? '').trim();
+    if (!blockedUserId) {
+      return res.status(400).json({ ok: false, error: '请提供要取消屏蔽的用户' });
+    }
+
+    const blockedUser = await User.findOne({ id: blockedUserId }).select('_id').lean();
+    if (!blockedUser) {
+      return res.json({ ok: true });
+    }
+
+    await Block.deleteOne({ blocker: req.user._id, blockedUser: blockedUser._id });
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('DELETE /api/blocks error:', e.message);
+    return res.status(500).json({ ok: false, error: '取消屏蔽失败，请稍后再试' });
+  }
+});
+
+app.get('/api/blocks', authenticateToken, async (req, res) => {
+  try {
+    const blocks = await Block.find({ blocker: req.user._id }).populate('blockedUser', 'id').lean();
+    const blockedUserIds = blocks.map((b) => b.blockedUser?.id).filter(Boolean);
+    return res.json({ ok: true, blockedUserIds });
+  } catch (e) {
+    console.error('GET /api/blocks error:', e.message);
+    return res.status(500).json({ ok: false, error: '获取屏蔽列表失败' });
+  }
+});
+
+app.get('/api/admin/reports', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const status = String(req.query.status ?? '').trim();
+    const limitRaw = parseInt(req.query.limit, 10);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 50;
+
+    const filter = {};
+    if (status && REPORT_STATUSES.has(status)) filter.status = status;
+
+    const reports = await Report.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .populate('reporter', 'id nickname')
+      .lean();
+
+    return res.json({ ok: true, reports: reports.map(formatAdminReport) });
+  } catch (e) {
+    console.error('GET /api/admin/reports error:', e.message);
+    return res.status(500).json({ ok: false, error: '获取举报列表失败' });
+  }
+});
+
+app.patch('/api/admin/reports/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const status = String(req.body?.status ?? '').trim();
+    if (!REPORT_ADMIN_STATUSES.has(status)) {
+      return res.status(400).json({ ok: false, error: '状态无效' });
+    }
+
+    let report;
+    try {
+      report = await Report.findById(req.params.id);
+    } catch (_) {
+      return res.status(400).json({ ok: false, error: '举报记录无效' });
+    }
+
+    if (!report) {
+      return res.status(404).json({ ok: false, error: '举报记录不存在' });
+    }
+
+    report.status = status;
+    report.reviewedAt = new Date();
+    report.reviewedBy = req.user._id;
+    await report.save();
+
+    const updated = await Report.findById(report._id).populate('reporter', 'id nickname').lean();
+    return res.json({ ok: true, report: formatAdminReport(updated) });
+  } catch (e) {
+    console.error('PATCH /api/admin/reports error:', e.message);
+    return res.status(500).json({ ok: false, error: '更新举报状态失败' });
+  }
 });
 
 // --- BayBay AI 发帖助手（仅生成草稿，不改发帖逻辑）---
