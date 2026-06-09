@@ -1707,6 +1707,27 @@ const validateInteractiveCard = (raw) => {
   return card;
 };
 
+const GUIDE_CHAT_SHORT_INTRO = {
+  rent: '刚来湾区租房，先别急着交押金。先确认预算、通勤、租约和看房方式，下面这些可以逐项核对。',
+  used: '二手交易最重要的是先确认物品真实性、交易地点和付款方式。下面这张卡可以帮你快速检查。',
+  moving: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+  cleaning: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+  ride: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+  repair: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+};
+
+const getGuideChatShortIntro = (category) => {
+  const cat = GUIDE_CHAT_CATEGORIES.has(category) ? category : 'other';
+  return GUIDE_CHAT_SHORT_INTRO[cat] || null;
+};
+
+const shortenGuideChatAnswer = (answer, maxLen = 120) => {
+  const text = String(answer ?? '').trim();
+  if (text.length <= maxLen) return text;
+  const trimmed = text.slice(0, maxLen - 1).replace(/[，,、；;：:\s]+$/, '');
+  return `${trimmed}…`;
+};
+
 const buildInteractiveCards = ({ message, category }) => {
   const cat = GUIDE_CHAT_CATEGORIES.has(category) ? category : 'other';
   void message;
@@ -1727,7 +1748,6 @@ const buildInteractiveCards = ({ message, category }) => {
       ],
       actions: [
         { label: '让 BayBay 帮我写求租帖', type: 'postAssist', postType: 'client', category: 'rent' },
-        { label: '看租房防骗指南', type: 'guide', url: '/guides/bay-area-rental-scam-guide' },
       ],
     };
   } else if (cat === 'used') {
@@ -1745,7 +1765,6 @@ const buildInteractiveCards = ({ message, category }) => {
       ],
       actions: [
         { label: '整理二手帖子', type: 'postAssist', postType: 'provider', category: 'used' },
-        { label: '看二手交易指南', type: 'guide', url: '/guides/bay-area-used-market-safety-guide' },
       ],
     };
   } else if (['moving', 'cleaning', 'ride', 'repair'].includes(cat)) {
@@ -1763,7 +1782,6 @@ const buildInteractiveCards = ({ message, category }) => {
       ],
       actions: [
         { label: '让 BayBay 帮我写需求', type: 'postAssist', postType: 'client', category: cat },
-        { label: '看本地服务避坑指南', type: 'guide', url: '/guides/local-service-safety-guide' },
       ],
     };
   }
@@ -1794,6 +1812,15 @@ const normalizeGuideChatResponse = (aiRaw, message, category) => {
   }
 
   const interactiveCards = buildInteractiveCards({ message, category });
+
+  if (interactiveCards.length > 0) {
+    const shortIntro = getGuideChatShortIntro(category);
+    if (shortIntro) {
+      answer = shortIntro;
+    } else if (answer.length > 120) {
+      answer = shortenGuideChatAnswer(answer, 120);
+    }
+  }
 
   return {
     ok: true,
