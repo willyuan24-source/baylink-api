@@ -1393,4 +1393,345 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
   }
 });
 
+// --- BayBay AI Guide 问答（首页助手面板，单轮、不存聊天记录）---
+const GUIDE_CHAT_CATEGORIES = new Set(['rent', 'used', 'moving', 'cleaning', 'ride', 'repair', 'other']);
+
+const GUIDE_CATALOG = [
+  {
+    title: '湾区租房防骗指南',
+    slug: 'bay-area-rental-scam-guide',
+    url: '/guides/bay-area-rental-scam-guide',
+    keywords: ['租房', '求租', '出租', '押金', '房东', '骗局', 'lease', 'room', 'rent'],
+    categories: ['rent'],
+  },
+  {
+    title: '新来湾区第一个月 checklist',
+    slug: 'bay-area-newcomer-first-month-checklist',
+    url: '/guides/bay-area-newcomer-first-month-checklist',
+    keywords: ['刚来', '新来', '搬来', '新移民', '留学生', '第一个月', 'checklist'],
+    categories: ['other', 'rent'],
+  },
+  {
+    title: '湾区找室友避坑指南',
+    slug: 'bay-area-roommate-guide',
+    url: '/guides/bay-area-roommate-guide',
+    keywords: ['室友', '合租', 'roommate', '找人一起租'],
+    categories: ['rent'],
+  },
+  {
+    title: '湾区通勤方式全对比',
+    slug: 'bay-area-commute-guide',
+    url: '/guides/bay-area-commute-guide',
+    keywords: ['通勤', 'Caltrain', 'BART', '开车', '停车', '上班', '交通'],
+    categories: ['ride', 'other'],
+  },
+  {
+    title: '湾区二手交易安全指南',
+    slug: 'bay-area-used-market-safety-guide',
+    url: '/guides/bay-area-used-market-safety-guide',
+    keywords: ['二手', '买卖', '出售', '求购', '交易', '取货', 'used'],
+    categories: ['used'],
+  },
+  {
+    title: '租房合同签字前 checklist',
+    slug: 'rental-lease-signing-checklist',
+    url: '/guides/rental-lease-signing-checklist',
+    keywords: ['合同', '租约', '签字', 'lease', '押金', '条款'],
+    categories: ['rent'],
+  },
+  {
+    title: '租客搬入搬出 checklist',
+    slug: 'tenant-move-in-out-checklist',
+    url: '/guides/tenant-move-in-out-checklist',
+    keywords: ['搬入', '搬出', '退租', '押金', 'move out', 'move in'],
+    categories: ['rent', 'moving'],
+  },
+  {
+    title: '本地服务避坑指南',
+    slug: 'local-service-safety-guide',
+    url: '/guides/local-service-safety-guide',
+    keywords: ['清洁', '搬家', '维修', '接送', '服务', '报价', '上门'],
+    categories: ['cleaning', 'moving', 'repair', 'ride'],
+  },
+  {
+    title: 'Peninsula 生活指南',
+    slug: 'peninsula-living-guide',
+    url: '/guides/peninsula-living-guide',
+    keywords: ['中半岛', 'Millbrae', 'San Mateo', 'Burlingame', 'Redwood City', 'Peninsula'],
+    categories: ['other', 'rent'],
+  },
+  {
+    title: '南湾居住指南',
+    slug: 'south-bay-living-guide',
+    url: '/guides/south-bay-living-guide',
+    keywords: ['南湾', 'San Jose', 'Cupertino', 'Sunnyvale', 'Santa Clara', 'Mountain View'],
+    categories: ['other', 'rent'],
+  },
+];
+
+const GUIDE_CHAT_CATEGORY_KEYWORDS = {
+  rent: ['租房', '求租', '出租', '房源', '单间', 'lease', 'room', 'rent', '押金'],
+  used: ['二手', '出售', '卖', '买', '求购', '家具', '电器', '桌子', '床', 'used'],
+  moving: ['搬家', '搬运', 'move', 'truck', 'queen bed'],
+  cleaning: ['清洁', '退房清洁', '打扫', 'cleaning'],
+  ride: ['接送', '机场', 'SFO', 'ride', 'pickup', 'dropoff'],
+  repair: ['维修', '修理', '水管', '电', '门锁', 'repair'],
+};
+
+const GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY = {
+  rent: 'bay-area-rental-scam-guide',
+  used: 'bay-area-used-market-safety-guide',
+  moving: 'tenant-move-in-out-checklist',
+  cleaning: 'local-service-safety-guide',
+  ride: 'bay-area-commute-guide',
+  repair: 'local-service-safety-guide',
+  other: 'bay-area-newcomer-first-month-checklist',
+};
+
+const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayBay 问答助手。用户单次提问，请给出简短实用回答。
+
+规则：
+- 中文优先，answer 控制在 80-180 字
+- 适合旧金山湾区华人用户，语气亲切务实
+- 不编造房源、服务商、实时政策或价格
+- 不给法律、移民、财务、医疗专业结论
+- 涉及租房押金、合同、诈骗等高风险话题，只给一般提醒，建议以合同/官方信息/专业人士意见为准
+- 回答应自然导向：在 BAYLINK 看指南、浏览分类、发布信息、使用发帖助手
+- safetyNote 可选，最多 60 字；无必要则返回空字符串
+- 只输出一个 JSON 对象，不要 Markdown，不要解释
+
+必须返回：{"answer":"","safetyNote":""}`;
+
+const guideChatRateByIp = new Map();
+
+const checkGuideChatRateLimit = (ip) => {
+  const now = Date.now();
+  const windowMs = 60000;
+  const maxRequests = 8;
+  let entry = guideChatRateByIp.get(ip);
+  if (!entry || now - entry.windowStart >= windowMs) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  guideChatRateByIp.set(ip, entry);
+  if (guideChatRateByIp.size > 5000) {
+    for (const [key, val] of guideChatRateByIp) {
+      if (now - val.windowStart >= windowMs) guideChatRateByIp.delete(key);
+    }
+  }
+  return entry.count <= maxRequests;
+};
+
+const normalizeGuideChatMessage = (value) => {
+  const message = String(value ?? '').trim();
+  if (!message) return { ok: false, error: '请输入你的问题' };
+  if (message.length < 2) return { ok: false, error: '问题太短，请再补充一点' };
+  if (message.length > 500) {
+    return { ok: true, message: message.slice(0, 500) };
+  }
+  return { ok: true, message };
+};
+
+const inferGuideChatCategory = (message, categoryHint) => {
+  const hint = String(categoryHint ?? '').trim();
+  if (GUIDE_CHAT_CATEGORIES.has(hint)) return hint;
+
+  const lower = message.toLowerCase();
+  let best = 'other';
+  let bestScore = 0;
+  for (const [category, keywords] of Object.entries(GUIDE_CHAT_CATEGORY_KEYWORDS)) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (message.includes(kw) || lower.includes(kw.toLowerCase())) score += 1;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = category;
+    }
+  }
+  return best;
+};
+
+const scoreGuideForMessage = (guide, message, category) => {
+  const lower = message.toLowerCase();
+  let score = 0;
+  for (const kw of guide.keywords) {
+    if (message.includes(kw) || lower.includes(kw.toLowerCase())) score += 3;
+  }
+  if (guide.categories.includes(category)) score += 2;
+  return score;
+};
+
+const pickSuggestedGuides = (message, category) => {
+  const ranked = GUIDE_CATALOG
+    .map((guide) => ({ guide, score: scoreGuideForMessage(guide, message, category) }))
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      const aCat = a.guide.categories.includes(category) ? 1 : 0;
+      const bCat = b.guide.categories.includes(category) ? 1 : 0;
+      return bCat - aCat;
+    });
+
+  const picked = [];
+  const seen = new Set();
+  for (const { guide, score } of ranked) {
+    if (score <= 0 && picked.length >= 1) continue;
+    if (seen.has(guide.slug)) continue;
+    seen.add(guide.slug);
+    picked.push({ title: guide.title, slug: guide.slug, url: guide.url });
+    if (picked.length >= 3) break;
+  }
+
+  if (picked.length === 0) {
+    const fallbackSlug = GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY[category] || GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY.other;
+    const fallback = GUIDE_CATALOG.find((g) => g.slug === fallbackSlug) || GUIDE_CATALOG[0];
+    picked.push({ title: fallback.title, slug: fallback.slug, url: fallback.url });
+  }
+
+  return picked.slice(0, 3);
+};
+
+const buildSuggestedActions = (category) => {
+  const cat = GUIDE_CHAT_CATEGORIES.has(category) ? category : 'other';
+  const actionsByCategory = {
+    rent: [
+      { label: '看租房分类', type: 'category', url: '/category/rent', category: 'rent' },
+      { label: '发布求租', type: 'post', url: '/?type=client&category=rent', postType: 'client', category: 'rent' },
+      { label: '让 BayBay 帮我写求租帖', type: 'postAssist', url: '/?postAssist=1&type=client&category=rent', postType: 'client', category: 'rent' },
+    ],
+    used: [
+      { label: '看二手分类', type: 'category', url: '/category/used', category: 'used' },
+      { label: '发布二手信息', type: 'post', url: '/?type=provider&category=used', postType: 'provider', category: 'used' },
+      { label: '让 BayBay 帮我整理二手帖', type: 'postAssist', url: '/?postAssist=1&type=provider&category=used', postType: 'provider', category: 'used' },
+    ],
+    moving: [
+      { label: '看搬家服务', type: 'category', url: '/category/moving', category: 'moving' },
+      { label: '发布搬家需求', type: 'post', url: '/?type=client&category=moving', postType: 'client', category: 'moving' },
+      { label: '让 BayBay 帮我写搬家需求', type: 'postAssist', url: '/?postAssist=1&type=client&category=moving', postType: 'client', category: 'moving' },
+    ],
+    cleaning: [
+      { label: '看清洁服务', type: 'category', url: '/category/cleaning', category: 'cleaning' },
+      { label: '发布清洁需求', type: 'post', url: '/?type=client&category=cleaning', postType: 'client', category: 'cleaning' },
+      { label: '让 BayBay 帮我写清洁需求', type: 'postAssist', url: '/?postAssist=1&type=client&category=cleaning', postType: 'client', category: 'cleaning' },
+    ],
+    ride: [
+      { label: '看接送分类', type: 'category', url: '/category/ride', category: 'ride' },
+      { label: '发布接送需求', type: 'post', url: '/?type=client&category=ride', postType: 'client', category: 'ride' },
+      { label: '让 BayBay 帮我写接送需求', type: 'postAssist', url: '/?postAssist=1&type=client&category=ride', postType: 'client', category: 'ride' },
+    ],
+    repair: [
+      { label: '看维修分类', type: 'category', url: '/category/repair', category: 'repair' },
+      { label: '发布维修需求', type: 'post', url: '/?type=client&category=repair', postType: 'client', category: 'repair' },
+      { label: '让 BayBay 帮我写维修需求', type: 'postAssist', url: '/?postAssist=1&type=client&category=repair', postType: 'client', category: 'repair' },
+    ],
+    other: [
+      { label: '浏览湾区指南', type: 'guide', url: '/guides', category: 'other' },
+      { label: '发布求助', type: 'post', url: '/?type=client&category=other', postType: 'client', category: 'other' },
+      { label: '让 BayBay 帮我整理帖子', type: 'postAssist', url: '/?postAssist=1&type=client&category=other', postType: 'client', category: 'other' },
+    ],
+  };
+  return (actionsByCategory[cat] || actionsByCategory.other).slice(0, 3);
+};
+
+const normalizeGuideChatResponse = (aiRaw, message, category) => {
+  let answer = clampStr(aiRaw?.answer, 180);
+  if (answer.length < 10) {
+    answer = '在 BAYLINK，你可以先看相关指南了解常见注意事项，再按分类浏览或发布信息。若有具体需求，也可以用 BayBay 发帖助手帮你整理帖子。';
+  }
+
+  const safetyNote = clampStr(aiRaw?.safetyNote, 60);
+  let suggestedGuides = pickSuggestedGuides(message, category);
+  if (suggestedGuides.length === 0) {
+    const fallbackSlug = GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY[category] || GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY.other;
+    const fallback = GUIDE_CATALOG.find((g) => g.slug === fallbackSlug) || GUIDE_CATALOG[0];
+    suggestedGuides = [{ title: fallback.title, slug: fallback.slug, url: fallback.url }];
+  }
+
+  let suggestedActions = buildSuggestedActions(category);
+  if (suggestedActions.length < 2) {
+    suggestedActions = buildSuggestedActions('other');
+  }
+
+  return {
+    ok: true,
+    answer,
+    suggestedGuides: suggestedGuides.slice(0, 3),
+    suggestedActions: suggestedActions.slice(0, 3),
+    safetyNote: safetyNote || '',
+  };
+};
+
+const callOpenAiGuideChat = async ({ message, category, currentPath }) => {
+  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const userPayload = {
+    message,
+    inferredCategory: category,
+    currentPath: currentPath || '/',
+  };
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.4,
+      max_tokens: 320,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: GUIDE_CHAT_SYSTEM },
+        {
+          role: 'user',
+          content: `用户问题：\n${JSON.stringify(userPayload)}`,
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    const brief = errText.slice(0, 120);
+    throw new Error(`OpenAI HTTP ${res.status}${brief ? `: ${brief}` : ''}`);
+  }
+
+  const data = await res.json();
+  const content = data?.choices?.[0]?.message?.content;
+  const parsed = extractJsonFromAiText(content);
+  if (!parsed) throw new Error('Invalid JSON from model');
+  return parsed;
+};
+
+app.post('/api/ai/guide-chat', async (req, res) => {
+  try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ ok: false, error: 'AI 问答服务暂未配置，请稍后再试' });
+    }
+
+    const normalized = normalizeGuideChatMessage(req.body?.message);
+    if (!normalized.ok) {
+      return res.status(400).json({ ok: false, error: normalized.error });
+    }
+
+    const ip = getClientIp(req);
+    if (!checkGuideChatRateLimit(ip)) {
+      return res.status(429).json({ ok: false, error: '提问过于频繁，请 60 秒后再试' });
+    }
+
+    const message = normalized.message;
+    const categoryHint = req.body?.context?.categoryHint;
+    const currentPath = String(req.body?.context?.currentPath ?? '/').trim() || '/';
+    const category = inferGuideChatCategory(message, categoryHint);
+
+    const aiRaw = await callOpenAiGuideChat({ message, category, currentPath });
+    const payload = normalizeGuideChatResponse(aiRaw, message, category);
+
+    return res.json(payload);
+  } catch (e) {
+    console.error('POST /api/ai/guide-chat error:', e.message);
+    return res.status(502).json({ ok: false, error: 'AI 回答失败，请稍后再试' });
+  }
+});
+
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
