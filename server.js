@@ -94,12 +94,6 @@ const UserSchema = new mongoose.Schema({
 
   bio: String,
   avatar: String,
-  area: String,
-  city: String,
-  profileTags: [String],
-  interests: [String],
-  website: String,
-  xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
   createdAt: { type: Number, default: Date.now }
 });
@@ -285,34 +279,6 @@ const sanitizeOptionalImageUrl = (value) => {
   return imageUrl;
 };
 
-const sanitizeProfileText = (value, maxLen) => {
-  const cleaned = String(value ?? '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/javascript:/gi, '')
-    .trim();
-  if (!cleaned) return '';
-  return cleaned.length > maxLen ? cleaned.slice(0, maxLen) : cleaned;
-};
-
-const normalizeProfileStringArray = (value) => {
-  if (!Array.isArray(value)) return [];
-  const seen = new Set();
-  const items = [];
-  for (const item of value) {
-    const tag = sanitizeProfileText(item, 20);
-    if (!tag || seen.has(tag)) continue;
-    seen.add(tag);
-    items.push(tag);
-    if (items.length >= 12) break;
-  }
-  return items;
-};
-
-const formatPublicSocialLinks = (socialLinks) => ({
-  linkedin: socialLinks?.linkedin || '',
-  instagram: socialLinks?.instagram || '',
-});
-
 const buildAdPayload = (body) => {
   const { title, content, description, imageUrl } = body || {};
   const finalTitle = String(title || '').trim();
@@ -487,29 +453,18 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/users/:id', async (req, res) => {
-  const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode');
+  const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode'); // ✨ 安全：排除敏感字段
   if (!user) return res.status(404).json({ error: 'Not found' });
-  res.json({
-    id: user.id,
-    nickname: user.nickname,
-    role: user.role,
-    avatar: user.avatar,
-    bio: user.bio,
-    area: user.area || '',
-    city: user.city || '',
-    profileTags: user.profileTags || [],
-    interests: user.interests || [],
-    website: user.website || '',
-    xiaohongshu: user.xiaohongshu || '',
-    isPhoneVerified: user.isPhoneVerified,
-    isOfficialVerified: user.isOfficialVerified,
-    socialLinks: formatPublicSocialLinks(user.socialLinks),
+  res.json({ 
+    id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio,
+    isPhoneVerified: user.isPhoneVerified, isOfficialVerified: user.isOfficialVerified, 
+    socialLinks: user.socialLinks || { linkedin: '', instagram: '' } 
   });
 });
 
 app.get('/api/users/:id/public', async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -verifyCodeExpires -lastSmsSentAt -verifyAttempts');
+    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType');
     if (!user) return res.status(404).json({ error: 'Not found' });
     const postCount = await Post.countDocuments({ authorId: user.id, isDeleted: false });
     const recent = await Post.find({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).limit(3).lean();
@@ -518,13 +473,6 @@ app.get('/api/users/:id/public', async (req, res) => {
       nickname: user.nickname,
       avatar: user.avatar,
       bio: user.bio,
-      area: user.area || '',
-      city: user.city || '',
-      profileTags: user.profileTags || [],
-      interests: user.interests || [],
-      website: user.website || '',
-      xiaohongshu: user.xiaohongshu || '',
-      socialLinks: formatPublicSocialLinks(user.socialLinks),
       role: user.role,
       createdAt: user.createdAt,
       isPhoneVerified: user.isPhoneVerified,
@@ -549,49 +497,18 @@ app.get('/api/users/:id/public', async (req, res) => {
 
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
   try {
-    const {
-      nickname,
-      bio,
-      avatar,
-      area,
-      city,
-      profileTags,
-      interests,
-      website,
-      xiaohongshu,
-      socialLinks,
-      isOfficialVerified,
-    } = req.body;
+    const { nickname, bio, avatar, socialLinks, isOfficialVerified } = req.body;
     const user = req.user;
-
-    if (nickname !== undefined) {
-      const nextNickname = sanitizeProfileText(nickname, 30);
-      if (nextNickname) user.nickname = nextNickname;
-    }
-    if (bio !== undefined) user.bio = sanitizeProfileText(bio, 240);
-    if (area !== undefined) user.area = sanitizeProfileText(area, 30);
-    if (city !== undefined) user.city = sanitizeProfileText(city, 40);
-    if (website !== undefined) user.website = sanitizeProfileText(website, 120);
-    if (xiaohongshu !== undefined) user.xiaohongshu = sanitizeProfileText(xiaohongshu, 80);
-    if (profileTags !== undefined) user.profileTags = normalizeProfileStringArray(profileTags);
-    if (interests !== undefined) user.interests = normalizeProfileStringArray(interests);
-
-    if (socialLinks) {
-      const next = { ...(user.socialLinks || {}) };
-      if (socialLinks.linkedin !== undefined) next.linkedin = sanitizeProfileText(socialLinks.linkedin, 120);
-      if (socialLinks.instagram !== undefined) next.instagram = sanitizeProfileText(socialLinks.instagram, 80);
-      user.socialLinks = next;
-    }
-
+    if (nickname) user.nickname = nickname;
+    if (bio !== undefined) user.bio = bio;
+    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; 
     if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
     if (avatar && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
     }
     await user.save();
-    if (avatar || nickname !== undefined) {
-      await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
-    }
+    if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
     const userResponse = user.toObject();
     delete userResponse.password;
     delete userResponse.verifyCode;
@@ -1716,6 +1633,147 @@ const buildSuggestedActions = (category) => {
   return (actionsByCategory[cat] || actionsByCategory.other).slice(0, 3);
 };
 
+const INTERACTIVE_CARD_ACTION_TYPES = new Set(['category', 'guide', 'post', 'postAssist']);
+const INTERACTIVE_CARD_TYPES = new Set(['checklist', 'safety']);
+const INTERACTIVE_CARD_POST_TYPES = new Set(['client', 'provider']);
+
+const validateInteractiveCardAction = (raw) => {
+  if (!raw || typeof raw !== 'object') return null;
+  const type = String(raw.type ?? '').trim();
+  if (!INTERACTIVE_CARD_ACTION_TYPES.has(type)) return null;
+
+  const label = clampStr(raw.label, 40);
+  if (!label) return null;
+
+  const action = { label, type };
+  const url = String(raw.url ?? '').trim();
+  if (url) {
+    if (!url.startsWith('/guides') && !url.startsWith('/category')) return null;
+    action.url = url;
+  }
+
+  const postType = String(raw.postType ?? '').trim();
+  if (postType) {
+    if (!INTERACTIVE_CARD_POST_TYPES.has(postType)) return null;
+    action.postType = postType;
+  }
+
+  const category = String(raw.category ?? '').trim();
+  if (category) {
+    if (!GUIDE_CHAT_CATEGORIES.has(category)) return null;
+    action.category = category;
+  }
+
+  return action;
+};
+
+const validateInteractiveCard = (raw) => {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const forbiddenKeys = ['html', 'markdown', 'jsx', 'component'];
+  if (forbiddenKeys.some((k) => raw[k] != null && String(raw[k]).trim() !== '')) return null;
+
+  const type = String(raw.type ?? '').trim();
+  if (!INTERACTIVE_CARD_TYPES.has(type)) return null;
+
+  const id = clampStr(raw.id, 48);
+  const title = clampStr(raw.title, 40);
+  if (!id || !title) return null;
+
+  const subtitle = clampStr(raw.subtitle, 80);
+  const itemsRaw = Array.isArray(raw.items) ? raw.items.slice(0, 6) : [];
+  const items = [];
+  for (const item of itemsRaw) {
+    if (!item || typeof item !== 'object') continue;
+    const itemId = clampStr(item.id, 32);
+    const label = clampStr(item.label, 60);
+    if (!itemId || !label) continue;
+    items.push({ id: itemId, label });
+    if (items.length >= 6) break;
+  }
+  if (items.length === 0) return null;
+
+  const actionsRaw = Array.isArray(raw.actions) ? raw.actions.slice(0, 2) : [];
+  const actions = [];
+  for (const act of actionsRaw) {
+    const validated = validateInteractiveCardAction(act);
+    if (validated) actions.push(validated);
+    if (actions.length >= 2) break;
+  }
+
+  const card = { id, type, title, items };
+  if (subtitle) card.subtitle = subtitle;
+  if (actions.length > 0) card.actions = actions;
+  return card;
+};
+
+const buildInteractiveCards = ({ message, category }) => {
+  const cat = GUIDE_CHAT_CATEGORIES.has(category) ? category : 'other';
+  void message;
+
+  let draft = null;
+  if (cat === 'rent') {
+    draft = {
+      id: 'rent-checklist-v1',
+      type: 'checklist',
+      title: '租房前先确认这些',
+      subtitle: '先把预算、位置和安全细节想清楚，再联系或发帖。',
+      items: [
+        { id: 'budget', label: '预算范围是否明确' },
+        { id: 'commute', label: '通勤区域是否合适' },
+        { id: 'move-in', label: '入住时间是否清楚' },
+        { id: 'lease', label: '押金和租约条款是否写明' },
+        { id: 'viewing', label: '是否能实地或视频看房' },
+      ],
+      actions: [
+        { label: '让 BayBay 帮我写求租帖', type: 'postAssist', postType: 'client', category: 'rent' },
+        { label: '看租房防骗指南', type: 'guide', url: '/guides/bay-area-rental-scam-guide' },
+      ],
+    };
+  } else if (cat === 'used') {
+    draft = {
+      id: 'used-safety-v1',
+      type: 'safety',
+      title: '二手交易前注意',
+      subtitle: '交易前先确认物品、地点和付款方式。',
+      items: [
+        { id: 'model', label: '确认物品型号和新旧程度' },
+        { id: 'media', label: '尽量要求实物照片或视频' },
+        { id: 'inspect', label: '当面验货后再付款' },
+        { id: 'links', label: '不点击陌生付款链接' },
+        { id: 'records', label: '保留聊天记录' },
+      ],
+      actions: [
+        { label: '整理二手帖子', type: 'postAssist', postType: 'provider', category: 'used' },
+        { label: '看二手交易指南', type: 'guide', url: '/guides/bay-area-used-market-safety-guide' },
+      ],
+    };
+  } else if (['moving', 'cleaning', 'ride', 'repair'].includes(cat)) {
+    draft = {
+      id: 'local-service-safety-v1',
+      type: 'safety',
+      title: '联系服务前先确认',
+      subtitle: '把时间、地点和价格说清楚，沟通会更顺。',
+      items: [
+        { id: 'time-place', label: '说明具体时间和地点' },
+        { id: 'price', label: '说明预算或期望价格' },
+        { id: 'scope', label: '说明物品数量或服务范围' },
+        { id: 'identity', label: '交易前确认对方身份' },
+        { id: 'records', label: '尽量保留聊天记录' },
+      ],
+      actions: [
+        { label: '让 BayBay 帮我写需求', type: 'postAssist', postType: 'client', category: cat },
+        { label: '看本地服务避坑指南', type: 'guide', url: '/guides/local-service-safety-guide' },
+      ],
+    };
+  }
+
+  if (!draft) return [];
+
+  const validated = validateInteractiveCard(draft);
+  return validated ? [validated] : [];
+};
+
 const normalizeGuideChatResponse = (aiRaw, message, category) => {
   let answer = clampStr(aiRaw?.answer, 180);
   if (answer.length < 10) {
@@ -1735,12 +1793,15 @@ const normalizeGuideChatResponse = (aiRaw, message, category) => {
     suggestedActions = buildSuggestedActions('other');
   }
 
+  const interactiveCards = buildInteractiveCards({ message, category });
+
   return {
     ok: true,
     answer,
     suggestedGuides: suggestedGuides.slice(0, 3),
     suggestedActions: suggestedActions.slice(0, 3),
     safetyNote: safetyNote || '',
+    interactiveCards,
   };
 };
 
