@@ -89,10 +89,17 @@ const UserSchema = new mongoose.Schema({
   // ✨ 信任体系字段
   isPhoneVerified: { type: Boolean, default: false },
   isOfficialVerified: { type: Boolean, default: false },
+  phone: String,
+  phoneNormalized: String,
+  phoneVerifiedAt: Number,
+  phoneVerificationCodeHash: String,
+  phoneVerificationExpiresAt: Number,
+  phoneVerificationAttempts: { type: Number, default: 0 },
+  phoneVerificationLastSentAt: Number,
   verifyCode: String, 
   verifyCodeExpires: Number, 
   lastSmsSentAt: Number, 
-  verifyAttempts: { type: Number, default: 0 }, // 防暴力破解
+  verifyAttempts: { type: Number, default: 0 }, // 防暴力破解（旧字段，保留兼容）
   passwordResetTokenHash: String,
   passwordResetExpires: Number,
   passwordResetRequestedAt: Number,
@@ -390,6 +397,8 @@ const SENSITIVE_USER_FIELDS = [
   'phoneVerificationExpiresAt',
   'phoneVerificationAttempts',
   'phoneVerificationLastSentAt',
+  'phoneNormalized',
+  'phoneVerifiedAt',
 ];
 
 const sanitizeUserForClient = (user) => {
@@ -411,6 +420,106 @@ const getFrontendBaseUrl = () => {
 
 const canReturnDevResetLink = () =>
   process.env.AUTH_DEV_RETURN_TOKENS === 'true' && process.env.NODE_ENV !== 'production';
+
+const canReturnDevPhoneCode = () =>
+  process.env.AUTH_DEV_RETURN_TOKENS === 'true' && process.env.NODE_ENV !== 'production';
+
+const PHONE_VERIFY_COOLDOWN_MS = 60000;
+const PHONE_VERIFY_EXPIRES_MS = 10 * 60 * 1000;
+const PHONE_VERIFY_MAX_ATTEMPTS = 5;
+
+const normalizePhone = (phone) => {
+  const raw = String(phone ?? '').trim();
+  if (!raw) return null;
+  const cleaned = raw.replace(/[\s().-]/g, '');
+  let digits = cleaned;
+  if (digits.startsWith('+')) digits = digits.slice(1);
+  if (/^1\d{10}$/.test(digits)) {
+    return { phone: cleaned.startsWith('+') ? cleaned : `+${digits}`, phoneNormalized: `+${digits}` };
+  }
+  if (/^\d{10}$/.test(digits)) {
+    return { phone: cleaned, phoneNormalized: `+1${digits}` };
+  }
+  return null;
+};
+
+const generatePhoneCode = () => Math.floor(100000 + Math.random() * 900000).toString();
+const hashPhoneCode = (code) => crypto.createHash('sha256').update(String(code)).digest('hex');
+
+const sendPhoneVerificationSms = async (phoneNormalized, plainCode) => {
+  if (twilioClient && TWILIO_PHONE) {
+    await twilioClient.messages.create({
+      body: `【BAYLINK】您的验证码是 ${plainCode}，10分钟内有效。工作人员不会向您索要此码。`,
+      from: TWILIO_PHONE,
+      to: phoneNormalized,
+    });
+    return;
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[DEV MODE] SMS to ${phoneNormalized}: ${plainCode}`);
+    return;
+  }
+  console.error('⚠️ Twilio 未配置，生产环境无法发送短信验证码');
+};
+
+const startPhoneVerificationForUser = async (user, phoneInput) => {
+  const normalized = normalizePhone(phoneInput);
+  if (!normalized) return { ok: false, status: 400, error: '请输入有效的手机号' };
+
+  if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
+    return { ok: false, status: 429, error: '请求太频繁，请等待60秒' };
+  }
+
+  const plainCode = generatePhoneCode();
+  user.phone = normalized.phone;
+  user.phoneNormalized = normalized.phoneNormalized;
+  user.phoneVerificationCodeHash = hashPhoneCode(plainCode);
+  user.phoneVerificationExpiresAt = Date.now() + PHONE_VERIFY_EXPIRES_MS;
+  user.phoneVerificationAttempts = 0;
+  user.phoneVerificationLastSentAt = Date.now();
+  await user.save();
+
+  try {
+    await sendPhoneVerificationSms(normalized.phoneNormalized, plainCode);
+    const payload = { message: '验证码已发送。' };
+    if (canReturnDevPhoneCode()) payload.devCode = plainCode;
+    return { ok: true, payload };
+  } catch (error) {
+    console.error('Twilio Error:', error.message);
+    return { ok: false, status: 500, error: '短信发送失败，请检查手机号格式' };
+  }
+};
+
+const verifyPhoneCodeForUser = async (user, codeInput) => {
+  const code = String(codeInput ?? '').trim();
+  if (!code) return { ok: false, status: 400, error: '验证码不正确或已过期' };
+
+  if (!user.phoneVerificationCodeHash || !user.phoneVerificationExpiresAt || user.phoneVerificationExpiresAt <= Date.now()) {
+    return { ok: false, status: 400, error: '验证码不正确或已过期' };
+  }
+
+  if ((user.phoneVerificationAttempts || 0) >= PHONE_VERIFY_MAX_ATTEMPTS) {
+    user.phoneVerificationCodeHash = undefined;
+    user.phoneVerificationExpiresAt = undefined;
+    await user.save();
+    return { ok: false, status: 400, error: '验证码不正确或已过期' };
+  }
+
+  if (user.phoneVerificationCodeHash !== hashPhoneCode(code)) {
+    user.phoneVerificationAttempts = (user.phoneVerificationAttempts || 0) + 1;
+    await user.save();
+    return { ok: false, status: 400, error: '验证码不正确或已过期' };
+  }
+
+  user.isPhoneVerified = true;
+  user.phoneVerifiedAt = Date.now();
+  user.phoneVerificationCodeHash = undefined;
+  user.phoneVerificationExpiresAt = undefined;
+  user.phoneVerificationAttempts = 0;
+  await user.save();
+
+  return { ok: true, payload: { message: '手机号已验证。', user: sanitizeUserForClient(user) } };
+};
 
 const FORGOT_PASSWORD_MESSAGE = '如果这个邮箱已注册，我们会发送重设密码链接。';
 
@@ -513,74 +622,24 @@ const authenticateToken = (req, res, next) => {
 
 // --- Routes ---
 
-// ✨ 手机验证接口 (含真实发送 + 安全限流)
+// ✨ 手机验证接口（兼容旧前端，内部走新逻辑）
 app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
+  try {
     const { phone, code } = req.body;
-    const user = req.user;
-
-    // 场景 1: 请求发送验证码
     if (phone && !code) {
-        // 1. 防刷：60秒限制
-        if (user.lastSmsSentAt && Date.now() - user.lastSmsSentAt < 60000) {
-            return res.status(429).json({ error: '请求太频繁，请等待60秒' });
-        }
-
-        const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        user.verifyCode = generatedCode;
-        user.verifyCodeExpires = Date.now() + 5 * 60 * 1000; // 5分钟有效期
-        user.lastSmsSentAt = Date.now();
-        user.verifyAttempts = 0; // 重置尝试次数
-        await user.save();
-
-        // 2. 发送逻辑
-        if (twilioClient && TWILIO_PHONE) {
-            try {
-                await twilioClient.messages.create({
-                    body: `【BAYLINK】您的验证码是 ${generatedCode}，5分钟内有效。工作人员不会向您索要此码。`,
-                    from: TWILIO_PHONE,
-                    to: phone 
-                });
-                return res.json({ success: true, message: '验证码已发送至手机' });
-            } catch (error) {
-                console.error('Twilio Error:', error.message);
-                return res.status(500).json({ error: '短信发送失败，请检查手机号格式 (例如 +1...)' });
-            }
-        } else {
-            console.log(`[DEV MODE] SMS to ${phone}: ${generatedCode}`);
-            return res.json({ success: true, message: '[开发模式] 验证码已在后台生成' });
-        }
+      const result = await startPhoneVerificationForUser(req.user, phone);
+      if (!result.ok) return res.status(result.status).json({ error: result.error });
+      return res.json({ success: true, ...result.payload });
     }
-
-    // 场景 2: 验证代码
-    if (phone && code) {
-        // 3. 安全检查
-        if (!user.verifyCode || Date.now() > user.verifyCodeExpires) return res.status(400).json({ error: '验证码已过期，请重新获取' });
-        
-        if (user.verifyAttempts >= 5) {
-            user.verifyCode = undefined; // 错误太多，销毁验证码
-            await user.save();
-            return res.status(400).json({ error: '尝试次数过多，请重新获取验证码' });
-        }
-
-        if (user.verifyCode !== code) {
-            user.verifyAttempts = (user.verifyAttempts || 0) + 1;
-            await user.save();
-            return res.status(400).json({ error: '验证码错误' });
-        }
-
-        // 4. 验证成功
-        user.contactValue = phone;
-        user.isPhoneVerified = true;
-        user.verifyCode = undefined;
-        user.verifyCodeExpires = undefined;
-        user.verifyAttempts = 0;
-        await user.save();
-        
-        return res.json({ success: true, user: sanitizeUserForClient(user) });
+    if (code) {
+      const result = await verifyPhoneCodeForUser(req.user, code);
+      if (!result.ok) return res.status(result.status).json({ error: result.error });
+      return res.json({ success: true, ...result.payload });
     }
-    
-    res.status(400).json({ error: '无效请求' });
+    return res.status(400).json({ error: '无效请求' });
+  } catch (e) {
+    res.status(500).json({ error: 'Request failed' });
+  }
 });
 
 app.post('/api/auth/register', async (req, res) => {
@@ -737,7 +796,7 @@ app.get('/api/users/:id', async (req, res) => {
 
 app.get('/api/users/:id/public', async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType');
+    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
     if (!user) return res.status(404).json({ error: 'Not found' });
     const postCount = await Post.countDocuments({ authorId: user.id, isDeleted: false });
     const recent = await Post.find({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).limit(3).lean();
@@ -805,6 +864,28 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     }
     res.json(sanitizeUserForClient(user));
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
+});
+
+app.post('/api/users/me/phone/start', authenticateToken, async (req, res) => {
+  try {
+    const { phone } = req.body || {};
+    const result = await startPhoneVerificationForUser(req.user, phone);
+    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    res.json(result.payload);
+  } catch (e) {
+    res.status(500).json({ error: 'Request failed' });
+  }
+});
+
+app.post('/api/users/me/phone/verify', authenticateToken, async (req, res) => {
+  try {
+    const { code } = req.body || {};
+    const result = await verifyPhoneCodeForUser(req.user, code);
+    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    res.json(result.payload);
+  } catch (e) {
+    res.status(500).json({ error: 'Request failed' });
+  }
 });
 
 const getCurrentUserIdFromRequest = (req) => {
