@@ -432,13 +432,12 @@ const normalizePhone = (phone) => {
   const raw = String(phone ?? '').trim();
   if (!raw) return null;
   const cleaned = raw.replace(/[\s().-]/g, '');
-  let digits = cleaned;
-  if (digits.startsWith('+')) digits = digits.slice(1);
+  let digits = cleaned.startsWith('+') ? cleaned.slice(1) : cleaned;
   if (/^1\d{10}$/.test(digits)) {
-    return { phone: cleaned.startsWith('+') ? cleaned : `+${digits}`, phoneNormalized: `+${digits}` };
+    return { phone: `+${digits}`, phoneNormalized: `+${digits}` };
   }
   if (/^\d{10}$/.test(digits)) {
-    return { phone: cleaned, phoneNormalized: `+1${digits}` };
+    return { phone: cleaned.startsWith('+') ? cleaned : digits, phoneNormalized: `+1${digits}` };
   }
   return null;
 };
@@ -446,31 +445,31 @@ const normalizePhone = (phone) => {
 const generatePhoneCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 const hashPhoneCode = (code) => crypto.createHash('sha256').update(String(code)).digest('hex');
 
-const sendPhoneVerificationSms = async (phoneNormalized, plainCode) => {
-  if (twilioClient && TWILIO_PHONE) {
-    await twilioClient.messages.create({
-      body: `【BAYLINK】您的验证码是 ${plainCode}，10分钟内有效。工作人员不会向您索要此码。`,
-      from: TWILIO_PHONE,
-      to: phoneNormalized,
-    });
-    return;
+const mapTwilioSendError = (error) => {
+  const code = error?.code;
+  if (code === 30034) {
+    return { ok: false, status: 503, error: '短信服务正在完成注册，请稍后再试。' };
   }
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[DEV MODE] SMS to ${phoneNormalized}: ${plainCode}`);
-    return;
+  if (code === 21266 || code === 21659 || code === 21606) {
+    return { ok: false, status: 503, error: '短信服务配置错误，请稍后再试。' };
   }
-  console.error('⚠️ Twilio 未配置，生产环境无法发送短信验证码');
+  return { ok: false, status: 502, error: '短信发送失败，请稍后再试。' };
 };
 
-const startPhoneVerificationForUser = async (user, phoneInput) => {
-  const normalized = normalizePhone(phoneInput);
-  if (!normalized) return { ok: false, status: 400, error: '请输入有效的手机号' };
-
-  if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
-    return { ok: false, status: 429, error: '请求太频繁，请等待60秒' };
+const sendPhoneVerificationViaTwilio = async (phoneNormalized, plainCode) => {
+  if (!twilioClient || !TWILIO_PHONE) {
+    const err = new Error('Twilio not configured');
+    err.code = 'TWILIO_NOT_CONFIGURED';
+    throw err;
   }
+  await twilioClient.messages.create({
+    body: `【BAYLINK】您的验证码是 ${plainCode}，10分钟内有效。工作人员不会向您索要此码。`,
+    from: TWILIO_PHONE,
+    to: phoneNormalized,
+  });
+};
 
-  const plainCode = generatePhoneCode();
+const persistPhoneVerificationState = async (user, normalized, plainCode) => {
   user.phone = normalized.phone;
   user.phoneNormalized = normalized.phoneNormalized;
   user.phoneVerificationCodeHash = hashPhoneCode(plainCode);
@@ -478,16 +477,46 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
   user.phoneVerificationAttempts = 0;
   user.phoneVerificationLastSentAt = Date.now();
   await user.save();
+};
 
-  try {
-    await sendPhoneVerificationSms(normalized.phoneNormalized, plainCode);
-    const payload = { message: '验证码已发送。' };
-    if (canReturnDevPhoneCode()) payload.devCode = plainCode;
-    return { ok: true, payload };
-  } catch (error) {
-    console.error('Twilio Error:', error.message);
-    return { ok: false, status: 500, error: '短信发送失败，请检查手机号格式' };
+const startPhoneVerificationForUser = async (user, phoneInput) => {
+  const normalized = normalizePhone(phoneInput);
+  if (!normalized) return { ok: false, status: 400, error: '请输入有效的美国手机号。' };
+
+  if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
+    return { ok: false, status: 429, error: '验证码发送太频繁，请稍后再试。' };
   }
+
+  const plainCode = generatePhoneCode();
+  const hasTwilio = !!(twilioClient && TWILIO_PHONE);
+
+  if (hasTwilio) {
+    try {
+      await sendPhoneVerificationViaTwilio(normalized.phoneNormalized, plainCode);
+      await persistPhoneVerificationState(user, normalized, plainCode);
+      const payload = { message: '验证码已发送。' };
+      if (canReturnDevPhoneCode()) payload.devCode = plainCode;
+      return { ok: true, payload };
+    } catch (error) {
+      console.error('Twilio Error:', error.code, error.message);
+      return mapTwilioSendError(error);
+    }
+  }
+
+  if (canReturnDevPhoneCode()) {
+    await persistPhoneVerificationState(user, normalized, plainCode);
+    console.log(`[DEV MODE] SMS to ${normalized.phoneNormalized}: ${plainCode}`);
+    return { ok: true, payload: { message: '验证码已发送。', devCode: plainCode } };
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    await persistPhoneVerificationState(user, normalized, plainCode);
+    console.log(`[DEV MODE] SMS to ${normalized.phoneNormalized}: ${plainCode}`);
+    return { ok: true, payload: { message: '验证码已发送。' } };
+  }
+
+  console.error('⚠️ Twilio 未配置，生产环境无法发送短信验证码');
+  return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
 };
 
 const verifyPhoneCodeForUser = async (user, codeInput) => {
