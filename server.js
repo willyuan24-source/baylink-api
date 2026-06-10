@@ -8,6 +8,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const twilio = require('twilio');
 const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
+const crypto = require('crypto');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -91,6 +92,11 @@ const UserSchema = new mongoose.Schema({
   verifyCodeExpires: Number, 
   lastSmsSentAt: Number, 
   verifyAttempts: { type: Number, default: 0 }, // 防暴力破解
+  passwordResetTokenHash: String,
+  passwordResetExpires: Number,
+  passwordResetRequestedAt: Number,
+  passwordResetUsedAt: Number,
+  passwordChangedAt: Number,
 
   bio: String,
   avatar: String,
@@ -190,6 +196,31 @@ const checkReportRateLimit = (userId) => {
   if (reportRateByUser.size > 5000) {
     for (const [k, val] of reportRateByUser) {
       if (now - val.windowStart >= windowMs) reportRateByUser.delete(k);
+    }
+  }
+  return entry.count <= maxRequests;
+};
+
+const authRateByKey = new Map();
+
+const getClientIp = (req) => {
+  const xf = req.headers['x-forwarded-for'];
+  if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
+  return req.ip || req.socket?.remoteAddress || 'unknown';
+};
+
+const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
+  const rateKey = String(key);
+  const now = Date.now();
+  let entry = authRateByKey.get(rateKey);
+  if (!entry || now - entry.windowStart >= windowMs) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  authRateByKey.set(rateKey, entry);
+  if (authRateByKey.size > 5000) {
+    for (const [k, val] of authRateByKey) {
+      if (now - val.windowStart >= windowMs) authRateByKey.delete(k);
     }
   }
   return entry.count <= maxRequests;
@@ -315,6 +346,7 @@ const SENSITIVE_USER_FIELDS = [
   'passwordResetExpiresAt',
   'passwordResetRequestedAt',
   'passwordResetUsedAt',
+  'passwordChangedAt',
   'phoneVerificationCodeHash',
   'phoneVerificationExpiresAt',
   'phoneVerificationAttempts',
@@ -328,6 +360,20 @@ const sanitizeUserForClient = (user) => {
   }
   return obj;
 };
+
+const generateResetToken = () => crypto.randomBytes(32).toString('hex');
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
+const getFrontendBaseUrl = () => {
+  if (process.env.FRONTEND_URL) return String(process.env.FRONTEND_URL).replace(/\/$/, '');
+  if (process.env.NODE_ENV === 'production') return 'https://www.baylink.us';
+  return 'http://localhost:5173';
+};
+
+const canReturnDevResetLink = () =>
+  process.env.AUTH_DEV_RETURN_TOKENS === 'true' && process.env.NODE_ENV !== 'production';
+
+const FORGOT_PASSWORD_MESSAGE = '如果这个邮箱已注册，我们会发送重设密码链接。';
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -463,6 +509,74 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
     res.json({ ...sanitizeUserForClient(user), token });
   } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const ip = getClientIp(req);
+    if (!checkAuthRateLimit(`forgot:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 5 })) {
+      return res.status(429).json({ error: '请求太频繁，请稍后再试' });
+    }
+    const { email } = req.body || {};
+    const trimmedEmail = String(email || '').trim();
+    if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    const lowerEmail = trimmedEmail.toLowerCase();
+    let user = await User.findOne({ email: lowerEmail });
+    if (!user && trimmedEmail === 'admin') {
+      user = await User.findOne({ email: 'admin' });
+    }
+    let devResetLink;
+    if (user) {
+      const plainToken = generateResetToken();
+      user.passwordResetTokenHash = hashResetToken(plainToken);
+      user.passwordResetExpires = Date.now() + 30 * 60 * 1000;
+      user.passwordResetRequestedAt = Date.now();
+      user.passwordResetUsedAt = undefined;
+      await user.save();
+      if (canReturnDevResetLink()) {
+        devResetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
+        console.log(`[DEV] Password reset link for ${user.email}: ${devResetLink}`);
+      }
+    }
+    const payload = { message: FORGOT_PASSWORD_MESSAGE };
+    if (devResetLink) payload.devResetLink = devResetLink;
+    res.json(payload);
+  } catch (e) {
+    res.status(500).json({ error: 'Request failed' });
+  }
+});
+
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const ip = getClientIp(req);
+    if (!checkAuthRateLimit(`reset:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 10 })) {
+      return res.status(429).json({ error: '请求太频繁，请稍后再试' });
+    }
+    const { token, newPassword } = req.body || {};
+    const plainToken = String(token || '').trim();
+    if (!plainToken) {
+      return res.status(400).json({ error: '重设链接无效或已过期。' });
+    }
+    if (!validatePasswordStrength(newPassword)) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters and include uppercase, lowercase, and a number' });
+    }
+    const tokenHash = hashResetToken(plainToken);
+    const user = await User.findOne({ passwordResetTokenHash: tokenHash });
+    if (!user || !user.passwordResetExpires || user.passwordResetExpires <= Date.now()) {
+      return res.status(400).json({ error: '重设链接无效或已过期。' });
+    }
+    user.password = newPassword;
+    user.passwordResetTokenHash = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordResetUsedAt = Date.now();
+    user.passwordChangedAt = Date.now();
+    await user.save();
+    res.json({ message: '密码已更新，请重新登录。' });
+  } catch (e) {
+    res.status(500).json({ error: 'Request failed' });
+  }
 });
 
 app.get('/api/users/:id', async (req, res) => {
@@ -1069,12 +1183,6 @@ const buildAiPostAssistUserMessage = ({ intent, type, categoryHint, areaHint, la
 };
 
 const aiPostAssistRateByIp = new Map();
-
-const getClientIp = (req) => {
-  const xf = req.headers['x-forwarded-for'];
-  if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
-  return req.ip || req.socket?.remoteAddress || 'unknown';
-};
 
 const checkAiPostAssistRateLimit = (ip) => {
   const now = Date.now();
