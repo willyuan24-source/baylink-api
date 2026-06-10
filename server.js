@@ -115,6 +115,18 @@ const UserSchema = new mongoose.Schema({
   website: String,
   xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
+  officialVerification: {
+    status: { type: String, default: 'none' },
+    type: String,
+    description: String,
+    website: String,
+    license: String,
+    socialLink: String,
+    submittedAt: Number,
+    reviewedAt: Number,
+    reviewedBy: String,
+    rejectionReason: String,
+  },
   createdAt: { type: Number, default: Date.now }
 });
 
@@ -334,6 +346,39 @@ const formatPublicProfileFields = (user) => ({
   website: user.website || '',
   xiaohongshu: user.xiaohongshu || '',
   socialLinks: user.socialLinks || { linkedin: '', instagram: '' },
+});
+
+const OFFICIAL_VERIFICATION_TYPES = new Set([
+  'realtor', 'service_provider', 'business', 'official_account', 'community_org', 'other',
+]);
+const OFFICIAL_VERIFICATION_LIST_STATUSES = new Set(['pending', 'approved', 'rejected', 'all']);
+
+const getOfficialVerificationStatus = (user) =>
+  user?.officialVerification?.status || 'none';
+
+const formatPublicOfficialVerification = (user) => {
+  const ov = user?.officialVerification;
+  if (!ov || ov.status !== 'approved' || !user.isOfficialVerified) return undefined;
+  return { status: 'approved', type: ov.type || '' };
+};
+
+const formatAdminOfficialVerificationRequest = (user) => ({
+  userId: user.id,
+  nickname: user.nickname,
+  email: user.email,
+  avatar: user.avatar,
+  isPhoneVerified: !!user.isPhoneVerified,
+  isOfficialVerified: !!user.isOfficialVerified,
+  officialVerification: {
+    status: user.officialVerification?.status || 'none',
+    type: user.officialVerification?.type || '',
+    description: user.officialVerification?.description || '',
+    website: user.officialVerification?.website || '',
+    license: user.officialVerification?.license || '',
+    socialLink: user.officialVerification?.socialLink || '',
+    submittedAt: user.officialVerification?.submittedAt,
+    rejectionReason: user.officialVerification?.rejectionReason || '',
+  },
 });
 
 const isValidHttpUrl = (value) => {
@@ -839,6 +884,9 @@ app.get('/api/users/:id/public', async (req, res) => {
       isPhoneVerified: user.isPhoneVerified,
       isOfficialVerified: user.isOfficialVerified,
       ...formatPublicProfileFields(user),
+      ...(formatPublicOfficialVerification(user)
+        ? { officialVerification: formatPublicOfficialVerification(user) }
+        : {}),
       postCount,
       recentPosts: recent.map((p) => ({
         id: p.id || String(p._id),
@@ -914,6 +962,50 @@ app.post('/api/users/me/phone/verify', authenticateToken, async (req, res) => {
     res.json(result.payload);
   } catch (e) {
     res.status(500).json({ error: 'Request failed' });
+  }
+});
+
+app.post('/api/users/me/official-verification', authenticateToken, async (req, res) => {
+  try {
+    const { type, description, website, license, socialLink } = req.body || {};
+    if (!OFFICIAL_VERIFICATION_TYPES.has(String(type || '').trim())) {
+      return res.status(400).json({ error: '认证类型无效' });
+    }
+    const desc = trimProfileString(description, 500);
+    if (!desc) return res.status(400).json({ error: '请填写认证说明' });
+
+    const user = req.user;
+    const currentStatus = getOfficialVerificationStatus(user);
+    if (currentStatus === 'approved' || user.isOfficialVerified) {
+      return res.status(400).json({ error: '已通过认证，无需重复申请' });
+    }
+
+    if (!user.officialVerification) user.officialVerification = {};
+    const submittedAt = Date.now();
+    user.officialVerification.status = 'pending';
+    user.officialVerification.type = String(type).trim();
+    user.officialVerification.description = desc;
+    user.officialVerification.website = trimProfileString(website, 160);
+    user.officialVerification.license = trimProfileString(license, 120);
+    user.officialVerification.socialLink = trimProfileString(socialLink, 160);
+    user.officialVerification.submittedAt = submittedAt;
+    user.officialVerification.reviewedAt = undefined;
+    user.officialVerification.reviewedBy = undefined;
+    user.officialVerification.rejectionReason = undefined;
+    user.isOfficialVerified = false;
+    await user.save();
+
+    res.json({
+      message: '认证申请已提交，BAYLINK 会尽快审核。',
+      officialVerification: {
+        status: 'pending',
+        type: user.officialVerification.type,
+        submittedAt,
+      },
+      user: sanitizeUserForClient(user),
+    });
+  } catch (e) {
+    res.status(500).json({ error: 'Submit Failed' });
   }
 });
 
@@ -1304,6 +1396,65 @@ app.get('/api/blocks', authenticateToken, async (req, res) => {
   } catch (e) {
     console.error('GET /api/blocks error:', e.message);
     return res.status(500).json({ ok: false, error: '获取屏蔽列表失败' });
+  }
+});
+
+app.get('/api/admin/official-verifications', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const status = String(req.query.status ?? 'pending').trim();
+    const filter = {};
+    if (status === 'all') {
+      filter['officialVerification.status'] = { $in: ['pending', 'approved', 'rejected'] };
+    } else if (OFFICIAL_VERIFICATION_LIST_STATUSES.has(status) && status !== 'all') {
+      filter['officialVerification.status'] = status;
+    } else {
+      filter['officialVerification.status'] = 'pending';
+    }
+
+    const users = await User.find(filter)
+      .select('-password -verifyCode -phoneVerificationCodeHash -passwordResetTokenHash')
+      .sort({ 'officialVerification.submittedAt': -1 })
+      .limit(100)
+      .lean();
+
+    return res.json({ requests: users.map(formatAdminOfficialVerificationRequest) });
+  } catch (e) {
+    console.error('GET /api/admin/official-verifications error:', e.message);
+    return res.status(500).json({ error: '获取认证申请失败' });
+  }
+});
+
+app.patch('/api/admin/users/:userId/official-verification', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const status = String(req.body?.status ?? '').trim();
+    if (status !== 'approved' && status !== 'rejected') {
+      return res.status(400).json({ error: '状态无效' });
+    }
+
+    const user = await User.findOne({ id: req.params.userId });
+    if (!user) return res.status(404).json({ error: '用户不存在' });
+
+    if (!user.officialVerification) user.officialVerification = {};
+
+    if (status === 'approved') {
+      user.isOfficialVerified = true;
+      user.officialVerification.status = 'approved';
+      user.officialVerification.reviewedAt = Date.now();
+      user.officialVerification.reviewedBy = req.user.id;
+      user.officialVerification.rejectionReason = undefined;
+    } else {
+      user.isOfficialVerified = false;
+      user.officialVerification.status = 'rejected';
+      user.officialVerification.reviewedAt = Date.now();
+      user.officialVerification.reviewedBy = req.user.id;
+      const reason = trimProfileString(req.body?.rejectionReason, 500);
+      user.officialVerification.rejectionReason = reason || '资料不足，请补充后重新申请。';
+    }
+
+    await user.save();
+    res.json(sanitizeUserForClient(user));
+  } catch (e) {
+    res.status(500).json({ error: 'Review Failed' });
   }
 });
 
