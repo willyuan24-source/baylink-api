@@ -9,6 +9,7 @@ const { Server } = require('socket.io');
 const twilio = require('twilio');
 const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 const crypto = require('crypto');
+const { Resend } = require('resend');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -375,6 +376,90 @@ const canReturnDevResetLink = () =>
 
 const FORGOT_PASSWORD_MESSAGE = '如果这个邮箱已注册，我们会发送重设密码链接。';
 
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+const escapeHtml = (value) => String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
+const buildPasswordResetEmailHtml = ({ resetLink, user }) => {
+  const safeLink = escapeHtml(resetLink);
+  const greeting = user?.nickname ? escapeHtml(user.nickname) : '邻居';
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F7F4EC;font-family:'Helvetica Neue',Arial,'PingFang SC','Microsoft YaHei',sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#F7F4EC;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(23,32,42,0.06);">
+        <tr><td style="height:4px;background:linear-gradient(90deg,#16A66A,#128256);"></td></tr>
+        <tr><td style="padding:32px 28px 8px;">
+          <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.12em;color:#16A66A;text-transform:uppercase;">BAYLINK</p>
+          <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#17202A;line-height:1.3;">重设你的 BAYLINK 密码</h1>
+          <p style="margin:0 0 8px;font-size:15px;color:#17202A;line-height:1.6;">你好，${greeting}：</p>
+          <p style="margin:0 0 24px;font-size:15px;color:#6B7280;line-height:1.6;">我们收到了重设 BAYLINK 密码的请求。请在 30 分钟内点击下面按钮完成重设。</p>
+          <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 24px;">
+            <tr><td style="border-radius:12px;background-color:#16A66A;">
+              <a href="${safeLink}" target="_blank" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">重设密码</a>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 8px;font-size:13px;color:#9A978F;line-height:1.5;">如果按钮无法打开，请复制以下链接到浏览器：</p>
+          <p style="margin:0 0 24px;font-size:12px;color:#16A66A;word-break:break-all;line-height:1.5;"><a href="${safeLink}" style="color:#16A66A;">${safeLink}</a></p>
+          <p style="margin:0;padding:16px;background:#F3F8F5;border-radius:10px;font-size:13px;color:#6B7280;line-height:1.6;">如果这不是你本人操作，可以忽略这封邮件，你的密码不会改变。</p>
+        </td></tr>
+        <tr><td style="padding:20px 28px 28px;border-top:1px solid #E3DFD6;">
+          <p style="margin:0;font-size:12px;color:#9A978F;text-align:center;">BAYLINK｜湾区生活信息站</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+};
+
+const buildPasswordResetEmailText = ({ resetLink }) => `重设你的 BAYLINK 密码
+
+我们收到了重设 BAYLINK 密码的请求。请在 30 分钟内打开下面链接完成重设：
+
+${resetLink}
+
+如果这不是你本人操作，可以忽略这封邮件，你的密码不会改变。
+
+BAYLINK｜湾区生活信息站`;
+
+const sendPasswordResetEmail = async ({ to, resetLink, user }) => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured');
+  }
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error('RESEND_FROM_EMAIL is not configured');
+  }
+  if (!resend) {
+    throw new Error('Resend client is not initialized');
+  }
+
+  const { data, error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL,
+    to,
+    subject: '重设你的 BAYLINK 密码',
+    html: buildPasswordResetEmailHtml({ resetLink, user }),
+    text: buildPasswordResetEmailText({ resetLink }),
+  });
+
+  if (error) {
+    throw new Error(error.message || 'Resend send failed');
+  }
+
+  if (process.env.NODE_ENV !== 'production' && data?.id) {
+    console.log(`[Resend] Password reset email sent, id=${data.id}`);
+  }
+
+  return data;
+};
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -528,6 +613,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       user = await User.findOne({ email: 'admin' });
     }
     let devResetLink;
+    let devEmailError;
     if (user) {
       const plainToken = generateResetToken();
       user.passwordResetTokenHash = hashResetToken(plainToken);
@@ -535,13 +621,30 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       user.passwordResetRequestedAt = Date.now();
       user.passwordResetUsedAt = undefined;
       await user.save();
-      if (canReturnDevResetLink()) {
-        devResetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
+
+      const resetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
+      const hasResendConfig = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
+
+      if (hasResendConfig) {
+        try {
+          await sendPasswordResetEmail({ to: user.email, resetLink, user });
+        } catch (emailErr) {
+          console.error('POST /api/auth/forgot-password email error:', emailErr.message);
+          if (canReturnDevResetLink()) {
+            devEmailError = emailErr.message;
+            devResetLink = resetLink;
+          }
+        }
+      } else if (canReturnDevResetLink()) {
+        devResetLink = resetLink;
         console.log(`[DEV] Password reset link for ${user.email}: ${devResetLink}`);
+      } else if (process.env.NODE_ENV === 'production') {
+        console.error('POST /api/auth/forgot-password: Resend is not configured in production');
       }
     }
     const payload = { message: FORGOT_PASSWORD_MESSAGE };
     if (devResetLink) payload.devResetLink = devResetLink;
+    if (devEmailError) payload.devEmailError = devEmailError;
     res.json(payload);
   } catch (e) {
     res.status(500).json({ error: 'Request failed' });
