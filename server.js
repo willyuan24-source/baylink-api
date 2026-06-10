@@ -304,6 +304,31 @@ const uploadToCloudinary = async (base64Image) => {
     } catch (error) { return null; }
 };
 
+const SENSITIVE_USER_FIELDS = [
+  'password',
+  'verifyCode',
+  'verifyCodeExpires',
+  'lastSmsSentAt',
+  'verifyAttempts',
+  'passwordResetTokenHash',
+  'passwordResetExpires',
+  'passwordResetExpiresAt',
+  'passwordResetRequestedAt',
+  'passwordResetUsedAt',
+  'phoneVerificationCodeHash',
+  'phoneVerificationExpiresAt',
+  'phoneVerificationAttempts',
+  'phoneVerificationLastSentAt',
+];
+
+const sanitizeUserForClient = (user) => {
+  const obj = user && typeof user.toObject === 'function' ? user.toObject() : { ...user };
+  for (const field of SENSITIVE_USER_FIELDS) {
+    delete obj[field];
+  }
+  return obj;
+};
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -383,7 +408,7 @@ app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
         user.verifyAttempts = 0;
         await user.save();
         
-        return res.json({ success: true, user });
+        return res.json({ success: true, user: sanitizeUserForClient(user) });
     }
     
     res.status(400).json({ error: '无效请求' });
@@ -411,13 +436,7 @@ app.post('/api/auth/register', async (req, res) => {
       socialLinks: { linkedin: '', instagram: '' }
     });
     const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
-    
-    // ✨ 安全優化：回傳時移除 password 與 verifyCode 等敏感欄位，防 Hash 被窺探
-    const userResponse = newUser.toObject();
-    delete userResponse.password;
-    delete userResponse.verifyCode;
-    
-    res.json({ ...userResponse, token });
+    res.json({ ...sanitizeUserForClient(newUser), token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -442,13 +461,7 @@ app.post('/api/auth/login', async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
     
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
-    
-    // ✨ 安全優化：回傳時移除密碼與驗證碼敏感資料
-    const userResponse = user.toObject();
-    delete userResponse.password;
-    delete userResponse.verifyCode;
-    
-    res.json({ ...userResponse, token });
+    res.json({ ...sanitizeUserForClient(user), token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -509,11 +522,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     }
     await user.save();
     if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
-    const userResponse = user.toObject();
-    delete userResponse.password;
-    delete userResponse.verifyCode;
-    delete userResponse.verifyCodeExpires;
-    res.json(userResponse);
+    res.json(sanitizeUserForClient(user));
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
