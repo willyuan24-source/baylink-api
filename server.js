@@ -76,6 +76,76 @@ io.on('connection', (socket) => {
 });
 
 // --- Schemas ---
+const OfficialVerificationSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: ['none', 'pending', 'approved', 'rejected'],
+      default: 'none',
+    },
+    type: {
+      type: String,
+      enum: [
+        'realtor',
+        'service_provider',
+        'business',
+        'official_account',
+        'community_org',
+        'other',
+        '',
+      ],
+      default: '',
+    },
+    description: { type: String, default: '' },
+    website: { type: String, default: '' },
+    license: { type: String, default: '' },
+    socialLink: { type: String, default: '' },
+    submittedAt: { type: Number, default: null },
+    reviewedAt: { type: Number, default: null },
+    reviewedBy: { type: String, default: '' },
+    rejectionReason: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const defaultOfficialVerification = () => ({
+  status: 'none',
+  type: '',
+  description: '',
+  website: '',
+  license: '',
+  socialLink: '',
+  submittedAt: null,
+  reviewedAt: null,
+  reviewedBy: '',
+  rejectionReason: '',
+});
+
+const normalizeOfficialVerificationData = (ov) => {
+  if (ov == null) return defaultOfficialVerification();
+  if (typeof ov === 'string') {
+    const s = ov.trim();
+    const legacyStatuses = new Set(['none', 'pending', 'approved', 'rejected']);
+    return {
+      ...defaultOfficialVerification(),
+      status: legacyStatuses.has(s) ? s : 'none',
+    };
+  }
+  if (typeof ov !== 'object' || Array.isArray(ov)) return defaultOfficialVerification();
+  return {
+    status: ov.status || 'none',
+    type: ov.type || '',
+    description: ov.description || '',
+    website: ov.website || '',
+    license: ov.license || '',
+    socialLink: ov.socialLink || '',
+    submittedAt: ov.submittedAt ?? null,
+    reviewedAt: ov.reviewedAt ?? null,
+    reviewedBy: ov.reviewedBy || '',
+    rejectionReason: ov.rejectionReason || '',
+  };
+};
+
 const UserSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   email: { type: String, required: true, unique: true },
@@ -116,16 +186,19 @@ const UserSchema = new mongoose.Schema({
   xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
   officialVerification: {
-    status: { type: String, default: 'none' },
-    type: String,
-    description: String,
-    website: String,
-    license: String,
-    socialLink: String,
-    submittedAt: Number,
-    reviewedAt: Number,
-    reviewedBy: String,
-    rejectionReason: String,
+    type: OfficialVerificationSchema,
+    default: () => ({
+      status: 'none',
+      type: '',
+      description: '',
+      website: '',
+      license: '',
+      socialLink: '',
+      submittedAt: null,
+      reviewedAt: null,
+      reviewedBy: '',
+      rejectionReason: '',
+    }),
   },
   createdAt: { type: Number, default: Date.now }
 });
@@ -139,6 +212,13 @@ UserSchema.pre('save', async function(next) {
     next();
   } catch (e) {
     next(e);
+  }
+});
+
+UserSchema.post('init', function coerceLegacyOfficialVerification() {
+  if (typeof this.officialVerification === 'string') {
+    this.set('officialVerification', normalizeOfficialVerificationData(this.officialVerification));
+    this.markModified('officialVerification');
   }
 });
 
@@ -392,33 +472,45 @@ const normalizeOptionalOfficialUrl = (value, maxLen) => {
   return { value: clipped };
 };
 
-const getOfficialVerificationStatus = (user) =>
-  user?.officialVerification?.status || 'none';
+const getOfficialVerificationStatus = (user) => {
+  const ov = user?.officialVerification;
+  if (typeof ov === 'string') {
+    const s = ov.trim();
+    if (['none', 'pending', 'approved', 'rejected'].includes(s)) return s;
+    return 'none';
+  }
+  return ov?.status || 'none';
+};
 
 const formatPublicOfficialVerification = (user) => {
-  const ov = user?.officialVerification;
-  if (!ov || ov.status !== 'approved' || !user.isOfficialVerified) return undefined;
+  const raw = user?.officialVerification;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const ov = normalizeOfficialVerificationData(raw);
+  if (ov.status !== 'approved' || !user.isOfficialVerified) return undefined;
   return { status: 'approved', type: ov.type || '' };
 };
 
-const formatAdminOfficialVerificationRequest = (user) => ({
-  userId: user.id,
-  nickname: user.nickname,
-  email: user.email,
-  avatar: user.avatar,
-  isPhoneVerified: !!user.isPhoneVerified,
-  isOfficialVerified: !!user.isOfficialVerified,
-  officialVerification: {
-    status: user.officialVerification?.status || 'none',
-    type: user.officialVerification?.type || '',
-    description: user.officialVerification?.description || '',
-    website: user.officialVerification?.website || '',
-    license: user.officialVerification?.license || '',
-    socialLink: user.officialVerification?.socialLink || '',
-    submittedAt: user.officialVerification?.submittedAt,
-    rejectionReason: user.officialVerification?.rejectionReason || '',
-  },
-});
+const formatAdminOfficialVerificationRequest = (user) => {
+  const ov = normalizeOfficialVerificationData(user?.officialVerification);
+  return {
+    userId: user.id,
+    nickname: user.nickname,
+    email: user.email,
+    avatar: user.avatar,
+    isPhoneVerified: !!user.isPhoneVerified,
+    isOfficialVerified: !!user.isOfficialVerified,
+    officialVerification: {
+      status: ov.status,
+      type: ov.type,
+      description: ov.description,
+      website: ov.website,
+      license: ov.license,
+      socialLink: ov.socialLink,
+      submittedAt: ov.submittedAt,
+      rejectionReason: ov.rejectionReason,
+    },
+  };
+};
 
 const isValidHttpUrl = (value) => {
   try {
@@ -490,6 +582,7 @@ const sanitizeUserForClient = (user) => {
   for (const field of SENSITIVE_USER_FIELDS) {
     delete obj[field];
   }
+  obj.officialVerification = normalizeOfficialVerificationData(obj.officialVerification);
   return obj;
 };
 
@@ -1057,7 +1150,6 @@ app.post('/api/users/me/official-verification', authenticateToken, async (req, r
       rejectionReason: '',
     });
     user.isOfficialVerified = false;
-    user.markModified('officialVerification');
     await user.save();
 
     res.json({
@@ -1495,21 +1587,27 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
     const user = await User.findOne({ id: req.params.userId });
     if (!user) return res.status(404).json({ error: '用户不存在' });
 
-    if (!user.officialVerification) user.officialVerification = {};
+    const currentOv = normalizeOfficialVerificationData(user.officialVerification);
 
     if (status === 'approved') {
       user.isOfficialVerified = true;
-      user.officialVerification.status = 'approved';
-      user.officialVerification.reviewedAt = Date.now();
-      user.officialVerification.reviewedBy = req.user.id;
-      user.officialVerification.rejectionReason = undefined;
+      user.set('officialVerification', {
+        ...currentOv,
+        status: 'approved',
+        reviewedAt: Date.now(),
+        reviewedBy: req.user.id,
+        rejectionReason: '',
+      });
     } else {
       user.isOfficialVerified = false;
-      user.officialVerification.status = 'rejected';
-      user.officialVerification.reviewedAt = Date.now();
-      user.officialVerification.reviewedBy = req.user.id;
       const reason = trimProfileString(req.body?.rejectionReason, 500);
-      user.officialVerification.rejectionReason = reason || '资料不足，请补充后重新申请。';
+      user.set('officialVerification', {
+        ...currentOv,
+        status: 'rejected',
+        reviewedAt: Date.now(),
+        reviewedBy: req.user.id,
+        rejectionReason: reason || '资料不足，请补充后重新申请。',
+      });
     }
 
     await user.save();
