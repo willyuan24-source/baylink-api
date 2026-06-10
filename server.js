@@ -315,6 +315,8 @@ const getClientIp = (req) => {
   return req.ip || req.socket?.remoteAddress || 'unknown';
 };
 
+const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
+
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
   const rateKey = String(key);
   const now = Date.now();
@@ -851,6 +853,10 @@ app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
 
 app.post('/api/auth/register', async (req, res) => {
   try {
+    const ip = getClientIp(req);
+    if (!checkAuthRateLimit(`register:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 5 })) {
+      return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    }
     const { email, password, nickname, contactType, contactValue } = req.body;
     if (!email || !EMAIL_REGEX.test(String(email).trim())) {
       return res.status(400).json({ error: 'Invalid email format' });
@@ -877,6 +883,10 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
   try {
+    const ip = getClientIp(req);
+    if (!checkAuthRateLimit(`login:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 10 })) {
+      return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    }
     const { email, password } = req.body;
     const trimmedEmail = String(email || '').trim();
     let user = null;
@@ -904,7 +914,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   try {
     const ip = getClientIp(req);
     if (!checkAuthRateLimit(`forgot:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 5 })) {
-      return res.status(429).json({ error: '请求太频繁，请稍后再试' });
+      return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     }
     const { email } = req.body || {};
     const trimmedEmail = String(email || '').trim();
@@ -959,7 +969,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
   try {
     const ip = getClientIp(req);
     if (!checkAuthRateLimit(`reset:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 10 })) {
-      return res.status(429).json({ error: '请求太频繁，请稍后再试' });
+      return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     }
     const { token, newPassword } = req.body || {};
     const plainToken = String(token || '').trim();
@@ -1272,17 +1282,55 @@ const validatePostBody = (body) => {
   return null;
 };
 
+const POST_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const POST_DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
+
+const getDailyPostLimit = (user) => {
+  if (user.role === 'admin') return null;
+  if (user.isOfficialVerified) return 20;
+  if (user.isPhoneVerified) return 10;
+  return 3;
+};
+
+const HIGH_RISK_CATEGORY_SLUGS = new Set([
+  'rent', 'housing', 'roommate', 'service', 'moving', 'cleaning', 'repair', 'ride',
+]);
+const HIGH_RISK_CATEGORIES_ZH = new Set(['租屋', '搬家', '清洁', '维修', '接送']);
+
+const isHighRiskPostCategory = (body) => {
+  const raw = String(body?.category || '').trim();
+  if (!raw) return false;
+  if (HIGH_RISK_CATEGORIES_ZH.has(raw)) return true;
+  return HIGH_RISK_CATEGORY_SLUGS.has(raw.toLowerCase());
+};
+
 const checkCreatePostRateLimit = async (user) => {
-  const todayStart = new Date().setHours(0, 0, 0, 0);
-  const dailyLimit = user.role === 'admin' ? 100 : 10;
-  const count = await Post.countDocuments({ authorId: user.id, isDeleted: false, createdAt: { $gte: todayStart } });
-  if (count >= dailyLimit) return { status: 429, error: 'Daily post limit reached.' };
-  if (user.role !== 'admin') {
-    const latest = await Post.findOne({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).lean();
-    if (latest && Date.now() - latest.createdAt < 60000) {
-      return { status: 429, error: 'Posting too frequently. Please try again later.' };
-    }
+  const dailyLimit = getDailyPostLimit(user);
+  if (dailyLimit == null) return null;
+  const windowStart = Date.now() - POST_DAILY_WINDOW_MS;
+  const count = await Post.countDocuments({
+    authorId: user.id,
+    isDeleted: false,
+    createdAt: { $gte: windowStart },
+  });
+  if (count >= dailyLimit) {
+    return { status: 429, error: '今天发布次数已达到上限，请明天再试。' };
   }
+  return null;
+};
+
+const checkDuplicatePost = async (userId, title, description) => {
+  const trimmedTitle = String(title || '').trim();
+  const trimmedDesc = String(description || '').trim();
+  const since = Date.now() - POST_DUPLICATE_WINDOW_MS;
+  const dup = await Post.findOne({
+    authorId: userId,
+    isDeleted: false,
+    createdAt: { $gte: since },
+    title: trimmedTitle,
+    description: trimmedDesc,
+  }).lean();
+  if (dup) return { status: 429, error: '请不要重复发布相同内容。' };
   return null;
 };
 
@@ -1308,6 +1356,12 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
     if (rateErr) return res.status(rateErr.status).json({ error: rateErr.error });
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
+    const dupErr = await checkDuplicatePost(
+      req.user.id,
+      req.body?.title,
+      req.body?.description,
+    );
+    if (dupErr) return res.status(dupErr.status).json({ error: dupErr.error });
     const { imageUrls, id: _id, authorId: _authorId, createdAt: _createdAt, updatedAt: _updatedAt, ...postData } = req.body;
     const uploadedUrls = await processPostImageUrls(imageUrls);
     const newPost = await Post.create({
@@ -1320,7 +1374,11 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       isDeleted: false,
       createdAt: Date.now(),
     });
-    res.json(newPost);
+    const payload = typeof newPost.toObject === 'function' ? newPost.toObject() : newPost;
+    if (!req.user.isPhoneVerified && isHighRiskPostCategory(postData)) {
+      payload.trustWarning = '为了提升可信度，建议完成手机验证后再发布租房、服务或接送相关信息。';
+    }
+    res.json(payload);
   } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
 });
 
