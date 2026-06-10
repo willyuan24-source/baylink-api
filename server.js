@@ -101,6 +101,12 @@ const UserSchema = new mongoose.Schema({
 
   bio: String,
   avatar: String,
+  area: String,
+  city: String,
+  profileTags: [String],
+  interests: [String],
+  website: String,
+  xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
   createdAt: { type: Number, default: Date.now }
 });
@@ -290,6 +296,38 @@ const validatePasswordStrength = (password) =>
   /[A-Z]/.test(password) &&
   /[a-z]/.test(password) &&
   /[0-9]/.test(password);
+
+const trimProfileString = (value, maxLen) => {
+  const s = String(value ?? '').trim();
+  if (!s) return '';
+  return s.length > maxLen ? s.slice(0, maxLen) : s;
+};
+
+const sanitizeProfileStringArray = (value, { maxItems = 12, maxLen = 20 } = {}) => {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const item of value) {
+    const s = String(item ?? '').trim();
+    if (!s) continue;
+    const clipped = s.length > maxLen ? s.slice(0, maxLen) : s;
+    if (seen.has(clipped)) continue;
+    seen.add(clipped);
+    out.push(clipped);
+    if (out.length >= maxItems) break;
+  }
+  return out;
+};
+
+const formatPublicProfileFields = (user) => ({
+  area: user.area || '',
+  city: user.city || '',
+  profileTags: user.profileTags || [],
+  interests: user.interests || [],
+  website: user.website || '',
+  xiaohongshu: user.xiaohongshu || '',
+  socialLinks: user.socialLinks || { linkedin: '', instagram: '' },
+});
 
 const isValidHttpUrl = (value) => {
   try {
@@ -685,10 +723,15 @@ app.post('/api/auth/reset-password', async (req, res) => {
 app.get('/api/users/:id', async (req, res) => {
   const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode'); // ✨ 安全：排除敏感字段
   if (!user) return res.status(404).json({ error: 'Not found' });
-  res.json({ 
-    id: user.id, nickname: user.nickname, role: user.role, avatar: user.avatar, bio: user.bio,
-    isPhoneVerified: user.isPhoneVerified, isOfficialVerified: user.isOfficialVerified, 
-    socialLinks: user.socialLinks || { linkedin: '', instagram: '' } 
+  res.json({
+    id: user.id,
+    nickname: user.nickname,
+    role: user.role,
+    avatar: user.avatar,
+    bio: user.bio,
+    isPhoneVerified: user.isPhoneVerified,
+    isOfficialVerified: user.isOfficialVerified,
+    ...formatPublicProfileFields(user),
   });
 });
 
@@ -707,6 +750,7 @@ app.get('/api/users/:id/public', async (req, res) => {
       createdAt: user.createdAt,
       isPhoneVerified: user.isPhoneVerified,
       isOfficialVerified: user.isOfficialVerified,
+      ...formatPublicProfileFields(user),
       postCount,
       recentPosts: recent.map((p) => ({
         id: p.id || String(p._id),
@@ -727,18 +771,38 @@ app.get('/api/users/:id/public', async (req, res) => {
 
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
   try {
-    const { nickname, bio, avatar, socialLinks, isOfficialVerified } = req.body;
+    const {
+      nickname, bio, avatar, socialLinks, isOfficialVerified,
+      area, city, profileTags, interests, website, xiaohongshu,
+    } = req.body;
     const user = req.user;
-    if (nickname) user.nickname = nickname;
-    if (bio !== undefined) user.bio = bio;
-    if (socialLinks) user.socialLinks = { ...user.socialLinks, ...socialLinks }; 
+    if (nickname !== undefined) {
+      const nextNickname = trimProfileString(nickname, 30);
+      if (!nextNickname) return res.status(400).json({ error: 'Nickname is required' });
+      user.nickname = nextNickname;
+    }
+    if (bio !== undefined) user.bio = trimProfileString(bio, 240);
+    if (area !== undefined) user.area = trimProfileString(area, 40);
+    if (city !== undefined) user.city = trimProfileString(city, 40);
+    if (website !== undefined) user.website = trimProfileString(website, 120);
+    if (xiaohongshu !== undefined) user.xiaohongshu = trimProfileString(xiaohongshu, 120);
+    if (profileTags !== undefined) user.profileTags = sanitizeProfileStringArray(profileTags);
+    if (interests !== undefined) user.interests = sanitizeProfileStringArray(interests);
+    if (socialLinks) {
+      const merged = { ...(user.socialLinks || {}) };
+      if (socialLinks.linkedin !== undefined) merged.linkedin = trimProfileString(socialLinks.linkedin, 120);
+      if (socialLinks.instagram !== undefined) merged.instagram = trimProfileString(socialLinks.instagram, 120);
+      user.socialLinks = merged;
+    }
     if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
     if (avatar && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
     }
     await user.save();
-    if (avatar || nickname) await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
+    if (avatar || nickname !== undefined) {
+      await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
+    }
     res.json(sanitizeUserForClient(user));
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
@@ -749,14 +813,39 @@ const getCurrentUserIdFromRequest = (req) => {
   try { return jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch (e) { return null; }
 };
 
-const formatPostResponse = (p, currentUserId) => ({
+const buildPostAuthor = (p, authorById) => {
+  const authorUser = authorById?.get(p.authorId);
+  return {
+    id: p.authorId,
+    nickname: p.authorNickname || authorUser?.nickname || 'Unknown',
+    avatar: p.authorAvatar || authorUser?.avatar,
+    isPhoneVerified: !!authorUser?.isPhoneVerified,
+    isOfficialVerified: !!authorUser?.isOfficialVerified,
+  };
+};
+
+const fetchAuthorTrustByIds = async (posts) => {
+  const ids = [...new Set(posts.map((p) => p.authorId).filter(Boolean))];
+  if (!ids.length) return new Map();
+  const users = await User.find({ id: { $in: ids } })
+    .select('id nickname avatar isPhoneVerified isOfficialVerified')
+    .lean();
+  return new Map(users.map((u) => [u.id, u]));
+};
+
+const formatPostResponse = (p, currentUserId, authorById) => ({
   ...p,
-  author: { nickname: p.authorNickname || 'Unknown', avatar: p.authorAvatar },
+  author: buildPostAuthor(p, authorById),
   likesCount: p.likes ? p.likes.length : 0,
   commentsCount: p.comments ? p.comments.length : 0,
   hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
   isReported: currentUserId ? (p.reports || []).some((r) => r.reporterId === currentUserId) : false,
 });
+
+const formatPostsResponseList = async (posts, currentUserId) => {
+  const authorById = await fetchAuthorTrustByIds(posts);
+  return posts.map((p) => formatPostResponse(p, currentUserId, authorById));
+};
 
 app.get('/api/posts/featured', async (req, res) => {
   try {
@@ -773,7 +862,7 @@ app.get('/api/posts/featured', async (req, res) => {
     let q = Post.find(query).sort({ featuredAt: -1, createdAt: -1 });
     if (limit > 0) q = q.limit(limit);
     const posts = await q.lean();
-    res.json({ posts: posts.map((p) => formatPostResponse(p, currentUserId)) });
+    res.json({ posts: await formatPostsResponseList(posts, currentUserId) });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
 
@@ -783,7 +872,8 @@ app.get('/api/posts/:id', async (req, res) => {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
     if (!post) return res.status(404).json({ error: 'Post not found' });
     const currentUserId = getCurrentUserIdFromRequest(req);
-    res.json(formatPostResponse(post, currentUserId));
+    const authorById = await fetchAuthorTrustByIds([post]);
+    res.json(formatPostResponse(post, currentUserId, authorById));
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
 
@@ -807,7 +897,7 @@ app.get('/api/posts', async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
     const totalCount = await Post.countDocuments(query);
-    const formatted = posts.map((p) => formatPostResponse(p, currentUserId));
+    const formatted = await formatPostsResponseList(posts, currentUserId);
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
 });
@@ -887,7 +977,8 @@ app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
     post.featuredAt = new Date();
     post.featuredBy = req.user.id;
     await post.save();
-    res.json(formatPostResponse(post.toObject(), req.user.id));
+    const authorById = await fetchAuthorTrustByIds([post.toObject()]);
+    res.json(formatPostResponse(post.toObject(), req.user.id, authorById));
   } catch (e) { res.status(500).json({ error: 'Feature Failed' }); }
 });
 
@@ -900,7 +991,8 @@ app.patch('/api/posts/:id/unfeature', authenticateToken, async (req, res) => {
     post.featuredAt = null;
     post.featuredBy = null;
     await post.save();
-    res.json(formatPostResponse(post.toObject(), req.user.id));
+    const authorById = await fetchAuthorTrustByIds([post.toObject()]);
+    res.json(formatPostResponse(post.toObject(), req.user.id, authorById));
   } catch (e) { res.status(500).json({ error: 'Unfeature Failed' }); }
 });
 
@@ -921,7 +1013,8 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     post.updatedAt = Date.now();
     await post.save();
     const p = post.toObject();
-    res.json(formatPostResponse(p, req.user.id));
+    const authorById = await fetchAuthorTrustByIds([p]);
+    res.json(formatPostResponse(p, req.user.id, authorById));
   } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
 });
 
