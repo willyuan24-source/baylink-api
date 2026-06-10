@@ -351,7 +351,46 @@ const formatPublicProfileFields = (user) => ({
 const OFFICIAL_VERIFICATION_TYPES = new Set([
   'realtor', 'service_provider', 'business', 'official_account', 'community_org', 'other',
 ]);
+const OFFICIAL_VERIFICATION_TYPE_ALIASES = {
+  '房地产经纪': 'realtor',
+  '房产经纪': 'realtor',
+  '经纪人': 'realtor',
+  '本地服务商': 'service_provider',
+  '服务商': 'service_provider',
+  '商家': 'business',
+  '官方账号': 'official_account',
+  '社区组织': 'community_org',
+  '其他': 'other',
+};
+const OPTIONAL_OFFICIAL_FIELD_EMPTY = new Set([
+  '没有', '无', 'none', 'n/a', 'na', 'null', 'undefined',
+]);
 const OFFICIAL_VERIFICATION_LIST_STATUSES = new Set(['pending', 'approved', 'rejected', 'all']);
+
+const normalizeOptionalOfficialField = (value) => {
+  const s = String(value ?? '').trim();
+  if (!s) return '';
+  const lower = s.toLowerCase();
+  if (OPTIONAL_OFFICIAL_FIELD_EMPTY.has(lower) || OPTIONAL_OFFICIAL_FIELD_EMPTY.has(s)) return '';
+  return s;
+};
+
+const normalizeOfficialVerificationType = (raw) => {
+  const s = String(raw ?? '').trim();
+  if (!s) return '';
+  if (OFFICIAL_VERIFICATION_TYPES.has(s)) return s;
+  return OFFICIAL_VERIFICATION_TYPE_ALIASES[s] || '';
+};
+
+const normalizeOptionalOfficialUrl = (value, maxLen) => {
+  const normalized = normalizeOptionalOfficialField(value);
+  if (!normalized) return { value: '' };
+  const clipped = normalized.length > maxLen ? normalized.slice(0, maxLen) : normalized;
+  if (!/^https?:\/\//i.test(clipped) || !isValidHttpUrl(clipped)) {
+    return { error: '请填写有效链接，或留空。' };
+  }
+  return { value: clipped };
+};
 
 const getOfficialVerificationStatus = (user) =>
   user?.officialVerification?.status || 'none';
@@ -967,45 +1006,67 @@ app.post('/api/users/me/phone/verify', authenticateToken, async (req, res) => {
 
 app.post('/api/users/me/official-verification', authenticateToken, async (req, res) => {
   try {
-    const { type, description, website, license, socialLink } = req.body || {};
-    if (!OFFICIAL_VERIFICATION_TYPES.has(String(type || '').trim())) {
-      return res.status(400).json({ error: '认证类型无效' });
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: '请先登录。' });
     }
-    const desc = trimProfileString(description, 500);
-    if (!desc) return res.status(400).json({ error: '请填写认证说明' });
 
-    const user = req.user;
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      return res.status(404).json({ error: '用户不存在。' });
+    }
+
+    const { type, description, website, license, socialLink } = req.body || {};
+    const normalizedType = normalizeOfficialVerificationType(type);
+    if (!normalizedType) {
+      return res.status(400).json({ error: '请选择有效的认证类型。' });
+    }
+
+    const desc = trimProfileString(description, 500);
+    if (!desc || desc.length < 10) {
+      return res.status(400).json({ error: '请填写更完整的认证说明。' });
+    }
+
     const currentStatus = getOfficialVerificationStatus(user);
     if (currentStatus === 'approved' || user.isOfficialVerified) {
       return res.status(400).json({ error: '已通过认证，无需重复申请' });
     }
 
-    if (!user.officialVerification) user.officialVerification = {};
+    const websiteResult = normalizeOptionalOfficialUrl(website, 160);
+    if (websiteResult.error) {
+      return res.status(400).json({ error: websiteResult.error });
+    }
+    const socialResult = normalizeOptionalOfficialUrl(socialLink, 160);
+    if (socialResult.error) {
+      return res.status(400).json({ error: socialResult.error });
+    }
+
+    const normalizedLicense = trimProfileString(normalizeOptionalOfficialField(license), 120);
     const submittedAt = Date.now();
-    user.officialVerification.status = 'pending';
-    user.officialVerification.type = String(type).trim();
-    user.officialVerification.description = desc;
-    user.officialVerification.website = trimProfileString(website, 160);
-    user.officialVerification.license = trimProfileString(license, 120);
-    user.officialVerification.socialLink = trimProfileString(socialLink, 160);
-    user.officialVerification.submittedAt = submittedAt;
-    user.officialVerification.reviewedAt = undefined;
-    user.officialVerification.reviewedBy = undefined;
-    user.officialVerification.rejectionReason = undefined;
+
+    user.set('officialVerification', {
+      status: 'pending',
+      type: normalizedType,
+      description: desc,
+      website: websiteResult.value || '',
+      license: normalizedLicense || '',
+      socialLink: socialResult.value || '',
+      submittedAt,
+      reviewedAt: null,
+      reviewedBy: '',
+      rejectionReason: '',
+    });
     user.isOfficialVerified = false;
+    user.markModified('officialVerification');
     await user.save();
 
     res.json({
-      message: '认证申请已提交，BAYLINK 会尽快审核。',
-      officialVerification: {
-        status: 'pending',
-        type: user.officialVerification.type,
-        submittedAt,
-      },
+      success: true,
       user: sanitizeUserForClient(user),
     });
-  } catch (e) {
-    res.status(500).json({ error: 'Submit Failed' });
+  } catch (err) {
+    console.error('[official-verification submit error]', err);
+    res.status(500).json({ error: '提交失败，请稍后再试。' });
   }
 });
 
