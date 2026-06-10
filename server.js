@@ -493,11 +493,11 @@ const formatPublicOfficialVerification = (user) => {
 const formatAdminOfficialVerificationRequest = (user) => {
   const ov = normalizeOfficialVerificationData(user?.officialVerification);
   return {
-    userId: user.id,
+    id: user.id,
     nickname: user.nickname,
-    email: user.email,
     avatar: user.avatar,
     isPhoneVerified: !!user.isPhoneVerified,
+    phoneVerifiedAt: user.phoneVerifiedAt ?? null,
     isOfficialVerified: !!user.isOfficialVerified,
     officialVerification: {
       status: ov.status,
@@ -507,6 +507,7 @@ const formatAdminOfficialVerificationRequest = (user) => {
       license: ov.license,
       socialLink: ov.socialLink,
       submittedAt: ov.submittedAt,
+      reviewedAt: ov.reviewedAt,
       rejectionReason: ov.rejectionReason,
     },
   };
