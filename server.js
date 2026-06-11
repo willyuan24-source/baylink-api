@@ -1115,7 +1115,7 @@ app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
     }
     return res.status(400).json({ error: '无效请求' });
   } catch (e) {
-    res.status(500).json({ error: 'Request failed' });
+    res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
 
@@ -1146,8 +1146,8 @@ app.post('/api/auth/register', async (req, res) => {
     });
     const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
     res.json({ ...sanitizeUserForClient(newUser), token });
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
+  } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
+  });
 
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -1175,7 +1175,7 @@ app.post('/api/auth/login', async (req, res) => {
     
     const token = jwt.sign({ id: user.id }, JWT_SECRET);
     res.json({ ...sanitizeUserForClient(user), token });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
 });
 
 app.post('/api/auth/forgot-password', async (req, res) => {
@@ -1229,7 +1229,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     if (devEmailError) payload.devEmailError = devEmailError;
     res.json(payload);
   } catch (e) {
-    res.status(500).json({ error: 'Request failed' });
+    res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
 
@@ -1260,7 +1260,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
     await user.save();
     res.json({ message: '密码已更新，请重新登录。' });
   } catch (e) {
-    res.status(500).json({ error: 'Request failed' });
+    res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
 
@@ -1389,7 +1389,7 @@ app.get('/api/users/:id/public', async (req, res) => {
         updatedAt: p.updatedAt,
       })),
     });
-  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+  } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
 app.patch('/api/users/me', authenticateToken, async (req, res) => {
@@ -1427,7 +1427,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
     }
     res.json(sanitizeUserForClient(user));
-  } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
+  } catch (e) { res.status(500).json({ error: '更新失败，请稍后再试' }); }
 });
 
 app.post('/api/users/me/phone/start', authenticateToken, async (req, res) => {
@@ -1437,7 +1437,7 @@ app.post('/api/users/me/phone/start', authenticateToken, async (req, res) => {
     if (!result.ok) return res.status(result.status).json({ error: result.error });
     res.json(result.payload);
   } catch (e) {
-    res.status(500).json({ error: 'Request failed' });
+    res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
 
@@ -1448,7 +1448,7 @@ app.post('/api/users/me/phone/verify', authenticateToken, async (req, res) => {
     if (!result.ok) return res.status(result.status).json({ error: result.error });
     res.json(result.payload);
   } catch (e) {
-    res.status(500).json({ error: 'Request failed' });
+    res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
 
@@ -1565,21 +1565,21 @@ app.get('/api/posts/featured', async (req, res) => {
     if (limit > 0) q = q.limit(limit);
     const posts = await q.lean();
     res.json({ posts: await formatPostsResponseList(posts, currentUserId) });
-  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+  } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
 app.get('/api/posts/:id', async (req, res) => {
   try {
     if (req.params.id === 'featured') return res.sendStatus(404);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
     const currentUserId = getCurrentUserIdFromRequest(req);
     if (post.adminHidden && !(await isAdminUserId(currentUserId))) {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
     const authorById = await fetchAuthorTrustByIds([post]);
     res.json(formatPostResponse(post, currentUserId, authorById));
-  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+  } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
 app.get('/api/posts', async (req, res) => {
@@ -1602,7 +1602,7 @@ app.get('/api/posts', async (req, res) => {
     const totalCount = await Post.countDocuments(query);
     const formatted = await formatPostsResponseList(posts, currentUserId);
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
-  } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
+  } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
 const validatePostBody = (body) => {
@@ -1718,7 +1718,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       payload.trustWarning = '为了提升可信度，建议完成手机验证后再发布租房、服务或接送相关信息。';
     }
     res.json(payload);
-  } catch (e) { res.status(500).json({ error: 'Post Failed' }); }
+  } catch (e) { res.status(500).json({ error: '发布失败，请稍后再试' }); }
 });
 
 app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
@@ -1732,7 +1732,7 @@ app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
     await post.save();
     const authorById = await fetchAuthorTrustByIds([post.toObject()]);
     res.json(formatPostResponse(post.toObject(), req.user.id, authorById));
-  } catch (e) { res.status(500).json({ error: 'Feature Failed' }); }
+  } catch (e) { res.status(500).json({ error: '推荐失败，请稍后再试' }); }
 });
 
 app.patch('/api/posts/:id/unfeature', authenticateToken, async (req, res) => {
@@ -1746,7 +1746,7 @@ app.patch('/api/posts/:id/unfeature', authenticateToken, async (req, res) => {
     await post.save();
     const authorById = await fetchAuthorTrustByIds([post.toObject()]);
     res.json(formatPostResponse(post.toObject(), req.user.id, authorById));
-  } catch (e) { res.status(500).json({ error: 'Unfeature Failed' }); }
+  } catch (e) { res.status(500).json({ error: '取消推荐失败，请稍后再试' }); }
 });
 
 app.put('/api/posts/:id', authenticateToken, async (req, res) => {
@@ -1768,7 +1768,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     const p = post.toObject();
     const authorById = await fetchAuthorTrustByIds([p]);
     res.json(formatPostResponse(p, req.user.id, authorById));
-  } catch (e) { res.status(500).json({ error: 'Update Failed' }); }
+  } catch (e) { res.status(500).json({ error: '更新失败，请稍后再试' }); }
 });
 
 app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
@@ -1778,7 +1778,7 @@ app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
     const hasReported = post.reports.some(r => r.reporterId === req.user.id);
     if (!hasReported) { post.reports.push({ reporterId: req.user.id, reason: req.body.reason || 'spam', createdAt: Date.now() }); await post.save(); }
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: 'Report Failed' }); }
+  } catch (e) { res.status(500).json({ error: '举报失败，请稍后再试' }); }
 });
 
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
@@ -1794,7 +1794,7 @@ app.post('/api/ads', authenticateToken, async (req, res) => {
   } catch (e) {
     if (e.statusCode === 400) return res.status(400).json({ error: e.message });
     console.error('POST /api/ads error:', e);
-    res.status(500).json({ error: e.message || 'Failed to create ad' });
+    res.status(500).json({ error: '创建推荐失败，请稍后再试' });
   }
 });
 app.put('/api/ads/:id', authenticateToken, async (req, res) => {
@@ -1811,7 +1811,7 @@ app.put('/api/ads/:id', authenticateToken, async (req, res) => {
   } catch (e) {
     if (e.statusCode === 400) return res.status(400).json({ error: e.message });
     console.error('PUT /api/ads error:', e);
-    res.status(500).json({ error: e.message || 'Failed to update ad' });
+    res.status(500).json({ error: '更新推荐失败，请稍后再试' });
   }
 });
 app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
@@ -2058,7 +2058,7 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
 
     res.json(sanitizeUserForClient(user));
   } catch (e) {
-    res.status(500).json({ error: 'Review Failed' });
+    res.status(500).json({ error: '审核失败，请稍后再试' });
   }
 });
 
