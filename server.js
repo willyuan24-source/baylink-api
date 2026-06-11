@@ -1087,12 +1087,12 @@ const sendPasswordResetEmail = async ({ to, resetLink, user }) => {
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.sendStatus(401);
+  if (!token) return res.status(401).json({ error: '请先登录' });
   jwt.verify(token, JWT_SECRET, async (err, userPayload) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.status(401).json({ error: '登录已过期，请重新登录' });
     const dbUser = await User.findOne({ id: userPayload.id });
-    if (!dbUser || dbUser.isBanned) return res.sendStatus(403);
-    req.user = dbUser; 
+    if (!dbUser || dbUser.isBanned) return res.status(403).json({ error: '账号不可用或已被限制' });
+    req.user = dbUser;
     next();
   });
 };
