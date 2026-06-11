@@ -2749,7 +2749,7 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
 });
 
 // --- BayBay AI Guide 问答（首页助手面板，单轮、不存聊天记录）---
-const GUIDE_CHAT_CATEGORIES = new Set(['rent', 'used', 'moving', 'cleaning', 'ride', 'repair', 'other']);
+const GUIDE_CHAT_CATEGORIES = new Set(['rent', 'roommate', 'used', 'moving', 'cleaning', 'ride', 'repair', 'other']);
 
 const GUIDE_CATALOG = [
   {
@@ -2771,7 +2771,7 @@ const GUIDE_CATALOG = [
     slug: 'bay-area-roommate-guide',
     url: '/guides/bay-area-roommate-guide',
     keywords: ['室友', '合租', 'roommate', '找人一起租'],
-    categories: ['rent'],
+    categories: ['roommate', 'rent'],
   },
   {
     title: '湾区通勤方式全对比',
@@ -2825,7 +2825,8 @@ const GUIDE_CATALOG = [
 ];
 
 const GUIDE_CHAT_CATEGORY_KEYWORDS = {
-  rent: ['租房', '求租', '出租', '房源', '单间', 'lease', 'room', 'rent', '押金'],
+  rent: ['租房', '求租', '出租', '房源', '单间', 'lease', 'rent', '押金', '租约'],
+  roommate: ['室友', '合租', 'roommate', '找人一起租'],
   used: ['二手', '出售', '卖', '买', '求购', '家具', '电器', '桌子', '床', 'used'],
   moving: ['搬家', '搬运', 'move', 'truck', 'queen bed'],
   cleaning: ['清洁', '退房清洁', '打扫', 'cleaning'],
@@ -2835,6 +2836,7 @@ const GUIDE_CHAT_CATEGORY_KEYWORDS = {
 
 const GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY = {
   rent: 'bay-area-rental-scam-guide',
+  roommate: 'bay-area-roommate-guide',
   used: 'bay-area-used-market-safety-guide',
   moving: 'tenant-move-in-out-checklist',
   cleaning: 'local-service-safety-guide',
@@ -2846,6 +2848,9 @@ const GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY = {
 const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayBay 问答助手。用户单次提问，请给出简短实用回答。
 
 规则：
+- 必须根据用户当前 message 回答，不要把所有问题都当成租房
+- 用户问维修就回答维修；问卖东西/二手就回答二手交易；问室友就回答找室友；问搬家/清洁/接送就回答对应主题
+- 不确定时先澄清用户想做什么，不要默认当成租房
 - 中文优先，answer 控制在 80-180 字
 - 适合旧金山湾区华人用户，语气亲切务实
 - 不编造房源、服务商、实时政策或价格
@@ -2856,6 +2861,47 @@ const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayB
 - 只输出一个 JSON 对象，不要 Markdown，不要解释
 
 必须返回：{"answer":"","safetyNote":""}`;
+
+const normalizeCategoryHint = (categoryHint) => {
+  const hint = String(categoryHint ?? '').trim().toLowerCase();
+  if (!hint || hint === 'general') return '';
+  if (GUIDE_CHAT_CATEGORIES.has(hint)) return hint;
+  return '';
+};
+
+function inferBayBayIntent(message = '', categoryHint = '') {
+  const text = String(message || '').toLowerCase();
+  if (/室友|合租|roommate|找人合租|share room/.test(text)) return 'roommate';
+  if (/维修|修理|水管|电工|电路|马桶|漏水|家电|handyman|repair|fix/.test(text)) return 'repair';
+  if (/卖东西|出东西|二手|转让|家具|家电|出售|used|sell|secondhand/.test(text)) return 'used';
+  if (/搬家|搬运|moving|move/.test(text)) return 'moving';
+  if (/清洁|打扫|保洁|cleaning|cleaner/.test(text)) return 'cleaning';
+  if (/接送|机场|通勤|ride|pickup|dropoff|sfo|sjc/.test(text)) return 'ride';
+  if (/租房|房源|找房|求租|押金|看房|租约|rent|housing|apartment/.test(text)) return 'rent';
+  if (/\broom\b/.test(text) && !/roommate/.test(text)) return 'rent';
+  if (/服务|帮忙|本地服务|service/.test(text)) return 'service';
+  const normalizedHint = normalizeCategoryHint(categoryHint);
+  return normalizedHint || 'general';
+}
+
+const intentToGuideCategory = (intent) => {
+  if (intent === 'general' || intent === 'service') return 'other';
+  if (intent === 'roommate') return 'roommate';
+  return GUIDE_CHAT_CATEGORIES.has(intent) ? intent : 'other';
+};
+
+const GUIDE_CHAT_FALLBACK_ANSWERS = {
+  repair: '可以先把维修类型、所在区域、希望上门时间、预算和照片说明清楚。建议先确认上门费、材料费和是否有维修后保障。',
+  roommate: '找室友时，建议先确认预算、入住时间、区域、通勤、作息、宠物和访客规则。把租约、押金和公共区域使用方式写清楚，会更容易找到合适的人。',
+  used: '卖二手时，建议写清物品名称、成色、价格、取货地点和是否可议价。上传真实照片，贵重物品尽量当面交易，不要点陌生付款链接。',
+  moving: '找搬家前，建议写清搬出/搬入区域、楼层、电梯、物品数量、是否需要拆装家具和希望时间。',
+  cleaning: '找清洁前，建议写清房屋大小、清洁范围、是否需要深度清洁、是否自备工具和希望时间。',
+  ride: '找接送前，建议写清出发地、目的地、时间、人数、行李数量和是否需要准时到达。',
+  rent: '刚来湾区租房，先别急着交押金。先确认预算、通勤、租约和看房方式，看房或视频看房后再付款更稳妥。',
+  service: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+  general: '可以先告诉我你想找房、找室友、买卖二手、找搬家清洁维修，还是需要本地生活建议。我可以帮你整理成更清楚的方向。',
+  other: '可以先告诉我你想找房、找室友、买卖二手、找搬家清洁维修，还是需要本地生活建议。我可以帮你整理成更清楚的方向。',
+};
 
 const guideChatRateByIp = new Map();
 
@@ -2887,25 +2933,11 @@ const normalizeGuideChatMessage = (value) => {
   return { ok: true, message };
 };
 
-const inferGuideChatCategory = (message, categoryHint) => {
-  const hint = String(categoryHint ?? '').trim();
-  if (GUIDE_CHAT_CATEGORIES.has(hint)) return hint;
+const inferGuideChatCategory = (message, categoryHint) =>
+  intentToGuideCategory(inferBayBayIntent(message, categoryHint));
 
-  const lower = message.toLowerCase();
-  let best = 'other';
-  let bestScore = 0;
-  for (const [category, keywords] of Object.entries(GUIDE_CHAT_CATEGORY_KEYWORDS)) {
-    let score = 0;
-    for (const kw of keywords) {
-      if (message.includes(kw) || lower.includes(kw.toLowerCase())) score += 1;
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      best = category;
-    }
-  }
-  return best;
-};
+const getGuideChatFallbackAnswer = (intent) =>
+  GUIDE_CHAT_FALLBACK_ANSWERS[intent] || GUIDE_CHAT_FALLBACK_ANSWERS.general;
 
 const scoreGuideForMessage = (guide, message, category) => {
   const lower = message.toLowerCase();
@@ -2953,6 +2985,11 @@ const buildSuggestedActions = (category) => {
       { label: '看租房分类', type: 'category', url: '/category/rent', category: 'rent' },
       { label: '发布求租', type: 'post', url: '/?type=client&category=rent', postType: 'client', category: 'rent' },
       { label: '让 BayBay 帮我写求租帖', type: 'postAssist', url: '/?postAssist=1&type=client&category=rent', postType: 'client', category: 'rent' },
+    ],
+    roommate: [
+      { label: '发布找室友', type: 'post', url: '/?type=client&category=rent', postType: 'client', category: 'rent' },
+      { label: '查看室友相关指南', type: 'guide', url: '/guides/bay-area-roommate-guide' },
+      { label: '让 BayBay 帮我写室友帖', type: 'postAssist', url: '/?postAssist=1&type=client&category=rent', postType: 'client', category: 'rent' },
     ],
     used: [
       { label: '看二手分类', type: 'category', url: '/category/used', category: 'used' },
@@ -3064,11 +3101,12 @@ const validateInteractiveCard = (raw) => {
 
 const GUIDE_CHAT_SHORT_INTRO = {
   rent: '刚来湾区租房，先别急着交押金。先确认预算、通勤、租约和看房方式，下面这些可以逐项核对。',
+  roommate: '找室友时，先把预算、入住时间、作息和公共区域规则说清楚，下面这张卡可以帮你快速核对。',
   used: '二手交易最重要的是先确认物品真实性、交易地点和付款方式。下面这张卡可以帮你快速检查。',
-  moving: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
-  cleaning: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
-  ride: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
-  repair: '联系本地服务前，先把时间、地点、预算和具体需求说清楚，沟通会更顺。',
+  moving: '找搬家前，先把搬出/搬入地点、楼层、物品数量和希望时间说清楚，下面可以逐项核对。',
+  cleaning: '找清洁前，先把房屋大小、清洁范围、是否深度清洁和希望时间说清楚，下面可以逐项核对。',
+  ride: '找接送前，先把出发地、目的地、时间、人数和行李数量说清楚，下面可以逐项核对。',
+  repair: '找维修前，先把故障类型、所在区域、希望上门时间和预算说清楚，下面可以逐项核对。',
 };
 
 const getGuideChatShortIntro = (category) => {
@@ -3105,6 +3143,23 @@ const buildInteractiveCards = ({ message, category }) => {
         { label: '让 BayBay 帮我写求租帖', type: 'postAssist', postType: 'client', category: 'rent' },
       ],
     };
+  } else if (cat === 'roommate') {
+    draft = {
+      id: 'roommate-checklist-v1',
+      type: 'checklist',
+      title: '找室友前先确认这些',
+      subtitle: '把预算、作息和公共区域规则说清楚，更容易找到合适的人。',
+      items: [
+        { id: 'budget', label: '预算和入住时间是否明确' },
+        { id: 'area', label: '区域和通勤是否合适' },
+        { id: 'schedule', label: '作息和访客规则是否说清' },
+        { id: 'pets', label: '宠物和公共区域使用是否一致' },
+        { id: 'lease', label: '租约、押金和分租关系是否清楚' },
+      ],
+      actions: [
+        { label: '让 BayBay 帮我写室友帖', type: 'postAssist', postType: 'client', category: 'rent' },
+      ],
+    };
   } else if (cat === 'used') {
     draft = {
       id: 'used-safety-v1',
@@ -3122,21 +3177,72 @@ const buildInteractiveCards = ({ message, category }) => {
         { label: '整理二手帖子', type: 'postAssist', postType: 'provider', category: 'used' },
       ],
     };
-  } else if (['moving', 'cleaning', 'ride', 'repair'].includes(cat)) {
+  } else if (cat === 'repair') {
     draft = {
-      id: 'local-service-safety-v1',
-      type: 'safety',
-      title: '联系服务前先确认',
-      subtitle: '把时间、地点和价格说清楚，沟通会更顺。',
+      id: 'repair-checklist-v1',
+      type: 'checklist',
+      title: '找维修前先确认这些',
+      subtitle: '把故障、地点和时间说清楚，沟通会更顺。',
       items: [
-        { id: 'time-place', label: '说明具体时间和地点' },
-        { id: 'price', label: '说明预算或期望价格' },
-        { id: 'scope', label: '说明物品数量或服务范围' },
-        { id: 'identity', label: '交易前确认对方身份' },
-        { id: 'records', label: '尽量保留聊天记录' },
+        { id: 'issue', label: '说明故障现象和位置' },
+        { id: 'photos', label: '尽量上传照片或视频' },
+        { id: 'time', label: '确认希望上门时间' },
+        { id: 'quote', label: '确认上门费和材料费' },
+        { id: 'records', label: '保留报价和聊天记录' },
       ],
       actions: [
-        { label: '让 BayBay 帮我写需求', type: 'postAssist', postType: 'client', category: cat },
+        { label: '发布维修需求', type: 'postAssist', postType: 'client', category: 'repair' },
+      ],
+    };
+  } else if (cat === 'moving') {
+    draft = {
+      id: 'moving-checklist-v1',
+      type: 'checklist',
+      title: '搬家前先确认这些',
+      subtitle: '把搬出/搬入地点和物品情况说清楚，报价会更准。',
+      items: [
+        { id: 'addresses', label: '搬出和搬入地址是否明确' },
+        { id: 'access', label: '楼层、电梯和停车是否说明' },
+        { id: 'items', label: '大件数量和是否需要拆装' },
+        { id: 'time', label: '希望搬家时间是否确定' },
+        { id: 'quote', label: '报价是否包含额外费用' },
+      ],
+      actions: [
+        { label: '发布搬家需求', type: 'postAssist', postType: 'client', category: 'moving' },
+      ],
+    };
+  } else if (cat === 'cleaning') {
+    draft = {
+      id: 'cleaning-checklist-v1',
+      type: 'checklist',
+      title: '找清洁前先确认这些',
+      subtitle: '把房屋大小和清洁范围说清楚，沟通会更顺。',
+      items: [
+        { id: 'size', label: '房屋大小和房间数量' },
+        { id: 'scope', label: '日常清洁还是深度清洁' },
+        { id: 'tools', label: '是否需要自备工具或清洁剂' },
+        { id: 'time', label: '希望上门时间' },
+        { id: 'quote', label: '报价是否包含额外区域' },
+      ],
+      actions: [
+        { label: '发布清洁需求', type: 'postAssist', postType: 'client', category: 'cleaning' },
+      ],
+    };
+  } else if (cat === 'ride') {
+    draft = {
+      id: 'ride-safety-v1',
+      type: 'safety',
+      title: '找接送前先确认这些',
+      subtitle: '把路线、时间和人数说清楚，安排会更稳。',
+      items: [
+        { id: 'route', label: '出发地和目的地是否明确' },
+        { id: 'time', label: '出发时间和是否需准时到达' },
+        { id: 'passengers', label: '人数和行李数量' },
+        { id: 'price', label: '报价和付款方式是否说清' },
+        { id: 'records', label: '保留聊天记录和确认信息' },
+      ],
+      actions: [
+        { label: '发布接送需求', type: 'postAssist', postType: 'client', category: 'ride' },
       ],
     };
   }
@@ -3147,10 +3253,53 @@ const buildInteractiveCards = ({ message, category }) => {
   return validated ? [validated] : [];
 };
 
+const buildGuideChatPayload = (message, category, answerOverride) => {
+  const intent = inferBayBayIntent(message, '');
+  let answer = answerOverride || getGuideChatFallbackAnswer(intent);
+  answer = clampStr(answer, 180);
+  if (answer.length < 10) {
+    answer = getGuideChatFallbackAnswer(intent);
+  }
+
+  const safetyNote = '';
+  let suggestedGuides = pickSuggestedGuides(message, category);
+  if (suggestedGuides.length === 0) {
+    const fallbackSlug = GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY[category] || GUIDE_CHAT_DEFAULT_SLUG_BY_CATEGORY.other;
+    const fallback = GUIDE_CATALOG.find((g) => g.slug === fallbackSlug) || GUIDE_CATALOG[0];
+    suggestedGuides = [{ title: fallback.title, slug: fallback.slug, url: fallback.url }];
+  }
+
+  let suggestedActions = buildSuggestedActions(category);
+  if (suggestedActions.length < 2) {
+    suggestedActions = buildSuggestedActions('other');
+  }
+
+  const interactiveCards = buildInteractiveCards({ message, category });
+
+  if (interactiveCards.length > 0) {
+    const shortIntro = getGuideChatShortIntro(category);
+    if (shortIntro) {
+      answer = shortIntro;
+    } else if (answer.length > 120) {
+      answer = shortenGuideChatAnswer(answer, 120);
+    }
+  }
+
+  return {
+    ok: true,
+    answer,
+    suggestedGuides: suggestedGuides.slice(0, 3),
+    suggestedActions: suggestedActions.slice(0, 3),
+    safetyNote,
+    interactiveCards,
+  };
+};
+
 const normalizeGuideChatResponse = (aiRaw, message, category) => {
+  const intent = inferBayBayIntent(message, '');
   let answer = clampStr(aiRaw?.answer, 180);
   if (answer.length < 10) {
-    answer = '在 BAYLINK，你可以先看相关指南了解常见注意事项，再按分类浏览或发布信息。若有具体需求，也可以用 BayBay 发帖助手帮你整理帖子。';
+    answer = getGuideChatFallbackAnswer(intent);
   }
 
   const safetyNote = clampStr(aiRaw?.safetyNote, 60);
@@ -3187,10 +3336,11 @@ const normalizeGuideChatResponse = (aiRaw, message, category) => {
   };
 };
 
-const callOpenAiGuideChat = async ({ message, category, currentPath }) => {
+const callOpenAiGuideChat = async ({ message, category, intent, currentPath }) => {
   const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
   const userPayload = {
     message,
+    inferredIntent: intent,
     inferredCategory: category,
     currentPath: currentPath || '/',
   };
@@ -3248,15 +3398,20 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     const message = normalized.message;
     const categoryHint = req.body?.context?.categoryHint;
     const currentPath = String(req.body?.context?.currentPath ?? '/').trim() || '/';
-    const category = inferGuideChatCategory(message, categoryHint);
+    const intent = inferBayBayIntent(message, categoryHint);
+    const category = intentToGuideCategory(intent);
 
-    const aiRaw = await callOpenAiGuideChat({ message, category, currentPath });
+    const aiRaw = await callOpenAiGuideChat({ message, category, intent, currentPath });
     const payload = normalizeGuideChatResponse(aiRaw, message, category);
 
     return res.json(payload);
   } catch (e) {
     console.error('POST /api/ai/guide-chat error:', e.message);
-    return res.status(502).json({ ok: false, error: 'AI 回答失败，请稍后再试' });
+    const message = String(req.body?.message ?? '').trim();
+    const categoryHint = req.body?.context?.categoryHint;
+    const category = inferGuideChatCategory(message, categoryHint);
+    const payload = buildGuideChatPayload(message, category);
+    return res.json(payload);
   }
 });
 
