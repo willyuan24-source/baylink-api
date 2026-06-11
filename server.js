@@ -1266,7 +1266,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 
 app.get('/api/users/:id', async (req, res) => {
   const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode'); // ✨ 安全：排除敏感字段
-  if (!user) return res.status(404).json({ error: 'Not found' });
+  if (!user) return res.status(404).json({ error: '用户不存在' });
   res.json({
     id: user.id,
     nickname: user.nickname,
@@ -1354,7 +1354,7 @@ app.delete('/api/users/:userId/block', authenticateToken, async (req, res) => {
 app.get('/api/users/:id/public', async (req, res) => {
   try {
     const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
-    if (!user) return res.status(404).json({ error: 'Not found' });
+    if (!user) return res.status(404).json({ error: '用户不存在' });
     const viewerId = getCurrentUserIdFromRequest(req);
     const blockRelation = viewerId ? await getBlockRelation(viewerId, user.id) : {};
     const publicPostQuery = { authorId: user.id, isDeleted: false, adminHidden: { $ne: true } };
@@ -1883,8 +1883,8 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: targetCheck.error });
     }
 
-    if (targetType === 'user' && targetCheck.targetId === req.user.id) {
-      return res.status(400).json({ error: '不能举报自己' });
+    if (targetCheck.targetUserId === req.user.id) {
+      return res.status(400).json({ error: '不能举报自己的内容' });
     }
 
     const since = Date.now() - REPORT_DUPLICATE_WINDOW_MS;
