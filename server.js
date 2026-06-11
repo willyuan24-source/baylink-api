@@ -61,8 +61,10 @@ const twilioClient = (TWILIO_SID && TWILIO_TOKEN) ? twilio(TWILIO_SID, TWILIO_TO
 
 if (!twilioClient) console.warn("⚠️ 警告: 未配置 Twilio，手机验证将使用模拟模式 (查看 Server Log)。");
 
-const JWT_SECRET = process.env.JWT_SECRET; 
-const MONGO_URI = process.env.MONGO_URI; 
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = '7d';
+const MONGO_URI = process.env.MONGO_URI;
+const SEARCH_KEYWORD_MAX_LENGTH = 80; 
 
 app.use(cors({ origin: corsOriginCheck, credentials: true }));
 app.use(express.json({ limit: '50mb' }));
@@ -407,6 +409,34 @@ const requireAdmin = (req, res, next) => {
 const clampReportDetail = (value) => {
   const detail = String(value ?? '').trim();
   return detail.length > 500 ? detail.slice(0, 500) : detail;
+};
+
+function escapeRegex(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const normalizeSearchKeyword = (keyword) => {
+  const trimmed = String(keyword || '').trim();
+  if (trimmed.length > SEARCH_KEYWORD_MAX_LENGTH) {
+    return { ok: false, error: '搜索关键词过长' };
+  }
+  return { ok: true, keyword: trimmed };
+};
+
+const parsePublicFeedPagination = (query, defaultLimit = 10) => {
+  const pageRaw = parseInt(query.page, 10);
+  const limitRaw = parseInt(query.limit, 10);
+  const page = Number.isFinite(pageRaw) && pageRaw >= 1 ? pageRaw : 1;
+  const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : defaultLimit;
+  return { page, limit, skip: (page - 1) * limit };
+};
+
+const formatContactTypeLabel = (contactType) => {
+  const t = String(contactType || '').trim().toLowerCase();
+  if (t === 'wechat') return '微信';
+  if (t === 'phone') return '电话';
+  if (t === 'email') return '邮箱';
+  return '联系方式';
 };
 
 const isAdminUserId = async (userId) => {
@@ -1089,9 +1119,12 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ error: '请先登录' });
   jwt.verify(token, JWT_SECRET, async (err, userPayload) => {
-    if (err) return res.status(401).json({ error: '登录已过期，请重新登录' });
+    if (err) return res.status(401).json({ error: '登录已过期，请重新登录。' });
     const dbUser = await User.findOne({ id: userPayload.id });
     if (!dbUser || dbUser.isBanned) return res.status(403).json({ error: '账号不可用或已被限制' });
+    if (dbUser.passwordChangedAt && userPayload.iat && userPayload.iat * 1000 < dbUser.passwordChangedAt) {
+      return res.status(401).json({ error: '登录已过期，请重新登录。' });
+    }
     req.user = dbUser;
     next();
   });
@@ -1144,7 +1177,7 @@ app.post('/api/auth/register', async (req, res) => {
       contactType, contactValue, bio: '这个邻居很懒，什么也没写~',
       socialLinks: { linkedin: '', instagram: '' }
     });
-    const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
+    const token = jwt.sign({ id: newUser.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     res.json({ ...sanitizeUserForClient(newUser), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
   });
@@ -1173,7 +1206,7 @@ app.post('/api/auth/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
     
-    const token = jwt.sign({ id: user.id }, JWT_SECRET);
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     res.json({ ...sanitizeUserForClient(user), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
 });
@@ -1553,7 +1586,8 @@ const formatPostsResponseList = async (posts, currentUserId) => {
 
 app.get('/api/posts/featured', async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit, 10);
+    const limitRaw = parseInt(req.query.limit, 10);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 0;
     const currentUserId = getCurrentUserIdFromRequest(req);
     let query = { isDeleted: false, isFeatured: true };
     await applyPublicPostVisibility(query, currentUserId);
@@ -1584,12 +1618,17 @@ app.get('/api/posts/:id', async (req, res) => {
 
 app.get('/api/posts', async (req, res) => {
   try {
-    const { type, keyword, page = 1, limit = 10 } = req.query;
+    const { type, keyword } = req.query;
+    const { page, limit, skip } = parsePublicFeedPagination(req.query, 10);
     let query = { isDeleted: false };
     if (type) query.type = type;
     if (keyword) {
-        const regex = new RegExp(keyword, 'i');
+      const kwResult = normalizeSearchKeyword(keyword);
+      if (!kwResult.ok) return res.status(400).json({ error: kwResult.error });
+      if (kwResult.keyword) {
+        const regex = new RegExp(escapeRegex(kwResult.keyword), 'i');
         query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
+      }
     }
     const currentUserId = getCurrentUserIdFromRequest(req);
     await applyPublicPostVisibility(query, currentUserId);
@@ -1597,8 +1636,7 @@ app.get('/api/posts', async (req, res) => {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
       if (blockedIds.length) query.authorId = { $nin: blockedIds };
     }
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
+    const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
     const totalCount = await Post.countDocuments(query);
     const formatted = await formatPostsResponseList(posts, currentUserId);
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
@@ -1771,14 +1809,8 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: '更新失败，请稍后再试' }); }
 });
 
-app.post('/api/posts/:id/report', authenticateToken, async (req, res) => {
-  try {
-    const post = await Post.findOne({ id: req.params.id });
-    if (!post) return res.sendStatus(404);
-    const hasReported = post.reports.some(r => r.reporterId === req.user.id);
-    if (!hasReported) { post.reports.push({ reporterId: req.user.id, reason: req.body.reason || 'spam', createdAt: Date.now() }); await post.save(); }
-    res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: '举报失败，请稍后再试' }); }
+app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
+  res.status(410).json({ error: '请使用新版举报入口。' });
 });
 
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
@@ -1819,8 +1851,44 @@ app.get('/api/content/:key', async (req, res) => { const content = await Content
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
 
 app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar, isPhoneVerified: otherUser?.isPhoneVerified, isOfficialVerified: otherUser?.isOfficialVerified } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
-app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => { const { targetUserId } = req.body; let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } }); if (!conv) { conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] }); } res.json(conv); });
-app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) => { const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 }); res.json(msgs); });
+app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => {
+  try {
+    const { targetUserId } = req.body;
+    if (!targetUserId || targetUserId === req.user.id) {
+      return res.status(400).json({ error: '无法与自己创建会话。' });
+    }
+    const targetUser = await User.findOne({ id: targetUserId }).select('id').lean();
+    if (!targetUser) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+    let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } });
+    if (!conv) {
+      try {
+        await assertCanMessage(req.user.id, targetUserId);
+      } catch (blockErr) {
+        return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
+      }
+      conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] });
+    }
+    res.json(conv);
+  } catch (e) {
+    console.error('POST /api/conversations/open-or-create error:', e.message);
+    res.status(500).json({ error: '操作失败，请稍后再试' });
+  }
+});
+app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ id: req.params.id });
+    if (!conv || !conv.userIds.includes(req.user.id)) {
+      return res.status(404).json({ error: '会话不存在。' });
+    }
+    const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 });
+    res.json(msgs);
+  } catch (e) {
+    console.error('GET /api/conversations/:id/messages error:', e.message);
+    res.status(500).json({ error: '加载失败，请稍后再试' });
+  }
+});
 app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => {
   try {
     const conv = await Conversation.findOne({ id: req.params.id });
@@ -1840,7 +1908,7 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
     const { type, content } = req.body;
     let finalContent = content;
     if (type === 'contact-share') {
-      finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`;
+      finalContent = `我的联系方式：${formatContactTypeLabel(req.user.contactType)} ${req.user.contactValue || ''}`;
     }
     const msg = await Message.create({
       id: Date.now().toString(),
