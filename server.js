@@ -243,7 +243,11 @@ const PostSchema = new mongoose.Schema({
   updatedAt: { type: Number },
   isFeatured: { type: Boolean, default: false },
   featuredAt: { type: Date },
-  featuredBy: { type: String }
+  featuredBy: { type: String },
+  adminHidden: { type: Boolean, default: false },
+  adminHiddenAt: { type: Number, default: null },
+  adminHiddenBy: { type: String, default: '' },
+  adminHiddenReason: { type: String, default: '' },
 });
 
 const AdSchema = new mongoose.Schema({ id: String, title: String, content: String, imageUrl: String, isVerified: { type: Boolean, default: true } });
@@ -252,18 +256,29 @@ const MessageSchema = new mongoose.Schema({ id: String, conversationId: String, 
 const ContentSchema = new mongoose.Schema({ key: { type: String, unique: true }, value: String });
 
 const ReportSchema = new mongoose.Schema({
-  reporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  targetType: { type: String, enum: ['post', 'user', 'message'], required: true },
+  id: { type: String, unique: true },
+  reporterId: String,
+  reporterNickname: String,
+  targetType: { type: String, enum: ['post', 'user'], required: true },
   targetId: { type: String, required: true },
-  reason: { type: String, enum: ['scam', 'false_info', 'harassment', 'spam', 'other'], required: true },
-  note: { type: String, maxlength: 500, default: '' },
+  targetPostId: { type: String, default: '' },
+  targetUserId: { type: String, default: '' },
+  reason: {
+    type: String,
+    enum: ['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other'],
+    required: true,
+  },
+  detail: { type: String, default: '' },
   status: { type: String, enum: ['open', 'reviewed', 'dismissed'], default: 'open' },
-  createdAt: { type: Date, default: Date.now },
-  reviewedAt: { type: Date },
-  reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  adminNote: { type: String, default: '' },
+  createdAt: { type: Number, default: Date.now },
+  updatedAt: { type: Number, default: Date.now },
+  reviewedAt: { type: Number, default: null },
+  reviewedBy: { type: String, default: '' },
 });
-ReportSchema.index({ reporter: 1, targetType: 1, targetId: 1 });
+ReportSchema.index({ reporterId: 1, targetType: 1, targetId: 1, createdAt: -1 });
 ReportSchema.index({ status: 1, createdAt: -1 });
+ReportSchema.index({ targetType: 1, status: 1, createdAt: -1 });
 
 const BlockSchema = new mongoose.Schema({
   blocker: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -281,10 +296,11 @@ const Content = mongoose.model('Content', ContentSchema);
 const Report = mongoose.model('Report', ReportSchema);
 const Block = mongoose.model('Block', BlockSchema);
 
-const REPORT_TARGET_TYPES = new Set(['post', 'user', 'message']);
-const REPORT_REASONS = new Set(['scam', 'false_info', 'harassment', 'spam', 'other']);
-const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
-const REPORT_ADMIN_STATUSES = new Set(['reviewed', 'dismissed']);
+const REPORT_TARGET_TYPES = new Set(['post', 'user']);
+const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
+const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed', 'all']);
+const REPORT_ADMIN_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
+const REPORT_DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 const reportRateByUser = new Map();
 
@@ -341,9 +357,21 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-const clampReportNote = (value) => {
-  const note = String(value ?? '').trim();
-  return note.length > 500 ? note.slice(0, 500) : note;
+const clampReportDetail = (value) => {
+  const detail = String(value ?? '').trim();
+  return detail.length > 500 ? detail.slice(0, 500) : detail;
+};
+
+const isAdminUserId = async (userId) => {
+  if (!userId) return false;
+  const user = await User.findOne({ id: userId }).select('role').lean();
+  return user?.role === 'admin';
+};
+
+const applyPublicPostVisibility = async (query, viewerUserId) => {
+  if (!(await isAdminUserId(viewerUserId))) {
+    query.adminHidden = { $ne: true };
+  }
 };
 
 const getBlockedAuthorIdsForUser = async (userDoc) => {
@@ -357,19 +385,14 @@ const resolveReportTarget = async (targetType, targetId) => {
   if (!id) return { ok: false, error: '举报目标无效' };
   try {
     if (targetType === 'post') {
-      const post = await Post.findOne({ id, isDeleted: false }).select('id').lean();
+      const post = await Post.findOne({ id, isDeleted: false }).select('id authorId').lean();
       if (!post) return { ok: false, error: '帖子不存在或已删除' };
-      return { ok: true, targetId: id };
+      return { ok: true, targetId: id, targetPostId: id, targetUserId: post.authorId || '' };
     }
     if (targetType === 'user') {
       const user = await User.findOne({ id }).select('id').lean();
       if (!user) return { ok: false, error: '用户不存在' };
-      return { ok: true, targetId: id };
-    }
-    if (targetType === 'message') {
-      const msg = await Message.findOne({ id }).select('id').lean();
-      if (!msg) return { ok: false, error: '消息不存在' };
-      return { ok: true, targetId: id };
+      return { ok: true, targetId: id, targetPostId: '', targetUserId: id };
     }
   } catch (_) {
     return { ok: false, error: '举报目标无效' };
@@ -377,18 +400,60 @@ const resolveReportTarget = async (targetType, targetId) => {
   return { ok: false, error: '举报目标无效' };
 };
 
-const formatAdminReport = (doc) => ({
-  id: doc._id.toString(),
-  reporter: doc.reporter
-    ? { id: doc.reporter.id, nickname: doc.reporter.nickname }
-    : null,
-  targetType: doc.targetType,
-  targetId: doc.targetId,
-  reason: doc.reason,
-  note: doc.note || '',
-  status: doc.status,
-  createdAt: doc.createdAt,
-});
+const formatTrustUserSummary = (user) => {
+  if (!user) return null;
+  return {
+    id: user.id,
+    nickname: user.nickname,
+    avatar: user.avatar,
+    isPhoneVerified: !!user.isPhoneVerified,
+    isOfficialVerified: !!user.isOfficialVerified,
+  };
+};
+
+const formatAdminPostSummary = (post) => {
+  if (!post) return null;
+  return {
+    id: post.id,
+    title: post.title,
+    category: post.category,
+    area: post.city || '',
+    createdAt: post.createdAt,
+    adminHidden: !!post.adminHidden,
+  };
+};
+
+const formatAdminReportsList = async (docs) => {
+  const userIds = [...new Set(docs.flatMap((d) => [d.targetUserId, d.reporterId]).filter(Boolean))];
+  const postIds = [...new Set(docs.map((d) => d.targetPostId).filter(Boolean))];
+
+  const [users, posts] = await Promise.all([
+    userIds.length
+      ? User.find({ id: { $in: userIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified').lean()
+      : [],
+    postIds.length
+      ? Post.find({ id: { $in: postIds } }).select('id title category city createdAt adminHidden').lean()
+      : [],
+  ]);
+
+  const userById = new Map(users.map((u) => [u.id, u]));
+  const postById = new Map(posts.map((p) => [p.id, p]));
+
+  return docs.map((doc) => ({
+    id: doc.id || String(doc._id),
+    targetType: doc.targetType,
+    targetId: doc.targetId,
+    reason: doc.reason,
+    detail: doc.detail || '',
+    status: doc.status,
+    adminNote: doc.adminNote || '',
+    createdAt: doc.createdAt,
+    reviewedAt: doc.reviewedAt ?? null,
+    reporter: formatTrustUserSummary(userById.get(doc.reporterId)),
+    targetUser: formatTrustUserSummary(userById.get(doc.targetUserId)),
+    targetPost: formatAdminPostSummary(postById.get(doc.targetPostId)),
+  }));
+};
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validatePasswordStrength = (password) =>
@@ -1015,8 +1080,9 @@ app.get('/api/users/:id/public', async (req, res) => {
   try {
     const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
     if (!user) return res.status(404).json({ error: 'Not found' });
-    const postCount = await Post.countDocuments({ authorId: user.id, isDeleted: false });
-    const recent = await Post.find({ authorId: user.id, isDeleted: false }).sort({ createdAt: -1 }).limit(3).lean();
+    const publicPostQuery = { authorId: user.id, isDeleted: false, adminHidden: { $ne: true } };
+    const postCount = await Post.countDocuments(publicPostQuery);
+    const recent = await Post.find(publicPostQuery).sort({ createdAt: -1 }).limit(3).lean();
     res.json({
       id: user.id,
       nickname: user.nickname,
@@ -1218,6 +1284,7 @@ app.get('/api/posts/featured', async (req, res) => {
     const limit = parseInt(req.query.limit, 10);
     const currentUserId = getCurrentUserIdFromRequest(req);
     let query = { isDeleted: false, isFeatured: true };
+    await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
       const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
       if (viewer) {
@@ -1238,6 +1305,9 @@ app.get('/api/posts/:id', async (req, res) => {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
     if (!post) return res.status(404).json({ error: 'Post not found' });
     const currentUserId = getCurrentUserIdFromRequest(req);
+    if (post.adminHidden && !(await isAdminUserId(currentUserId))) {
+      return res.status(404).json({ error: '内容不存在或已被移除。' });
+    }
     const authorById = await fetchAuthorTrustByIds([post]);
     res.json(formatPostResponse(post, currentUserId, authorById));
   } catch (e) { res.status(500).json({ error: 'Fetch Failed' }); }
@@ -1253,6 +1323,7 @@ app.get('/api/posts', async (req, res) => {
         query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
     }
     const currentUserId = getCurrentUserIdFromRequest(req);
+    await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
       const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
       if (viewer) {
@@ -1497,49 +1568,64 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
 app.post('/api/reports', authenticateToken, async (req, res) => {
   try {
     if (!checkReportRateLimit(req.user.id)) {
-      return res.status(429).json({ ok: false, error: '举报过于频繁，请 60 秒后再试' });
+      return res.status(429).json({ error: '举报过于频繁，请稍后再试' });
     }
 
     const targetType = String(req.body?.targetType ?? '').trim();
     const reason = String(req.body?.reason ?? '').trim();
-    const note = clampReportNote(req.body?.note);
+    const detail = clampReportDetail(req.body?.detail ?? req.body?.note);
 
     if (!REPORT_TARGET_TYPES.has(targetType)) {
-      return res.status(400).json({ ok: false, error: '举报类型无效' });
+      return res.status(400).json({ error: '举报类型无效' });
     }
     if (!REPORT_REASONS.has(reason)) {
-      return res.status(400).json({ ok: false, error: '举报原因无效' });
+      return res.status(400).json({ error: '举报原因无效' });
     }
 
     const targetCheck = await resolveReportTarget(targetType, req.body?.targetId);
     if (!targetCheck.ok) {
-      return res.status(404).json({ ok: false, error: targetCheck.error });
+      return res.status(404).json({ error: targetCheck.error });
     }
 
-    const existingOpen = await Report.findOne({
-      reporter: req.user._id,
+    if (targetType === 'user' && targetCheck.targetId === req.user.id) {
+      return res.status(400).json({ error: '不能举报自己' });
+    }
+
+    const since = Date.now() - REPORT_DUPLICATE_WINDOW_MS;
+    const existingRecent = await Report.findOne({
+      reporterId: req.user.id,
       targetType,
       targetId: targetCheck.targetId,
-      status: 'open',
-    }).select('_id').lean();
+      createdAt: { $gte: since },
+    }).select('id').lean();
 
-    if (existingOpen) {
-      return res.json({ ok: true, reportId: existingOpen._id.toString(), message: '你已举报过' });
+    if (existingRecent) {
+      return res.status(400).json({ error: '你已经举报过该内容，我们会尽快处理。' });
     }
 
+    const now = Date.now();
     const report = await Report.create({
-      reporter: req.user._id,
+      id: now.toString(),
+      reporterId: req.user.id,
+      reporterNickname: req.user.nickname,
       targetType,
       targetId: targetCheck.targetId,
+      targetPostId: targetCheck.targetPostId || '',
+      targetUserId: targetCheck.targetUserId || '',
       reason,
-      note,
+      detail,
       status: 'open',
+      adminNote: '',
+      createdAt: now,
+      updatedAt: now,
+      reviewedAt: null,
+      reviewedBy: '',
     });
 
-    return res.json({ ok: true, reportId: report._id.toString() });
+    return res.json({ success: true, message: '举报已提交，感谢你的反馈。', id: report.id });
   } catch (e) {
     console.error('POST /api/reports error:', e.message);
-    return res.status(500).json({ ok: false, error: '举报提交失败，请稍后再试' });
+    return res.status(500).json({ error: '举报提交失败，请稍后再试' });
   }
 });
 
@@ -1678,54 +1764,91 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
 
 app.get('/api/admin/reports', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const status = String(req.query.status ?? '').trim();
+    const status = String(req.query.status ?? 'open').trim();
+    const type = String(req.query.type ?? 'all').trim();
     const limitRaw = parseInt(req.query.limit, 10);
     const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 50;
 
     const filter = {};
-    if (status && REPORT_STATUSES.has(status)) filter.status = status;
+    if (status && status !== 'all' && REPORT_STATUSES.has(status)) filter.status = status;
+    if (type && type !== 'all' && REPORT_TARGET_TYPES.has(type)) filter.targetType = type;
 
     const reports = await Report.find(filter)
       .sort({ createdAt: -1 })
       .limit(limit)
-      .populate('reporter', 'id nickname')
       .lean();
 
-    return res.json({ ok: true, reports: reports.map(formatAdminReport) });
+    return res.json({ reports: await formatAdminReportsList(reports) });
   } catch (e) {
     console.error('GET /api/admin/reports error:', e.message);
-    return res.status(500).json({ ok: false, error: '获取举报列表失败' });
+    return res.status(500).json({ error: '获取举报列表失败' });
   }
 });
 
-app.patch('/api/admin/reports/:id', authenticateToken, requireAdmin, async (req, res) => {
+app.patch('/api/admin/reports/:reportId', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const status = String(req.body?.status ?? '').trim();
     if (!REPORT_ADMIN_STATUSES.has(status)) {
-      return res.status(400).json({ ok: false, error: '状态无效' });
+      return res.status(400).json({ error: '状态无效' });
     }
 
-    let report;
-    try {
-      report = await Report.findById(req.params.id);
-    } catch (_) {
-      return res.status(400).json({ ok: false, error: '举报记录无效' });
-    }
-
+    const report = await Report.findOne({ id: req.params.reportId });
     if (!report) {
-      return res.status(404).json({ ok: false, error: '举报记录不存在' });
+      return res.status(404).json({ error: '举报记录不存在' });
     }
 
+    const adminNote = clampReportDetail(req.body?.adminNote);
+    const now = Date.now();
     report.status = status;
-    report.reviewedAt = new Date();
-    report.reviewedBy = req.user._id;
+    report.adminNote = adminNote || report.adminNote || '';
+    report.updatedAt = now;
+    if (status === 'reviewed' || status === 'dismissed') {
+      report.reviewedAt = now;
+      report.reviewedBy = req.user.id;
+    } else {
+      report.reviewedAt = null;
+      report.reviewedBy = '';
+    }
     await report.save();
 
-    const updated = await Report.findById(report._id).populate('reporter', 'id nickname').lean();
-    return res.json({ ok: true, report: formatAdminReport(updated) });
+    const [formatted] = await formatAdminReportsList([report.toObject()]);
+    return res.json({ success: true, report: formatted });
   } catch (e) {
     console.error('PATCH /api/admin/reports error:', e.message);
-    return res.status(500).json({ ok: false, error: '更新举报状态失败' });
+    return res.status(500).json({ error: '更新举报状态失败' });
+  }
+});
+
+app.patch('/api/admin/posts/:postId/hide', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.postId, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    const reason = trimProfileString(req.body?.reason, 500) || '管理员隐藏';
+    post.adminHidden = true;
+    post.adminHiddenAt = Date.now();
+    post.adminHiddenBy = req.user.id;
+    post.adminHiddenReason = reason;
+    await post.save();
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('PATCH /api/admin/posts/:postId/hide error:', e.message);
+    return res.status(500).json({ error: '隐藏帖子失败' });
+  }
+});
+
+app.patch('/api/admin/posts/:postId/unhide', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.postId });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    post.adminHidden = false;
+    post.adminHiddenAt = null;
+    post.adminHiddenBy = '';
+    post.adminHiddenReason = '';
+    await post.save();
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('PATCH /api/admin/posts/:postId/unhide error:', e.message);
+    return res.status(500).json({ error: '恢复帖子失败' });
   }
 });
 
