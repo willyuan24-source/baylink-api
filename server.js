@@ -200,6 +200,14 @@ const UserSchema = new mongoose.Schema({
       rejectionReason: '',
     }),
   },
+  accountStatus: {
+    type: String,
+    enum: ['active', 'limited', 'suspended'],
+    default: 'active',
+  },
+  accountStatusReason: { type: String, default: '' },
+  accountStatusUpdatedAt: { type: Number, default: null },
+  accountStatusUpdatedBy: { type: String, default: '' },
   createdAt: { type: Number, default: Date.now }
 });
 
@@ -397,6 +405,32 @@ const getBlockRelation = async (viewerId, targetUserId) => {
   };
 };
 
+const ACCOUNT_STATUSES = new Set(['active', 'limited', 'suspended']);
+
+const getAccountStatus = (user) => {
+  const status = user?.accountStatus;
+  if (ACCOUNT_STATUSES.has(status)) return status;
+  return 'active';
+};
+
+const assertAccountCanPost = (user) => {
+  if (user?.role === 'admin') return null;
+  const status = getAccountStatus(user);
+  if (status === 'limited' || status === 'suspended') {
+    return '你的账号当前受到限制，暂时无法发布内容。';
+  }
+  return null;
+};
+
+const assertAccountCanMessage = (user) => {
+  if (user?.role === 'admin') return null;
+  const status = getAccountStatus(user);
+  if (status === 'limited' || status === 'suspended') {
+    return '你的账号当前受到限制，暂时无法发送私信。';
+  }
+  return null;
+};
+
 const assertCanMessage = async (senderId, recipientId) => {
   const rel = await getBlockRelation(senderId, recipientId);
   if (rel.viewerHasBlockedUser) {
@@ -445,6 +479,22 @@ const formatTrustUserSummary = (user) => {
     avatar: user.avatar,
     isPhoneVerified: !!user.isPhoneVerified,
     isOfficialVerified: !!user.isOfficialVerified,
+    accountStatus: getAccountStatus(user),
+  };
+};
+
+const formatAdminUserSummary = (user) => {
+  if (!user) return null;
+  return {
+    id: user.id,
+    nickname: user.nickname,
+    avatar: user.avatar,
+    isPhoneVerified: !!user.isPhoneVerified,
+    isOfficialVerified: !!user.isOfficialVerified,
+    accountStatus: getAccountStatus(user),
+    accountStatusReason: user.accountStatusReason || '',
+    accountStatusUpdatedAt: user.accountStatusUpdatedAt ?? null,
+    accountStatusUpdatedBy: user.accountStatusUpdatedBy || '',
   };
 };
 
@@ -466,7 +516,7 @@ const formatAdminReportsList = async (docs) => {
 
   const [users, posts] = await Promise.all([
     userIds.length
-      ? User.find({ id: { $in: userIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified').lean()
+      ? User.find({ id: { $in: userIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified accountStatus accountStatusReason accountStatusUpdatedAt accountStatusUpdatedBy').lean()
       : [],
     postIds.length
       ? Post.find({ id: { $in: postIds } }).select('id title category city createdAt adminHidden').lean()
@@ -487,7 +537,7 @@ const formatAdminReportsList = async (docs) => {
     createdAt: doc.createdAt,
     reviewedAt: doc.reviewedAt ?? null,
     reporter: formatTrustUserSummary(userById.get(doc.reporterId)),
-    targetUser: formatTrustUserSummary(userById.get(doc.targetUserId)),
+    targetUser: formatAdminUserSummary(userById.get(doc.targetUserId)),
     targetPost: formatAdminPostSummary(postById.get(doc.targetPostId)),
   }));
 };
@@ -680,6 +730,9 @@ const SENSITIVE_USER_FIELDS = [
   'phoneVerificationLastSentAt',
   'phoneNormalized',
   'phoneVerifiedAt',
+  'accountStatusReason',
+  'accountStatusUpdatedBy',
+  'accountStatusUpdatedAt',
 ];
 
 const sanitizeUserForClient = (user) => {
@@ -688,6 +741,7 @@ const sanitizeUserForClient = (user) => {
     delete obj[field];
   }
   obj.officialVerification = normalizeOfficialVerificationData(obj.officialVerification);
+  obj.accountStatus = getAccountStatus(obj);
   return obj;
 };
 
@@ -1523,6 +1577,8 @@ const processPostImageUrls = async (imageUrls) => {
 
 app.post('/api/posts', authenticateToken, async (req, res) => {
   try {
+    const accountPostErr = assertAccountCanPost(req.user);
+    if (accountPostErr) return res.status(403).json({ error: accountPostErr });
     const rateErr = await checkCreatePostRateLimit(req.user);
     if (rateErr) return res.status(rateErr.status).json({ error: rateErr.error });
     const validationErr = validatePostBody(req.body);
@@ -1659,6 +1715,8 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
     if (!conv || !conv.userIds.includes(req.user.id)) {
       return res.status(404).json({ error: '会话不存在' });
     }
+    const accountMsgErr = assertAccountCanMessage(req.user);
+    if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
     const recipientId = conv.userIds.find((uid) => uid !== req.user.id);
     if (recipientId) {
       try {
@@ -1752,6 +1810,45 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
   } catch (e) {
     console.error('POST /api/reports error:', e.message);
     return res.status(500).json({ error: '举报提交失败，请稍后再试' });
+  }
+});
+
+app.patch('/api/admin/users/:userId/account-status', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const status = String(req.body?.status ?? '').trim();
+    if (!ACCOUNT_STATUSES.has(status)) {
+      return res.status(400).json({ error: '账号状态无效' });
+    }
+    if (req.params.userId === req.user.id) {
+      return res.status(400).json({ error: '不能调整自己的账号状态' });
+    }
+
+    const user = await User.findOne({ id: req.params.userId });
+    if (!user) return res.status(404).json({ error: '用户不存在' });
+
+    const reason = trimProfileString(req.body?.reason, 300);
+    const now = Date.now();
+    user.accountStatus = status;
+    user.accountStatusReason = status === 'active' ? '' : (reason || '');
+    user.accountStatusUpdatedAt = now;
+    user.accountStatusUpdatedBy = req.user.id;
+    await user.save();
+
+    const sanitized = sanitizeUserForClient(user);
+    return res.json({
+      success: true,
+      user: {
+        id: sanitized.id,
+        nickname: sanitized.nickname,
+        avatar: sanitized.avatar,
+        accountStatus: sanitized.accountStatus,
+        isPhoneVerified: !!sanitized.isPhoneVerified,
+        isOfficialVerified: !!sanitized.isOfficialVerified,
+      },
+    });
+  } catch (e) {
+    console.error('PATCH /api/admin/users/:userId/account-status error:', e.message);
+    return res.status(500).json({ error: '更新账号状态失败' });
   }
 });
 
