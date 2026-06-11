@@ -280,12 +280,14 @@ ReportSchema.index({ reporterId: 1, targetType: 1, targetId: 1, createdAt: -1 })
 ReportSchema.index({ status: 1, createdAt: -1 });
 ReportSchema.index({ targetType: 1, status: 1, createdAt: -1 });
 
-const BlockSchema = new mongoose.Schema({
-  blocker: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  blockedUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  createdAt: { type: Date, default: Date.now },
+const UserBlockSchema = new mongoose.Schema({
+  blockerId: { type: String, required: true },
+  blockedUserId: { type: String, required: true },
+  reason: { type: String, default: '' },
+  createdAt: { type: Number, default: Date.now },
+  updatedAt: { type: Number, default: Date.now },
 });
-BlockSchema.index({ blocker: 1, blockedUser: 1 }, { unique: true });
+UserBlockSchema.index({ blockerId: 1, blockedUserId: 1 }, { unique: true });
 
 const User = mongoose.model('User', UserSchema);
 const Post = mongoose.model('Post', PostSchema);
@@ -294,7 +296,7 @@ const Conversation = mongoose.model('Conversation', ConversationSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
 const Report = mongoose.model('Report', ReportSchema);
-const Block = mongoose.model('Block', BlockSchema);
+const UserBlock = mongoose.model('UserBlock', UserBlockSchema);
 
 const REPORT_TARGET_TYPES = new Set(['post', 'user']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
@@ -374,10 +376,45 @@ const applyPublicPostVisibility = async (query, viewerUserId) => {
   }
 };
 
-const getBlockedAuthorIdsForUser = async (userDoc) => {
-  if (!userDoc?._id) return [];
-  const blocks = await Block.find({ blocker: userDoc._id }).populate('blockedUser', 'id').lean();
-  return blocks.map((b) => b.blockedUser?.id).filter(Boolean);
+const getBlockedAuthorIdsForUser = async (userId) => {
+  const id = typeof userId === 'object' ? userId?.id : userId;
+  if (!id) return [];
+  const blocks = await UserBlock.find({ blockerId: id }).select('blockedUserId').lean();
+  return blocks.map((b) => b.blockedUserId).filter(Boolean);
+};
+
+const getBlockRelation = async (viewerId, targetUserId) => {
+  if (!viewerId || !targetUserId || viewerId === targetUserId) {
+    return { viewerHasBlockedUser: false, viewerIsBlockedByUser: false };
+  }
+  const [blockedByViewer, blockedByTarget] = await Promise.all([
+    UserBlock.findOne({ blockerId: viewerId, blockedUserId: targetUserId }).select('_id').lean(),
+    UserBlock.findOne({ blockerId: targetUserId, blockedUserId: viewerId }).select('_id').lean(),
+  ]);
+  return {
+    viewerHasBlockedUser: !!blockedByViewer,
+    viewerIsBlockedByUser: !!blockedByTarget,
+  };
+};
+
+const assertCanMessage = async (senderId, recipientId) => {
+  const rel = await getBlockRelation(senderId, recipientId);
+  if (rel.viewerHasBlockedUser) {
+    const err = new Error('你已屏蔽该用户，取消屏蔽后才能发送消息。');
+    err.statusCode = 400;
+    throw err;
+  }
+  if (rel.viewerIsBlockedByUser) {
+    const err = new Error('暂时无法向该用户发送消息。');
+    err.statusCode = 403;
+    throw err;
+  }
+};
+
+const getCurrentUserIdFromRequest = (req) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return null;
+  try { return jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch (e) { return null; }
 };
 
 const resolveReportTarget = async (targetType, targetId) => {
@@ -1076,10 +1113,84 @@ app.get('/api/users/:id', async (req, res) => {
   });
 });
 
+app.get('/api/users/me/blocks', authenticateToken, async (req, res) => {
+  try {
+    const blocks = await UserBlock.find({ blockerId: req.user.id }).sort({ createdAt: -1 }).lean();
+    const userIds = [...new Set(blocks.map((b) => b.blockedUserId).filter(Boolean))];
+    const users = userIds.length
+      ? await User.find({ id: { $in: userIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified').lean()
+      : [];
+    const userById = new Map(users.map((u) => [u.id, u]));
+    return res.json({
+      blocks: blocks.map((b) => {
+        const u = userById.get(b.blockedUserId);
+        if (!u) return null;
+        return {
+          id: u.id,
+          nickname: u.nickname,
+          avatar: u.avatar,
+          isPhoneVerified: !!u.isPhoneVerified,
+          isOfficialVerified: !!u.isOfficialVerified,
+          blockedAt: b.createdAt,
+        };
+      }).filter(Boolean),
+    });
+  } catch (e) {
+    console.error('GET /api/users/me/blocks error:', e.message);
+    return res.status(500).json({ error: '获取屏蔽列表失败' });
+  }
+});
+
+app.post('/api/users/:userId/block', authenticateToken, async (req, res) => {
+  try {
+    const blockedUserId = String(req.params.userId ?? '').trim();
+    if (!blockedUserId) {
+      return res.status(400).json({ error: '请提供要屏蔽的用户' });
+    }
+    if (blockedUserId === req.user.id) {
+      return res.status(400).json({ error: '不能屏蔽自己' });
+    }
+    const blockedUser = await User.findOne({ id: blockedUserId }).select('id').lean();
+    if (!blockedUser) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+    const now = Date.now();
+    await UserBlock.findOneAndUpdate(
+      { blockerId: req.user.id, blockedUserId },
+      {
+        $set: { updatedAt: now, reason: trimProfileString(req.body?.reason, 200) },
+        $setOnInsert: { blockerId: req.user.id, blockedUserId, createdAt: now },
+      },
+      { upsert: true, new: true },
+    );
+    return res.json({ success: true, message: '已屏蔽该用户。' });
+  } catch (e) {
+    if (e?.code === 11000) return res.json({ success: true, message: '已屏蔽该用户。' });
+    console.error('POST /api/users/:userId/block error:', e.message);
+    return res.status(500).json({ error: '屏蔽失败，请稍后再试' });
+  }
+});
+
+app.delete('/api/users/:userId/block', authenticateToken, async (req, res) => {
+  try {
+    const blockedUserId = String(req.params.userId ?? '').trim();
+    if (!blockedUserId) {
+      return res.status(400).json({ error: '请提供要取消屏蔽的用户' });
+    }
+    await UserBlock.deleteOne({ blockerId: req.user.id, blockedUserId });
+    return res.json({ success: true, message: '已取消屏蔽。' });
+  } catch (e) {
+    console.error('DELETE /api/users/:userId/block error:', e.message);
+    return res.status(500).json({ error: '取消屏蔽失败，请稍后再试' });
+  }
+});
+
 app.get('/api/users/:id/public', async (req, res) => {
   try {
     const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
     if (!user) return res.status(404).json({ error: 'Not found' });
+    const viewerId = getCurrentUserIdFromRequest(req);
+    const blockRelation = viewerId ? await getBlockRelation(viewerId, user.id) : {};
     const publicPostQuery = { authorId: user.id, isDeleted: false, adminHidden: { $ne: true } };
     const postCount = await Post.countDocuments(publicPostQuery);
     const recent = await Post.find(publicPostQuery).sort({ createdAt: -1 }).limit(3).lean();
@@ -1096,6 +1207,7 @@ app.get('/api/users/:id/public', async (req, res) => {
       ...(formatPublicOfficialVerification(user)
         ? { officialVerification: formatPublicOfficialVerification(user) }
         : {}),
+      ...(viewerId ? blockRelation : {}),
       postCount,
       recentPosts: recent.map((p) => ({
         id: p.id || String(p._id),
@@ -1239,12 +1351,6 @@ app.post('/api/users/me/official-verification', authenticateToken, async (req, r
   }
 });
 
-const getCurrentUserIdFromRequest = (req) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) return null;
-  try { return jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch (e) { return null; }
-};
-
 const buildPostAuthor = (p, authorById) => {
   const authorUser = authorById?.get(p.authorId);
   return {
@@ -1286,11 +1392,8 @@ app.get('/api/posts/featured', async (req, res) => {
     let query = { isDeleted: false, isFeatured: true };
     await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
-      const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
-      if (viewer) {
-        const blockedIds = await getBlockedAuthorIdsForUser(viewer);
-        if (blockedIds.length) query.authorId = { $nin: blockedIds };
-      }
+      const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
+      if (blockedIds.length) query.authorId = { $nin: blockedIds };
     }
     let q = Post.find(query).sort({ featuredAt: -1, createdAt: -1 });
     if (limit > 0) q = q.limit(limit);
@@ -1325,11 +1428,8 @@ app.get('/api/posts', async (req, res) => {
     const currentUserId = getCurrentUserIdFromRequest(req);
     await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
-      const viewer = await User.findOne({ id: currentUserId }).select('_id').lean();
-      if (viewer) {
-        const blockedIds = await getBlockedAuthorIdsForUser(viewer);
-        if (blockedIds.length) query.authorId = { $nin: blockedIds };
-      }
+      const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
+      if (blockedIds.length) query.authorId = { $nin: blockedIds };
     }
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit)).lean();
@@ -1553,15 +1653,41 @@ app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.r
 app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar, isPhoneVerified: otherUser?.isPhoneVerified, isOfficialVerified: otherUser?.isOfficialVerified } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
 app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => { const { targetUserId } = req.body; let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } }); if (!conv) { conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] }); } res.json(conv); });
 app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) => { const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 }); res.json(msgs); });
-app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => { 
-  const { type, content } = req.body; 
-  let finalContent = content; 
-  if (type === 'contact-share') { finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`; } 
-  const msg = await Message.create({ id: Date.now().toString(), conversationId: req.params.id, senderId: req.user.id, type, content: finalContent }); 
-  await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() }); 
-  const conv = await Conversation.findOne({ id: req.params.id });
-  if (conv) { const receiverId = conv.userIds.find(uid => uid !== req.user.id); if (receiverId) { io.to(receiverId).emit('new_message', msg); } }
-  res.json(msg); 
+app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ id: req.params.id });
+    if (!conv || !conv.userIds.includes(req.user.id)) {
+      return res.status(404).json({ error: '会话不存在' });
+    }
+    const recipientId = conv.userIds.find((uid) => uid !== req.user.id);
+    if (recipientId) {
+      try {
+        await assertCanMessage(req.user.id, recipientId);
+      } catch (blockErr) {
+        return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
+      }
+    }
+    const { type, content } = req.body;
+    let finalContent = content;
+    if (type === 'contact-share') {
+      finalContent = `我的联系方式：${req.user.contactType.toUpperCase()} ${req.user.contactValue}`;
+    }
+    const msg = await Message.create({
+      id: Date.now().toString(),
+      conversationId: req.params.id,
+      senderId: req.user.id,
+      type,
+      content: finalContent,
+    });
+    await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() });
+    if (recipientId) {
+      io.to(recipientId).emit('new_message', msg);
+    }
+    res.json(msg);
+  } catch (e) {
+    console.error('POST /api/conversations/:id/messages error:', e.message);
+    res.status(500).json({ error: '发送失败' });
+  }
 });
 
 // --- 举报 / 屏蔽（社区安全轻量版）---
@@ -1626,74 +1752,6 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
   } catch (e) {
     console.error('POST /api/reports error:', e.message);
     return res.status(500).json({ error: '举报提交失败，请稍后再试' });
-  }
-});
-
-app.post('/api/blocks', authenticateToken, async (req, res) => {
-  try {
-    const blockedUserId = String(req.body?.blockedUserId ?? '').trim();
-    if (!blockedUserId) {
-      return res.status(400).json({ ok: false, error: '请提供要屏蔽的用户' });
-    }
-    if (blockedUserId === req.user.id) {
-      return res.status(400).json({ ok: false, error: '不能屏蔽自己' });
-    }
-
-    const blockedUser = await User.findOne({ id: blockedUserId }).select('_id id').lean();
-    if (!blockedUser) {
-      return res.status(404).json({ ok: false, error: '用户不存在' });
-    }
-
-    const existing = await Block.findOne({
-      blocker: req.user._id,
-      blockedUser: blockedUser._id,
-    }).select('_id').lean();
-
-    if (existing) {
-      return res.json({ ok: true });
-    }
-
-    await Block.create({
-      blocker: req.user._id,
-      blockedUser: blockedUser._id,
-    });
-
-    return res.json({ ok: true });
-  } catch (e) {
-    if (e?.code === 11000) return res.json({ ok: true });
-    console.error('POST /api/blocks error:', e.message);
-    return res.status(500).json({ ok: false, error: '屏蔽失败，请稍后再试' });
-  }
-});
-
-app.delete('/api/blocks/:blockedUserId', authenticateToken, async (req, res) => {
-  try {
-    const blockedUserId = String(req.params.blockedUserId ?? '').trim();
-    if (!blockedUserId) {
-      return res.status(400).json({ ok: false, error: '请提供要取消屏蔽的用户' });
-    }
-
-    const blockedUser = await User.findOne({ id: blockedUserId }).select('_id').lean();
-    if (!blockedUser) {
-      return res.json({ ok: true });
-    }
-
-    await Block.deleteOne({ blocker: req.user._id, blockedUser: blockedUser._id });
-    return res.json({ ok: true });
-  } catch (e) {
-    console.error('DELETE /api/blocks error:', e.message);
-    return res.status(500).json({ ok: false, error: '取消屏蔽失败，请稍后再试' });
-  }
-});
-
-app.get('/api/blocks', authenticateToken, async (req, res) => {
-  try {
-    const blocks = await Block.find({ blocker: req.user._id }).populate('blockedUser', 'id').lean();
-    const blockedUserIds = blocks.map((b) => b.blockedUser?.id).filter(Boolean);
-    return res.json({ ok: true, blockedUserIds });
-  } catch (e) {
-    console.error('GET /api/blocks error:', e.message);
-    return res.status(500).json({ ok: false, error: '获取屏蔽列表失败' });
   }
 });
 
