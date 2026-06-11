@@ -297,6 +297,28 @@ const UserBlockSchema = new mongoose.Schema({
 });
 UserBlockSchema.index({ blockerId: 1, blockedUserId: 1 }, { unique: true });
 
+const ModerationLogSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  adminId: String,
+  adminNickname: String,
+  action: String,
+  targetType: String,
+  targetId: String,
+  targetUserId: { type: String, default: '' },
+  targetPostId: { type: String, default: '' },
+  targetReportId: { type: String, default: '' },
+  previousValue: mongoose.Schema.Types.Mixed,
+  newValue: mongoose.Schema.Types.Mixed,
+  reason: { type: String, default: '' },
+  note: { type: String, default: '' },
+  createdAt: { type: Number, default: Date.now },
+});
+ModerationLogSchema.index({ createdAt: -1 });
+ModerationLogSchema.index({ action: 1, createdAt: -1 });
+ModerationLogSchema.index({ targetType: 1, createdAt: -1 });
+ModerationLogSchema.index({ targetUserId: 1, createdAt: -1 });
+ModerationLogSchema.index({ targetPostId: 1, createdAt: -1 });
+
 const User = mongoose.model('User', UserSchema);
 const Post = mongoose.model('Post', PostSchema);
 const Ad = mongoose.model('Ad', AdSchema);
@@ -305,6 +327,21 @@ const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
 const Report = mongoose.model('Report', ReportSchema);
 const UserBlock = mongoose.model('UserBlock', UserBlockSchema);
+const ModerationLog = mongoose.model('ModerationLog', ModerationLogSchema);
+
+const MODERATION_LOG_ACTIONS = new Set([
+  'official_verification_approved',
+  'official_verification_rejected',
+  'report_reviewed',
+  'report_dismissed',
+  'report_reopened',
+  'post_hidden',
+  'post_unhidden',
+  'account_limited',
+  'account_suspended',
+  'account_restored',
+]);
+const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification']);
 
 const REPORT_TARGET_TYPES = new Set(['post', 'user']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
@@ -430,6 +467,81 @@ const assertAccountCanMessage = (user) => {
   }
   return null;
 };
+
+const MODERATION_LOG_SENSITIVE_KEYS = new Set([
+  'email', 'phone', 'password', 'token', 'verifyCode', 'passwordResetTokenHash',
+  'phoneVerificationCodeHash', 'phoneNormalized', 'passwordResetToken',
+]);
+
+const sanitizeModerationLogValue = (value) => {
+  if (value == null) return value;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (Array.isArray(value)) return value.map(sanitizeModerationLogValue);
+  if (typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (MODERATION_LOG_SENSITIVE_KEYS.has(k)) continue;
+      out[k] = sanitizeModerationLogValue(v);
+    }
+    return out;
+  }
+  return value;
+};
+
+async function createModerationLog({
+  admin,
+  action,
+  targetType,
+  targetId,
+  targetUserId = '',
+  targetPostId = '',
+  targetReportId = '',
+  previousValue = null,
+  newValue = null,
+  reason = '',
+  note = '',
+}) {
+  try {
+    const now = Date.now();
+    await ModerationLog.create({
+      id: `${now}_${crypto.randomBytes(4).toString('hex')}`,
+      adminId: admin?.id || '',
+      adminNickname: admin?.nickname || admin?.name || 'Admin',
+      action: String(action || '').trim(),
+      targetType: String(targetType || '').trim(),
+      targetId: String(targetId || '').trim(),
+      targetUserId: String(targetUserId || '').trim(),
+      targetPostId: String(targetPostId || '').trim(),
+      targetReportId: String(targetReportId || '').trim(),
+      previousValue: sanitizeModerationLogValue(previousValue),
+      newValue: sanitizeModerationLogValue(newValue),
+      reason: trimProfileString(reason, 500),
+      note: trimProfileString(note, 500),
+      createdAt: now,
+    });
+  } catch (err) {
+    console.error('[moderation log error]', err);
+  }
+}
+
+const formatModerationLogForAdmin = (doc) => ({
+  id: doc.id || String(doc._id),
+  admin: {
+    id: doc.adminId || '',
+    nickname: doc.adminNickname || 'Admin',
+  },
+  action: doc.action || '',
+  targetType: doc.targetType || '',
+  targetId: doc.targetId || '',
+  targetUserId: doc.targetUserId || '',
+  targetPostId: doc.targetPostId || '',
+  targetReportId: doc.targetReportId || '',
+  previousValue: doc.previousValue ?? {},
+  newValue: doc.newValue ?? {},
+  reason: doc.reason || '',
+  note: doc.note || '',
+  createdAt: doc.createdAt,
+});
 
 const assertCanMessage = async (senderId, recipientId) => {
   const rel = await getBlockRelation(senderId, recipientId);
@@ -1826,6 +1938,7 @@ app.patch('/api/admin/users/:userId/account-status', authenticateToken, requireA
     const user = await User.findOne({ id: req.params.userId });
     if (!user) return res.status(404).json({ error: '用户不存在' });
 
+    const prevAccountStatus = getAccountStatus(user);
     const reason = trimProfileString(req.body?.reason, 300);
     const now = Date.now();
     user.accountStatus = status;
@@ -1833,6 +1946,22 @@ app.patch('/api/admin/users/:userId/account-status', authenticateToken, requireA
     user.accountStatusUpdatedAt = now;
     user.accountStatusUpdatedBy = req.user.id;
     await user.save();
+
+    const accountActionMap = {
+      limited: 'account_limited',
+      suspended: 'account_suspended',
+      active: 'account_restored',
+    };
+    void createModerationLog({
+      admin: req.user,
+      action: accountActionMap[status],
+      targetType: 'user',
+      targetId: user.id,
+      targetUserId: user.id,
+      previousValue: { accountStatus: prevAccountStatus },
+      newValue: { accountStatus: status },
+      reason: status === 'active' ? '' : (reason || ''),
+    });
 
     const sanitized = sanitizeUserForClient(user);
     return res.json({
@@ -1888,6 +2017,7 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
     if (!user) return res.status(404).json({ error: '用户不存在' });
 
     const currentOv = normalizeOfficialVerificationData(user.officialVerification);
+    const prevOv = { status: currentOv.status, type: currentOv.type };
 
     if (status === 'approved') {
       user.isOfficialVerified = true;
@@ -1911,6 +2041,21 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
     }
 
     await user.save();
+
+    const rejectionReason = status === 'rejected'
+      ? trimProfileString(req.body?.rejectionReason, 500) || '资料不足，请补充后重新申请。'
+      : '';
+    void createModerationLog({
+      admin: req.user,
+      action: status === 'approved' ? 'official_verification_approved' : 'official_verification_rejected',
+      targetType: 'official_verification',
+      targetId: user.id,
+      targetUserId: user.id,
+      previousValue: prevOv,
+      newValue: { status, type: currentOv.type },
+      reason: rejectionReason,
+    });
+
     res.json(sanitizeUserForClient(user));
   } catch (e) {
     res.status(500).json({ error: 'Review Failed' });
@@ -1952,6 +2097,7 @@ app.patch('/api/admin/reports/:reportId', authenticateToken, requireAdmin, async
       return res.status(404).json({ error: '举报记录不存在' });
     }
 
+    const prevReportStatus = report.status;
     const adminNote = clampReportDetail(req.body?.adminNote);
     const now = Date.now();
     report.status = status;
@@ -1965,6 +2111,25 @@ app.patch('/api/admin/reports/:reportId', authenticateToken, requireAdmin, async
       report.reviewedBy = '';
     }
     await report.save();
+
+    let reportAction = null;
+    if (status === 'reviewed' && prevReportStatus !== 'reviewed') reportAction = 'report_reviewed';
+    else if (status === 'dismissed' && prevReportStatus !== 'dismissed') reportAction = 'report_dismissed';
+    else if (status === 'open' && prevReportStatus !== 'open') reportAction = 'report_reopened';
+    if (reportAction) {
+      void createModerationLog({
+        admin: req.user,
+        action: reportAction,
+        targetType: 'report',
+        targetId: report.id,
+        targetReportId: report.id,
+        targetUserId: report.targetUserId || '',
+        targetPostId: report.targetPostId || '',
+        previousValue: { status: prevReportStatus },
+        newValue: { status },
+        note: report.adminNote || '',
+      });
+    }
 
     const [formatted] = await formatAdminReportsList([report.toObject()]);
     return res.json({ success: true, report: formatted });
@@ -1984,6 +2149,19 @@ app.patch('/api/admin/posts/:postId/hide', authenticateToken, requireAdmin, asyn
     post.adminHiddenBy = req.user.id;
     post.adminHiddenReason = reason;
     await post.save();
+
+    void createModerationLog({
+      admin: req.user,
+      action: 'post_hidden',
+      targetType: 'post',
+      targetId: post.id,
+      targetPostId: post.id,
+      targetUserId: post.authorId || '',
+      previousValue: { adminHidden: false },
+      newValue: { adminHidden: true },
+      reason,
+    });
+
     return res.json({ success: true });
   } catch (e) {
     console.error('PATCH /api/admin/posts/:postId/hide error:', e.message);
@@ -2000,10 +2178,49 @@ app.patch('/api/admin/posts/:postId/unhide', authenticateToken, requireAdmin, as
     post.adminHiddenBy = '';
     post.adminHiddenReason = '';
     await post.save();
+
+    void createModerationLog({
+      admin: req.user,
+      action: 'post_unhidden',
+      targetType: 'post',
+      targetId: post.id,
+      targetPostId: post.id,
+      targetUserId: post.authorId || '',
+      previousValue: { adminHidden: true },
+      newValue: { adminHidden: false },
+    });
+
     return res.json({ success: true });
   } catch (e) {
     console.error('PATCH /api/admin/posts/:postId/unhide error:', e.message);
     return res.status(500).json({ error: '恢复帖子失败' });
+  }
+});
+
+app.get('/api/admin/moderation-logs', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const action = String(req.query.action ?? '').trim();
+    const targetType = String(req.query.targetType ?? '').trim();
+    const targetUserId = String(req.query.targetUserId ?? '').trim();
+    const targetPostId = String(req.query.targetPostId ?? '').trim();
+    const limitRaw = parseInt(req.query.limit, 10);
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 50;
+
+    const filter = {};
+    if (action && MODERATION_LOG_ACTIONS.has(action)) filter.action = action;
+    if (targetType && MODERATION_LOG_TARGET_TYPES.has(targetType)) filter.targetType = targetType;
+    if (targetUserId) filter.targetUserId = targetUserId;
+    if (targetPostId) filter.targetPostId = targetPostId;
+
+    const logs = await ModerationLog.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return res.json({ logs: logs.map(formatModerationLogForAdmin) });
+  } catch (e) {
+    console.error('GET /api/admin/moderation-logs error:', e.message);
+    return res.status(500).json({ error: '获取操作日志失败' });
   }
 });
 
