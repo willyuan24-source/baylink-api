@@ -540,6 +540,28 @@ const checkReportRateLimit = (userId) => {
   return entry.count <= maxRequests;
 };
 
+const contactRequestRateByUser = new Map();
+const CONTACT_REQUEST_RATE_WINDOW_MS = 60000;
+const CONTACT_REQUEST_RATE_MAX = 5;
+const CONTACT_REQUEST_DECLINED_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+const checkContactRequestRateLimit = (userId) => {
+  const key = String(userId);
+  const now = Date.now();
+  let entry = contactRequestRateByUser.get(key);
+  if (!entry || now - entry.windowStart >= CONTACT_REQUEST_RATE_WINDOW_MS) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  contactRequestRateByUser.set(key, entry);
+  if (contactRequestRateByUser.size > 5000) {
+    for (const [k, val] of contactRequestRateByUser) {
+      if (now - val.windowStart >= CONTACT_REQUEST_RATE_WINDOW_MS) contactRequestRateByUser.delete(k);
+    }
+  }
+  return entry.count <= CONTACT_REQUEST_RATE_MAX;
+};
+
 const authRateByKey = new Map();
 
 const getClientIp = (req) => {
@@ -1739,15 +1761,22 @@ const fetchAuthorTrustByIds = async (posts) => {
 };
 
 const formatPostResponse = (p, currentUserId, authorById, isAdmin = false) => {
-  const { contactPreference, ...rest } = p;
+  const {
+    contactPreference,
+    likes,
+    comments,
+    reports,
+    ...rest
+  } = p;
   return {
     ...rest,
     contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
     author: buildPostAuthor(p, authorById),
-    likesCount: p.likes ? p.likes.length : 0,
-    commentsCount: p.comments ? p.comments.length : 0,
-    hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
-    isReported: currentUserId ? (p.reports || []).some((r) => r.reporterId === currentUserId) : false,
+    likesCount: likes ? likes.length : 0,
+    commentsCount: comments ? comments.length : 0,
+    reportsCount: reports ? reports.length : 0,
+    hasLiked: currentUserId ? (likes || []).includes(currentUserId) : false,
+    isReported: currentUserId ? (reports || []).some((r) => r.reporterId === currentUserId) : false,
   };
 };
 
@@ -1829,6 +1858,16 @@ const validatePostBody = (body) => {
   if (!body.category) return { status: 400, error: 'Category is required' };
   if (!body.city) return { status: 400, error: 'City/area is required' };
   return null;
+};
+
+const POST_USER_WRITABLE_FIELDS = ['title', 'description', 'category', 'city', 'budget', 'type', 'timeInfo'];
+
+const pickUserPostFields = (body) => {
+  const out = {};
+  for (const key of POST_USER_WRITABLE_FIELDS) {
+    if (body[key] !== undefined) out[key] = body[key];
+  }
+  return out;
 };
 
 const POST_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -1913,7 +1952,8 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       req.body?.description,
     );
     if (dupErr) return res.status(dupErr.status).json({ error: dupErr.error });
-    const { imageUrls, id: _id, authorId: _authorId, createdAt: _createdAt, updatedAt: _updatedAt, contactPreference: rawContactPreference, ...postData } = req.body;
+    const { imageUrls, contactPreference: rawContactPreference } = req.body;
+    const postData = pickUserPostFields(req.body);
     const contactPreference = normalizeContactPreference(rawContactPreference);
     const contactPrefErr = validateContactPreference(contactPreference);
     if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
@@ -1974,7 +2014,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
-    const allowed = ['title', 'description', 'category', 'city', 'budget', 'type', 'timeInfo'];
+    const allowed = POST_USER_WRITABLE_FIELDS;
     for (const key of allowed) {
       if (req.body[key] !== undefined) post[key] = req.body[key];
     }
@@ -2035,6 +2075,20 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
         request: formatContactRequestForClient(existing.toObject()),
         status: existing.status,
       });
+    }
+
+    const recentDeclined = await ContactRequest.findOne({
+      postId: post.id,
+      requesterId: req.user.id,
+      status: 'declined',
+      respondedAt: { $gte: Date.now() - CONTACT_REQUEST_DECLINED_COOLDOWN_MS },
+    }).sort({ respondedAt: -1 }).lean();
+    if (recentDeclined) {
+      return res.status(429).json({ error: '帖主暂未同意发送联系方式，请稍后再试或先使用站内私信。' });
+    }
+
+    if (!checkContactRequestRateLimit(req.user.id)) {
+      return res.status(429).json({ error: '你刚刚已经请求过，请稍后再试。' });
     }
 
     const enabledMethods = buildContactCardMethods(pref);
@@ -2132,35 +2186,75 @@ app.get('/api/contact-requests', authenticateToken, async (req, res) => {
 
 app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (req, res) => {
   try {
-    const reqDoc = await ContactRequest.findOne({ id: req.params.requestId });
-    if (!reqDoc) return res.status(404).json({ error: '请求不存在' });
-    if (reqDoc.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
-    if (reqDoc.status !== 'pending') return res.status(400).json({ error: '该请求已处理' });
+    const accountMsgErr = assertAccountCanMessage(req.user);
+    if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
+
+    const ownerFilter = req.user.role === 'admin'
+      ? { id: req.params.requestId, status: 'pending' }
+      : { id: req.params.requestId, status: 'pending', postOwnerId: req.user.id };
+
+    const reqDoc = await ContactRequest.findOneAndUpdate(
+      ownerFilter,
+      { $set: { status: 'approved', respondedAt: Date.now() } },
+      { new: true },
+    );
+    if (!reqDoc) {
+      const existing = await ContactRequest.findOne({ id: req.params.requestId });
+      if (!existing) return res.status(404).json({ error: '请求不存在' });
+      if (existing.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+      return res.status(400).json({ error: '该请求已处理', status: existing.status });
+    }
 
     const post = await Post.findOne({ id: reqDoc.postId, isDeleted: false });
-    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    if (!post) {
+      await ContactRequest.findOneAndUpdate(
+        { id: reqDoc.id },
+        { $set: { status: 'pending', respondedAt: null } },
+      );
+      return res.status(404).json({ error: '帖子不存在' });
+    }
+    if (post.adminHidden && req.user.role !== 'admin') {
+      await ContactRequest.findOneAndUpdate(
+        { id: reqDoc.id },
+        { $set: { status: 'pending', respondedAt: null } },
+      );
+      return res.status(404).json({ error: '帖子不存在或已被隐藏' });
+    }
+
     const methods = buildContactCardMethods(post.contactPreference);
-    if (!methods.length) return res.status(400).json({ error: '暂无可用联系方式' });
+    if (!methods.length) {
+      await ContactRequest.findOneAndUpdate(
+        { id: reqDoc.id },
+        { $set: { status: 'pending', respondedAt: null } },
+      );
+      return res.status(400).json({ error: '暂无可用联系方式' });
+    }
 
-    const conv = await openOrCreateConversationBetween(reqDoc.requesterId, req.user.id);
-    const msg = await sendContactCardMessage({
-      conversationId: conv.id,
-      senderId: req.user.id,
-      recipientId: reqDoc.requesterId,
-      postId: reqDoc.postId,
-      contactRequestId: reqDoc.id,
-      methods,
-    });
+    try {
+      const conv = await openOrCreateConversationBetween(reqDoc.requesterId, req.user.id);
+      const msg = await sendContactCardMessage({
+        conversationId: conv.id,
+        senderId: req.user.id,
+        recipientId: reqDoc.requesterId,
+        postId: reqDoc.postId,
+        contactRequestId: reqDoc.id,
+        methods,
+      });
 
-    reqDoc.status = 'approved';
-    reqDoc.contactSnapshot = methods;
-    reqDoc.threadId = conv.id;
-    reqDoc.messageId = msg.id;
-    reqDoc.respondedAt = Date.now();
-    reqDoc.sentAt = Date.now();
-    await reqDoc.save();
+      reqDoc.contactSnapshot = methods;
+      reqDoc.threadId = conv.id;
+      reqDoc.messageId = msg.id;
+      reqDoc.sentAt = Date.now();
+      await reqDoc.save();
 
-    res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'approved', threadId: conv.id });
+      res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'approved', threadId: conv.id });
+    } catch (sendErr) {
+      await ContactRequest.findOneAndUpdate(
+        { id: reqDoc.id },
+        { $set: { status: 'pending', respondedAt: null } },
+      );
+      throw sendErr;
+    }
   } catch (e) {
     console.error('PATCH contact-requests approve error:', e);
     res.status(500).json({ error: '操作失败，请稍后再试' });
