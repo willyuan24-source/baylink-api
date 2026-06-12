@@ -246,7 +246,20 @@ const PostSchema = new mongoose.Schema({
   description: String,
   imageUrls: [String],
   likes: [String],
-  comments: [{ id: String, authorId: String, authorName: String, content: String, createdAt: Number }],
+  comments: [{
+    id: String,
+    authorId: String,
+    authorName: String,
+    authorAvatar: { type: String, default: '' },
+    isAdmin: { type: Boolean, default: false },
+    content: String,
+    parentId: { type: String, default: null },
+    createdAt: Number,
+    updatedAt: { type: Number, default: null },
+    editedAt: { type: Number, default: null },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Number, default: null },
+  }],
   reports: [{ reporterId: String, reason: String, createdAt: Number }],
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Number, default: Date.now },
@@ -1763,17 +1776,77 @@ const fetchAuthorTrustByIds = async (posts) => {
   return new Map(users.map((u) => [u.id, u]));
 };
 
-const formatPublicComments = (comments, commentRoleById = new Map()) =>
-  (comments || []).map((c) => ({
-    id: c.id,
-    authorId: c.authorId,
-    authorName: c.authorName,
-    content: c.content,
-    createdAt: c.createdAt,
-    isAdmin: c.isAdmin === true || commentRoleById.get(c.authorId) === 'admin',
-  }));
+const COMMENT_MAX_LENGTH = 500;
 
-const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, commentRoleById = new Map()) => {
+const normalizeCommentContent = (raw) => {
+  const content = String(raw ?? '').trim();
+  if (!content) return { ok: false, error: '评论不能为空' };
+  if (content.length > COMMENT_MAX_LENGTH) return { ok: false, error: `评论不能超过 ${COMMENT_MAX_LENGTH} 字` };
+  return { ok: true, content };
+};
+
+const countActiveComments = (comments) =>
+  (comments || []).filter((c) => !c.isDeleted).length;
+
+const findCommentOnPost = (post, commentId) =>
+  (post?.comments || []).find((c) => c.id === commentId);
+
+const canManageComment = (user, comment) =>
+  user?.role === 'admin' || user?.id === comment?.authorId;
+
+const createCommentDoc = (user, content, parentId = null) => ({
+  id: `${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+  authorId: user.id,
+  authorName: user.nickname,
+  authorAvatar: user.avatar || '',
+  isAdmin: user.role === 'admin',
+  content,
+  parentId: parentId || null,
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+  editedAt: null,
+  isDeleted: false,
+  deletedAt: null,
+});
+
+const fetchCommentAuthorsByIds = async (comments) => {
+  const ids = [...new Set((comments || []).map((c) => c.authorId).filter(Boolean))];
+  if (!ids.length) return new Map();
+  const users = await User.find({ id: { $in: ids } })
+    .select('id nickname avatar role isPhoneVerified isOfficialVerified')
+    .lean();
+  return new Map(users.map((u) => [u.id, u]));
+};
+
+const buildCommentsApiPayload = async (post) => {
+  const commentAuthorById = await fetchCommentAuthorsByIds(post.comments);
+  const commentRoleById = new Map([...commentAuthorById.entries()].map(([id, u]) => [id, u.role]));
+  return {
+    comments: formatPublicComments(post.comments, commentRoleById, commentAuthorById),
+    commentsCount: countActiveComments(post.comments),
+  };
+};
+
+const formatPublicComments = (comments, commentRoleById = new Map(), commentAuthorById = new Map()) =>
+  (comments || []).map((c) => {
+    const authorUser = commentAuthorById.get(c.authorId);
+    const isDeleted = !!c.isDeleted;
+    return {
+      id: c.id,
+      authorId: c.authorId,
+      authorName: c.authorName || authorUser?.nickname || '用户',
+      authorAvatar: c.authorAvatar || authorUser?.avatar || '',
+      isAdmin: c.isAdmin === true || commentRoleById.get(c.authorId) === 'admin',
+      content: isDeleted ? '' : (c.content || ''),
+      parentId: c.parentId || null,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt || null,
+      editedAt: c.editedAt || null,
+      isDeleted,
+    };
+  });
+
+const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, commentRoleById = new Map(), commentAuthorById = new Map()) => {
   const {
     contactPreference,
     likes,
@@ -1785,9 +1858,9 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, comme
     ...rest,
     contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
     author: buildPostAuthor(p, authorById),
-    comments: formatPublicComments(comments, commentRoleById),
+    comments: formatPublicComments(comments, commentRoleById, commentAuthorById),
     likesCount: likes ? likes.length : 0,
-    commentsCount: comments ? comments.length : 0,
+    commentsCount: countActiveComments(comments),
     reportsCount: reports ? reports.length : 0,
     hasLiked: currentUserId ? (likes || []).includes(currentUserId) : false,
     isReported: currentUserId ? (reports || []).some((r) => r.reporterId === currentUserId) : false,
@@ -1829,12 +1902,9 @@ app.get('/api/posts/:id', async (req, res) => {
     }
     const authorById = await fetchAuthorTrustByIds([post]);
     const isAdmin = await isAdminUserId(currentUserId);
-    const commentAuthorIds = [...new Set((post.comments || []).map((c) => c.authorId).filter(Boolean))];
-    const commentRoleUsers = commentAuthorIds.length
-      ? await User.find({ id: { $in: commentAuthorIds } }).select('id role').lean()
-      : [];
-    const commentRoleById = new Map(commentRoleUsers.map((u) => [u.id, u.role]));
-    res.json(formatPostResponse(post, currentUserId, authorById, isAdmin, commentRoleById));
+    const commentAuthorById = await fetchCommentAuthorsByIds(post.comments);
+    const commentRoleById = new Map([...commentAuthorById.entries()].map(([id, u]) => [id, u.role]));
+    res.json(formatPostResponse(post, currentUserId, authorById, isAdmin, commentRoleById, commentAuthorById));
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -2061,19 +2131,93 @@ app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
-  const post = await Post.findOne({ id: req.params.id });
-  if (!post) return res.sendStatus(404);
-  const comment = {
-    id: Date.now().toString(),
-    authorId: req.user.id,
-    authorName: req.user.nickname,
-    content: req.body.content,
-    createdAt: Date.now(),
-    isAdmin: req.user.role === 'admin',
-  };
-  post.comments.push(comment);
-  await post.save();
-  res.json(comment);
+  try {
+    const accountPostErr = assertAccountCanPost(req.user);
+    if (accountPostErr) return res.status(403).json({ error: accountPostErr });
+
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+
+    const normalized = normalizeCommentContent(req.body?.content);
+    if (!normalized.ok) return res.status(400).json({ error: normalized.error });
+
+    const rawParentId = String(req.body?.parentId || '').trim();
+    let parentId = null;
+    if (rawParentId) {
+      const parent = findCommentOnPost(post, rawParentId);
+      if (!parent) return res.status(404).json({ error: '回复的评论不存在' });
+      if (parent.isDeleted) return res.status(400).json({ error: '无法回复已删除的评论' });
+      if (parent.parentId) return res.status(400).json({ error: '不支持回复二级评论' });
+      parentId = parent.id;
+    }
+
+    const comment = createCommentDoc(req.user, normalized.content, parentId);
+    post.comments.push(comment);
+    await post.save();
+
+    const payload = await buildCommentsApiPayload(post);
+    res.json({ comment, ...payload });
+  } catch (e) {
+    console.error('POST /api/posts/:id/comments error:', e);
+    res.status(500).json({ error: '评论失败，请稍后再试' });
+  }
+});
+
+app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+
+    const comment = findCommentOnPost(post, req.params.commentId);
+    if (!comment) return res.status(404).json({ error: '评论不存在' });
+    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (comment.isDeleted) return res.status(400).json({ error: '评论已删除，无法编辑' });
+
+    const normalized = normalizeCommentContent(req.body?.content);
+    if (!normalized.ok) return res.status(400).json({ error: normalized.error });
+
+    comment.content = normalized.content;
+    comment.editedAt = Date.now();
+    comment.updatedAt = Date.now();
+    await post.save();
+
+    const payload = await buildCommentsApiPayload(post);
+    res.json(payload);
+  } catch (e) {
+    console.error('PATCH /api/posts/:id/comments/:commentId error:', e);
+    res.status(500).json({ error: '编辑失败，请稍后再试' });
+  }
+});
+
+app.delete('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+
+    const comment = findCommentOnPost(post, req.params.commentId);
+    if (!comment) return res.status(404).json({ error: '评论不存在' });
+    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (comment.isDeleted) return res.status(400).json({ error: '评论已删除' });
+
+    const hasReplies = (post.comments || []).some((c) => c.parentId === comment.id);
+
+    if (hasReplies) {
+      comment.isDeleted = true;
+      comment.content = '';
+      comment.deletedAt = Date.now();
+      comment.updatedAt = Date.now();
+    } else {
+      post.comments = post.comments.filter((c) => c.id !== comment.id);
+    }
+
+    await post.save();
+
+    const payload = await buildCommentsApiPayload(post);
+    res.json(payload);
+  } catch (e) {
+    console.error('DELETE /api/posts/:id/comments/:commentId error:', e);
+    res.status(500).json({ error: '删除失败，请稍后再试' });
+  }
 });
 
 app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, res) => {
