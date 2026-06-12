@@ -605,6 +605,91 @@ const checkContactRequestRateLimit = (userId) => {
   return entry.count <= CONTACT_REQUEST_RATE_MAX;
 };
 
+const commentRateByUser = new Map();
+const COMMENT_RATE_WINDOW_MS = 60000;
+const COMMENT_RATE_MAX = 10;
+
+const checkCommentRateLimit = (userId) => {
+  const key = String(userId);
+  const now = Date.now();
+  let entry = commentRateByUser.get(key);
+  if (!entry || now - entry.windowStart >= COMMENT_RATE_WINDOW_MS) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  commentRateByUser.set(key, entry);
+  if (commentRateByUser.size > 5000) {
+    for (const [k, val] of commentRateByUser) {
+      if (now - val.windowStart >= COMMENT_RATE_WINDOW_MS) commentRateByUser.delete(k);
+    }
+  }
+  return entry.count <= COMMENT_RATE_MAX;
+};
+
+const messageRateByUser = new Map();
+const MESSAGE_RATE_WINDOW_MS = 60000;
+const MESSAGE_RATE_MAX = 30;
+const MESSAGE_MAX_LENGTH = 2000;
+
+const checkMessageRateLimit = (userId) => {
+  const key = String(userId);
+  const now = Date.now();
+  let entry = messageRateByUser.get(key);
+  if (!entry || now - entry.windowStart >= MESSAGE_RATE_WINDOW_MS) {
+    entry = { count: 0, windowStart: now };
+  }
+  entry.count += 1;
+  messageRateByUser.set(key, entry);
+  if (messageRateByUser.size > 5000) {
+    for (const [k, val] of messageRateByUser) {
+      if (now - val.windowStart >= MESSAGE_RATE_WINDOW_MS) messageRateByUser.delete(k);
+    }
+  }
+  return entry.count <= MESSAGE_RATE_MAX;
+};
+
+const NICKNAME_RESERVED_PATTERNS = [
+  'baylink', 'baybay', '管理员', '官方', '客服', '版主',
+  'admin', 'administrator', 'official', 'support', 'moderator',
+];
+
+const validateNicknameReservedWords = (nickname, user) => {
+  if (user?.role === 'admin') return null;
+  const compact = String(nickname || '').toLowerCase().replace(/\s+/g, '');
+  if (!compact) return null;
+  for (const pattern of NICKNAME_RESERVED_PATTERNS) {
+    const normalizedPattern = pattern.toLowerCase().replace(/\s+/g, '');
+    if (compact.includes(normalizedPattern)) {
+      return '该昵称包含平台保留词，请换一个昵称';
+    }
+  }
+  return null;
+};
+
+const assertPostCommentable = (post, user) => {
+  if (!post || post.isDeleted) return { status: 404, error: '内容不存在或已被移除。' };
+  if (post.adminHidden && user?.role !== 'admin') {
+    return { status: 404, error: '内容不存在或已被移除。' };
+  }
+  return null;
+};
+
+const validateDirectMessageContent = (type, content) => {
+  const msgType = String(type || 'text').trim() || 'text';
+  if (msgType === 'contact_card' || msgType === 'system') {
+    return { ok: true, content };
+  }
+  if (msgType === 'contact-share') {
+    return { ok: true, content: '' };
+  }
+  const trimmed = String(content ?? '').trim();
+  if (!trimmed) return { ok: false, status: 400, message: '消息不能为空' };
+  if (trimmed.length > MESSAGE_MAX_LENGTH) {
+    return { ok: false, status: 400, message: '消息内容太长，请控制在 2000 字以内' };
+  }
+  return { ok: true, content: trimmed };
+};
+
 const authRateByKey = new Map();
 
 const getClientIp = (req) => {
@@ -1401,6 +1486,9 @@ app.post('/api/auth/register', async (req, res) => {
     if (!nickname || !contactValue) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    const registerRole = email === 'admin' ? 'admin' : 'user';
+    const reservedNicknameErr = validateNicknameReservedWords(nickname, { role: registerRole });
+    if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
     if (await User.findOne({ email: String(email).trim().toLowerCase() })) {
       return res.status(400).json({ error: 'Email already registered' });
     }
@@ -1669,6 +1757,8 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     if (nickname !== undefined) {
       const nextNickname = trimProfileString(nickname, 30);
       if (!nextNickname) return res.status(400).json({ error: 'Nickname is required' });
+      const reservedNicknameErr = validateNicknameReservedWords(nextNickname, user);
+      if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
       user.nickname = nextNickname;
     }
     if (bio !== undefined) user.bio = trimProfileString(bio, 240);
@@ -2191,8 +2281,13 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
     const accountPostErr = assertAccountCanPost(req.user);
     if (accountPostErr) return res.status(403).json({ error: accountPostErr });
 
+    if (!checkCommentRateLimit(req.user.id)) {
+      return res.status(429).json({ message: '评论太频繁了，请稍后再试', error: '评论太频繁了，请稍后再试' });
+    }
+
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    const postErr = assertPostCommentable(post, req.user);
+    if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const normalized = normalizeCommentContent(req.body?.content);
     if (!normalized.ok) return res.status(400).json({ error: normalized.error });
@@ -2222,7 +2317,8 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
 app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    const postErr = assertPostCommentable(post, req.user);
+    if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
@@ -2248,7 +2344,8 @@ app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, r
 app.delete('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    const postErr = assertPostCommentable(post, req.user);
+    if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
@@ -2636,8 +2733,18 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
         return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
       }
     }
+
+    if (!checkMessageRateLimit(req.user.id)) {
+      return res.status(429).json({ message: '发送太频繁了，请稍后再试', error: '发送太频繁了，请稍后再试' });
+    }
+
     const { type, content } = req.body;
-    let finalContent = content;
+    const contentCheck = validateDirectMessageContent(type, content);
+    if (!contentCheck.ok) {
+      return res.status(contentCheck.status).json({ message: contentCheck.message, error: contentCheck.message });
+    }
+
+    let finalContent = contentCheck.content;
     if (type === 'contact-share') {
       finalContent = `我的联系方式：${formatContactTypeLabel(req.user.contactType)} ${req.user.contactValue || ''}`;
     }
