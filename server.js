@@ -1589,6 +1589,7 @@ app.get('/api/users/:id/public', async (req, res) => {
       avatar: user.avatar,
       bio: user.bio,
       role: user.role,
+      isAdmin: user.role === 'admin',
       createdAt: user.createdAt,
       isPhoneVerified: user.isPhoneVerified,
       isOfficialVerified: user.isOfficialVerified,
@@ -1742,12 +1743,14 @@ app.post('/api/users/me/official-verification', authenticateToken, async (req, r
 
 const buildPostAuthor = (p, authorById) => {
   const authorUser = authorById?.get(p.authorId);
+  const isAdmin = authorUser?.role === 'admin';
   return {
     id: p.authorId,
     nickname: p.authorNickname || authorUser?.nickname || 'Unknown',
     avatar: p.authorAvatar || authorUser?.avatar,
     isPhoneVerified: !!authorUser?.isPhoneVerified,
     isOfficialVerified: !!authorUser?.isOfficialVerified,
+    isAdmin,
   };
 };
 
@@ -1755,12 +1758,22 @@ const fetchAuthorTrustByIds = async (posts) => {
   const ids = [...new Set(posts.map((p) => p.authorId).filter(Boolean))];
   if (!ids.length) return new Map();
   const users = await User.find({ id: { $in: ids } })
-    .select('id nickname avatar isPhoneVerified isOfficialVerified')
+    .select('id nickname avatar isPhoneVerified isOfficialVerified role')
     .lean();
   return new Map(users.map((u) => [u.id, u]));
 };
 
-const formatPostResponse = (p, currentUserId, authorById, isAdmin = false) => {
+const formatPublicComments = (comments, commentRoleById = new Map()) =>
+  (comments || []).map((c) => ({
+    id: c.id,
+    authorId: c.authorId,
+    authorName: c.authorName,
+    content: c.content,
+    createdAt: c.createdAt,
+    isAdmin: c.isAdmin === true || commentRoleById.get(c.authorId) === 'admin',
+  }));
+
+const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, commentRoleById = new Map()) => {
   const {
     contactPreference,
     likes,
@@ -1772,6 +1785,7 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false) => {
     ...rest,
     contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
     author: buildPostAuthor(p, authorById),
+    comments: formatPublicComments(comments, commentRoleById),
     likesCount: likes ? likes.length : 0,
     commentsCount: comments ? comments.length : 0,
     reportsCount: reports ? reports.length : 0,
@@ -1815,7 +1829,12 @@ app.get('/api/posts/:id', async (req, res) => {
     }
     const authorById = await fetchAuthorTrustByIds([post]);
     const isAdmin = await isAdminUserId(currentUserId);
-    res.json(formatPostResponse(post, currentUserId, authorById, isAdmin));
+    const commentAuthorIds = [...new Set((post.comments || []).map((c) => c.authorId).filter(Boolean))];
+    const commentRoleUsers = commentAuthorIds.length
+      ? await User.find({ id: { $in: commentAuthorIds } }).select('id role').lean()
+      : [];
+    const commentRoleById = new Map(commentRoleUsers.map((u) => [u.id, u.role]));
+    res.json(formatPostResponse(post, currentUserId, authorById, isAdmin, commentRoleById));
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -2041,7 +2060,21 @@ app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
 
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
-app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
+app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
+  const post = await Post.findOne({ id: req.params.id });
+  if (!post) return res.sendStatus(404);
+  const comment = {
+    id: Date.now().toString(),
+    authorId: req.user.id,
+    authorName: req.user.nickname,
+    content: req.body.content,
+    createdAt: Date.now(),
+    isAdmin: req.user.role === 'admin',
+  };
+  post.comments.push(comment);
+  await post.save();
+  res.json(comment);
+});
 
 app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, res) => {
   try {
@@ -2313,14 +2346,37 @@ app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user
 app.get('/api/content/:key', async (req, res) => { const content = await Content.findOne({ key: req.params.key }); res.json({ value: content ? content.value : '' }); });
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
 
-app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: formatMessagePreview(lastMsg), otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar, isPhoneVerified: otherUser?.isPhoneVerified, isOfficialVerified: otherUser?.isOfficialVerified } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
+app.get('/api/conversations', authenticateToken, async (req, res) => {
+  const convs = await Conversation.find({ userIds: req.user.id });
+  const result = await Promise.all(convs.map(async (c) => {
+    const otherId = c.userIds.find((uid) => uid !== req.user.id);
+    const otherUser = await User.findOne({ id: otherId });
+    return {
+      id: c.id,
+      updatedAt: c.updatedAt,
+      lastMessage: formatMessagePreview(await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 })),
+      otherUser: {
+        id: otherUser?.id,
+        nickname: otherUser?.nickname,
+        avatar: otherUser?.avatar,
+        isPhoneVerified: otherUser?.isPhoneVerified,
+        isOfficialVerified: otherUser?.isOfficialVerified,
+        isAdmin: otherUser?.role === 'admin',
+      },
+    };
+  }));
+  result.sort((a, b) => b.updatedAt - a.updatedAt);
+  res.json(result);
+});
 app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => {
   try {
     const { targetUserId } = req.body;
     if (!targetUserId || targetUserId === req.user.id) {
       return res.status(400).json({ error: '无法与自己创建会话。' });
     }
-    const targetUser = await User.findOne({ id: targetUserId }).select('id').lean();
+    const targetUser = await User.findOne({ id: targetUserId })
+      .select('id nickname avatar isPhoneVerified isOfficialVerified role')
+      .lean();
     if (!targetUser) {
       return res.status(404).json({ error: '用户不存在' });
     }
@@ -2333,7 +2389,19 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
       }
       conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] });
     }
-    res.json(conv);
+    res.json({
+      id: conv.id,
+      userIds: conv.userIds,
+      updatedAt: conv.updatedAt,
+      otherUser: {
+        id: targetUser.id,
+        nickname: targetUser.nickname,
+        avatar: targetUser.avatar,
+        isPhoneVerified: targetUser.isPhoneVerified,
+        isOfficialVerified: targetUser.isOfficialVerified,
+        isAdmin: targetUser.role === 'admin',
+      },
+    });
   } catch (e) {
     console.error('POST /api/conversations/open-or-create error:', e.message);
     res.status(500).json({ error: '操作失败，请稍后再试' });
