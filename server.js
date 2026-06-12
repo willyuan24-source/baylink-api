@@ -2128,7 +2128,33 @@ app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
   res.status(410).json({ error: '请使用新版举报入口。' });
 });
 
-app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
+app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
+  try {
+    const accountPostErr = assertAccountCanPost(req.user);
+    if (accountPostErr) return res.status(403).json({ error: accountPostErr });
+
+    const post = await Post.findOne({ id: req.params.id, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
+    if (post.adminHidden && req.user.role !== 'admin') {
+      return res.status(404).json({ error: '内容不存在或已被移除。' });
+    }
+
+    const idx = post.likes.indexOf(req.user.id);
+    let liked;
+    if (idx === -1) {
+      post.likes.push(req.user.id);
+      liked = true;
+    } else {
+      post.likes.splice(idx, 1);
+      liked = false;
+    }
+    await post.save();
+    res.json({ liked, likesCount: post.likes.length });
+  } catch (e) {
+    console.error('POST /api/posts/:id/like error:', e);
+    res.status(500).json({ error: '操作失败，请稍后再试' });
+  }
+});
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
   try {
