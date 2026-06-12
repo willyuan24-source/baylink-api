@@ -2108,14 +2108,20 @@ app.get('/api/contact-requests', authenticateToken, async (req, res) => {
     }
     const list = await ContactRequest.find(query).sort({ createdAt: -1 }).limit(50).lean();
     const requesterIds = [...new Set(list.map((r) => r.requesterId).filter(Boolean))];
+    const postIds = [...new Set(list.map((r) => r.postId).filter(Boolean))];
     const requesters = requesterIds.length
       ? await User.find({ id: { $in: requesterIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified').lean()
       : [];
+    const posts = postIds.length
+      ? await Post.find({ id: { $in: postIds }, isDeleted: false }).select('id title').lean()
+      : [];
     const requesterById = new Map(requesters.map((u) => [u.id, u]));
+    const postById = new Map(posts.map((p) => [p.id, p]));
     res.json({
       requests: list.map((r) => ({
         ...formatContactRequestForClient(r),
         requester: requesterById.get(r.requesterId) || null,
+        postTitle: postById.get(r.postId)?.title || '',
       })),
     });
   } catch (e) {
