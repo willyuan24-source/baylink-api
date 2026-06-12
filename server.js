@@ -258,11 +258,40 @@ const PostSchema = new mongoose.Schema({
   adminHiddenAt: { type: Number, default: null },
   adminHiddenBy: { type: String, default: '' },
   adminHiddenReason: { type: String, default: '' },
+  contactPreference: {
+    mode: { type: String, enum: ['dm_first', 'auto_send', 'manual_approve'], default: 'dm_first' },
+    methods: [{
+      type: { type: String, enum: ['wechat', 'phone', 'email', 'other'], default: 'other' },
+      label: { type: String, default: '' },
+      value: { type: String, default: '' },
+      note: { type: String, default: '' },
+      enabled: { type: Boolean, default: true },
+    }],
+    updatedAt: { type: Number, default: null },
+  },
 });
 
 const AdSchema = new mongoose.Schema({ id: String, title: String, content: String, imageUrl: String, isVerified: { type: Boolean, default: true } });
 const ConversationSchema = new mongoose.Schema({ id: { type: String, unique: true }, userIds: [String], updatedAt: { type: Number, default: Date.now } });
-const MessageSchema = new mongoose.Schema({ id: String, conversationId: String, senderId: String, type: String, content: String, createdAt: { type: Number, default: Date.now } });
+const MessageSchema = new mongoose.Schema({
+  id: String,
+  conversationId: String,
+  senderId: String,
+  type: String,
+  messageType: { type: String, enum: ['text', 'system', 'contact_card'], default: 'text' },
+  content: String,
+  contactCard: {
+    postId: { type: String, default: '' },
+    contactRequestId: { type: String, default: '' },
+    methods: [{
+      type: { type: String, enum: ['wechat', 'phone', 'email', 'other'], default: 'other' },
+      label: { type: String, default: '' },
+      value: { type: String, default: '' },
+      note: { type: String, default: '' },
+    }],
+  },
+  createdAt: { type: Number, default: Date.now },
+});
 const ContentSchema = new mongoose.Schema({ key: { type: String, unique: true }, value: String });
 
 const ReportSchema = new mongoose.Schema({
@@ -299,6 +328,29 @@ const UserBlockSchema = new mongoose.Schema({
 });
 UserBlockSchema.index({ blockerId: 1, blockedUserId: 1 }, { unique: true });
 
+const ContactRequestSchema = new mongoose.Schema({
+  id: { type: String, unique: true },
+  postId: { type: String, required: true },
+  postOwnerId: { type: String, required: true },
+  requesterId: { type: String, required: true },
+  status: { type: String, enum: ['pending', 'approved', 'declined', 'auto_sent', 'cancelled'], default: 'pending' },
+  requestMessage: { type: String, default: '' },
+  contactSnapshot: [{
+    type: { type: String, enum: ['wechat', 'phone', 'email', 'other'], default: 'other' },
+    label: { type: String, default: '' },
+    value: { type: String, default: '' },
+    note: { type: String, default: '' },
+  }],
+  messageId: { type: String, default: '' },
+  threadId: { type: String, default: '' },
+  createdAt: { type: Number, default: Date.now },
+  respondedAt: { type: Number, default: null },
+  sentAt: { type: Number, default: null },
+});
+ContactRequestSchema.index({ postId: 1, requesterId: 1, status: 1 });
+ContactRequestSchema.index({ postOwnerId: 1, status: 1, createdAt: -1 });
+ContactRequestSchema.index({ requesterId: 1, createdAt: -1 });
+
 const ModerationLogSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   adminId: String,
@@ -329,7 +381,123 @@ const Message = mongoose.model('Message', MessageSchema);
 const Content = mongoose.model('Content', ContentSchema);
 const Report = mongoose.model('Report', ReportSchema);
 const UserBlock = mongoose.model('UserBlock', UserBlockSchema);
+const ContactRequest = mongoose.model('ContactRequest', ContactRequestSchema);
 const ModerationLog = mongoose.model('ModerationLog', ModerationLogSchema);
+
+const CONTACT_PREFERENCE_MODES = new Set(['dm_first', 'auto_send', 'manual_approve']);
+const CONTACT_METHOD_TYPES = new Set(['wechat', 'phone', 'email', 'other']);
+const ACTIVE_CONTACT_REQUEST_STATUSES = ['pending', 'approved', 'auto_sent'];
+
+const defaultContactPreference = () => ({
+  mode: 'dm_first',
+  methods: [],
+  updatedAt: null,
+});
+
+const normalizeContactMethod = (raw) => {
+  const type = CONTACT_METHOD_TYPES.has(raw?.type) ? raw.type : 'other';
+  return {
+    type,
+    label: trimProfileString(raw?.label || formatContactTypeLabel(type), 40),
+    value: trimProfileString(raw?.value || '', 120),
+    note: trimProfileString(raw?.note || '', 120),
+    enabled: raw?.enabled !== false,
+  };
+};
+
+const normalizeContactPreference = (raw) => {
+  if (!raw || typeof raw !== 'object') return defaultContactPreference();
+  const mode = CONTACT_PREFERENCE_MODES.has(raw.mode) ? raw.mode : 'dm_first';
+  const methods = Array.isArray(raw.methods)
+    ? raw.methods.map(normalizeContactMethod).filter((m) => m.value || m.label)
+    : [];
+  return { mode, methods, updatedAt: Date.now() };
+};
+
+const validateContactPreference = (pref) => {
+  if (!pref || !CONTACT_PREFERENCE_MODES.has(pref.mode)) {
+    return '联系方式设置无效';
+  }
+  if (pref.mode === 'auto_send' || pref.mode === 'manual_approve') {
+    const enabled = (pref.methods || []).filter((m) => m.enabled !== false && String(m.value || '').trim());
+    if (!enabled.length) return '请至少填写一种可用的联系方式';
+  }
+  return null;
+};
+
+const sanitizeContactPreferenceForViewer = (contactPreference, postAuthorId, currentUserId, isAdmin) => {
+  const pref = contactPreference || defaultContactPreference();
+  const mode = CONTACT_PREFERENCE_MODES.has(pref.mode) ? pref.mode : 'dm_first';
+  const canSeeValues = !!isAdmin || (!!currentUserId && currentUserId === postAuthorId);
+  const methods = (pref.methods || [])
+    .filter((m) => m.enabled !== false)
+    .map((m) => {
+      const item = {
+        type: m.type || 'other',
+        label: m.label || '',
+        note: m.note || '',
+        enabled: m.enabled !== false,
+      };
+      if (canSeeValues) item.value = m.value || '';
+      return item;
+    });
+  return { mode, methods, updatedAt: pref.updatedAt || null };
+};
+
+const buildContactCardMethods = (contactPreference) => (contactPreference?.methods || [])
+  .filter((m) => m.enabled !== false && String(m.value || '').trim())
+  .map((m) => ({
+    type: m.type || 'other',
+    label: m.label || formatContactTypeLabel(m.type),
+    value: String(m.value).trim(),
+    note: m.note || '',
+  }));
+
+const formatContactRequestForClient = (doc) => ({
+  id: doc.id,
+  postId: doc.postId,
+  postOwnerId: doc.postOwnerId,
+  requesterId: doc.requesterId,
+  status: doc.status,
+  requestMessage: doc.requestMessage || '',
+  threadId: doc.threadId || '',
+  messageId: doc.messageId || '',
+  createdAt: doc.createdAt,
+  respondedAt: doc.respondedAt || null,
+  sentAt: doc.sentAt || null,
+});
+
+const openOrCreateConversationBetween = async (userIdA, userIdB) => {
+  let conv = await Conversation.findOne({ userIds: { $all: [userIdA, userIdB] } });
+  if (!conv) {
+    await assertCanMessage(userIdA, userIdB);
+    conv = await Conversation.create({ id: Date.now().toString(), userIds: [userIdA, userIdB] });
+  }
+  return conv;
+};
+
+const sendContactCardMessage = async ({ conversationId, senderId, recipientId, postId, contactRequestId, methods }) => {
+  const msg = await Message.create({
+    id: Date.now().toString(),
+    conversationId,
+    senderId,
+    type: 'contact_card',
+    messageType: 'contact_card',
+    content: 'BAYLINK 联系方式卡片',
+    contactCard: { postId, contactRequestId, methods },
+    createdAt: Date.now(),
+  });
+  await Conversation.findOneAndUpdate({ id: conversationId }, { updatedAt: Date.now() });
+  if (recipientId) io.to(recipientId).emit('new_message', msg);
+  return msg;
+};
+
+const formatMessagePreview = (msg) => {
+  if (!msg) return '';
+  if (msg.messageType === 'contact_card' || msg.type === 'contact_card') return '[联系方式卡片]';
+  if (msg.type === 'contact-share') return '[联系方式]';
+  return msg.type === 'text' ? (msg.content || '') : `[${msg.type}]`;
+};
 
 const MODERATION_LOG_ACTIONS = new Set([
   'official_verification_approved',
@@ -1570,18 +1738,23 @@ const fetchAuthorTrustByIds = async (posts) => {
   return new Map(users.map((u) => [u.id, u]));
 };
 
-const formatPostResponse = (p, currentUserId, authorById) => ({
-  ...p,
-  author: buildPostAuthor(p, authorById),
-  likesCount: p.likes ? p.likes.length : 0,
-  commentsCount: p.comments ? p.comments.length : 0,
-  hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
-  isReported: currentUserId ? (p.reports || []).some((r) => r.reporterId === currentUserId) : false,
-});
+const formatPostResponse = (p, currentUserId, authorById, isAdmin = false) => {
+  const { contactPreference, ...rest } = p;
+  return {
+    ...rest,
+    contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
+    author: buildPostAuthor(p, authorById),
+    likesCount: p.likes ? p.likes.length : 0,
+    commentsCount: p.comments ? p.comments.length : 0,
+    hasLiked: currentUserId ? (p.likes || []).includes(currentUserId) : false,
+    isReported: currentUserId ? (p.reports || []).some((r) => r.reporterId === currentUserId) : false,
+  };
+};
 
 const formatPostsResponseList = async (posts, currentUserId) => {
   const authorById = await fetchAuthorTrustByIds(posts);
-  return posts.map((p) => formatPostResponse(p, currentUserId, authorById));
+  const isAdmin = await isAdminUserId(currentUserId);
+  return posts.map((p) => formatPostResponse(p, currentUserId, authorById, isAdmin));
 };
 
 app.get('/api/posts/featured', async (req, res) => {
@@ -1612,7 +1785,8 @@ app.get('/api/posts/:id', async (req, res) => {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
     const authorById = await fetchAuthorTrustByIds([post]);
-    res.json(formatPostResponse(post, currentUserId, authorById));
+    const isAdmin = await isAdminUserId(currentUserId);
+    res.json(formatPostResponse(post, currentUserId, authorById, isAdmin));
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -1739,7 +1913,10 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       req.body?.description,
     );
     if (dupErr) return res.status(dupErr.status).json({ error: dupErr.error });
-    const { imageUrls, id: _id, authorId: _authorId, createdAt: _createdAt, updatedAt: _updatedAt, ...postData } = req.body;
+    const { imageUrls, id: _id, authorId: _authorId, createdAt: _createdAt, updatedAt: _updatedAt, contactPreference: rawContactPreference, ...postData } = req.body;
+    const contactPreference = normalizeContactPreference(rawContactPreference);
+    const contactPrefErr = validateContactPreference(contactPreference);
+    if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
     const uploadedUrls = await processPostImageUrls(imageUrls);
     const newPost = await Post.create({
       id: Date.now().toString(),
@@ -1747,11 +1924,14 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       authorNickname: req.user.nickname,
       authorAvatar: req.user.avatar,
       ...postData,
+      contactPreference,
       imageUrls: uploadedUrls,
       isDeleted: false,
       createdAt: Date.now(),
     });
-    const payload = typeof newPost.toObject === 'function' ? newPost.toObject() : newPost;
+    const p = typeof newPost.toObject === 'function' ? newPost.toObject() : newPost;
+    const authorById = await fetchAuthorTrustByIds([p]);
+    const payload = formatPostResponse(p, req.user.id, authorById, req.user.role === 'admin');
     if (!req.user.isPhoneVerified && isHighRiskPostCategory(postData)) {
       payload.trustWarning = '为了提升可信度，建议完成手机验证后再发布租房、服务或接送相关信息。';
     }
@@ -1801,11 +1981,17 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     if (req.body.imageUrls !== undefined) {
       post.imageUrls = await processPostImageUrls(req.body.imageUrls);
     }
+    if (req.body.contactPreference !== undefined) {
+      const contactPreference = normalizeContactPreference(req.body.contactPreference);
+      const contactPrefErr = validateContactPreference(contactPreference);
+      if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
+      post.contactPreference = contactPreference;
+    }
     post.updatedAt = Date.now();
     await post.save();
     const p = post.toObject();
     const authorById = await fetchAuthorTrustByIds([p]);
-    res.json(formatPostResponse(p, req.user.id, authorById));
+    res.json(formatPostResponse(p, req.user.id, authorById, req.user.role === 'admin'));
   } catch (e) { res.status(500).json({ error: '更新失败，请稍后再试' }); }
 });
 
@@ -1816,6 +2002,183 @@ app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
 app.post('/api/posts/:id/like', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const idx = post.likes.indexOf(req.user.id); if (idx === -1) post.likes.push(req.user.id); else post.likes.splice(idx, 1); await post.save(); res.json({ success: true }); });
 app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); const comment = { id: Date.now().toString(), authorId: req.user.id, authorName: req.user.nickname, content: req.body.content, createdAt: Date.now() }; post.comments.push(comment); await post.save(); res.json(comment); });
+
+app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, res) => {
+  try {
+    const accountMsgErr = assertAccountCanMessage(req.user);
+    if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
+
+    const post = await Post.findOne({ id: req.params.postId, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
+    if (post.adminHidden && req.user.role !== 'admin') return res.status(404).json({ error: '内容不存在或已被移除。' });
+    if (post.authorId === req.user.id) return res.status(400).json({ error: '不能请求自己帖子的联系方式。' });
+
+    try {
+      await assertCanMessage(req.user.id, post.authorId);
+    } catch (blockErr) {
+      return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
+    }
+
+    const pref = post.contactPreference || defaultContactPreference();
+    const mode = pref.mode || 'dm_first';
+    if (mode === 'dm_first') {
+      return res.status(400).json({ error: '该帖子仅支持站内私信', status: 'dm_first' });
+    }
+
+    const existing = await ContactRequest.findOne({
+      postId: post.id,
+      requesterId: req.user.id,
+      status: { $in: ACTIVE_CONTACT_REQUEST_STATUSES },
+    });
+    if (existing) {
+      return res.json({
+        request: formatContactRequestForClient(existing.toObject()),
+        status: existing.status,
+      });
+    }
+
+    const enabledMethods = buildContactCardMethods(pref);
+    if (!enabledMethods.length) {
+      return res.status(400).json({ error: '帖主尚未设置可分享的联系方式。' });
+    }
+
+    const requestMessage = trimProfileString(req.body?.requestMessage || '', 500);
+
+    if (mode === 'manual_approve') {
+      const reqDoc = await ContactRequest.create({
+        id: `${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+        postId: post.id,
+        postOwnerId: post.authorId,
+        requesterId: req.user.id,
+        status: 'pending',
+        requestMessage,
+        contactSnapshot: [],
+        createdAt: Date.now(),
+      });
+      return res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'pending' });
+    }
+
+    const conv = await openOrCreateConversationBetween(req.user.id, post.authorId);
+    const reqDoc = await ContactRequest.create({
+      id: `${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+      postId: post.id,
+      postOwnerId: post.authorId,
+      requesterId: req.user.id,
+      status: 'auto_sent',
+      requestMessage,
+      contactSnapshot: enabledMethods,
+      threadId: conv.id,
+      createdAt: Date.now(),
+      sentAt: Date.now(),
+    });
+    const msg = await sendContactCardMessage({
+      conversationId: conv.id,
+      senderId: post.authorId,
+      recipientId: req.user.id,
+      postId: post.id,
+      contactRequestId: reqDoc.id,
+      methods: enabledMethods,
+    });
+    reqDoc.messageId = msg.id;
+    await reqDoc.save();
+
+    return res.json({
+      request: formatContactRequestForClient(reqDoc.toObject()),
+      status: 'auto_sent',
+      threadId: conv.id,
+    });
+  } catch (e) {
+    console.error('POST /api/posts/:postId/contact-requests error:', e);
+    res.status(500).json({ error: '请求失败，请稍后再试' });
+  }
+});
+
+app.get('/api/contact-requests', authenticateToken, async (req, res) => {
+  try {
+    const role = String(req.query.role || '').trim();
+    const status = String(req.query.status || '').trim();
+    let query = {};
+    if (role === 'owner') {
+      query.postOwnerId = req.user.id;
+      if (status) query.status = status;
+    } else if (role === 'requester') {
+      query.requesterId = req.user.id;
+    } else {
+      return res.status(400).json({ error: 'role 参数无效' });
+    }
+    const list = await ContactRequest.find(query).sort({ createdAt: -1 }).limit(50).lean();
+    const requesterIds = [...new Set(list.map((r) => r.requesterId).filter(Boolean))];
+    const requesters = requesterIds.length
+      ? await User.find({ id: { $in: requesterIds } }).select('id nickname avatar isPhoneVerified isOfficialVerified').lean()
+      : [];
+    const requesterById = new Map(requesters.map((u) => [u.id, u]));
+    res.json({
+      requests: list.map((r) => ({
+        ...formatContactRequestForClient(r),
+        requester: requesterById.get(r.requesterId) || null,
+      })),
+    });
+  } catch (e) {
+    console.error('GET /api/contact-requests error:', e);
+    res.status(500).json({ error: '加载失败，请稍后再试' });
+  }
+});
+
+app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (req, res) => {
+  try {
+    const reqDoc = await ContactRequest.findOne({ id: req.params.requestId });
+    if (!reqDoc) return res.status(404).json({ error: '请求不存在' });
+    if (reqDoc.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+    if (reqDoc.status !== 'pending') return res.status(400).json({ error: '该请求已处理' });
+
+    const post = await Post.findOne({ id: reqDoc.postId, isDeleted: false });
+    if (!post) return res.status(404).json({ error: '帖子不存在' });
+    const methods = buildContactCardMethods(post.contactPreference);
+    if (!methods.length) return res.status(400).json({ error: '暂无可用联系方式' });
+
+    const conv = await openOrCreateConversationBetween(reqDoc.requesterId, req.user.id);
+    const msg = await sendContactCardMessage({
+      conversationId: conv.id,
+      senderId: req.user.id,
+      recipientId: reqDoc.requesterId,
+      postId: reqDoc.postId,
+      contactRequestId: reqDoc.id,
+      methods,
+    });
+
+    reqDoc.status = 'approved';
+    reqDoc.contactSnapshot = methods;
+    reqDoc.threadId = conv.id;
+    reqDoc.messageId = msg.id;
+    reqDoc.respondedAt = Date.now();
+    reqDoc.sentAt = Date.now();
+    await reqDoc.save();
+
+    res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'approved', threadId: conv.id });
+  } catch (e) {
+    console.error('PATCH contact-requests approve error:', e);
+    res.status(500).json({ error: '操作失败，请稍后再试' });
+  }
+});
+
+app.patch('/api/contact-requests/:requestId/decline', authenticateToken, async (req, res) => {
+  try {
+    const reqDoc = await ContactRequest.findOne({ id: req.params.requestId });
+    if (!reqDoc) return res.status(404).json({ error: '请求不存在' });
+    if (reqDoc.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+    if (reqDoc.status !== 'pending') return res.status(400).json({ error: '该请求已处理' });
+
+    reqDoc.status = 'declined';
+    reqDoc.respondedAt = Date.now();
+    await reqDoc.save();
+
+    res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'declined' });
+  } catch (e) {
+    console.error('PATCH contact-requests decline error:', e);
+    res.status(500).json({ error: '操作失败，请稍后再试' });
+  }
+});
+
 app.get('/api/ads', async (req, res) => { const ads = await Ad.find({}); res.json(ads); });
 app.post('/api/ads', authenticateToken, async (req, res) => {
   try {
@@ -1850,7 +2213,7 @@ app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user
 app.get('/api/content/:key', async (req, res) => { const content = await Content.findOne({ key: req.params.key }); res.json({ value: content ? content.value : '' }); });
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
 
-app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: lastMsg ? (lastMsg.type === 'text' ? lastMsg.content : `[${lastMsg.type}]`) : '', otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar, isPhoneVerified: otherUser?.isPhoneVerified, isOfficialVerified: otherUser?.isOfficialVerified } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
+app.get('/api/conversations', authenticateToken, async (req, res) => { const convs = await Conversation.find({ userIds: req.user.id }); const result = await Promise.all(convs.map(async c => { const otherId = c.userIds.find(uid => uid !== req.user.id); const otherUser = await User.findOne({ id: otherId }); const lastMsg = await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 }); return { id: c.id, updatedAt: c.updatedAt, lastMessage: formatMessagePreview(lastMsg), otherUser: { id: otherUser?.id, nickname: otherUser?.nickname, avatar: otherUser?.avatar, isPhoneVerified: otherUser?.isPhoneVerified, isOfficialVerified: otherUser?.isOfficialVerified } }; })); result.sort((a, b) => b.updatedAt - a.updatedAt); res.json(result); });
 app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => {
   try {
     const { targetUserId } = req.body;
