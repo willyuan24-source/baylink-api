@@ -941,7 +941,7 @@ const sendPhoneVerificationViaTwilio = async (phoneNormalized, plainCode) => {
     throw err;
   }
   await twilioClient.messages.create({
-    body: `【BAYLINK】您的验证码是 ${plainCode}，10分钟内有效。工作人员不会向您索要此码。`,
+    body: `Your BAYLINK verification code is ${plainCode}. This code expires in 10 minutes. Do not share this code. Reply STOP to opt out or HELP for help. Msg&data rates may apply.`,
     from: TWILIO_PHONE,
     to: phoneNormalized,
   });
