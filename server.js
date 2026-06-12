@@ -72,11 +72,6 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 mongoose.connect(MONGO_URI).then(() => console.log('✅ MongoDB Connected')).catch(err => console.error(err));
 
-// --- Socket.io ---
-io.on('connection', (socket) => {
-  socket.on('join_room', (userId) => { if (userId) socket.join(userId); });
-});
-
 // --- Schemas ---
 const OfficialVerificationSchema = new mongoose.Schema(
   {
@@ -396,6 +391,41 @@ const Report = mongoose.model('Report', ReportSchema);
 const UserBlock = mongoose.model('UserBlock', UserBlockSchema);
 const ContactRequest = mongoose.model('ContactRequest', ContactRequestSchema);
 const ModerationLog = mongoose.model('ModerationLog', ModerationLogSchema);
+
+const extractSocketAuthToken = (socket) => {
+  const authToken = socket.handshake.auth?.token;
+  if (authToken) return String(authToken);
+  const header = socket.handshake.headers?.authorization || '';
+  const match = /^Bearer\s+(.+)$/i.exec(header);
+  return match ? match[1] : '';
+};
+
+io.use((socket, next) => {
+  const token = extractSocketAuthToken(socket);
+  if (!token) return next(new Error('unauthorized'));
+  jwt.verify(token, JWT_SECRET, async (err, payload) => {
+    if (err || !payload?.id) return next(new Error('unauthorized'));
+    try {
+      const dbUser = await User.findOne({ id: payload.id }).select('id isBanned passwordChangedAt').lean();
+      if (!dbUser || dbUser.isBanned) return next(new Error('unauthorized'));
+      if (dbUser.passwordChangedAt && payload.iat && payload.iat * 1000 < dbUser.passwordChangedAt) {
+        return next(new Error('unauthorized'));
+      }
+      socket.userId = dbUser.id;
+      next();
+    } catch (e) {
+      next(new Error('unauthorized'));
+    }
+  });
+});
+
+io.on('connection', (socket) => {
+  if (!socket.userId) return;
+  socket.join(socket.userId);
+  socket.on('join_room', () => {
+    socket.join(socket.userId);
+  });
+});
 
 const CONTACT_PREFERENCE_MODES = new Set(['dm_first', 'auto_send', 'manual_approve']);
 const CONTACT_METHOD_TYPES = new Set(['wechat', 'phone', 'email', 'other']);
