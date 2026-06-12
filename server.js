@@ -676,8 +676,8 @@ const assertPostCommentable = (post, user) => {
 
 const validateDirectMessageContent = (type, content) => {
   const msgType = String(type || 'text').trim() || 'text';
-  if (msgType === 'contact_card' || msgType === 'system') {
-    return { ok: true, content };
+  if (!['text', 'contact-share'].includes(msgType)) {
+    return { ok: false, status: 400, message: '消息类型无效' };
   }
   if (msgType === 'contact-share') {
     return { ok: true, content: '' };
