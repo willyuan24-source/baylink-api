@@ -2134,6 +2134,17 @@ const checkDuplicatePost = async (userId, title, description) => {
 const isDefaultCoverUrl = (value) =>
   typeof value === 'string' && value.startsWith('/default-covers/');
 
+const MAX_POST_IMAGES = 5;
+
+const validatePostImageUrls = (imageUrls) => {
+  if (!imageUrls || !Array.isArray(imageUrls)) return { ok: true, urls: [] };
+  const urls = imageUrls.filter((img) => typeof img === 'string' && img.trim());
+  if (urls.length > MAX_POST_IMAGES) {
+    return { ok: false, status: 400, message: '最多上传 5 张照片' };
+  }
+  return { ok: true, urls };
+};
+
 const processPostImageUrls = async (imageUrls) => {
   if (!imageUrls || !Array.isArray(imageUrls)) return [];
   const results = await Promise.all(imageUrls.map(async (img) => {
@@ -2162,11 +2173,15 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
     );
     if (dupErr) return res.status(dupErr.status).json({ error: dupErr.error });
     const { imageUrls, contactPreference: rawContactPreference } = req.body;
+    const imageCheck = validatePostImageUrls(imageUrls);
+    if (!imageCheck.ok) {
+      return res.status(imageCheck.status).json({ message: imageCheck.message, error: imageCheck.message });
+    }
     const postData = pickUserPostFields(req.body);
     const contactPreference = normalizeContactPreference(rawContactPreference);
     const contactPrefErr = validateContactPreference(contactPreference);
     if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
-    const uploadedUrls = await processPostImageUrls(imageUrls);
+    const uploadedUrls = await processPostImageUrls(imageCheck.urls);
     const newPost = await Post.create({
       id: Date.now().toString(),
       authorId: req.user.id,
@@ -2228,7 +2243,11 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
       if (req.body[key] !== undefined) post[key] = req.body[key];
     }
     if (req.body.imageUrls !== undefined) {
-      post.imageUrls = await processPostImageUrls(req.body.imageUrls);
+      const imageCheck = validatePostImageUrls(req.body.imageUrls);
+      if (!imageCheck.ok) {
+        return res.status(imageCheck.status).json({ message: imageCheck.message, error: imageCheck.message });
+      }
+      post.imageUrls = await processPostImageUrls(imageCheck.urls);
     }
     if (req.body.contactPreference !== undefined) {
       const contactPreference = normalizeContactPreference(req.body.contactPreference);
