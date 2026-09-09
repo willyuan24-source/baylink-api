@@ -16,6 +16,7 @@ const { MAX_CANDIDATES, POST_FIELDS, isProviderRequest, planPostSearch, summariz
 const { fetchAiJson } = require('./lib/aiRequest');
 const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest } = require('./lib/guideConversation');
+const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -3645,6 +3646,14 @@ const GUIDE_CHAT_CATEGORIES = new Set(['rent', 'roommate', 'used', 'moving', 'cl
 const GUIDE_CHAT_MAX_ANSWER_LENGTH = 1200;
 
 const GUIDE_CATALOG = options.guideCatalog || require('./data/guide-catalog.json');
+const englishCatalogPath = require('path').join(__dirname, 'data', 'guide-catalog.en.json');
+const englishGuides = options.guideCatalogEn || (!isTest && require('fs').existsSync(englishCatalogPath) ? require(englishCatalogPath) : []);
+// Translations supply presentation text only; canonical catalog entries still control IDs, links and eligibility.
+const ENGLISH_GUIDE_CATALOG = new Map(englishGuides.filter(guide => GUIDE_CATALOG.some(source => source.slug === guide.slug)).map(guide => [guide.slug, guide]));
+const ENGLISH_SEARCH_CATALOG = GUIDE_CATALOG.map(guide => {
+  const english = ENGLISH_GUIDE_CATALOG.get(guide.slug);
+  return english ? { ...guide, title: `${guide.title} ${english.title}`, summary: `${guide.summary || ''} ${english.summary || ''}`, keywords: [...(guide.keywords || []), ...(english.keywords || [])], content: `${english.content || ''}\n${guide.content || ''}` } : guide;
+});
 
 const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayBay 问答助手。结合最近最多四轮对话和站内资料，给出简短实用回答。
 
@@ -3659,7 +3668,7 @@ const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayB
 - 用户问维修就回答维修；问卖东西/二手就回答二手交易；问室友就回答找室友；问搬家/清洁/接送就回答对应主题
 - 用户提供服务、找客户、招聘或找求职者时，应按供方角色指导介绍服务或发布招聘，不要建议其发布求服务、求职信息。
 - 不确定时先澄清用户想做什么，不要默认当成租房
-- 中文优先。简单问题简短回答；多步骤问题用完整的编号短段落，answer 最多 1200 字。接近上限时减少细节，必须完整结束每一步，不截断句子。
+- 输出语言按本系统提示最后的语言规则执行。简单问题简短回答；多步骤问题用完整的编号短段落，answer 最多 1200 字符。接近上限时减少细节，必须完整结束每一步，不截断句子。
 - answer 使用纯文本，可以用“1. ”编号和换行；不要 Markdown 星号、粗体标记、标题标记或代码块。
 - answer 和 safetyNote 不要生成任何链接或网址；相关指南链接由服务器在回答下方单独提供。需要提及资料时只写资料名称。
 - 适合旧金山湾区华人用户，语气亲切务实
@@ -3685,17 +3694,17 @@ const normalizeCategoryHint = (categoryHint) => {
 
 function inferBayBayIntent(message = '', categoryHint = '') {
   const text = String(message || '').toLowerCase();
-  if (/翻译|口译|笔译|translation|translator|interpretation/.test(text)) return 'translation';
-  if (/兼职|招聘|找工作|part.time|hiring|job/.test(text)) return 'part-time';
-  if (/室友|合租|roommate|找人合租|share room/.test(text)) return 'roommate';
-  if (/维修|修理|水管|电工|电路|马桶|漏水|handyman|repair|fix/.test(text)) return 'repair';
-  if (/搬家|搬运|moving|move/.test(text)) return 'moving';
-  if (/清洁|打扫|保洁|cleaning|cleaner/.test(text)) return 'cleaning';
-  if (/接送|接机|送机|机场|通勤|ride|pickup|dropoff|airport|\bsfo\b|\bsjc\b|\boak\b/.test(text)) return 'ride';
-  if (/卖东西|出东西|二手|闲置|转让|家具|家电|出售|used|sell|secondhand/.test(text)) return 'used';
-  if (/租房|租屋|出租|月租|房源|找房|求租|押金|看房|租约|单间|studio|rent|housing|apartment/.test(text)) return 'rent';
+  if (/翻译|口译|笔译|\b(?:translation|translator|interpretation)\b/.test(text)) return 'translation';
+  if (/兼职|招聘|找工作|\b(?:part.time|hiring|jobs?)\b/.test(text)) return 'part-time';
+  if (/室友|合租|找人合租|\b(?:roommates?|share room)\b/.test(text)) return 'roommate';
+  if (/维修|修理|水管|电工|电路|马桶|漏水|\b(?:handyman|repair|fix)\b/.test(text)) return 'repair';
+  if (/搬家|搬运|\b(?:moving|move)\b/.test(text)) return 'moving';
+  if (/清洁|打扫|保洁|\b(?:cleaning|cleaner)\b/.test(text)) return 'cleaning';
+  if (/接送|接机|送机|机场|通勤|\b(?:ride|pickup|dropoff|airport|sfo|sjc|oak)\b/.test(text)) return 'ride';
+  if (/卖东西|出东西|二手|闲置|转让|家具|家电|出售|我想卖|\b(?:used|sell|secondhand)\b/.test(text)) return 'used';
+  if (/租房|租屋|出租|月租|房源|找房|求租|押金|看房|租约|单间|\b(?:studio|rent|housing|apartment)\b/.test(text)) return 'rent';
   if (/\broom\b/.test(text) && !/roommate/.test(text)) return 'rent';
-  if (/服务|帮忙|本地服务|service/.test(text)) return 'service';
+  if (/服务|帮忙|本地服务|\bservice\b/.test(text)) return 'service';
   const normalizedHint = normalizeCategoryHint(categoryHint);
   return normalizedHint || 'general';
 }
@@ -4120,9 +4129,9 @@ const parseGuideChatCompletion = (data) => {
   return parsed;
 };
 
-const callOpenAiGuideChat = async ({ message, resolvedRequest = message, category, intent, currentPath, guideSources, history = [], currentDatePacific, matchingPosts = [], searchPerformed = false }) => {
+const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale = 'zh-Hans', category, intent, currentPath, guideSources, history = [], currentDatePacific, matchingPosts = [], searchPerformed = false }) => {
   const currentGuideTitle = guideSources.find(guide => guide.url === currentPath)?.title || '';
-  const userPayload = { message, resolvedRequest, inferredIntent: intent, inferredCategory: category, inferredPostType: isProviderRequest(resolvedRequest) ? 'provider' : 'client', currentPath: currentPath || '/', currentGuideTitle, currentDatePacific, guideSources, matchingPosts, searchPerformed, history };
+  const userPayload = { message, resolvedRequest, locale, inferredIntent: intent, inferredCategory: category, inferredPostType: isProviderRequest(resolvedRequest) ? 'provider' : 'client', currentPath: currentPath || '/', currentGuideTitle, currentDatePacific, guideSources, matchingPosts, searchPerformed, history };
   if (options.ai?.guideChat) {
     const result = await options.ai.guideChat(userPayload);
     return result?.choices ? parseGuideChatCompletion(result) : result;
@@ -4142,7 +4151,7 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, categor
       max_tokens: 2000,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: GUIDE_CHAT_SYSTEM },
+        { role: 'system', content: `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}` },
         ...history,
         {
           role: 'user',
@@ -4156,24 +4165,30 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, categor
 };
 
 app.post('/api/ai/guide-chat', async (req, res) => {
+  const locale = normalizeGuideLocale(req.body?.locale);
+  const errorResponse = error => ({ ok: false, error: guideLocaleError(error, locale) });
   const normalized = normalizeGuideChatMessage(req.body?.message);
-  if (!normalized.ok) return res.status(400).json({ ok: false, error: normalized.error });
+  if (!normalized.ok) return res.status(400).json(errorResponse(normalized.error));
   const normalizedHistory = normalizeGuideHistory(req.body?.history);
-  if (!normalizedHistory.ok) return res.status(400).json({ ok: false, error: normalizedHistory.error });
+  if (!normalizedHistory.ok) return res.status(400).json(errorResponse(normalizedHistory.error));
   const history = normalizedHistory.history;
   if (!checkGuideChatRateLimit(getClientIp(req))) {
-    return res.status(429).json({ ok: false, error: '提问过于频繁，请 60 秒后再试' });
+    return res.status(429).json(errorResponse('提问过于频繁，请 60 秒后再试'));
   }
   const message = normalized.message;
-  const resolvedRequest = resolveConversationRequest(message, history);
+  // Only deterministic intent/retrieval sees aliases. Preserve the original message and history for the model.
+  const analysisMessage = normalizeGuideQuery(message);
+  const analysisHistory = history.map(item => item.role === 'user' ? { ...item, content: normalizeGuideQuery(item.content) } : item);
+  const resolvedRequest = resolveConversationRequest(analysisMessage, analysisHistory);
   const categoryHint = req.body?.context?.categoryHint;
   const currentPath = String(req.body?.context?.currentPath ?? '/').trim().slice(0, 200) || '/';
   const intent = inferBayBayIntent(resolvedRequest, categoryHint);
   const category = intentToGuideCategory(intent);
   const currentDatePacific = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-  const selectedGuides = selectConversationGuides(GUIDE_CATALOG, message, category, currentPath, history, currentDatePacific);
+  const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)
+    .map(guide => GUIDE_CATALOG.find(canonical => canonical.slug === guide.slug));
   const guideReferences = selectedGuides.map(guide => ({ title: guide.title, slug: guide.slug, url: guide.url }));
-  const readingRequest = category === 'other' && (selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(message));
+  const readingRequest = category === 'other' && (selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(analysisMessage));
   const withGuideContext = payload => ({ ...payload, suggestedGuides: guideReferences,
     ...(readingRequest ? { interactiveCards: [], suggestedActions: [
       { label: '浏览全部生活指南', type: 'guide', url: '/guides' },
@@ -4182,6 +4197,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   });
   const searchPlan = planPostSearch(resolvedRequest, category);
   const providerRequest = isProviderRequest(resolvedRequest);
+  const localized = payload => localizeGuidePayload(payload, { locale, intent, category, providerRequest, readingRequest, selectedGuides, englishCatalog: ENGLISH_GUIDE_CATALOG, today: currentDatePacific, searchPlan });
   const offerLabel = category === 'part-time' ? '招聘信息' : ['rent', 'roommate'].includes(category) ? '出租信息' : category === 'used' ? '出售信息' : '服务介绍';
   const withPostDirection = (payload) => providerRequest ? {
     ...payload, interactiveCards: [],
@@ -4199,7 +4215,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   }));
   try {
     if (searchPlan?.needsClarification) {
-      return res.json({ ...buildGuideChatPayload(resolvedRequest, category), suggestedGuides: guideReferences, answer: searchPlan.clarification, matchingPosts: [], interactiveCards: [], degraded: false, responseMode: 'search', matchNote: '目标地区尚未明确，本次尚未检索帖子。' });
+      return res.json(localized({ ...buildGuideChatPayload(resolvedRequest, category), suggestedGuides: guideReferences, answer: searchPlan.clarification, matchingPosts: [], interactiveCards: [], degraded: false, responseMode: 'search', matchNote: '目标地区尚未明确，本次尚未检索帖子。' }));
     }
     if (searchPlan) {
       // Public visibility is unconditional here, even for an administrator.
@@ -4210,24 +4226,27 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       }
       const posts = await Post.find(searchPlan.query).select(POST_FIELDS).sort({ createdAt: -1 }).limit(MAX_CANDIDATES + 1).lean();
       const matches = summarizeMatches(posts, searchPlan);
-      return res.json({
+      return res.json(localized({
         ...buildGuideChatPayload(resolvedRequest, category), suggestedGuides: guideReferences, ...matches, interactiveCards: [], degraded: false, responseMode: 'search',
-      });
+      }));
     }
-    if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return res.json(fallback());
-    const guideSources = selectedGuides.map(guide => ({
-      title: guide.title, url: guide.url, summary: guide.summary || '', content: guideSourceExcerpt(guide, resolvedRequest),
-      sources: guide.sources || [], updatedAt: guide.updatedAt || '',
-      editionMonth: guideEditionMonth(guide), archived: !!guideEditionMonth(guide) && guideEditionMonth(guide) < currentDatePacific.slice(0, 7),
-    }));
-    const aiRaw = await callOpenAiGuideChat({ message, resolvedRequest, category, intent, currentPath, guideSources, history, currentDatePacific, matchingPosts: [], searchPerformed: false });
-    if (typeof aiRaw?.answer !== 'string' || aiRaw.answer.trim().length < 10 || aiRaw.answer.trim().length > GUIDE_CHAT_MAX_ANSWER_LENGTH) return res.json(fallback());
+    if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return res.json(localized(fallback()));
+    const guideSources = selectedGuides.map(guide => {
+      const english = locale === 'en' && ENGLISH_GUIDE_CATALOG.get(guide.slug);
+      return {
+        title: english?.title || guide.title, url: guide.url, summary: english?.summary || guide.summary || '', content: guideSourceExcerpt(english ? { ...guide, content: english.content } : guide, english ? message : resolvedRequest),
+        sources: guide.sources || [], updatedAt: guide.updatedAt || '',
+        editionMonth: guideEditionMonth(guide), archived: !!guideEditionMonth(guide) && guideEditionMonth(guide) < currentDatePacific.slice(0, 7),
+      };
+    });
+    const aiRaw = await callOpenAiGuideChat({ message, resolvedRequest, locale, category, intent, currentPath, guideSources, history, currentDatePacific, matchingPosts: [], searchPerformed: false });
+    if (typeof aiRaw?.answer !== 'string' || aiRaw.answer.trim().length < 10 || aiRaw.answer.trim().length > GUIDE_CHAT_MAX_ANSWER_LENGTH) return res.json(localized(fallback()));
     const payload = normalizeGuideChatResponse(aiRaw, resolvedRequest, category);
-    if (payload.answer.length < 10) return res.json(fallback());
-    return res.json(withPostDirection(withGuideContext({ ...payload, matchingPosts: [], degraded: false, responseMode: 'ai' })));
+    if (payload.answer.length < 10) return res.json(localized(fallback()));
+    return res.json(localized(withPostDirection(withGuideContext({ ...payload, matchingPosts: [], degraded: false, responseMode: 'ai' }))));
   } catch (e) {
     console.error('POST /api/ai/guide-chat error:', e.message);
-    return res.json(fallback(searchPlan ? '目前无法完成站内检索，请稍后重试；以下基础建议不代表帖子查询结果。' : undefined));
+    return res.json(localized(fallback(searchPlan ? '目前无法完成站内检索，请稍后重试；以下基础建议不代表帖子查询结果。' : undefined)));
   }
 });
 
