@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -10,32 +9,31 @@ const twilio = require('twilio');
 const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 const crypto = require('crypto');
 const { Resend } = require('resend');
+const { publicPostFilters, postLifecycleChanges } = require('./lib/postLifecycle');
+const { normalizeContact, allowedOrigins, apiSecurityHeaders, hashSessionToken } = require('./lib/security');
+
+// Importing this module is side-effect free: no .env loading, network listener or database connection.
+function createApplication(options = {}) {
+const config = { ...(options.config || process.env) };
+const injectedModels = options.models || {};
+const isTest = config.NODE_ENV === 'test';
+if (!config.JWT_SECRET) throw new Error('JWT_SECRET is required');
 
 const app = express();
+app.disable('x-powered-by');
 app.set('trust proxy', 1);
-const PORT = process.env.PORT || 3000;
 
-const ALLOWED_ORIGINS = [
-  'https://www.baylink.us',
-  'https://baylink.us',
-  'http://localhost:5173',
-];
+const ALLOWED_ORIGINS = allowedOrigins(config);
 
 const corsOriginCheck = (origin, callback) => {
   if (!origin || ALLOWED_ORIGINS.includes(origin)) {
     callback(null, true);
   } else {
-    callback(new Error('Not allowed by CORS'));
+    const error = new Error('不允许此来源访问');
+    error.status = 403;
+    callback(error);
   }
 };
-
-// --- 生产环境安全检查 ---
-const requiredEnvs = ['MONGO_URI', 'JWT_SECRET', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
-const missingEnvs = requiredEnvs.filter(key => !process.env[key]);
-if (missingEnvs.length > 0) {
-    console.error(`❌ 致命错误: 缺少环境变量: ${missingEnvs.join(', ')}`);
-    process.exit(1);
-}
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -44,33 +42,33 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  allowRequest: (req, callback) => callback(null, !req.headers.origin || ALLOWED_ORIGINS.includes(req.headers.origin)),
 });
 
 // --- 配置区域 ---
-cloudinary.config({ 
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-  api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET 
+if (!isTest) cloudinary.config({
+  cloud_name: config.CLOUDINARY_CLOUD_NAME,
+  api_key: config.CLOUDINARY_API_KEY,
+  api_secret: config.CLOUDINARY_API_SECRET
 });
 
 // Twilio 初始化
-const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
-const twilioClient = (TWILIO_SID && TWILIO_TOKEN) ? twilio(TWILIO_SID, TWILIO_TOKEN) : null;
+const TWILIO_SID = config.TWILIO_ACCOUNT_SID;
+const TWILIO_TOKEN = config.TWILIO_AUTH_TOKEN;
+const TWILIO_PHONE = config.TWILIO_PHONE_NUMBER;
+const twilioClient = !isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null;
 
-if (!twilioClient) console.warn("⚠️ 警告: 未配置 Twilio，手机验证将使用模拟模式 (查看 Server Log)。");
+if (!twilioClient && !isTest) console.warn('Twilio 未配置；生产短信验证不可用，开发测试码仅在显式开启时返回。');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = config.JWT_SECRET;
 const JWT_EXPIRES_IN = '7d';
-const MONGO_URI = process.env.MONGO_URI;
 const SEARCH_KEYWORD_MAX_LENGTH = 80; 
 
-app.use(cors({ origin: corsOriginCheck, credentials: true }));
+app.use(apiSecurityHeaders(config.NODE_ENV === 'production'));
+app.use(cors({ origin: corsOriginCheck, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'Authorization'], maxAge: 600 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-mongoose.connect(MONGO_URI).then(() => console.log('✅ MongoDB Connected')).catch(err => console.error(err));
 
 // --- Schemas ---
 const OfficialVerificationSchema = new mongoose.Schema(
@@ -259,6 +257,8 @@ const PostSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Number, default: Date.now },
   updatedAt: { type: Number },
+  status: { type: String, enum: ['active', 'closed'], default: 'active' },
+  confirmedAt: { type: Number, default: null },
   isFeatured: { type: Boolean, default: false },
   featuredAt: { type: Date },
   featuredBy: { type: String },
@@ -381,16 +381,42 @@ ModerationLogSchema.index({ targetType: 1, createdAt: -1 });
 ModerationLogSchema.index({ targetUserId: 1, createdAt: -1 });
 ModerationLogSchema.index({ targetPostId: 1, createdAt: -1 });
 
-const User = mongoose.model('User', UserSchema);
-const Post = mongoose.model('Post', PostSchema);
-const Ad = mongoose.model('Ad', AdSchema);
-const Conversation = mongoose.model('Conversation', ConversationSchema);
-const Message = mongoose.model('Message', MessageSchema);
-const Content = mongoose.model('Content', ContentSchema);
-const Report = mongoose.model('Report', ReportSchema);
-const UserBlock = mongoose.model('UserBlock', UserBlockSchema);
-const ContactRequest = mongoose.model('ContactRequest', ContactRequestSchema);
-const ModerationLog = mongoose.model('ModerationLog', ModerationLogSchema);
+const RevokedSessionSchema = new mongoose.Schema({
+  tokenHash: { type: String, required: true, unique: true },
+  expiresAt: { type: Date, required: true, expires: 0 },
+});
+const model = (name, schema) => injectedModels[name] || mongoose.models[name] || mongoose.model(name, schema);
+const User = model('User', UserSchema);
+const Post = model('Post', PostSchema);
+const Ad = model('Ad', AdSchema);
+const Conversation = model('Conversation', ConversationSchema);
+const Message = model('Message', MessageSchema);
+const Content = model('Content', ContentSchema);
+const Report = model('Report', ReportSchema);
+const UserBlock = model('UserBlock', UserBlockSchema);
+const ContactRequest = model('ContactRequest', ContactRequestSchema);
+const ModerationLog = model('ModerationLog', ModerationLogSchema);
+const RevokedSession = model('RevokedSession', RevokedSessionSchema);
+
+const sessionError = (status, message) => Object.assign(new Error(message), { status });
+const verifySession = async (token) => {
+  let payload;
+  try { payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }); }
+  catch { throw sessionError(401, '登录已过期，请重新登录。'); }
+  if (!payload || typeof payload.id !== 'string' || !Number.isFinite(payload.exp)) throw sessionError(401, '登录已过期，请重新登录。');
+  const tokenHash = hashSessionToken(token);
+  if (await RevokedSession.exists({ tokenHash })) throw sessionError(401, '登录已过期，请重新登录。');
+  const user = await User.findOne({ id: payload.id });
+  if (!user || user.isBanned || user.accountStatus === 'suspended') throw sessionError(403, '账号不可用或已被限制');
+  const issuedAt = Number.isFinite(payload.sessionIssuedAt) ? payload.sessionIssuedAt : Number(payload.iat) * 1000;
+  if (user.passwordChangedAt && (!Number.isFinite(issuedAt) || issuedAt < user.passwordChangedAt)) throw sessionError(401, '登录已过期，请重新登录。');
+  return { user, payload, tokenHash };
+};
+const issueToken = user => jwt.sign({ id: user.id, sessionIssuedAt: Date.now() }, JWT_SECRET, {
+  algorithm: 'HS256', expiresIn: JWT_EXPIRES_IN, jwtid: crypto.randomUUID(),
+});
+const extractBearerToken = header => typeof header === 'string' ? /^Bearer\s+([^\s]+)$/i.exec(header)?.[1] || '' : '';
+const sessionRoom = tokenHash => `session:${tokenHash}`;
 
 const extractSocketAuthToken = (socket) => {
   const authToken = socket.handshake.auth?.token;
@@ -400,32 +426,51 @@ const extractSocketAuthToken = (socket) => {
   return match ? match[1] : '';
 };
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
   const token = extractSocketAuthToken(socket);
   if (!token) return next(new Error('unauthorized'));
-  jwt.verify(token, JWT_SECRET, async (err, payload) => {
-    if (err || !payload?.id) return next(new Error('unauthorized'));
-    try {
-      const dbUser = await User.findOne({ id: payload.id }).select('id isBanned passwordChangedAt').lean();
-      if (!dbUser || dbUser.isBanned) return next(new Error('unauthorized'));
-      if (dbUser.passwordChangedAt && payload.iat && payload.iat * 1000 < dbUser.passwordChangedAt) {
-        return next(new Error('unauthorized'));
-      }
-      socket.userId = dbUser.id;
-      next();
-    } catch (e) {
-      next(new Error('unauthorized'));
-    }
-  });
+  try {
+    const { user, payload, tokenHash } = await verifySession(token);
+    socket.userId = user.id;
+    socket.sessionToken = token;
+    socket.sessionTokenHash = tokenHash;
+    socket.sessionExpiresAt = payload.exp * 1000;
+    next();
+  } catch { next(new Error('unauthorized')); }
 });
 
 io.on('connection', (socket) => {
   if (!socket.userId) return;
   socket.join(socket.userId);
+  socket.join(sessionRoom(socket.sessionTokenHash));
+  const validateConnection = async () => {
+    try { await verifySession(socket.sessionToken); }
+    catch { socket.disconnect(true); }
+  };
+  socket.use(async (_packet, next) => {
+    try { await verifySession(socket.sessionToken); next(); }
+    catch { socket.disconnect(true); next(new Error('unauthorized')); }
+  });
+  // Covers idle sockets after password/account changes or a logout handled by another process.
+  const recheck = setInterval(validateConnection, 15000);
+  const expiry = setTimeout(() => socket.disconnect(true), Math.max(0, socket.sessionExpiresAt - Date.now()));
+  recheck.unref();
+  expiry.unref();
+  socket.on('disconnect', () => { clearInterval(recheck); clearTimeout(expiry); });
   socket.on('join_room', () => {
     socket.join(socket.userId);
   });
 });
+
+const emitMessageToUser = async (userId, message) => {
+  const sockets = await io.in(userId).fetchSockets();
+  await Promise.all(sockets.map(async socket => {
+    try {
+      await verifySession(socket.sessionToken);
+      socket.emit('new_message', message);
+    } catch { socket.disconnect(true); }
+  }));
+};
 
 const CONTACT_PREFERENCE_MODES = new Set(['dm_first', 'auto_send', 'manual_approve']);
 const CONTACT_METHOD_TYPES = new Set(['wechat', 'phone', 'email', 'other']);
@@ -531,7 +576,7 @@ const sendContactCardMessage = async ({ conversationId, senderId, recipientId, p
     createdAt: Date.now(),
   });
   await Conversation.findOneAndUpdate({ id: conversationId }, { updatedAt: Date.now() });
-  if (recipientId) io.to(recipientId).emit('new_message', msg);
+  if (recipientId) await emitMessageToUser(recipientId, msg);
   return msg;
 };
 
@@ -905,10 +950,10 @@ const assertCanMessage = async (senderId, recipientId) => {
   }
 };
 
-const getCurrentUserIdFromRequest = (req) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) return null;
-  try { return jwt.verify(authHeader.split(' ')[1], JWT_SECRET).id; } catch (e) { return null; }
+const getCurrentUserIdFromRequest = async (req) => {
+  const token = extractBearerToken(req.headers.authorization);
+  if (!token) return null;
+  try { return (await verifySession(token)).user.id; } catch { return null; }
 };
 
 const resolveReportTarget = async (targetType, targetId) => {
@@ -1166,6 +1211,7 @@ const buildAdPayload = (body) => {
 
 const uploadToCloudinary = async (base64Image) => {
     if (!base64Image || !base64Image.startsWith('data:image')) return null;
+    if (isTest) throw new Error('External image uploads are disabled in tests');
     try {
         const result = await cloudinary.uploader.upload(base64Image, { folder: "baylink_posts" });
         return result.secure_url;
@@ -1209,16 +1255,16 @@ const generateResetToken = () => crypto.randomBytes(32).toString('hex');
 const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 const getFrontendBaseUrl = () => {
-  if (process.env.FRONTEND_URL) return String(process.env.FRONTEND_URL).replace(/\/$/, '');
-  if (process.env.NODE_ENV === 'production') return 'https://www.baylink.us';
+  if (config.FRONTEND_URL) return String(config.FRONTEND_URL).replace(/\/$/, '');
+  if (config.NODE_ENV === 'production') return 'https://www.baylink.us';
   return 'http://localhost:5173';
 };
 
 const canReturnDevResetLink = () =>
-  process.env.AUTH_DEV_RETURN_TOKENS === 'true' && process.env.NODE_ENV !== 'production';
+  config.AUTH_DEV_RETURN_TOKENS === 'true' && config.NODE_ENV !== 'production';
 
 const canReturnDevPhoneCode = () =>
-  process.env.AUTH_DEV_RETURN_TOKENS === 'true' && process.env.NODE_ENV !== 'production';
+  config.AUTH_DEV_RETURN_TOKENS === 'true' && config.NODE_ENV !== 'production';
 
 const PHONE_VERIFY_COOLDOWN_MS = 60000;
 const PHONE_VERIFY_EXPIRES_MS = 10 * 60 * 1000;
@@ -1238,7 +1284,7 @@ const normalizePhone = (phone) => {
   return null;
 };
 
-const generatePhoneCode = () => Math.floor(100000 + Math.random() * 900000).toString();
+const generatePhoneCode = () => crypto.randomInt(100000, 1000000).toString();
 const hashPhoneCode = (code) => crypto.createHash('sha256').update(String(code)).digest('hex');
 
 const mapTwilioSendError = (error) => {
@@ -1301,17 +1347,10 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
 
   if (canReturnDevPhoneCode()) {
     await persistPhoneVerificationState(user, normalized, plainCode);
-    console.log(`[DEV MODE] SMS to ${normalized.phoneNormalized}: ${plainCode}`);
-    return { ok: true, payload: { message: '验证码已发送。', devCode: plainCode } };
+    return { ok: true, payload: { message: '开发测试验证码已生成，未发送短信。', devCode: plainCode } };
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    await persistPhoneVerificationState(user, normalized, plainCode);
-    console.log(`[DEV MODE] SMS to ${normalized.phoneNormalized}: ${plainCode}`);
-    return { ok: true, payload: { message: '验证码已发送。' } };
-  }
-
-  console.error('⚠️ Twilio 未配置，生产环境无法发送短信验证码');
+  if (!isTest) console.error('Twilio 未配置，无法发送短信验证码');
   return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
 };
 
@@ -1348,7 +1387,7 @@ const verifyPhoneCodeForUser = async (user, codeInput) => {
 
 const FORGOT_PASSWORD_MESSAGE = '如果这个邮箱已注册，我们会发送重设密码链接。';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const resend = !isTest && config.RESEND_API_KEY ? new Resend(config.RESEND_API_KEY) : null;
 
 const escapeHtml = (value) => String(value ?? '')
   .replace(/&/g, '&amp;')
@@ -1403,10 +1442,10 @@ ${resetLink}
 BAYLINK｜湾区生活信息站`;
 
 const sendPasswordResetEmail = async ({ to, resetLink, user }) => {
-  if (!process.env.RESEND_API_KEY) {
+  if (!config.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY is not configured');
   }
-  if (!process.env.RESEND_FROM_EMAIL) {
+  if (!config.RESEND_FROM_EMAIL) {
     throw new Error('RESEND_FROM_EMAIL is not configured');
   }
   if (!resend) {
@@ -1414,7 +1453,7 @@ const sendPasswordResetEmail = async ({ to, resetLink, user }) => {
   }
 
   const { data, error } = await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL,
+    from: config.RESEND_FROM_EMAIL,
     to,
     subject: '重设你的 BAYLINK 密码',
     html: buildPasswordResetEmailHtml({ resetLink, user }),
@@ -1425,30 +1464,38 @@ const sendPasswordResetEmail = async ({ to, resetLink, user }) => {
     throw new Error(error.message || 'Resend send failed');
   }
 
-  if (process.env.NODE_ENV !== 'production' && data?.id) {
+  if (config.NODE_ENV !== 'production' && data?.id) {
     console.log(`[Resend] Password reset email sent, id=${data.id}`);
   }
 
   return data;
 };
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+const authenticateToken = async (req, res, next) => {
+  const token = extractBearerToken(req.headers.authorization);
   if (!token) return res.status(401).json({ error: '请先登录' });
-  jwt.verify(token, JWT_SECRET, async (err, userPayload) => {
-    if (err) return res.status(401).json({ error: '登录已过期，请重新登录。' });
-    const dbUser = await User.findOne({ id: userPayload.id });
-    if (!dbUser || dbUser.isBanned) return res.status(403).json({ error: '账号不可用或已被限制' });
-    if (dbUser.passwordChangedAt && userPayload.iat && userPayload.iat * 1000 < dbUser.passwordChangedAt) {
-      return res.status(401).json({ error: '登录已过期，请重新登录。' });
-    }
-    req.user = dbUser;
+  try {
+    const session = await verifySession(token);
+    req.user = session.user;
+    req.session = session;
     next();
-  });
+  } catch (error) {
+    const status = error.status || 503;
+    res.status(status).json({ error: status === 503 ? '暂时无法验证登录状态，请重试。' : error.message });
+  }
 };
 
 // --- Routes ---
+
+app.post('/api/auth/logout', authenticateToken, async (req, res) => {
+  try {
+    await RevokedSession.updateOne({ tokenHash: req.session.tokenHash }, {
+      $setOnInsert: { tokenHash: req.session.tokenHash, expiresAt: new Date(req.session.payload.exp * 1000) },
+    }, { upsert: true });
+    io.in(sessionRoom(req.session.tokenHash)).disconnectSockets(true);
+    res.json({ success: true });
+  } catch { res.status(503).json({ error: '暂时无法撤销登录，请重试。' }); }
+});
 
 // ✨ 手机验证接口（兼容旧前端，内部走新逻辑）
 app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
@@ -1483,10 +1530,12 @@ app.post('/api/auth/register', async (req, res) => {
     if (!validatePasswordStrength(password)) {
       return res.status(400).json({ error: 'Password must be at least 8 characters and include uppercase, lowercase, and a number' });
     }
-    if (!nickname || !contactValue) {
+    if (typeof nickname !== 'string' || !nickname.trim()) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const registerRole = email === 'admin' ? 'admin' : 'user';
+    const contact = normalizeContact(contactType || 'wechat', contactValue);
+    if (contact.error) return res.status(400).json({ error: contact.error });
+    const registerRole = 'user';
     const reservedNicknameErr = validateNicknameReservedWords(nickname, { role: registerRole });
     if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
     if (await User.findOne({ email: String(email).trim().toLowerCase() })) {
@@ -1494,11 +1543,11 @@ app.post('/api/auth/register', async (req, res) => {
     }
     const newUser = await User.create({
       id: Date.now().toString(), email: String(email).trim().toLowerCase(), password, nickname,
-      role: email === 'admin' ? 'admin' : 'user',
-      contactType, contactValue, bio: '这个邻居很懒，什么也没写~',
+      role: 'user',
+      contactType: contact.contactType, contactValue: contact.contactValue, bio: '这个邻居很懒，什么也没写~',
       socialLinks: { linkedin: '', instagram: '' }
     });
-    const token = jwt.sign({ id: newUser.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const token = issueToken(newUser);
     res.json({ ...sanitizeUserForClient(newUser), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
   });
@@ -1522,12 +1571,14 @@ app.post('/api/auth/login', async (req, res) => {
       }
     }
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    if (typeof password !== 'string') return res.status(401).json({ error: 'Invalid credentials' });
     
     // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    if (user.isBanned || user.accountStatus === 'suspended') return res.status(403).json({ error: '账号不可用或已被限制' });
     
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const token = issueToken(user);
     res.json({ ...sanitizeUserForClient(user), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
 });
@@ -1559,7 +1610,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       await user.save();
 
       const resetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
-      const hasResendConfig = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
+      const hasResendConfig = Boolean(config.RESEND_API_KEY && config.RESEND_FROM_EMAIL);
 
       if (hasResendConfig) {
         try {
@@ -1573,8 +1624,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         }
       } else if (canReturnDevResetLink()) {
         devResetLink = resetLink;
-        console.log(`[DEV] Password reset link for ${user.email}: ${devResetLink}`);
-      } else if (process.env.NODE_ENV === 'production') {
+      } else if (config.NODE_ENV === 'production') {
         console.error('POST /api/auth/forgot-password: Resend is not configured in production');
       }
     }
@@ -1709,7 +1759,7 @@ app.get('/api/users/:id/public', async (req, res) => {
   try {
     const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
     if (!user) return res.status(404).json({ error: '用户不存在' });
-    const viewerId = getCurrentUserIdFromRequest(req);
+    const viewerId = await getCurrentUserIdFromRequest(req);
     const blockRelation = viewerId ? await getBlockRelation(viewerId, user.id) : {};
     const publicPostQuery = { authorId: user.id, isDeleted: false, adminHidden: { $ne: true } };
     const postCount = await Post.countDocuments(publicPostQuery);
@@ -1752,8 +1802,15 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     const {
       nickname, bio, avatar, socialLinks, isOfficialVerified,
       area, city, profileTags, interests, website, xiaohongshu,
+      contactType, contactValue,
     } = req.body;
     const user = req.user;
+    if (contactType !== undefined || contactValue !== undefined) {
+      const contact = normalizeContact(contactType === undefined ? user.contactType : contactType, contactValue === undefined ? user.contactValue : contactValue);
+      if (contact.error) return res.status(400).json({ error: contact.error });
+      user.contactType = contact.contactType;
+      user.contactValue = contact.contactValue;
+    }
     if (nickname !== undefined) {
       const nextNickname = trimProfileString(nickname, 30);
       if (!nextNickname) return res.status(400).json({ error: 'Nickname is required' });
@@ -1775,7 +1832,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       user.socialLinks = merged;
     }
     if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
-    if (avatar && avatar.startsWith('data:image')) {
+    if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
         const url = await uploadToCloudinary(avatar);
         if (url) user.avatar = url;
     }
@@ -1997,8 +2054,8 @@ app.get('/api/posts/featured', async (req, res) => {
   try {
     const limitRaw = parseInt(req.query.limit, 10);
     const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 0;
-    const currentUserId = getCurrentUserIdFromRequest(req);
-    let query = { isDeleted: false, isFeatured: true };
+    const currentUserId = await getCurrentUserIdFromRequest(req);
+    let query = { isDeleted: false, isFeatured: true, status: { $ne: 'closed' } };
     await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
@@ -2016,7 +2073,7 @@ app.get('/api/posts/:id', async (req, res) => {
     if (req.params.id === 'featured') return res.sendStatus(404);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
-    const currentUserId = getCurrentUserIdFromRequest(req);
+    const currentUserId = await getCurrentUserIdFromRequest(req);
     if (post.adminHidden && !(await isAdminUserId(currentUserId))) {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
@@ -2032,8 +2089,9 @@ app.get('/api/posts', async (req, res) => {
   try {
     const { type, keyword } = req.query;
     const { page, limit, skip } = parsePublicFeedPagination(req.query, 10);
-    let query = { isDeleted: false };
-    if (type) query.type = type;
+    let query;
+    try { query = publicPostFilters({ ...req.query, type }); }
+    catch (error) { return res.status(400).json({ error: error.message }); }
     if (keyword) {
       const kwResult = normalizeSearchKeyword(keyword);
       if (!kwResult.ok) return res.status(400).json({ error: kwResult.error });
@@ -2042,7 +2100,7 @@ app.get('/api/posts', async (req, res) => {
         query.$or = [{ title: regex }, { description: regex }, { city: regex }, { category: regex }];
       }
     }
-    const currentUserId = getCurrentUserIdFromRequest(req);
+    const currentUserId = await getCurrentUserIdFromRequest(req);
     await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
@@ -2051,7 +2109,7 @@ app.get('/api/posts', async (req, res) => {
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
     const totalCount = await Post.countDocuments(query);
     const formatted = await formatPostsResponseList(posts, currentUserId);
-    res.json({ posts: formatted, hasMore: totalCount > skip + posts.length });
+    res.json({ posts: formatted, hasMore: totalCount > skip + posts.length, filtersApplied: true });
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -2068,6 +2126,16 @@ const validatePostBody = (body) => {
   if (!body.city) return { status: 400, error: 'City/area is required' };
   return null;
 };
+
+app.get('/api/users/me/posts', authenticateToken, async (req, res) => {
+  try {
+    const { limit, skip } = parsePublicFeedPagination(req.query, 10);
+    const query = { isDeleted: false, authorId: req.user.id };
+    const posts = await Post.find(query).sort({ createdAt: -1, id: -1 }).skip(skip).limit(limit + 1).lean();
+    const hasMore = posts.length > limit;
+    res.json({ posts: await formatPostsResponseList(posts.slice(0, limit), req.user.id), hasMore });
+  } catch { res.status(500).json({ error: '无法加载你的发布，请重试。' }); }
+});
 
 const POST_USER_WRITABLE_FIELDS = ['title', 'description', 'category', 'city', 'budget', 'type', 'timeInfo'];
 
@@ -2178,6 +2246,9 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       return res.status(imageCheck.status).json({ message: imageCheck.message, error: imageCheck.message });
     }
     const postData = pickUserPostFields(req.body);
+    let lifecycle;
+    try { lifecycle = postLifecycleChanges(req.body, { creating: true, isOwner: true }); }
+    catch (error) { return res.status(400).json({ error: error.message }); }
     const contactPreference = normalizeContactPreference(rawContactPreference);
     const contactPrefErr = validateContactPreference(contactPreference);
     if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
@@ -2188,6 +2259,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       authorNickname: req.user.nickname,
       authorAvatar: req.user.avatar,
       ...postData,
+      ...lifecycle,
       contactPreference,
       imageUrls: uploadedUrls,
       isDeleted: false,
@@ -2239,6 +2311,10 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
     const allowed = POST_USER_WRITABLE_FIELDS;
+    let lifecycle;
+    try { lifecycle = postLifecycleChanges(req.body, { isOwner: post.authorId === req.user.id, previousStatus: post.status }); }
+    catch (error) { return res.status(400).json({ error: error.message }); }
+    Object.assign(post, lifecycle);
     for (const key of allowed) {
       if (req.body[key] !== undefined) post[key] = req.body[key];
     }
@@ -2400,6 +2476,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
     const post = await Post.findOne({ id: req.params.postId, isDeleted: false });
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
     if (post.adminHidden && req.user.role !== 'admin') return res.status(404).json({ error: '内容不存在或已被移除。' });
+    if (post.status === 'closed') return res.status(409).json({ error: '这条信息已结束，不再接受新的联系请求。', status: 'closed' });
     if (post.authorId === req.user.id) return res.status(400).json({ error: '不能请求自己帖子的联系方式。' });
 
     try {
@@ -2776,7 +2853,7 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
     });
     await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() });
     if (recipientId) {
-      io.to(recipientId).emit('new_message', msg);
+      await emitMessageToUser(recipientId, msg);
     }
     res.json(msg);
   } catch (e) {
@@ -3500,14 +3577,15 @@ const normalizeAiPostDraft = (raw, defaults) => {
 };
 
 const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) => {
-  const model = process.env.OPENAI_MODEL || 'gpt-5.4-mini';
+  if (isTest) throw new Error('External AI requests are disabled in tests');
+  const model = config.OPENAI_MODEL || 'gpt-5.4-mini';
   const maxTokens = lengthGuide.max >= 350 ? 1100 : 900;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${config.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model,
@@ -3548,7 +3626,7 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
 
 app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!config.OPENAI_API_KEY) {
       return res.status(503).json({ ok: false, error: 'AI 服务暂未配置，请稍后再试' });
     }
 
@@ -4194,7 +4272,8 @@ const normalizeGuideChatResponse = (aiRaw, message, category) => {
 };
 
 const callOpenAiGuideChat = async ({ message, category, intent, currentPath }) => {
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  if (isTest) throw new Error('External AI requests are disabled in tests');
+  const model = config.OPENAI_MODEL || 'gpt-4o-mini';
   const userPayload = {
     message,
     inferredIntent: intent,
@@ -4206,7 +4285,7 @@ const callOpenAiGuideChat = async ({ message, category, intent, currentPath }) =
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${config.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model,
@@ -4238,7 +4317,7 @@ const callOpenAiGuideChat = async ({ message, category, intent, currentPath }) =
 
 app.post('/api/ai/guide-chat', async (req, res) => {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!config.OPENAI_API_KEY) {
       return res.status(503).json({ ok: false, error: 'AI 问答服务暂未配置，请稍后再试' });
     }
 
@@ -4272,4 +4351,29 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.use((error, _req, res, _next) => {
+  const status = error.status || 500;
+  res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
+});
+
+return { app, server, io, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession } };
+}
+
+async function startProduction(config = process.env) {
+  if (config.NODE_ENV === 'test') throw new Error('Tests must use createApplication with isolated models');
+  const required = ['MONGO_URI', 'JWT_SECRET', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
+  const missing = required.filter(key => !config[key]);
+  if (missing.length) throw new Error(`Missing environment keys: ${missing.join(', ')}`);
+  const application = createApplication({ config });
+  await mongoose.connect(config.MONGO_URI);
+  await application.models.RevokedSession.init();
+  application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
+  return application;
+}
+
+if (require.main === module) {
+  if (process.env.NODE_ENV !== 'test') require('dotenv').config();
+  startProduction().catch(async () => { console.error('BAYLINK API startup failed; check database connectivity and required environment keys.'); await mongoose.disconnect(); process.exitCode = 1; });
+}
+
+module.exports = { createApplication, startProduction };
