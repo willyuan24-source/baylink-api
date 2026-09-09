@@ -107,4 +107,3 @@ test('an explicit consumer request can switch direction after the user previousl
   assert.equal(response.data.responseMode, 'search');
   assert.ok(response.data.suggestedActions.filter(action => action.postType).every(action => action.postType === 'client'));
 });
-
