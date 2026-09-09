@@ -259,6 +259,37 @@ test('an oversized completed answer falls back instead of slicing a sentence', a
   assert.ok(!response.data.answer.startsWith('1. 完整的说明。'));
 });
 
+test('model link destinations and Markdown markers are removed while readable labels and all steps remain', async t => {
+  const answer = [
+    '## 办理顺序',
+    '1. **水电燃气**：先确认账户责任，再参考[水电网和地址变更指南](https://www.baylink.com/guides/bay-area-utilities-address-change-guide)。',
+    '2. `宽带安装`：预约安装，并保留确认记录。',
+    '3. **地址变更**：参考[USPS 地址变更](https://www.usps.com/manage/forward.htm)。官方页面：https://www.usps.com/manage/forward.htm。随后核对重要账户。',
+    '4. 逐项检查完成状态，保留办理记录。',
+  ].join('\n');
+  const { request } = await fixture(t, { ai: { guideChat: async () => ({ answer, safetyNote: '请核实官方信息：https://www.usps.com/manage/forward.htm' }) } });
+  const response = await request('/api/ai/guide-chat', { message: '搬家后的水电网和地址变更应该按什么顺序办理？' });
+  assert.equal(response.data.responseMode, 'ai');
+  assert.equal(response.data.degraded, false);
+  assert.ok(!/https?:|www\.|baylink\.com|usps\.com|\*|`|^#/m.test(response.data.answer));
+  assert.match(response.data.answer, /水电网和地址变更指南/);
+  assert.match(response.data.answer, /USPS 地址变更/);
+  assert.match(response.data.answer, /2\. 宽带安装：预约安装，并保留确认记录。/);
+  assert.match(response.data.answer, /随后核对重要账户。/);
+  assert.ok(response.data.answer.endsWith('4. 逐项检查完成状态，保留办理记录。'));
+  assert.ok(!/https?:|usps\.com/.test(response.data.safetyNote));
+  assert.ok(response.data.suggestedGuides.every(guide => guide.url.startsWith('/guides/')));
+});
+
+test('an answer containing only a model-generated URL degrades instead of showing an empty AI answer', async t => {
+  const { request } = await fixture(t, { ai: { guideChat: async () => ({ answer: 'https://www.baylink.com/guides/fabricated', safetyNote: '' }) } });
+  const response = await request('/api/ai/guide-chat', { message: '如何安排搬家后的水电网开通？' });
+  assert.equal(response.data.degraded, true);
+  assert.equal(response.data.responseMode, 'fallback');
+  assert.ok(!response.data.answer.includes('baylink.com'));
+  assert.ok(response.data.answer.length >= 10);
+});
+
 test('missing AI configuration and provider failures are labeled degraded, and malformed input is rejected', async t => {
   const { request } = await fixture(t);
   const response = await request('/api/ai/guide-chat', { message: '怎样避免二手交易骗局？' });
