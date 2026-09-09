@@ -17,6 +17,7 @@ const { fetchAiJson } = require('./lib/aiRequest');
 const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest } = require('./lib/guideConversation');
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
+const { PROFILE_THEMES, MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -179,6 +180,9 @@ const UserSchema = new mongoose.Schema({
 
   bio: String,
   avatar: String,
+  profileTheme: { type: String, enum: [...PROFILE_THEMES], default: 'bay' },
+  statusText: { type: String, default: '', maxlength: 60 },
+  coverImage: { type: String, default: '' },
   area: String,
   city: String,
   profileTags: [String],
@@ -294,6 +298,10 @@ const MessageSchema = new mongoose.Schema({
   type: String,
   messageType: { type: String, enum: ['text', 'system', 'contact_card'], default: 'text' },
   content: String,
+  replyTo: { type: new mongoose.Schema({ id: String, senderId: String, content: String }, { _id: false }), default: undefined },
+  reactionVotes: { type: Map, of: new mongoose.Schema({ userId: String, emoji: { type: String, enum: MESSAGE_REACTIONS } }, { _id: false }), default: () => ({}) },
+  reactionVersion: { type: Number, default: 0 },
+  readBy: { type: [String], default: [] },
   contactCard: {
     postId: { type: String, default: '' },
     contactRequestId: { type: String, default: '' },
@@ -306,6 +314,8 @@ const MessageSchema = new mongoose.Schema({
   },
   createdAt: { type: Number, default: Date.now },
 });
+MessageSchema.index({ conversationId: 1, _id: 1 });
+MessageSchema.index({ conversationId: 1, id: 1 });
 const ContentSchema = new mongoose.Schema({ key: { type: String, unique: true }, value: String });
 
 const ReportSchema = new mongoose.Schema({
@@ -468,12 +478,17 @@ io.on('connection', (socket) => {
   });
 });
 
-const emitMessageToUser = async (userId, message) => {
+const emitMessageToUser = async (userId, message, event = 'new_message') => {
+  // Never trust the target room alone: every delivery is checked against the
+  // stored conversation and the socket's current authenticated session.
+  const conversation = await Conversation.findOne({ id: message.conversationId }).select('userIds').lean();
+  if (!conversation?.userIds.includes(userId)) return;
   const sockets = await io.in(userId).fetchSockets();
   await Promise.all(sockets.map(async socket => {
     try {
-      await verifySession(socket.sessionToken);
-      socket.emit('new_message', message);
+      const { user } = await verifySession(socket.sessionToken);
+      if (user.id !== userId || !conversation.userIds.includes(user.id)) return;
+      socket.emit(event, publicMessage(message));
     } catch { socket.disconnect(true); }
   }));
 };
@@ -565,14 +580,14 @@ const openOrCreateConversationBetween = async (userIdA, userIdB) => {
   let conv = await Conversation.findOne({ userIds: { $all: [userIdA, userIdB] } });
   if (!conv) {
     await assertCanMessage(userIdA, userIdB);
-    conv = await Conversation.create({ id: Date.now().toString(), userIds: [userIdA, userIdB] });
+    conv = await Conversation.create({ id: crypto.randomUUID(), userIds: [userIdA, userIdB] });
   }
   return conv;
 };
 
 const sendContactCardMessage = async ({ conversationId, senderId, recipientId, postId, contactRequestId, methods }) => {
   const msg = await Message.create({
-    id: Date.now().toString(),
+    id: crypto.randomUUID(),
     conversationId,
     senderId,
     type: 'contact_card',
@@ -940,6 +955,12 @@ const formatModerationLogForAdmin = (doc) => ({
 });
 
 const assertCanMessage = async (senderId, recipientId) => {
+  const recipient = await User.findOne({ id: recipientId }).select('id isBanned accountStatus').lean();
+  if (!recipient || recipient.isBanned || recipient.accountStatus === 'suspended') {
+    const err = new Error('暂时无法向该用户发送消息。');
+    err.statusCode = 403;
+    throw err;
+  }
   const rel = await getBlockRelation(senderId, recipientId);
   if (rel.viewerHasBlockedUser) {
     const err = new Error('你已屏蔽该用户，取消屏蔽后才能发送消息。');
@@ -1081,6 +1102,9 @@ const sanitizeProfileStringArray = (value, { maxItems = 12, maxLen = 20 } = {}) 
 };
 
 const formatPublicProfileFields = (user) => ({
+  profileTheme: PROFILE_THEMES.has(user.profileTheme) ? user.profileTheme : 'bay',
+  statusText: user.statusText || '',
+  coverImage: user.coverImage || '',
   area: user.area || '',
   city: user.city || '',
   profileTags: user.profileTags || [],
@@ -1089,6 +1113,7 @@ const formatPublicProfileFields = (user) => ({
   xiaohongshu: user.xiaohongshu || '',
   socialLinks: user.socialLinks || { linkedin: '', instagram: '' },
 });
+const PUBLIC_USER_FIELDS = 'id nickname role avatar bio profileTheme statusText coverImage area city profileTags interests website xiaohongshu socialLinks isPhoneVerified isOfficialVerified createdAt officialVerification';
 
 const OFFICIAL_VERIFICATION_TYPES = new Set([
   'realtor', 'service_provider', 'business', 'official_account', 'community_org', 'other',
@@ -1251,6 +1276,9 @@ const sanitizeUserForClient = (user) => {
   }
   obj.officialVerification = normalizeOfficialVerificationData(obj.officialVerification);
   obj.accountStatus = getAccountStatus(obj);
+  obj.profileTheme = PROFILE_THEMES.has(obj.profileTheme) ? obj.profileTheme : 'bay';
+  obj.statusText = obj.statusText || '';
+  obj.coverImage = obj.coverImage || '';
   return obj;
 };
 
@@ -1672,7 +1700,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 });
 
 app.get('/api/users/:id', async (req, res) => {
-  const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode'); // ✨ 安全：排除敏感字段
+  const user = await User.findOne({ id: req.params.id }).select(PUBLIC_USER_FIELDS);
   if (!user) return res.status(404).json({ error: '用户不存在' });
   res.json({
     id: user.id,
@@ -1760,7 +1788,7 @@ app.delete('/api/users/:userId/block', authenticateToken, async (req, res) => {
 
 app.get('/api/users/:id/public', async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id }).select('-password -verifyCode -email -contactValue -contactType -phone -phoneNormalized');
+    const user = await User.findOne({ id: req.params.id }).select(PUBLIC_USER_FIELDS);
     if (!user) return res.status(404).json({ error: '用户不存在' });
     const viewerId = await getCurrentUserIdFromRequest(req);
     const blockRelation = viewerId ? await getBlockRelation(viewerId, user.id) : {};
@@ -1805,9 +1833,14 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     const {
       nickname, bio, avatar, socialLinks, isOfficialVerified,
       area, city, profileTags, interests, website, xiaohongshu,
-      contactType, contactValue,
+      contactType, contactValue, profileTheme, statusText, coverImage,
     } = req.body;
     const user = req.user;
+    if (profileTheme !== undefined && !PROFILE_THEMES.has(profileTheme)) return res.status(400).json({ error: '个人主页主题无效。' });
+    if (statusText !== undefined && (typeof statusText !== 'string' || statusText.trim().length > 60)) return res.status(400).json({ error: '状态签名最多 60 个字符。' });
+    const avatarCheck = validateProfileImage(avatar, user.avatar);
+    const coverCheck = validateProfileImage(coverImage, user.coverImage);
+    if (!avatarCheck.ok || !coverCheck.ok) return res.status(400).json({ error: avatarCheck.error || coverCheck.error });
     if (contactType !== undefined || contactValue !== undefined) {
       const contact = normalizeContact(contactType === undefined ? user.contactType : contactType, contactValue === undefined ? user.contactValue : contactValue);
       if (contact.error) return res.status(400).json({ error: contact.error });
@@ -1822,6 +1855,8 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       user.nickname = nextNickname;
     }
     if (bio !== undefined) user.bio = trimProfileString(bio, 240);
+    if (profileTheme !== undefined) user.profileTheme = profileTheme;
+    if (statusText !== undefined) user.statusText = statusText.trim();
     if (area !== undefined) user.area = trimProfileString(area, 40);
     if (city !== undefined) user.city = trimProfileString(city, 40);
     if (website !== undefined) user.website = trimProfileString(website, 120);
@@ -1835,12 +1870,18 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       user.socialLinks = merged;
     }
     if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
-    if (typeof avatar === 'string' && avatar.startsWith('data:image')) {
-        const url = await uploadToCloudinary(avatar);
-        if (url) user.avatar = url;
+    for (const [field, imageCheck] of [['avatar', avatarCheck], ['coverImage', coverCheck]]) {
+      if (imageCheck.action === 'remove') user[field] = '';
+      if (imageCheck.action === 'upload') {
+        let url;
+        try { url = await (options.uploadProfileImage || uploadToCloudinary)(imageCheck.data); }
+        catch { return res.status(502).json({ error: '图片上传失败，请稍后重试。' }); }
+        if (typeof url !== 'string' || !url.startsWith('https://')) return res.status(502).json({ error: '图片上传失败，请稍后重试。' });
+        user[field] = url;
+      }
     }
     await user.save();
-    if (avatar || nickname !== undefined) {
+    if (avatar !== undefined || nickname !== undefined) {
       await Post.updateMany({ authorId: user.id }, { authorNickname: user.nickname, authorAvatar: user.avatar });
     }
     res.json(sanitizeUserForClient(user));
@@ -2743,14 +2784,16 @@ app.get('/api/content/:key', async (req, res) => { const content = await Content
 app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
 
 app.get('/api/conversations', authenticateToken, async (req, res) => {
+  try {
   const convs = await Conversation.find({ userIds: req.user.id });
   const result = await Promise.all(convs.map(async (c) => {
     const otherId = c.userIds.find((uid) => uid !== req.user.id);
-    const otherUser = await User.findOne({ id: otherId });
+    const otherUser = await User.findOne({ id: otherId }).select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city').lean();
     return {
       id: c.id,
       updatedAt: c.updatedAt,
-      lastMessage: formatMessagePreview(await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1 })),
+      lastMessage: formatMessagePreview(await Message.findOne({ conversationId: c.id }).sort({ createdAt: -1, _id: -1 })),
+      unreadCount: await Message.countDocuments({ conversationId: c.id, senderId: { $ne: req.user.id }, readBy: { $ne: req.user.id } }),
       otherUser: {
         id: otherUser?.id,
         nickname: otherUser?.nickname,
@@ -2758,37 +2801,47 @@ app.get('/api/conversations', authenticateToken, async (req, res) => {
         isPhoneVerified: otherUser?.isPhoneVerified,
         isOfficialVerified: otherUser?.isOfficialVerified,
         isAdmin: otherUser?.role === 'admin',
+        profileTheme: PROFILE_THEMES.has(otherUser?.profileTheme) ? otherUser.profileTheme : 'bay',
+        statusText: otherUser?.statusText || '',
+        city: otherUser?.city || '',
       },
     };
   }));
   result.sort((a, b) => b.updatedAt - a.updatedAt);
   res.json(result);
+  } catch (e) {
+    console.error('GET /api/conversations error:', e.message);
+    res.status(500).json({ error: '加载失败，请稍后再试' });
+  }
 });
 app.post('/api/conversations/open-or-create', authenticateToken, async (req, res) => {
   try {
-    const { targetUserId } = req.body;
-    if (!targetUserId || targetUserId === req.user.id) {
+    const targetUserId = typeof req.body?.targetUserId === 'string' ? req.body.targetUserId.trim() : '';
+    if (!targetUserId || targetUserId.length > 200 || targetUserId === req.user.id) {
       return res.status(400).json({ error: '无法与自己创建会话。' });
     }
     const targetUser = await User.findOne({ id: targetUserId })
-      .select('id nickname avatar isPhoneVerified isOfficialVerified role')
+      .select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city')
       .lean();
     if (!targetUser) {
       return res.status(404).json({ error: '用户不存在' });
     }
     let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } });
     if (!conv) {
+      const accountMsgErr = assertAccountCanMessage(req.user);
+      if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
       try {
         await assertCanMessage(req.user.id, targetUserId);
       } catch (blockErr) {
         return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
       }
-      conv = await Conversation.create({ id: Date.now().toString(), userIds: [req.user.id, targetUserId] });
+      conv = await Conversation.create({ id: crypto.randomUUID(), userIds: [req.user.id, targetUserId] });
     }
     res.json({
       id: conv.id,
       userIds: conv.userIds,
       updatedAt: conv.updatedAt,
+      unreadCount: await Message.countDocuments({ conversationId: conv.id, senderId: { $ne: req.user.id }, readBy: { $ne: req.user.id } }),
       otherUser: {
         id: targetUser.id,
         nickname: targetUser.nickname,
@@ -2796,6 +2849,9 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
         isPhoneVerified: targetUser.isPhoneVerified,
         isOfficialVerified: targetUser.isOfficialVerified,
         isAdmin: targetUser.role === 'admin',
+        profileTheme: PROFILE_THEMES.has(targetUser.profileTheme) ? targetUser.profileTheme : 'bay',
+        statusText: targetUser.statusText || '',
+        city: targetUser.city || '',
       },
     });
   } catch (e) {
@@ -2809,8 +2865,8 @@ app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) =
     if (!conv || !conv.userIds.includes(req.user.id)) {
       return res.status(404).json({ error: '会话不存在。' });
     }
-    const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1 });
-    res.json(msgs);
+    const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1, _id: 1 });
+    res.json(msgs.map(publicMessage));
   } catch (e) {
     console.error('GET /api/conversations/:id/messages error:', e.message);
     res.status(500).json({ error: '加载失败，请稍后再试' });
@@ -2837,10 +2893,17 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
       return res.status(429).json({ message: '发送太频繁了，请稍后再试', error: '发送太频繁了，请稍后再试' });
     }
 
-    const { type, content } = req.body;
+    const { type, content, replyToId } = req.body;
     const contentCheck = validateDirectMessageContent(type, content);
     if (!contentCheck.ok) {
       return res.status(contentCheck.status).json({ message: contentCheck.message, error: contentCheck.message });
+    }
+    let replyTo;
+    if (replyToId !== undefined) {
+      if (type !== 'text' || typeof replyToId !== 'string' || !replyToId || replyToId.length > 200) return res.status(400).json({ error: '请选择本会话中的文字消息进行回复。' });
+      const referenced = await Message.findOne({ id: replyToId, conversationId: req.params.id }).lean();
+      if (!referenced || referenced.type !== 'text' || (referenced.messageType && referenced.messageType !== 'text')) return res.status(400).json({ error: '请选择本会话中的文字消息进行回复。' });
+      replyTo = buildReplyPreview(referenced);
     }
 
     let finalContent = contentCheck.content;
@@ -2848,20 +2911,79 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
       finalContent = `我的联系方式：${formatContactTypeLabel(req.user.contactType)} ${req.user.contactValue || ''}`;
     }
     const msg = await Message.create({
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       conversationId: req.params.id,
       senderId: req.user.id,
       type,
       content: finalContent,
+      ...(replyTo ? { replyTo } : {}),
     });
     await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() });
     if (recipientId) {
       await emitMessageToUser(recipientId, msg);
     }
-    res.json(msg);
+    res.json(publicMessage(msg));
   } catch (e) {
     console.error('POST /api/conversations/:id/messages error:', e.message);
     res.status(500).json({ error: '发送失败' });
+  }
+});
+
+app.put('/api/conversations/:id/messages/:messageId/reaction', authenticateToken, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ id: req.params.id });
+    if (!conv || !conv.userIds.includes(req.user.id)) return res.status(404).json({ error: '会话不存在。' });
+    const accountError = assertAccountCanMessage(req.user);
+    if (accountError) return res.status(403).json({ error: accountError });
+    for (const otherId of conv.userIds.filter(id => id !== req.user.id)) {
+      try { await assertCanMessage(req.user.id, otherId); }
+      catch (error) { return res.status(error.statusCode || 403).json({ error: error.message }); }
+    }
+    const emoji = req.body?.emoji;
+    if (emoji !== null && !MESSAGE_REACTIONS.includes(emoji)) return res.status(400).json({ error: '请选择支持的表情回应。' });
+    if (!checkAuthRateLimit(`reaction:${req.user.id}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: '操作太频繁，请稍后再试。' });
+    // Updating a single server-derived key cannot overwrite another member's vote.
+    const key = `reactionVotes.${reactionKey(req.user.id)}`;
+    const update = emoji === null ? { $unset: { [key]: '' } } : { $set: { [key]: { userId: req.user.id, emoji } } };
+    const message = await Message.findOneAndUpdate(
+      { id: req.params.messageId, conversationId: conv.id },
+      { ...update, $inc: { reactionVersion: 1 } },
+      { new: true, runValidators: true },
+    );
+    if (!message) return res.status(404).json({ error: '消息不存在。' });
+    await Promise.all(conv.userIds.map(userId => emitMessageToUser(userId, message, 'message_updated')));
+    res.json(publicMessage(message));
+  } catch (e) {
+    console.error('PUT message reaction error:', e.message);
+    res.status(500).json({ error: '回应失败，请稍后重试。' });
+  }
+});
+
+app.post('/api/conversations/:id/read', authenticateToken, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ id: req.params.id });
+    if (!conv || !conv.userIds.includes(req.user.id)) return res.status(404).json({ error: '会话不存在。' });
+    const messageId = req.body?.messageId;
+    if (typeof messageId !== 'string' || !messageId || messageId.length > 200) return res.status(400).json({ error: '请选择已经收到的消息。' });
+    const observedIds = req.body?.messageIds === undefined ? [messageId] : req.body.messageIds;
+    if (!Array.isArray(observedIds) || !observedIds.length || observedIds.length > 500 || observedIds.at(-1) !== messageId || observedIds.some(id => typeof id !== 'string' || !id || id.length > 200)) return res.status(400).json({ error: '请选择已经收到的消息。' });
+    const uniqueIds = [...new Set(observedIds)];
+    if (!checkAuthRateLimit(`read:${req.user.id}`, { windowMs: 60000, maxRequests: 120 })) return res.status(429).json({ error: '操作太频繁，请稍后再试。' });
+    const observed = await Message.find({ id: { $in: uniqueIds }, conversationId: conv.id }).select('_id id').lean();
+    if (observed.length !== uniqueIds.length || observed.some(message => !message._id)) return res.status(404).json({ error: '消息不存在。' });
+    // Explicitly observed IDs are necessary: timestamps and ObjectIds cannot
+    // order arrivals reliably across processes. Freeze this verified set before
+    // writing so an incoming message, even one with an earlier timestamp/ID,
+    // remains unread. A stale request only adds the caller and cannot undo reads.
+    await Message.updateMany(
+      { conversationId: conv.id, _id: { $in: observed.map(message => message._id) }, senderId: { $ne: req.user.id }, readBy: { $ne: req.user.id } },
+      { $addToSet: { readBy: req.user.id } },
+    );
+    const unreadCount = await Message.countDocuments({ conversationId: conv.id, senderId: { $ne: req.user.id }, readBy: { $ne: req.user.id } });
+    res.json({ conversationId: conv.id, unreadCount });
+  } catch (e) {
+    console.error('POST conversation read error:', e.message);
+    res.status(500).json({ error: '更新未读状态失败，请稍后重试。' });
   }
 });
 
