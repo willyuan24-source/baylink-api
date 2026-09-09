@@ -221,6 +221,44 @@ test('guide answers preserve the model answer and receive actual guide text/sour
   assert.equal(context.searchPerformed, false);
 });
 
+test('a completed multistep guide answer is returned intact beyond the former 180-character cutoff', async t => {
+  const answer = [
+    '1. 先确认交接日期和租约中的费用分工，列出需要自己办理的服务，以及已经由房东或物业统一提供的项目。',
+    '2. 再确认水电燃气的服务范围、账户办理方式和开始日期，把需要衔接的时间写在同一张清单上，避免遗漏交接。',
+    '3. 查询新地址能安装哪些宽带服务，确认设备、安装时间和收费内容，再安排安装并保留预约记录。',
+    '4. 核对邮寄地址和邮件转寄安排，按实际情况更新重要账户，同时保留各项提交或确认记录。',
+    '5. 入住当天记录交接情况，测试已经开通的服务；如果预约尚未完成，及时向对应服务方确认下一步。',
+    '6. 最后按清单逐项复核，完成的项目做标记，尚未确认的费用和日期继续向相关服务方核实。',
+  ].join('\n\n');
+  assert.ok(answer.length > 180 && answer.length <= 1200);
+  const { request } = await fixture(t, { ai: { guideChat: async () => ({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ answer, safetyNote: '' }) } }] }) } });
+  const response = await request('/api/ai/guide-chat', { message: '搬到湾区新住处后，水电网和地址变更应该按什么顺序办理？请根据站内指南说明。' });
+  assert.equal(response.data.responseMode, 'ai');
+  assert.equal(response.data.degraded, false);
+  assert.equal(response.data.answer, answer);
+  assert.ok(response.data.answer.endsWith('核实。'));
+});
+
+test('length-limited or otherwise unfinished completions degrade even when their partial JSON is valid', async t => {
+  for (const finishReason of ['length', 'content_filter', null]) {
+    const partial = '1. 确认水电服务。\n2. 安排宽带安装。\n3. 邮';
+    const { request } = await fixture(t, { ai: { guideChat: async () => ({ choices: [{ finish_reason: finishReason, message: { content: JSON.stringify({ answer: partial, safetyNote: '' }) } }] }) } });
+    const response = await request('/api/ai/guide-chat', { message: '搬家后水电网和地址变更应该按什么顺序办理？' });
+    assert.equal(response.data.responseMode, 'fallback');
+    assert.equal(response.data.degraded, true);
+    assert.notEqual(response.data.answer, partial);
+  }
+});
+
+test('an oversized completed answer falls back instead of slicing a sentence', async t => {
+  const answer = `1. ${'完整的说明。'.repeat(220)}最后一句必须完整。`;
+  const { request } = await fixture(t, { ai: { guideChat: async () => ({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ answer, safetyNote: '' }) } }] }) } });
+  const response = await request('/api/ai/guide-chat', { message: '搬家后水电网应该按什么顺序办理？' });
+  assert.equal(response.data.degraded, true);
+  assert.equal(response.data.responseMode, 'fallback');
+  assert.ok(!response.data.answer.startsWith('1. 完整的说明。'));
+});
+
 test('missing AI configuration and provider failures are labeled degraded, and malformed input is rejected', async t => {
   const { request } = await fixture(t);
   const response = await request('/api/ai/guide-chat', { message: '怎样避免二手交易骗局？' });
