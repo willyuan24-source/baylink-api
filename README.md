@@ -1,0 +1,13 @@
+# BAYLINK API
+
+Run `npm test` for isolated HTTP, Socket.IO, security, search and AI behavior tests. Tests use in-memory models and block `.env` loading, MongoDB connections and external AI requests. Run `npm run check` for the server syntax check.
+
+## Search and BayBay
+
+- `GET /api/posts?keyword=...` uses literal matching with AND between up to 8 terms. Explicit synonyms include 租房/租屋/出租 and 二手/闲置; region terms also match their known cities. Category, visibility, author blocks and pagination are applied before results are returned.
+- `POST /api/ai/guide-chat` accepts `{message, context?: {categoryHint, currentPath}}`. Clear requests for listings use a read-only provider search without an AI call. It scans up to the newest 200 candidates after category, location, room-type and public-visibility filters, returning at most 3 cards. Signed-in users' author blocks apply; administrators cannot obtain hidden posts through BayBay.
+- `matchingPosts` contains only `id`, `title`, `city`, `budget`, `confirmedAt?`, `createdAt`, `status?`, `category`. Contact and author records are not returned or sent to the model. Contact-like text in card labels is redacted.
+- Monthly budget comparisons require a clear upper limit and monthly unit in the question. A listing must have a single unambiguous monthly amount in its budget, or the same bare amount explicitly described as monthly rent in its title/body. Daily/weekly prices, ranges, starting prices, per-person amounts and unclear currency/units are not treated as a confirmed monthly price. Original posts are never rewritten by this search.
+- `matchNote` explains recognized constraints and uncertainty; `responseMode` is `search`, `ai` or `fallback`. `degraded: true` means AI or retrieval failed/unavailable and the response is basic guidance, not completed search results. Active status alone is not proof of current availability.
+- Knowledge questions receive relevant excerpts and source links from `data/guide-catalog.json`, generated from the frontend's guide data with `scripts/export-guide-catalog.ts`. Regenerate and copy this catalog whenever guide content changes. The server does not browse source sites or claim live policy verification.
+- Model requests have a 12-second request/body timeout. Existing per-IP quotas remain in place. Test-only fixture providers may be injected through `createApplication({ai: {guideChat, postAssist}})`; test mode otherwise refuses external AI calls.
