@@ -602,17 +602,33 @@ const sendContactCardMessage = async ({ conversationId, senderId, recipientId, p
   // Contact cards disclose private information; an existing thread must never
   // bypass a block or recipient restriction introduced after the request.
   await assertCanMessage(senderId, recipientId);
-  const msg = await Message.create({
-    id: crypto.randomUUID(),
-    conversationId,
-    senderId,
-    type: 'contact_card',
-    messageType: 'contact_card',
-    content: 'BAYLINK 联系方式卡片',
-    contactCard: { postId, contactRequestId, methods },
-    createdAt: Date.now(),
-  });
-  await Conversation.findOneAndUpdate({ id: conversationId }, { updatedAt: Date.now() });
+  const identity = { senderId, type: 'contact_card', 'contactCard.postId': postId, 'contactCard.contactRequestId': contactRequestId };
+  // A prior attempt may have committed the card before a later write failed.
+  // Keep legacy random IDs, original contact details, timestamps and reactions.
+  let msg = await Message.findOne(identity).sort({ createdAt: 1, _id: 1 });
+  if (!msg) {
+    const digest = crypto.createHash('sha256').update(`baylink:contact-card:${contactRequestId}`).digest('hex');
+    // Message.id has no unique index. Mongo's existing unique ObjectId index
+    // makes this upsert safe across workers without an index/data migration.
+    const _id = digest.slice(0, 24);
+    try {
+      msg = await Message.findOneAndUpdate(
+        { _id, ...identity },
+        { $setOnInsert: {
+          id: `contact_${digest}`, conversationId, senderId, type: 'contact_card', messageType: 'contact_card',
+          content: 'BAYLINK 联系方式卡片', contactCard: { postId, contactRequestId, methods }, createdAt: Date.now(),
+        } },
+        { upsert: true, new: true },
+      );
+    } catch (error) {
+      if (error.code !== 11000) throw error;
+      msg = await Message.findOne({ _id, ...identity });
+      if (!msg) throw error;
+    }
+  }
+  const thread = await Conversation.findOne({ id: msg.conversationId }).select('userIds').lean();
+  if (!thread || thread.userIds.length !== 2 || !thread.userIds.includes(senderId) || !thread.userIds.includes(recipientId)) throw new Error('Contact card conversation does not match its participants');
+  await Conversation.findOneAndUpdate({ id: msg.conversationId }, { updatedAt: Date.now() });
   if (recipientId) await emitMessageToUser(recipientId, msg);
   return msg;
 };
@@ -2736,13 +2752,13 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
         methods,
       });
 
-      reqDoc.contactSnapshot = methods;
-      reqDoc.threadId = conv.id;
+      reqDoc.contactSnapshot = msg.contactCard.methods;
+      reqDoc.threadId = msg.conversationId;
       reqDoc.messageId = msg.id;
-      reqDoc.sentAt = Date.now();
+      reqDoc.sentAt = msg.createdAt;
       await reqDoc.save();
 
-      res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'approved', threadId: conv.id });
+      res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'approved', threadId: msg.conversationId });
     } catch (sendErr) {
       await ContactRequest.findOneAndUpdate(
         { id: reqDoc.id },

@@ -30,7 +30,7 @@ async function fixture(t, seed = {}) {
     try { data = JSON.parse(raw); } catch { data = raw; }
     return { status: response.status, data };
   };
-  return { models, request, tokens };
+  return { models, request, tokens, io: application.io };
 }
 
 // Freeze two genuine read results before either request continues. This makes
@@ -183,4 +183,92 @@ test('only the owner or administrator can decide a pending contact request, and 
   assert.equal((await request('/contact-requests/request/approve', { method: 'PATCH', body: {} })).status, 400);
   assert.equal(models.ContactRequest.rows[0].status, 'declined');
   assert.equal(models.Message.rows.length, 0);
+});
+
+test('contact approval retries recover downstream failures without duplicating or changing the saved card', async t => {
+  for (const failure of ['conversation-update', 'socket-notification', 'request-save']) {
+    await t.test(failure, async t => {
+      const { models, request, io } = await fixture(t);
+      let failOnce = true;
+      if (failure === 'conversation-update') {
+        const update = models.Conversation.findOneAndUpdate;
+        models.Conversation.findOneAndUpdate = async (query, mutation, options) => {
+          if (failOnce && query.id === 'existing' && mutation.updatedAt) { failOnce = false; throw new Error('Simulated conversation update failure'); }
+          return update(query, mutation, options);
+        };
+      } else if (failure === 'socket-notification') {
+        const inRoom = io.in.bind(io);
+        io.in = room => {
+          const operator = inRoom(room);
+          const fetchSockets = operator.fetchSockets.bind(operator);
+          operator.fetchSockets = async () => {
+            if (failOnce) { failOnce = false; throw new Error('Simulated socket adapter failure'); }
+            return fetchSockets();
+          };
+          return operator;
+        };
+      } else {
+        const update = models.ContactRequest.findOneAndUpdate;
+        models.ContactRequest.findOneAndUpdate = async (query, mutation, options) => {
+          const document = await update(query, mutation, options);
+          if (document && mutation.$set?.status === 'approved') {
+            const save = document.save.bind(document);
+            document.save = async () => {
+              if (failOnce) { failOnce = false; throw new Error('Simulated request metadata failure'); }
+              return save();
+            };
+          }
+          return document;
+        };
+      }
+      const first = await request('/contact-requests/request/approve', { method: 'PATCH', body: {} });
+      assert.equal(first.status, 500);
+      assert.equal(models.Message.rows.length, 1);
+      const original = structuredClone(models.Message.rows[0]);
+      assert.equal(models.ContactRequest.rows[0].status, 'pending');
+      models.Post.rows[0].contactPreference.methods[0].value = 'changed-after-the-card-was-sent';
+      const retried = await request('/contact-requests/request/approve', { method: 'PATCH', body: {} });
+      assert.equal(retried.status, 200);
+      assert.equal(models.Message.rows.length, 1, `${failure} retry must reuse the committed card`);
+      assert.deepEqual(models.Message.rows[0], original);
+      assert.equal(models.ContactRequest.rows[0].status, 'approved');
+      assert.equal(models.ContactRequest.rows[0].messageId, original.id);
+      assert.equal(models.ContactRequest.rows[0].sentAt, original.createdAt);
+      assert.deepEqual(models.ContactRequest.rows[0].contactSnapshot, original.contactCard.methods);
+    });
+  }
+});
+
+test('contact approval recovery reuses a legacy card with a random ID', async t => {
+  const legacy = { id: 'legacy-random-card-id', conversationId: 'existing', senderId: 'owner', type: 'contact_card', messageType: 'contact_card', content: 'BAYLINK 联系方式卡片', createdAt: 123, contactCard: { postId: 'listing', contactRequestId: 'request', methods: [{ type: 'wechat', value: 'original-legacy-contact' }] } };
+  const { models, request } = await fixture(t, { Message: [legacy] });
+  const response = await request('/contact-requests/request/approve', { method: 'PATCH', body: {} });
+  assert.equal(response.status, 200);
+  assert.equal(models.Message.rows.length, 1);
+  assert.equal(response.data.request.messageId, legacy.id);
+  assert.deepEqual(models.ContactRequest.rows[0].contactSnapshot, legacy.contactCard.methods);
+});
+
+test('contact card upsert handles a lost write acknowledgement and a unique-index race', async t => {
+  for (const failure of ['lost-acknowledgement', 'duplicate-key']) {
+    const { models, request } = await fixture(t);
+    const update = models.Message.findOneAndUpdate;
+    let failOnce = true;
+    models.Message.findOneAndUpdate = async (query, mutation, options) => {
+      const document = await update(query, mutation, options);
+      if (options.upsert && failOnce) {
+        failOnce = false;
+        throw Object.assign(new Error(`Simulated ${failure}`), failure === 'duplicate-key' ? { code: 11000 } : {});
+      }
+      return document;
+    };
+    const first = await request('/contact-requests/request/approve', { method: 'PATCH', body: {} });
+    if (failure === 'lost-acknowledgement') {
+      assert.equal(first.status, 500);
+      assert.equal((await request('/contact-requests/request/approve', { method: 'PATCH', body: {} })).status, 200);
+    } else assert.equal(first.status, 200);
+    assert.equal(models.Message.rows.length, 1);
+    assert.equal(models.ContactRequest.rows[0].messageId, models.Message.rows[0].id);
+    assert.equal(models.ContactRequest.rows[0].status, 'approved');
+  }
 });
