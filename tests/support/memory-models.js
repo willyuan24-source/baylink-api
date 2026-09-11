@@ -33,6 +33,7 @@ function matches(document, query) {
         if (operator === '$nin') return Array.isArray(value) ? value.every(item => !operand.includes(item)) : !operand.includes(value);
         if (operator === '$ne') return Array.isArray(value) ? !value.includes(operand) : value !== operand;
         if (operator === '$all') return Array.isArray(value) && operand.every(item => value.includes(item));
+        if (operator === '$size') return Array.isArray(value) && value.length === operand;
         if (operator === '$gte') return value >= operand;
         if (operator === '$gt') return value > operand;
         if (operator === '$lte') return value <= operand;

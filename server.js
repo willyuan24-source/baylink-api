@@ -577,15 +577,31 @@ const formatContactRequestForClient = (doc) => ({
 });
 
 const openOrCreateConversationBetween = async (userIdA, userIdB) => {
-  let conv = await Conversation.findOne({ userIds: { $all: [userIdA, userIdB] } });
-  if (!conv) {
-    await assertCanMessage(userIdA, userIdB);
-    conv = await Conversation.create({ id: crypto.randomUUID(), userIds: [userIdA, userIdB] });
+  await assertCanMessage(userIdA, userIdB);
+  const userIds = [userIdA, userIdB].sort();
+  const existing = await Conversation.findOne({ userIds: { $all: userIds, $size: 2 } }).sort({ updatedAt: -1, id: 1 });
+  if (existing) return existing;
+  // Keep legacy conversations intact. New pairs share one deterministic key in
+  // the existing unique ID index, including simultaneous opens on different workers.
+  const id = `dm_${crypto.createHash('sha256').update(JSON.stringify(userIds)).digest('hex')}`;
+  try {
+    return await Conversation.findOneAndUpdate(
+      { id },
+      { $setOnInsert: { id, userIds, updatedAt: Date.now() } },
+      { upsert: true, new: true },
+    );
+  } catch (error) {
+    if (error.code !== 11000) throw error;
+    const winner = await Conversation.findOne({ id });
+    if (!winner) throw error;
+    return winner;
   }
-  return conv;
 };
 
 const sendContactCardMessage = async ({ conversationId, senderId, recipientId, postId, contactRequestId, methods }) => {
+  // Contact cards disclose private information; an existing thread must never
+  // bypass a block or recipient restriction introduced after the request.
+  await assertCanMessage(senderId, recipientId);
   const msg = await Message.create({
     id: crypto.randomUUID(),
     conversationId,
@@ -741,19 +757,21 @@ const assertPostCommentable = (post, user) => {
 };
 
 const validateDirectMessageContent = (type, content) => {
-  const msgType = String(type || 'text').trim() || 'text';
+  if (type !== undefined && typeof type !== 'string') return { ok: false, status: 400, message: '消息类型无效' };
+  const msgType = (type || 'text').trim() || 'text';
   if (!['text', 'contact-share'].includes(msgType)) {
     return { ok: false, status: 400, message: '消息类型无效' };
   }
   if (msgType === 'contact-share') {
-    return { ok: true, content: '' };
+    return { ok: true, type: msgType, content: '' };
   }
-  const trimmed = String(content ?? '').trim();
+  if (typeof content !== 'string') return { ok: false, status: 400, message: '消息内容必须是文字' };
+  const trimmed = content.trim();
   if (!trimmed) return { ok: false, status: 400, message: '消息不能为空' };
   if (trimmed.length > MESSAGE_MAX_LENGTH) {
     return { ok: false, status: 400, message: '消息内容太长，请控制在 2000 字以内' };
   }
-  return { ok: true, content: trimmed };
+  return { ok: true, type: msgType, content: trimmed };
 };
 
 const authRateByKey = new Map();
@@ -1687,12 +1705,19 @@ app.post('/api/auth/reset-password', async (req, res) => {
     if (!user || !user.passwordResetExpires || user.passwordResetExpires <= Date.now()) {
       return res.status(400).json({ error: '重设链接无效或已过期。' });
     }
-    user.password = newPassword;
-    user.passwordResetTokenHash = undefined;
-    user.passwordResetExpires = undefined;
-    user.passwordResetUsedAt = Date.now();
-    user.passwordChangedAt = Date.now();
-    await user.save();
+    // findOneAndUpdate does not run the document save password hook. Hash first,
+    // then atomically consume the still-valid token together with the replacement.
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const changedAt = Date.now();
+    const changed = await User.findOneAndUpdate(
+      { id: user.id, passwordResetTokenHash: tokenHash, passwordResetExpires: { $gt: changedAt } },
+      {
+        $set: { password: passwordHash, passwordResetUsedAt: changedAt, passwordChangedAt: changedAt },
+        $unset: { passwordResetTokenHash: '', passwordResetExpires: '' },
+      },
+      { new: true },
+    );
+    if (!changed) return res.status(400).json({ error: '重设链接无效或已过期。' });
     res.json({ message: '密码已更新，请重新登录。' });
   } catch (e) {
     res.status(500).json({ error: '操作失败，请稍后再试' });
@@ -2701,10 +2726,10 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
     }
 
     try {
-      const conv = await openOrCreateConversationBetween(reqDoc.requesterId, req.user.id);
+      const conv = await openOrCreateConversationBetween(reqDoc.postOwnerId, reqDoc.requesterId);
       const msg = await sendContactCardMessage({
         conversationId: conv.id,
-        senderId: req.user.id,
+        senderId: reqDoc.postOwnerId,
         recipientId: reqDoc.requesterId,
         postId: reqDoc.postId,
         contactRequestId: reqDoc.id,
@@ -2723,6 +2748,7 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
         { id: reqDoc.id },
         { $set: { status: 'pending', respondedAt: null } },
       );
+      if (sendErr.statusCode) return res.status(sendErr.statusCode).json({ error: sendErr.message });
       throw sendErr;
     }
   } catch (e) {
@@ -2733,14 +2759,18 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
 
 app.patch('/api/contact-requests/:requestId/decline', authenticateToken, async (req, res) => {
   try {
-    const reqDoc = await ContactRequest.findOne({ id: req.params.requestId });
-    if (!reqDoc) return res.status(404).json({ error: '请求不存在' });
-    if (reqDoc.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
-    if (reqDoc.status !== 'pending') return res.status(400).json({ error: '该请求已处理' });
-
-    reqDoc.status = 'declined';
-    reqDoc.respondedAt = Date.now();
-    await reqDoc.save();
+    const ownerFilter = { id: req.params.requestId, status: 'pending', ...(req.user.role === 'admin' ? {} : { postOwnerId: req.user.id }) };
+    const reqDoc = await ContactRequest.findOneAndUpdate(
+      ownerFilter,
+      { $set: { status: 'declined', respondedAt: Date.now() } },
+      { new: true },
+    );
+    if (!reqDoc) {
+      const existing = await ContactRequest.findOne({ id: req.params.requestId });
+      if (!existing) return res.status(404).json({ error: '请求不存在' });
+      if (existing.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+      return res.status(400).json({ error: '该请求已处理', status: existing.status });
+    }
 
     res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'declined' });
   } catch (e) {
@@ -2826,7 +2856,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
     if (!targetUser) {
       return res.status(404).json({ error: '用户不存在' });
     }
-    let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId] } });
+    let conv = await Conversation.findOne({ userIds: { $all: [req.user.id, targetUserId], $size: 2 } }).sort({ updatedAt: -1, id: 1 });
     if (!conv) {
       const accountMsgErr = assertAccountCanMessage(req.user);
       if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
@@ -2835,7 +2865,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
       } catch (blockErr) {
         return res.status(blockErr.statusCode || 403).json({ error: blockErr.message });
       }
-      conv = await Conversation.create({ id: crypto.randomUUID(), userIds: [req.user.id, targetUserId] });
+      conv = await openOrCreateConversationBetween(req.user.id, targetUserId);
     }
     res.json({
       id: conv.id,
@@ -2900,21 +2930,21 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
     }
     let replyTo;
     if (replyToId !== undefined) {
-      if (type !== 'text' || typeof replyToId !== 'string' || !replyToId || replyToId.length > 200) return res.status(400).json({ error: '请选择本会话中的文字消息进行回复。' });
+      if (contentCheck.type !== 'text' || typeof replyToId !== 'string' || !replyToId || replyToId.length > 200) return res.status(400).json({ error: '请选择本会话中的文字消息进行回复。' });
       const referenced = await Message.findOne({ id: replyToId, conversationId: req.params.id }).lean();
       if (!referenced || referenced.type !== 'text' || (referenced.messageType && referenced.messageType !== 'text')) return res.status(400).json({ error: '请选择本会话中的文字消息进行回复。' });
       replyTo = buildReplyPreview(referenced);
     }
 
     let finalContent = contentCheck.content;
-    if (type === 'contact-share') {
+    if (contentCheck.type === 'contact-share') {
       finalContent = `我的联系方式：${formatContactTypeLabel(req.user.contactType)} ${req.user.contactValue || ''}`;
     }
     const msg = await Message.create({
       id: crypto.randomUUID(),
       conversationId: req.params.id,
       senderId: req.user.id,
-      type,
+      type: contentCheck.type,
       content: finalContent,
       ...(replyTo ? { replyTo } : {}),
     });
