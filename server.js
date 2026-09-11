@@ -76,6 +76,14 @@ app.use(cors({ origin: corsOriginCheck, credentials: true, methods: ['GET', 'POS
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Read-only process/version probe; no account, database or configuration values.
+// Render documents RENDER_GIT_COMMIT at https://render.com/docs/environment-variables.
+const releaseCommit = /^[a-f0-9]{40}$/i.test(config.RENDER_GIT_COMMIT || '') ? config.RENDER_GIT_COMMIT.toLowerCase() : null;
+app.get('/api/health', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ status: 'ok', service: 'baylink-api', commit: releaseCommit });
+});
+
 
 // --- Schemas ---
 const OfficialVerificationSchema = new mongoose.Schema(
