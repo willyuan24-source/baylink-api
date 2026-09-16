@@ -110,7 +110,7 @@ test('Pacific end dates include the final local day and allow cancellation after
   assert.equal((await put({ interested: true, lookingForBuddy: true }, 'owner', 'today-event')).status, 200);
   now += 1000;
   assert.equal(bayAreaDate(now), '2026-10-16');
-  assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', 'today-event')).status, 410);
+  assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', 'today-event')).status, 200, 'existing members may leave the public list while retaining private interest');
   assert.equal((await put({ interested: true, lookingForBuddy: true }, 'other', 'ended-event')).status, 410);
   assert.equal((await put({ interested: false, lookingForBuddy: false }, 'owner', 'ended-event')).status, 200);
   assert.equal(models.EventInterest.rows.find(row => row.eventId === 'ended-event').interested, false);
@@ -162,6 +162,51 @@ test('restricted accounts cannot opt in, limited members can withdraw, and reads
   assert.equal(models.EventInterest.rows.find(row => row.userId === 'other').lookingForBuddy, false);
   for (let i = 0; i < 180; i++) assert.equal((await request('/events/engagement?ids=future-festival')).status, 200);
   assert.equal((await request('/events/engagement?ids=future-festival')).status, 429);
+});
+
+test('limited and expired members can withdraw public buddy visibility without losing private interest', async t => {
+  for (const [status, eventId] of [['limited', 'future-festival'], ['active', 'ended-event'], ['limited', 'ended-event']]) {
+    const { put, models } = await fixture(t, {
+      users: [user('owner', { accountStatus: status })],
+      interests: [interest('owner', { eventId, lookingForBuddy: true })],
+    });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await put({ interested: true, lookingForBuddy: false }, 'owner', eventId);
+      assert.equal(result.status, 200);
+      assert.deepEqual(result.data.me, { interested: true, lookingForBuddy: false });
+      assert.equal(models.EventInterest.rows.length, 1);
+    }
+    const denied = eventId === 'ended-event' ? 410 : 403;
+    assert.equal((await put({ interested: true, lookingForBuddy: true }, 'owner', eventId)).status, denied);
+    assert.equal((await put({ interested: false, lookingForBuddy: false }, 'owner', eventId)).status, 200);
+    assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', eventId)).status, denied, 'withdrawal cannot restore a cancelled interest');
+    assert.equal(models.EventInterest.rows[0].interested, false);
+  }
+});
+
+test('restricted withdrawal cannot create absent interest or override a concurrent full cancellation', async t => {
+  for (const [status, eventId, denied] of [['limited', 'future-festival', 403], ['active', 'ended-event', 410]]) {
+    const { put, models } = await fixture(t, { users: [user('owner', { accountStatus: status })] });
+    assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', eventId)).status, denied);
+    assert.equal(models.EventInterest.rows.length, 0, 'a restricted withdrawal never upserts a membership');
+    models.EventInterest.rows.push(interest('owner', { eventId, lookingForBuddy: true }));
+    const update = models.EventInterest.findOneAndUpdate;
+    let calls = 0;
+    models.EventInterest.findOneAndUpdate = async (query, values, options) => {
+      calls++;
+      assert.deepEqual(query, { eventId, userId: 'owner', interested: true });
+      assert.equal(options.upsert, false);
+      assert.equal(Object.hasOwn(values.$set, 'interested'), false, 'public withdrawal must never set interest back to true');
+      models.EventInterest.rows[0].interested = false;
+      models.EventInterest.rows[0].lookingForBuddy = false;
+      return update(query, values, options);
+    };
+    assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', eventId)).status, denied);
+    assert.equal(calls, 1);
+    assert.equal(models.EventInterest.rows.length, 1);
+    assert.equal(models.EventInterest.rows[0].interested, false);
+    assert.equal(models.EventInterest.rows[0].lookingForBuddy, false);
+  }
 });
 
 test('catalog and database failures are explicit service failures, never invented zero counts or successful joins', async t => {
