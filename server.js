@@ -18,6 +18,7 @@ const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest } = require('./lib/guideConversation');
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
 const { PROFILE_THEMES, MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
+const { registerEventEngagement } = require('./lib/eventEngagement');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -409,6 +410,20 @@ const RevokedSessionSchema = new mongoose.Schema({
   tokenHash: { type: String, required: true, unique: true },
   expiresAt: { type: Date, required: true, expires: 0 },
 });
+const EventInterestSchema = new mongoose.Schema({
+  eventId: { type: String, required: true },
+  userId: { type: String, required: true },
+  interested: { type: Boolean, required: true, default: false },
+  lookingForBuddy: {
+    type: Boolean, required: true, default: false,
+    validate: { validator(value) { return !value || this.get('interested') === true; }, message: 'Looking for a buddy requires interest.' },
+  },
+  createdAt: { type: Number, default: Date.now },
+  updatedAt: { type: Number, default: Date.now },
+});
+EventInterestSchema.index({ eventId: 1, userId: 1 }, { unique: true });
+EventInterestSchema.index({ eventId: 1, interested: 1, lookingForBuddy: 1, userId: 1 });
+UserBlockSchema.index({ blockedUserId: 1, blockerId: 1 });
 const model = (name, schema) => injectedModels[name] || mongoose.models[name] || mongoose.model(name, schema);
 const User = model('User', UserSchema);
 const Post = model('Post', PostSchema);
@@ -421,6 +436,7 @@ const UserBlock = model('UserBlock', UserBlockSchema);
 const ContactRequest = model('ContactRequest', ContactRequestSchema);
 const ModerationLog = model('ModerationLog', ModerationLogSchema);
 const RevokedSession = model('RevokedSession', RevokedSessionSchema);
+const EventInterest = model('EventInterest', EventInterestSchema);
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -1559,6 +1575,8 @@ const authenticateToken = async (req, res, next) => {
 };
 
 // --- Routes ---
+
+registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -4431,7 +4449,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession } };
+return { app, server, io, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest } };
 }
 
 async function startProduction(config = process.env) {
@@ -4442,6 +4460,7 @@ async function startProduction(config = process.env) {
   const application = createApplication({ config });
   await mongoose.connect(config.MONGO_URI);
   await application.models.RevokedSession.init();
+  await application.models.EventInterest.init();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
   return application;
 }

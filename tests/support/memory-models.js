@@ -46,7 +46,16 @@ function matches(document, query) {
   });
 }
 
-function memoryModel(name, seed = []) {
+const aggregateValue = (row, expression) => {
+  if (typeof expression === 'string' && expression.startsWith('$')) return getPath(row, expression.slice(1));
+  if (!expression || typeof expression !== 'object') return expression;
+  if (Array.isArray(expression)) return expression.map(item => aggregateValue(row, item));
+  if (expression.$eq) { const [left, right] = aggregateValue(row, expression.$eq); return left === right; }
+  if (expression.$cond) { const [condition, yes, no] = expression.$cond; return aggregateValue(row, condition) ? aggregateValue(row, yes) : aggregateValue(row, no); }
+  return Object.fromEntries(Object.entries(expression).map(([key, value]) => [key, aggregateValue(row, value)]));
+};
+
+function memoryModel(name, seed = [], registry = {}) {
   const rows = seed.map(value => ({ _id: objectId(), ...copy(value) }));
   class Document {
     constructor(value) { Object.assign(this, copy(value)); }
@@ -87,7 +96,52 @@ function memoryModel(name, seed = []) {
     then(resolve, reject) { return this.exec().then(resolve, reject); }
   }
   return {
+    collection: { name },
     rows,
+    aggregate: async pipeline => {
+      let result = rows.map(copy);
+      for (const stage of pipeline) {
+        if (stage.$match) result = result.filter(row => matches(row, stage.$match));
+        else if (stage.$lookup) {
+          const { from, localField, foreignField, as } = stage.$lookup;
+          result = result.map(row => ({ ...row, [as]: registry[from].rows.filter(other => getPath(other, foreignField) === getPath(row, localField)).map(copy) }));
+        } else if (stage.$unwind) {
+          const field = stage.$unwind.slice(1);
+          result = result.flatMap(row => (getPath(row, field) || []).map(value => { const next = copy(row); setPath(next, field, value); return next; }));
+        } else if (stage.$group) {
+          const groups = new Map();
+          for (const row of result) {
+            const id = aggregateValue(row, stage.$group._id);
+            const key = JSON.stringify(id);
+            const group = groups.get(key) || { _id: id };
+            for (const [field, operation] of Object.entries(stage.$group)) {
+              if (field === '_id') continue;
+              if ('$sum' in operation) group[field] = (group[field] || 0) + aggregateValue(row, operation.$sum);
+              else if ('$max' in operation) group[field] = Math.max(group[field] ?? -Infinity, aggregateValue(row, operation.$max));
+              else if ('$first' in operation && !(field in group)) group[field] = aggregateValue(row, operation.$first);
+              else if (!('$first' in operation)) throw new Error(`Unsupported test aggregation accumulator: ${JSON.stringify(operation)}`);
+            }
+            groups.set(key, group);
+          }
+          result = [...groups.values()];
+        } else if (stage.$sort) {
+          result.sort((left, right) => {
+            for (const [field, direction] of Object.entries(stage.$sort)) {
+              const a = getPath(left, field), b = getPath(right, field);
+              if (a !== b) return (a < b ? -1 : 1) * direction;
+            }
+            return 0;
+          });
+        } else if (stage.$limit) result = result.slice(0, stage.$limit);
+        else if (stage.$project) result = result.map(row => {
+          const projected = {};
+          for (const [field, include] of Object.entries(stage.$project)) if (include && getPath(row, field) !== undefined) setPath(projected, field, getPath(row, field));
+          return projected;
+        });
+        else throw new Error(`Unsupported test aggregation stage: ${JSON.stringify(stage)}`);
+      }
+      return result;
+    },
     find: query => new Query(query || {}, false),
     findOne: query => new Query(query || {}, true),
     exists: async query => rows.some(row => matches(row, query)),
@@ -112,7 +166,9 @@ function memoryModel(name, seed = []) {
 }
 
 function createMemoryModels(seed = {}) {
-  return Object.fromEntries(['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession'].map(name => [name, memoryModel(name, seed[name])]));
+  const registry = {};
+  for (const name of ['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession', 'EventInterest']) registry[name] = memoryModel(name, seed[name], registry);
+  return registry;
 }
 
 module.exports = { createMemoryModels };
