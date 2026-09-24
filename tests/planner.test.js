@@ -7,7 +7,7 @@ const { inferFilters, loadPlannerCatalog, recommend } = require('../lib/planner'
 
 const NOW = Date.parse('2026-09-23T19:00:00Z');
 const SECRET = 'isolated-planner-tests-only-not-a-real-key';
-const event = (id, fields = {}) => ({ id, title: id, region: 'east-bay', city: 'Fremont', startDate: '2026-09-26', endDate: '2026-09-26', cost: 'paid', planning: { setting: 'indoor', reservation: 'required' }, ...fields });
+const event = (id, fields = {}) => ({ id, title: id, region: 'east-bay', city: 'Fremont', category: 'family', startDate: '2026-09-26', endDate: '2026-09-26', cost: 'paid', planning: { setting: 'indoor', reservation: 'required' }, ...fields });
 const catalog = { version: 1, checkedAt: '2026-09-23', events: [
   event('known', { planning: { setting: 'indoor', admissionUsd: 20, reservation: 'required' }, location: { lat: 37.55, lng: -121.98, precision: 'venue' } }),
   event('unknown'), event('expensive', { planning: { setting: 'indoor', admissionUsd: 70 } }),
@@ -104,7 +104,7 @@ test('without a date the catalog offers upcoming days and each card carries its 
 
 test('unrestricted UI defaults never hide natural date, city, budget, age, setting or travel mode', async () => {
   const response = await recommend({ body: { message: '周六Fremont\n带五岁孩子\t预算40室内公共交通', filters: { region: 'all', budget: null, childAge: null, setting: 'any', travelMode: 'any' } }, catalog, now: () => NOW });
-  assert.deepEqual(response.filters, { region: 'east-bay', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit', date: '2026-09-26' });
+  assert.deepEqual(response.filters, { region: 'east-bay', city: 'Fremont', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit', date: '2026-09-26' });
   assert.ok(response.suggestions.every(row => !row.eventId.includes('adults') && !row.eventId.includes('outside')));
   assert.ok(response.suggestions.every(row => row.unknowns.some(note => note.includes('成人陪同要求'))));
   assert.ok(response.suggestions.every(row => !/适合.{0,8}孩子/.test(row.reason)));
@@ -131,6 +131,45 @@ test('multiline questions stay inert bounded text and never permit control bytes
   assert.equal(response.filters.region, 'east-bay');
   await assert.rejects(recommend({ body: { message: 'a'.repeat(801) }, catalog, now: () => NOW }), /800/);
   await assert.rejects(recommend({ body: { message: 'Fremont\u0000' }, catalog, now: () => NOW }), /800/);
+});
+
+test('destination cities stay strict while Chinese and English departure cities do not narrow destinations', async () => {
+  const local = { ...catalog, events: [event('fremont-family'), event('oakland-family', { city: 'Oakland' })] };
+  for (const message of ['在Fremont带孩子玩', 'Fremont有什么活动', 'activities in Fremont with my kids']) {
+    const response = await recommend({ body: { message }, catalog: local, now: () => NOW });
+    assert.equal(response.filters.city, 'Fremont');
+    assert.deepEqual(response.suggestions.map(row => row.eventId), ['fremont-family']);
+  }
+  for (const message of ['从Fremont出发带孩子玩', 'Leaving from Fremont with my kids', '🚗 从Fremont出发带孩子']) {
+    const response = await recommend({ body: { message }, catalog: local, now: () => NOW });
+    assert.equal(response.filters.city, undefined);
+    assert.equal(response.filters.region, 'all');
+    assert.deepEqual(response.suggestions.map(row => row.eventId), ['fremont-family', 'oakland-family']);
+  }
+  const destination = await recommend({ body: { message: '从Fremont出发去Oakland带孩子玩' }, catalog: local, now: () => NOW });
+  assert.equal(destination.filters.city, 'Oakland');
+  assert.deepEqual(destination.suggestions.map(row => row.eventId), ['oakland-family']);
+});
+
+test('child recommendations require real family or age evidence even when the model ranks professional events first', async () => {
+  const local = { ...catalog, events: [
+    event('family-movie', { city: 'Fremont' }),
+    event('fremont-developer-sprint', { category: 'culture', audience: ['开发者与工程团队'], summary: 'AI infrastructure design sprint', city: 'Fremont' }),
+    event('oakland-family', { city: 'Oakland' }),
+    event('verified-child-workshop', { category: 'culture', city: 'Fremont', planning: { minAge: 6, maxAge: 10 } }),
+  ] };
+  const response = await recommend({ body: { message: '在Fremont带五岁孩子', filters: { region: 'all' } }, catalog: local, now: () => NOW,
+    ai: async () => ({ filters: { city: 'Oakland', childAge: null, region: 'all' }, rankedEventIds: ['fremont-developer-sprint', 'oakland-family', 'verified-child-workshop', 'family-movie'] }),
+  });
+  assert.equal(response.filters.city, 'Fremont');
+  assert.equal(response.filters.childAge, 5);
+  assert.deepEqual(response.suggestions.map(row => row.eventId), ['family-movie']);
+  assert.match(response.notices.join(' '), /只有 1 项/);
+  assert.ok(response.suggestions[0].unknowns.some(note => note.includes('成人陪同')));
+  const noEvidence = await recommend({ body: { message: '在Fremont带孩子' }, catalog: { ...local, events: [local.events[1]] }, now: () => NOW });
+  assert.deepEqual(noEvidence.suggestions, []);
+  const older = await recommend({ body: { message: '在Fremont带7岁孩子' }, catalog: local, now: () => NOW });
+  assert.ok(older.suggestions.some(row => row.eventId === 'verified-child-workshop'));
 });
 
 test('account routes require auth, reject forged owners and keep every private collection isolated', async t => {

@@ -27,20 +27,37 @@ test('published catalog defaults return three future suggestions with canonical 
   t.diagnostic(response.suggestions.map(row => `${row.eventId} (${row.date})`).join(', '));
 });
 
-test('published Fremont weekend request respects Chinese language and unrestricted UI defaults', async t => {
+test('published Fremont departure request respects Chinese language without inventing a destination restriction', async t => {
   const response = await request({ message: '这周六从 Fremont 出发，带五岁孩子，预算40美元', filters: { region: 'all', setting: 'any', travelMode: 'any' } });
-  assert.equal(response.filters.region, 'east-bay');
+  assert.equal(response.filters.region, 'all');
+  assert.equal(response.filters.city, undefined);
   assert.equal(response.filters.childAge, 5);
   assert.equal(response.filters.budget, 40);
   assert.equal(new Date(`${response.filters.date}T12:00:00Z`).getUTCDay(), 6);
   for (const suggestion of response.suggestions) {
     const event = catalog.events.find(row => row.id === suggestion.eventId);
-    assert.equal(event.region, 'east-bay');
     assert.ok(event.startDate <= response.filters.date && event.endDate >= response.filters.date);
     assert.match(suggestion.reason, /活动日期覆盖/);
     assert.ok(suggestion.unknowns.some(note => note.includes('儿童票')));
   }
   t.diagnostic(`${response.filters.date}: ${response.suggestions.length} verified catalog matches; empty means no invented alternatives.`);
+});
+
+test('live Fremont five-year-old regression returns Nemo alone and cannot be broadened by AI', async () => {
+  const body = { message: '10月2日在Fremont带五岁孩子，门票预算30美元', filters: { region: 'all', setting: 'any', travelMode: 'any' } };
+  for (const ai of [undefined, async () => ({ filters: { region: 'east-bay', city: 'Oakland', childAge: null }, rankedEventIds: ['oakland-civic-ai-design-sprint-2026', 'fremont-finding-nemo-outdoor-movie-2026'] })]) {
+    const response = await recommend({ body, catalog: checkedCatalog(), now: () => Date.parse(`${catalog.checkedAt}T19:00:00Z`), isTest: true, ai });
+    assert.equal(response.filters.city, 'Fremont');
+    assert.equal(response.filters.childAge, 5);
+    assert.deepEqual(response.suggestions.map(row => row.eventId), ['fremont-finding-nemo-outdoor-movie-2026']);
+    assert.ok(response.notices.some(note => note.includes('只有 1 项')));
+  }
+  const eastBay = await request({ message: '10月2日在东湾带五岁孩子' });
+  assert.deepEqual(eastBay.suggestions.map(row => row.eventId), ['fremont-finding-nemo-outdoor-movie-2026']);
+  const oakland = await request({ message: '10月2日在Oakland带五岁孩子' });
+  assert.deepEqual(oakland.suggestions, []);
+  const adult = await request({ message: '10月2日在Oakland参加AI技术活动' });
+  assert.ok(adult.suggestions.some(row => row.eventId === 'oakland-civic-ai-design-sprint-2026'));
 });
 
 test('published indoor recommendations use only explicitly confirmed settings', async t => {
