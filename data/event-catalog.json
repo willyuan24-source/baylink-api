@@ -36,9 +36,21 @@
     "endDate": "2026-09-26"
   },
   {
+    "id": "san-jose-cdm-mid-autumn-2026",
+    "title": "San José 儿童博物馆中秋节：舞狮与灯笼",
+    "startDate": "2026-09-26",
+    "endDate": "2026-09-26"
+  },
+  {
     "id": "sonoma-farm-trails-fall-tour-2026",
     "title": "Sonoma Farm Trails：跟着收获季，去农场过一个秋天",
     "startDate": "2026-09-26",
+    "endDate": "2026-09-27"
+  },
+  {
+    "id": "menlo-clara-africrafty-2026",
+    "title": "Menlo Park 免费故事节：Clara 的非洲故事",
+    "startDate": "2026-09-27",
     "endDate": "2026-09-27"
   },
   {
@@ -90,6 +102,12 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "sonoma-jorgensen-gallery-2026",
+    "title": "Sonoma 免费画廊夜：看水彩，也试着画",
+    "startDate": "2026-10-01",
+    "endDate": "2026-10-01"
+  },
+  {
     "id": "fremont-finding-nemo-outdoor-movie-2026",
     "title": "Fremont 星空电影：《海底总动员》",
     "startDate": "2026-10-02",
@@ -108,16 +126,40 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "oakland-oacc-mending-circle-2026",
+    "title": "Oakland 免费缝补圈：带一件想修的旧衣服",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
+  },
+  {
     "id": "rio-vista-bass-derby-2026",
     "title": "Rio Vista Bass Derby：三角洲小镇周末",
     "startDate": "2026-10-02",
     "endDate": "2026-10-04"
   },
   {
+    "id": "san-jose-first-friday-ballet-2026",
+    "title": "San José 免费美术馆之夜：New Ballet 演出季预览",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
+  },
+  {
+    "id": "san-jose-sofa-pocket-market-2026",
+    "title": "San José 花园小市集：艺术、手作与预约餐券",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
+  },
+  {
     "id": "clayton-oktoberfest-2026",
     "title": "Clayton Oktoberfest：山脚下的秋日街庆",
     "startDate": "2026-10-03",
     "endDate": "2026-10-04"
+  },
+  {
+    "id": "menlo-kasturba-gandhi-2026",
+    "title": "Menlo Park 故事节：走近 Kasturba Gandhi",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03"
   },
   {
     "id": "oakland-oaktoberfest-2026",
@@ -154,6 +196,12 @@
     "title": "Vacaville 亲子彩色跑",
     "startDate": "2026-10-03",
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "fremont-ohlone-gathering-2026",
+    "title": "Fremont Ohlone 文化聚会：听原住民讲述今天与过去",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-04"
   },
   {
     "id": "litquake-out-loud-2026",
@@ -222,6 +270,12 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "fremont-ardenwood-harvest-2026",
+    "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-11"
+  },
+  {
     "id": "napa-musictime-halloween-2026",
     "title": "Napa 图书馆 MusicTime：万圣节音乐故事",
     "startDate": "2026-10-10",
@@ -230,6 +284,12 @@
   {
     "id": "novato-nostalgia-days-2026",
     "title": "Novato Nostalgia Days 经典车展",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "palo-alto-rocks-2026",
+    "title": "Palo Alto Rocks：公园免费音乐与社区下午",
     "startDate": "2026-10-10",
     "endDate": "2026-10-10"
   },
@@ -250,6 +310,18 @@
     "title": "Sonoma County Harvest Fair 颁奖品酒晚会",
     "startDate": "2026-10-10",
     "endDate": "2026-10-10"
+  },
+  {
+    "id": "sonoma-womens-suffrage-2026",
+    "title": "Sonoma 免费历史活动：加州女性投票权 115 周年",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "sf-italian-heritage-parade-2026",
+    "title": "旧金山意大利文化游行：从渔人码头走进 North Beach",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-11"
   },
   {
     "id": "sf-ybg-dance-day-2026",
@@ -304,6 +376,30 @@
     "title": "湾区科学节：到 UCSF 动手做实验",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "sf-filbookfest-2026",
+    "title": "旧金山菲律宾裔国际书展：阅读、讲座与签书",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-18"
+  },
+  {
+    "id": "sf-sunnydale-pumpkin-fest-2026",
+    "title": "Sunnydale 免费南瓜节：The Hub 两周年社区聚会",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "sonoma-dia-movie-night-2026",
+    "title": "Sonoma 免费亡灵节电影夜：户外电影与社区游戏",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "sf-apature-literary-2026",
+    "title": "APAture 文学夜：亚太裔创作者的代际故事",
+    "startDate": "2026-10-21",
+    "endDate": "2026-10-21"
   },
   {
     "id": "bay-area-musical-improv-festival-2026",
@@ -366,8 +462,20 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "petaluma-coco-matinee-2026",
+    "title": "Petaluma 5 美元亲子电影：《寻梦环游记》",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "petaluma-witches-wizards-water-2026",
     "title": "Petaluma 水上巫师与女巫派对",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "san-mateo-boos-brews-2026",
+    "title": "San Mateo B Street 万圣节：要糖、手作与音乐",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
   },
@@ -388,6 +496,18 @@
     "title": "OMCA 亡灵节社区庆典：祭坛、音乐与创作",
     "startDate": "2026-10-25",
     "endDate": "2026-10-25"
+  },
+  {
+    "id": "sf-world-of-dumplings-2026",
+    "title": "旧金山世界饺子节：在 Ferry Building 尝不同文化",
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-25"
+  },
+  {
+    "id": "sf-apature-film-2026",
+    "title": "APAture 电影夜：五位亚太裔导演的作品与对谈",
+    "startDate": "2026-10-27",
+    "endDate": "2026-10-27"
   },
   {
     "id": "menlo-park-trunk-or-treat-2026",

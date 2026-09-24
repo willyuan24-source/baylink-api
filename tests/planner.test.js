@@ -102,6 +102,71 @@ test('without a date the catalog offers upcoming days and each card carries its 
   assert.ok(response.suggestions.every(row => row.date === '2026-09-26'));
 });
 
+test('catalog occurrence dates must be unique valid calendar dates within the published range', () => {
+  const range = { startDate: '2026-09-20', endDate: '2026-10-10' };
+  const withDates = occurrenceDates => ({ ...catalog, events: [event('sessions', { ...range, occurrenceDates })] });
+  for (const dates of [[], ['2026-09-20', '2026-10-10'], ['2026-10-10', '2026-09-26']]) {
+    assert.notEqual(loadPlannerCatalog(withDates(dates)), null);
+  }
+  for (const dates of [null, '2026-09-26', {}, ['2026-09-26', '2026-09-26'], ['2026-09-31'],
+    ['2026-09-19'], ['2026-10-11'], ['2026-09-26T12:00:00Z'], [20260926], [null]]) {
+    assert.equal(loadPlannerCatalog(withDates(dates)), null, `must reject ${JSON.stringify(dates)}`);
+  }
+  assert.notEqual(loadPlannerCatalog({ ...catalog, events: [event('continuous', range)] }), null);
+});
+
+test('exact dates exclude gaps even when AI ranks the event first, while continuous events remain eligible', async () => {
+  const local = { ...catalog, events: [
+    event('sessions', { startDate: '2026-09-24', endDate: '2026-09-28', occurrenceDates: ['2026-09-24', '2026-09-28'] }),
+    event('continuous', { startDate: '2026-09-24', endDate: '2026-09-28' }),
+  ] };
+  const gap = await recommend({ body: { filters: { date: '2026-09-26' }, message: 'Pick an event' }, catalog: local, now: () => NOW,
+    ai: async () => ({ rankedEventIds: ['sessions', 'continuous'] }),
+  });
+  assert.deepEqual(gap.suggestions.map(row => row.eventId), ['continuous']);
+  const occurrence = await recommend({ body: { filters: { date: '2026-09-28' } }, catalog: local, now: () => NOW });
+  assert.deepEqual(occurrence.suggestions.map(row => row.eventId).sort(), ['continuous', 'sessions']);
+  assert.ok(occurrence.suggestions.every(row => row.date === '2026-09-28'));
+});
+
+test('undated recommendations choose the nearest future occurrence from unordered dates and exclude unconfirmed or exhausted sessions', async () => {
+  const range = { startDate: '2026-09-20', endDate: '2026-10-31' };
+  const local = { ...catalog, events: [
+    event('sessions', { ...range, occurrenceDates: ['2026-10-10', '2026-09-20', '2026-09-26'] }),
+    event('exhausted', { ...range, occurrenceDates: ['2026-09-20', '2026-09-22'] }),
+    event('unconfirmed', { ...range, occurrenceDates: [] }),
+    event('continuous', range),
+    event('soonest', { ...range, occurrenceDates: ['2026-09-24'] }),
+  ] };
+  const response = await recommend({ body: {}, catalog: local, now: () => NOW });
+  assert.deepEqual(response.suggestions.map(({ eventId, date }) => ({ eventId, date })), [
+    { eventId: 'continuous', date: '2026-09-23' },
+    { eventId: 'soonest', date: '2026-09-24' },
+    { eventId: 'sessions', date: '2026-09-26' },
+  ]);
+  const onLastDay = await recommend({ body: {}, catalog: local, now: () => Date.parse('2026-10-11T06:59:59Z') });
+  assert.equal(onLastDay.suggestions.find(row => row.eventId === 'sessions').date, '2026-10-10');
+  const afterLastDay = await recommend({ body: {}, catalog: local, now: () => Date.parse('2026-10-11T07:00:00Z') });
+  assert.ok(!afterLastDay.suggestions.some(row => row.eventId === 'sessions'));
+});
+
+test('AI receives confirmed occurrence dates and cannot recover exhausted or unconfirmed events', async () => {
+  const range = { startDate: '2026-09-20', endDate: '2026-10-31' };
+  const local = { ...catalog, events: [
+    event('sessions', { ...range, occurrenceDates: ['2026-09-20', '2026-09-26'] }),
+    event('exhausted', { ...range, occurrenceDates: ['2026-09-20'] }),
+    event('unconfirmed', { ...range, occurrenceDates: [] }),
+  ] };
+  let payload;
+  const response = await recommend({ body: { message: 'Choose an event' }, catalog: local, now: () => NOW,
+    ai: async value => { payload = value; return { rankedEventIds: ['exhausted', 'unconfirmed', 'sessions'] }; },
+  });
+  assert.deepEqual(payload.events.map(row => row.id), ['sessions']);
+  assert.deepEqual(payload.events[0].occurrenceDates, ['2026-09-20', '2026-09-26']);
+  assert.deepEqual(response.suggestions.map(row => row.eventId), ['sessions']);
+  assert.equal(response.suggestions[0].date, '2026-09-26');
+});
+
 test('unrestricted UI defaults never hide natural date, city, budget, age, setting or travel mode', async () => {
   const response = await recommend({ body: { message: '周六Fremont\n带五岁孩子\t预算40室内公共交通', filters: { region: 'all', budget: null, childAge: null, setting: 'any', travelMode: 'any' } }, catalog, now: () => NOW });
   assert.deepEqual(response.filters, { region: 'east-bay', city: 'Fremont', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit', date: '2026-09-26' });
@@ -232,4 +297,27 @@ test('plan validation rejects unpublished stops, impossible dates, injection and
   for (const body of invalid) assert.ok([400, 404, 410].includes((await request('/plans', { as: 'owner', method: 'POST', body })).status));
   assert.equal((await request('/me', { as: 'owner' })).data.plans.length, 0);
   assert.equal((await request('/recommend', { method: 'POST', body: { filters: { budget: { $gt: 0 } } } })).status, 400);
+});
+
+test('account plans reject gap dates and unconfirmed sessions on creation and update without changing the saved plan', async t => {
+  const local = { ...catalog, events: [
+    event('sessions', { startDate: '2026-09-24', endDate: '2026-09-28', occurrenceDates: ['2026-09-24', '2026-09-28'] }),
+    event('unconfirmed', { startDate: '2026-09-24', endDate: '2026-09-28', occurrenceDates: [] }),
+  ] };
+  const { request } = await fixture(t, { catalog: local });
+  const scheduled = { title: 'Confirmed session', date: '2026-09-24', stops: [{ kind: 'event', id: 'sessions' }] };
+  for (const body of [
+    { ...scheduled, date: '2026-09-26' },
+    { ...scheduled, stops: [{ kind: 'event', id: 'unconfirmed' }] },
+  ]) assert.equal((await request('/plans', { as: 'owner', method: 'POST', body })).status, 400);
+  const saved = await request('/plans', { as: 'owner', method: 'POST', body: scheduled });
+  assert.equal(saved.status, 201);
+  const path = `/plans/${saved.data.plan.id}`;
+  assert.equal((await request(path, { as: 'owner', method: 'PUT', body: { ...scheduled, date: '2026-09-26', version: 1 } })).status, 400);
+  assert.equal((await request(path, { as: 'owner', method: 'PUT', body: { ...scheduled, stops: [{ kind: 'event', id: 'unconfirmed' }], version: 1 } })).status, 400);
+  assert.deepEqual((await request('/me', { as: 'owner' })).data.plans, [saved.data.plan]);
+  const updated = await request(path, { as: 'owner', method: 'PUT', body: { ...scheduled, date: '2026-09-28', version: 1 } });
+  assert.equal(updated.status, 200);
+  assert.equal(updated.data.plan.date, '2026-09-28');
+  assert.equal(updated.data.plan.version, 2);
 });
