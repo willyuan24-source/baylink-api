@@ -1,0 +1,524 @@
+[
+  {
+    "id": "source-070a8569f453",
+    "title": "21+ · Portola：把月底留给现场音乐",
+    "url": "https://www.portolamusicfestival.com/general-info/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "portola-2026"
+    ],
+    "endDate": "2026-09-27"
+  },
+  {
+    "id": "source-870812a05f62",
+    "title": "非洲艺术节：草坪上的鼓乐、舞蹈与市集",
+    "url": "https://ybgfestival.org/event/african-arts-festival-2026/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "sf-african-arts-festival-2026"
+    ],
+    "endDate": "2026-10-03"
+  },
+  {
+    "id": "source-075cd7aee0b3",
+    "title": "Quinteto Latino：午休听一小时木管五重奏",
+    "url": "https://ybgfestival.org/event/quinteto-latino-2026/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "sf-quinteto-latino-lunchtime-2026"
+    ],
+    "endDate": "2026-10-08"
+  },
+  {
+    "id": "source-da222a968b3c",
+    "title": "旧金山原住民日：艺术、音乐与社区聚会",
+    "url": "https://ybgfestival.org/event/sf-indigenous-peoples-day-2026/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "sf-indigenous-peoples-day-2026"
+    ],
+    "endDate": "2026-10-12"
+  },
+  {
+    "id": "source-2e800c8a1b3f",
+    "title": "旧金山 Halloween Hoopla：儿童装扮大游行",
+    "url": "https://ybgfestival.org/event/halloween-hoopla-2026/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "sf-halloween-hoopla-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-1619ba446a07",
+    "title": "Fremont 星空电影：《海底总动员》",
+    "url": "https://www.fremont.gov/government/departments/parks-recreation/events/movies-under-the-stars",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "fremont-finding-nemo-outdoor-movie-2026"
+    ],
+    "endDate": "2026-10-02"
+  },
+  {
+    "id": "source-1fe05decff30",
+    "title": "Oakland Autumn Lights：湖畔花园灯光夜",
+    "url": "https://gardensatlakemerritt.org/autumn-lights-festival-2026/",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "oakland-autumn-lights-festival-2026"
+    ],
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-1ab0aed3d3c8",
+    "title": "Berkeley 免费丰收节与种子交换",
+    "url": "https://berkeleyca.gov/community-recreation/events/harvest-festival-1",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "berkeley-harvest-festival-2026"
+    ],
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-8d9e40f04a68",
+    "title": "Emeryville 年度艺术展闭幕周末",
+    "url": "https://www.emeryarts.org/",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "emeryville-art-exhibition-closing-2026"
+    ],
+    "endDate": "2026-10-25"
+  },
+  {
+    "id": "source-4f35968d6c96",
+    "title": "OMCA 周五夜季末场：LA GENTE SF 现场音乐",
+    "url": "https://museumca.org/event/friday-nights-at-omca-with-la-gente-sf/",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "oakland-omca-friday-finale-2026"
+    ],
+    "endDate": "2026-10-30"
+  },
+  {
+    "id": "source-d724719600a6",
+    "title": "Cupertino 秋季自行车节：骑车去市政广场",
+    "url": "https://www.cupertino.gov/Events-directory/Bike-Fest-2026",
+    "kind": "event",
+    "region": "south-bay",
+    "contentIds": [
+      "cupertino-fall-bike-fest-2026"
+    ],
+    "endDate": "2026-09-26"
+  },
+  {
+    "id": "source-25d66b1af5df",
+    "title": "Silicon Valley African Film Festival",
+    "url": "https://svaff.org/programs/annual-film-festival",
+    "kind": "event",
+    "region": "south-bay",
+    "contentIds": [
+      "silicon-valley-african-film-festival-2026"
+    ],
+    "endDate": "2026-10-11"
+  },
+  {
+    "id": "source-696bcc0c2a86",
+    "title": "Campbell Oktoberfest 德式街区嘉年华",
+    "url": "https://campbelloktoberfest.com/",
+    "kind": "event",
+    "region": "south-bay",
+    "contentIds": [
+      "campbell-oktoberfest-2026"
+    ],
+    "endDate": "2026-10-18"
+  },
+  {
+    "id": "source-a215cae55f97",
+    "title": "Cupertino Monster Mash：傍晚万圣节亲子场",
+    "url": "https://www.cupertino.gov/Parks-Recreation/Events/Monster-Mash/Monster-Mash-Event",
+    "kind": "event",
+    "region": "south-bay",
+    "contentIds": [
+      "cupertino-monster-mash-2026"
+    ],
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-6213597c2802",
+    "title": "San José Avenida de Altares 亡灵节文化夜",
+    "url": "https://mhplaza.org/allevents/avenida26",
+    "kind": "event",
+    "region": "south-bay",
+    "contentIds": [
+      "san-jose-avenida-altares-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-1fad4a00bb90",
+    "title": "Redwood City Oktoberfest：收官周末，去广场听一场巴伐利亚音乐",
+    "url": "https://www.redwoodcity.org/residents/redwood-city-events/oktoberfest",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "redwood-oktoberfest-closing-weekend-2026"
+    ],
+    "endDate": "2026-09-27"
+  },
+  {
+    "id": "source-a5405e4b77ca",
+    "title": "Burlingame 图书馆中英双语故事时间",
+    "url": "https://burlingame.org/356/Events",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "burlingame-mandarin-storytime-2026"
+    ],
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "source-01b5f5c51d61",
+    "title": "San Carlos Art & Wine Faire：半岛秋日艺术节",
+    "url": "https://pacificfinearts.com/festival/san-carlos-art-wine-faire/",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "san-carlos-art-wine-faire-2026"
+    ],
+    "endDate": "2026-10-11"
+  },
+  {
+    "id": "source-aab132d211a0",
+    "title": "Menlo Park 万圣节游行与嘉年华",
+    "url": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261024-Halloween-Hoopla-Parade-and-Carnival",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "menlo-park-halloween-hoopla-2026"
+    ],
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-97928f1af7ad",
+    "title": "Palo Alto《亚当斯一家》：万圣节开演周末",
+    "url": "https://paplayers.org/show/the-addams-family/",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "palo-alto-addams-family-opening-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-12c0e94a730d",
+    "title": "Petaluma 南瓜田与玉米迷宫",
+    "url": "https://petalumapumpkinpatch.com/pricing-hours/",
+    "kind": "event",
+    "region": "north-bay",
+    "contentIds": [
+      "petaluma-pumpkin-patch-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-5a721034d163",
+    "title": "Santa Rosa 公园南瓜寻宝",
+    "url": "https://www.srcity.org/Calendar.aspx?EID=2289&calType=0&day=23&month=10&year=2026",
+    "kind": "event",
+    "region": "north-bay",
+    "contentIds": [
+      "santa-rosa-pumpkins-parks-2026"
+    ],
+    "endDate": "2026-10-30"
+  },
+  {
+    "id": "source-547728a13f13",
+    "title": "Marinwood 万圣节收获庆典",
+    "url": "https://www.marinwood.org/event/halloween-harvest-festival",
+    "kind": "event",
+    "region": "north-bay",
+    "contentIds": [
+      "marinwood-halloween-harvest-2026"
+    ],
+    "endDate": "2026-10-09"
+  },
+  {
+    "id": "source-0bddf03c158e",
+    "title": "Petaluma 水上巫师与女巫派对",
+    "url": "https://www.thefloathousepetaluma.org/events/witches-wizards-on-the-water-2026",
+    "kind": "event",
+    "region": "north-bay",
+    "contentIds": [
+      "petaluma-witches-wizards-water-2026"
+    ],
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-df1de42962b7",
+    "title": "21+ · Napa Harvest After Dark 面具晚宴",
+    "url": "https://www.theduckhorncollection.com/blogs/events/harvest-after-dark-a-halloween-masquerade-dinner",
+    "kind": "event",
+    "region": "north-bay",
+    "contentIds": [
+      "napa-harvest-after-dark-2026"
+    ],
+    "endDate": "2026-10-30"
+  },
+  {
+    "id": "source-cbd972ebfda3",
+    "title": "顺路领一根儿童棒棒糖",
+    "url": "https://www.lowes.com/diy-projects-and-ideas/workshops",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "lowes-kids-lollipop"
+    ]
+  },
+  {
+    "id": "source-be7b93f27f5e",
+    "title": "Sonoma 周三免费美术馆时光",
+    "url": "https://svma.org/visit/",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "svma-free-wednesdays-october"
+    ]
+  },
+  {
+    "id": "source-3890e57399cb",
+    "title": "东湾居民先查图书馆免费或低价门票",
+    "url": "https://aclibrary.org/faqs/",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "alameda-county-discover-go"
+    ]
+  },
+  {
+    "id": "source-6804d862e9c4",
+    "title": "Berkeley 居民可免费借工具和厨房设备",
+    "url": "https://www.berkeleypubliclibrary.org/locations/tool-lending-library/borrowing-tools",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "berkeley-tool-lending"
+    ]
+  },
+  {
+    "id": "source-b9b54d5c36e3",
+    "title": "Santa Clara Triton：展览和停车都免费",
+    "url": "https://www.tritonmuseum.org/visit",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "triton-museum-free"
+    ]
+  },
+  {
+    "id": "source-39b9551e681d",
+    "title": "持 EBT 到 Lawrence 科学馆，最多六人免费",
+    "url": "https://lawrencehallofscience.org/visitors/plan-your-visit/museums-for-all/",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "lawrence-museums-for-all"
+    ]
+  },
+  {
+    "id": "source-27ce55464e09",
+    "title": "符合收入资格，Clipper START 单程交通费五折",
+    "url": "https://mtc.ca.gov/planning/transportation/access-equity-mobility/clipperr-startsm",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "clipper-start-half-fares"
+    ]
+  },
+  {
+    "id": "source-aef92ee3f08e",
+    "title": "Richmond 免费看二战后方与湾区劳动史",
+    "url": "https://www.nps.gov/rori/planyourvisit/fees.htm",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "rosie-riveter-richmond-free"
+    ]
+  },
+  {
+    "id": "source-0216176cf2be",
+    "title": "一句暗号，$1 小杯冷萃",
+    "url": "https://www.peets.com/pages/current-offers",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "peets-orange-friday-sep25",
+      "peets-coffee-day-sep29",
+      "peets-cold-brew-pass-september"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-3504f7285080",
+    "title": "10/1 免费逛 Berkeley 艺术展厅",
+    "url": "https://bampfa.org/event/free-first-thursdays",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "bampfa-free-oct1"
+    ],
+    "endDate": "2026-10-01"
+  },
+  {
+    "id": "source-f730b8399d64",
+    "title": "10/4 免费看加州艺术、历史与自然",
+    "url": "https://museumca.org/first-sundays/",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "omca-free-oct4"
+    ],
+    "endDate": "2026-10-04"
+  },
+  {
+    "id": "source-9cc805e9ff93",
+    "title": "10/10 Santa Rosa 博物馆免费家庭日",
+    "url": "https://museumsc.org/events/",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "sonoma-county-museum-family-oct10"
+    ],
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "source-1a7aa38e5322",
+    "title": "10/20 会员到店冰酸奶八折",
+    "url": "https://www.yogurtland.com/news_posts/view/86/celebrating-20-years-of-yogurtland-anniversary-promo-how-you-can-join-the-fun",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "yogurtland-anniversary-oct20"
+    ],
+    "endDate": "2026-10-20"
+  },
+  {
+    "id": "source-27b2bb8aa7fb",
+    "title": "10/27 Muir Woods：符合身份条件免入园费",
+    "url": "https://www.nps.gov/muwo/planyourvisit/fees.htm",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "muir-woods-fee-free-oct27"
+    ],
+    "endDate": "2026-10-27"
+  },
+  {
+    "id": "source-12b270ccadc3",
+    "title": "Beauty 样品盒，认准这份门店名单",
+    "url": "https://www.target.com/c/target-beauty-studio-event/-/N-140b1",
+    "kind": "offer",
+    "region": "bay-area",
+    "contentIds": [
+      "target-beauty-sep26"
+    ],
+    "endDate": "2026-09-26"
+  },
+  {
+    "id": "source-c5567faaacd5",
+    "title": "The AI Conference：从研究到实际产品",
+    "url": "https://aiconference.com/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "ai-conference-sf-2026"
+    ],
+    "endDate": "2026-10-01"
+  },
+  {
+    "id": "source-2df126eb0d01",
+    "title": "PyLadies：AI 时代的数据科学职业与实践",
+    "url": "https://luma.com/693643qu",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "pyladies-snowflake-ai-data-2026"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-cbdd162173dc",
+    "title": "Runtime by Modal：AI 基础设施交流日",
+    "url": "https://luma.com/runtime-by-modal",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "runtime-modal-sf-2026"
+    ],
+    "endDate": "2026-10-01"
+  },
+  {
+    "id": "source-65a4c9cac59b",
+    "title": "LLMday：智能体、评测与 AI 工程实践",
+    "url": "https://llmday.com/2026-san-francisco-q4/",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "llmday-san-francisco-q4-2026"
+    ],
+    "endDate": "2026-10-01"
+  },
+  {
+    "id": "source-9513094f0497",
+    "title": "Oakland Civic Tech Design Sprint：用 AI 回应社区问题",
+    "url": "https://luma.com/cgx812ka",
+    "kind": "event",
+    "region": "east-bay",
+    "contentIds": [
+      "oakland-civic-ai-design-sprint-2026"
+    ],
+    "endDate": "2026-10-02"
+  },
+  {
+    "id": "source-90e57e4141b0",
+    "title": "SurrealDB × Mastra：智能体共享记忆与生产实践",
+    "url": "https://luma.com/surrealdb-gs07",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "surrealdb-mastra-shared-memory-2026"
+    ],
+    "endDate": "2026-10-05"
+  },
+  {
+    "id": "source-ae477352119d",
+    "title": "n8n 实作夜：做一个能带走的自动化流程",
+    "url": "https://luma.com/n8n-ntlt",
+    "kind": "event",
+    "region": "sf",
+    "contentIds": [
+      "n8n-sf-tech-week-workshop-2026"
+    ],
+    "endDate": "2026-10-05"
+  },
+  {
+    "id": "source-97e1856dfeec",
+    "title": "SF Tech Week Agent Day：开源 AI 演讲、演示与工作坊",
+    "url": "https://luma.com/7wn8tsf7",
+    "kind": "event",
+    "region": "peninsula",
+    "contentIds": [
+      "oss4ai-agent-day-menlo-park-2026"
+    ],
+    "endDate": "2026-10-09"
+  }
+]

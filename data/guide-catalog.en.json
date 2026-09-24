@@ -1180,7 +1180,7 @@
       "Rainy-day outings with kids: OMCA and The Tech, two half-day options",
       "City guides",
       "Rainy days",
-      "Family outings",
+      "Family",
       "Museums",
       "OMCA",
       "Oakland Museum of California",
@@ -1441,7 +1441,7 @@
       "City guides",
       "Palo Alto",
       "Baylands",
-      "Family outings",
+      "Family",
       "Birdwatching",
       "Wetlands",
       "Half-day routes",
@@ -1837,7 +1837,7 @@
       "San Jose",
       "The Tech Interactive",
       "Japantown",
-      "Family outings"
+      "Family"
     ],
     "categories": [
       "other",
@@ -2105,7 +2105,7 @@
       "October weekends",
       "Local Bay Area",
       "Half-day routes",
-      "Family outings",
+      "Family",
       "October 2026"
     ],
     "categories": [
@@ -2186,7 +2186,7 @@
       "San José",
       "History Park",
       "Emma Prusch",
-      "Family outings",
+      "Family",
       "Local history",
       "October"
     ],
@@ -2224,7 +2224,7 @@
       "Tilden",
       "Little Farm",
       "Nature watching",
-      "Family outings",
+      "Family",
       "October"
     ],
     "categories": [
@@ -2699,7 +2699,7 @@
       "October local guides",
       "Fremont",
       "Ardenwood",
-      "Family outings",
+      "Family",
       "Historic farm"
     ],
     "categories": [
@@ -2893,6 +2893,55 @@
       {
         "title": "Napa Open Space District: Bothe park",
         "url": "https://napaoutdoors.org/parks/bothe-napa-valley-state-park/"
+      }
+    ],
+    "updatedAt": "2026-09-23",
+    "editionMonth": "2026-10"
+  },
+  {
+    "title": "Your first Bay Area AI event: choose, register and leave with something useful",
+    "slug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+    "url": "/guides/bay-area-ai-week-tech-week-first-timer-guide-2026",
+    "summary": "Turn late-September and October AI events into a useful afternoon or evening. Choose by interest, location, ticket and approval requirements, with a preparation checklist and conversation template.",
+    "keywords": [
+      "Your first Bay Area AI event: choose, register and leave with something useful",
+      "Getting started with AI and tech events",
+      "AI events",
+      "AI Week SF",
+      "SF Tech Week",
+      "Open-source community",
+      "Menlo Park",
+      "Oakland"
+    ],
+    "categories": [
+      "other",
+      "part-time"
+    ],
+    "content": "You do not have to start with an expensive full-day conference. Decide whether you want to meet a community, understand a technical problem or build a small project, then choose one event that fits.\n\nSeparate the two event weeks from individual sessions\n\nAI Week SF runs Sep 27–Oct 3 across Bay Area venues. The AI Conference is one conference within the week, not the entire program.\nSF Tech Week runs Oct 5–11 with independent hosts. The main calendar is a directory, and each event requires its own registration. LA Tech Week on Oct 12–18 is outside the Bay Area.\nMulti-day conferences follow daily schedules, not continuous overnight opening. Free events may still require approval or physical identification.\n\nChoose by what you want to take away\n\nStart building: the Oct 5 n8n evening lets you practice a small workflow. Bring a laptop and prepare your account.\nExplore career changes: the Sep 30 PyLadies discussion suits data, analytics and product interests. Bring a practical work question.\nAlready building AI systems: Runtime and LLMday overlap on Oct 1, so pick one. Consider shared memory on Oct 5 or Agent Day on Oct 9 by topic.\nInterested in AI's community impact: Oakland's Oct 2 Civic Tech Design Sprint combines civic needs, design and prototypes across disciplines.\n\nConfirm four things when registering\n\nStatus: application, waitlist, approval and purchased ticket are different states. Follow the organizer's confirmation.\nCost: check ticket eligibility, fees and refund terms. Student or promotional passes are not available to everyone.\nLocation: use the current registration address. If it is not public, wait for the host rather than copying an old calendar or company headquarters.\nPreparation: check ID, laptop, account and age requirements. A free event does not imply free tools.\n\nGive your travel plan room\n\nEditorial suggestion: choose one main event per outing. Menlo Park's 135 Constitution Dr is not a walkable transfer from downtown San Francisco, and Oakland requires a separate cross-bay travel plan. Within SF, group venues by Mission Rock, Dogpatch, Union Square or downtown. Check the return trip before adding an evening event. Map pins identify venues, not entrances or travel directions.\n\nDo not let an old calendar send you to the wrong city\nDuring this check, LLMday's old Redwood City registration link redirected to San Francisco; the current venue is 55 Stockton St. Save your confirmation and official registration page, then check again on the day.\n\nStart your first conversation with one concrete question\n\nA 30-second introduction\nI am working on / learning ____. I came to understand ____. Your point about ____ interested me. After using it in practice, what should I watch out for?\n\nEditorial suggestion: leave with one technique to try, one project to read about and one person happy to stay in touch. Ask before contacting people or sharing photos. Attendance does not guarantee interviews, funding or jobs.\n\nBack to AI in the Bay\nChoose events by date and purpose, then register with the organizer.",
+    "sources": [
+      {
+        "title": "AI Week SF: official week and calendar",
+        "url": "https://aiweeksf.com/"
+      },
+      {
+        "title": "a16z Tech Week: official San Francisco calendar",
+        "url": "https://www.tech-week.com/calendar/sf"
+      },
+      {
+        "title": "The AI Conference: tickets and daily agenda",
+        "url": "https://aiconference.com/"
+      },
+      {
+        "title": "LLMday: current San Francisco venue and program",
+        "url": "https://llmday.com/2026-san-francisco-q4/"
+      },
+      {
+        "title": "n8n: build-night preparation",
+        "url": "https://luma.com/n8n-ntlt"
+      },
+      {
+        "title": "SurrealDB × Mastra: admission requirements",
+        "url": "https://luma.com/surrealdb-gs07"
       }
     ],
     "updatedAt": "2026-09-23",

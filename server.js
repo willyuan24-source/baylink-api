@@ -19,6 +19,8 @@ const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, 
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
 const { PROFILE_THEMES, MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 const { registerEventEngagement } = require('./lib/eventEngagement');
+const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
+const { registerSourceMonitor } = require('./lib/sourceMonitor');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -437,6 +439,7 @@ const ContactRequest = model('ContactRequest', ContactRequestSchema);
 const ModerationLog = model('ModerationLog', ModerationLogSchema);
 const RevokedSession = model('RevokedSession', RevokedSessionSchema);
 const EventInterest = model('EventInterest', EventInterestSchema);
+const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -1577,6 +1580,9 @@ const authenticateToken = async (req, res, next) => {
 // --- Routes ---
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
+registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
+const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
+server.once('close', sourceMonitor.stop);
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -4449,7 +4455,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest } };
+return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4461,7 +4467,11 @@ async function startProduction(config = process.env) {
   await mongoose.connect(config.MONGO_URI);
   await application.models.RevokedSession.init();
   await application.models.EventInterest.init();
+  await application.models.PlannerAccount.init();
+  await application.models.SourceMonitorSnapshot.init();
+  await application.models.SourceMonitorLease.init();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
+  application.sourceMonitor.start();
   return application;
 }
 

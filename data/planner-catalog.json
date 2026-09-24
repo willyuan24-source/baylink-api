@@ -1,0 +1,2978 @@
+{
+  "version": 1,
+  "checkedAt": "2026-09-23",
+  "events": [
+    {
+      "id": "petaluma-pumpkin-patch-2026",
+      "title": "Petaluma 南瓜田与玉米迷宫",
+      "startDate": "2026-09-25",
+      "endDate": "2026-10-31",
+      "dateLabel": "9 月 25 日–10 月 31 日 · 每日开放，天气可能影响",
+      "region": "north-bay",
+      "city": "Petaluma",
+      "venue": "Petaluma Pumpkin Patch · 450 Stony Point Road",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "基础入场和停车免费 · 大迷宫与部分项目另付",
+      "summary": "在 Sonoma County 的农场挑南瓜、看农场动物，或挑战每年重新设计的玉米迷宫。周五、周六可以把行程留到傍晚，体验夜间迷宫。",
+      "plan": [
+        "周日至周四 10:00–19:00，周五和周六至 22:00；迷宫入场比园区关门提前 30 分钟停止。",
+        "免费基础项目与大迷宫、跳跳设施等收费项目分开；买南瓜及餐饮另算，先看官网价格再选项目。",
+        "编辑建议穿适合泥土路面的鞋、晚间带手电；雨天先查农场首页的关闭公告。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "秋季出游"
+      ],
+      "officialUrl": "https://petalumapumpkinpatch.com/pricing-hours/",
+      "sourceLabel": "Petaluma Pumpkin Patch",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "redwood-oktoberfest-closing-weekend-2026",
+      "title": "Redwood City Oktoberfest：收官周末，去广场听一场巴伐利亚音乐",
+      "startDate": "2026-09-25",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 25–27 日 · 按票面场次入场",
+      "region": "peninsula",
+      "city": "Redwood City",
+      "venue": "Courthouse Square",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "收官周末不含酒票 $15–27；21+ 含酒票 $25–37",
+      "summary": "Courthouse Square 的节庆帐篷里有德国音乐、舞蹈与餐饮。这里精选最后一个周末的场次，适合先约好同行的人，再挑一段时间坐下来感受节日气氛。",
+      "plan": [
+        "需要按场次买票，官网强烈建议提前购票；周五 17:00–22:00，周六 12:00–16:00／17:00–21:00，周日 11:00–15:00／16:00–20:00。",
+        "上述为 9 月 25–27 日 Festival Seating 票价范围，按年龄及是否含酒选择；餐食另付，最终价格及票务条件以官方购票页为准。",
+        "儿童可以参加，但官方说明没有专门儿童游乐区；不允许宠物或外带食物。全活动另有较早场次，9 月 21 日休场。"
+      ],
+      "audience": [
+        "现场音乐",
+        "朋友聚会",
+        "节庆餐饮"
+      ],
+      "officialUrl": "https://www.redwoodcity.org/residents/redwood-city-events/oktoberfest",
+      "sourceLabel": "City of Redwood City",
+      "imageKey": "sep26-redwood-oktoberfest",
+      "verifiedAt": "2026-09-11",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "cupertino-fall-bike-fest-2026",
+      "title": "Cupertino 秋季自行车节：骑车去市政广场",
+      "startDate": "2026-09-26",
+      "endDate": "2026-09-26",
+      "dateLabel": "9 月 26 日 · 09:00–13:00",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "venue": "Civic Center Plaza · 10300 Torre Avenue",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费参加 · 餐饮另付",
+      "summary": "骑行、单车游戏和手工把市政广场变成周六上午的社区聚会。适合正在建立骑车习惯的家庭，也能和附近骑友一起参加。",
+      "plan": [
+        "从市府页面查看骑行路线、项目时段与登记表，选择适合自己的活动。",
+        "活动免费，食品和饮料另外购买；编辑建议自带水瓶。",
+        "编辑建议戴好头盔并提前检查刹车、轮胎，带孩子时按其能力选择路线。"
+      ],
+      "audience": [
+        "骑行家庭",
+        "社区户外"
+      ],
+      "officialUrl": "https://www.cupertino.gov/Events-directory/Bike-Fest-2026",
+      "sourceLabel": "City of Cupertino",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "pacific-coast-fog-fest-2026",
+      "title": "Pacifica Fog Fest：海风、手作摊位与三处音乐舞台",
+      "startDate": "2026-09-26",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 26–27 日 · 10:00–18:00",
+      "region": "peninsula",
+      "city": "Pacifica",
+      "venue": "Palmetto Avenue",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮、购物与部分体验另付",
+      "summary": "沿 Palmetto Avenue 逛艺术手作、找一组喜欢的现场乐队，再闻着海风慢慢走。Fog Fest 让半岛海边小城变成周末集市，不喝酒也能安排出一段有趣的散步。",
+      "plan": [
+        "两天均为免费入场，官网未列普通观众预约要求；商家摊位申请与观众参加是两回事。",
+        "想看巡游就选周六：9 月 26 日 10:00 开始；只想听歌逛摊，可以先按官网舞台表挑时段。",
+        "编辑建议带一件防风外套，给沿街步行留出余量；停车、道路限制与现场活动规则出发前查官网。"
+      ],
+      "audience": [
+        "海边周末",
+        "现场音乐",
+        "艺术手作"
+      ],
+      "officialUrl": "https://pacificcoastfogfest.com/",
+      "sourceLabel": "Fog Fest Organizing Group",
+      "imageKey": "sep26-fog-fest",
+      "verifiedAt": "2026-09-11",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "portola-2026",
+      "title": "21+ · Portola：把月底留给现场音乐",
+      "startDate": "2026-09-26",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 26–27 日 · 周末",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Pier 80 · San Francisco",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "购票入场 · 单日／两日票 · 限 21 岁及以上",
+      "summary": "Pier 80 的两日音乐节同时使用室内和户外空间，适合想认真看演出的成年乐迷。先按喜欢的演出选一天，再决定单日或两日票。",
+      "plan": [
+        "入场当天必须年满 21 岁，并携带有效的政府签发实体照片证件；未满 21 岁即使有成年人陪同也不能入场。",
+        "从官网进入 AXS 购票并准备可刷新的 Mobile ID，截图不能代替门票；购票前确认日期，现场不允许离场后再次入场。",
+        "Pier 80 没有活动停车位，先看官方进出场交通说明并安排返程；餐饮另收费，演出时间与阵容可能调整。"
+      ],
+      "audience": [
+        "21 岁及以上",
+        "现场音乐爱好者",
+        "成年朋友出游"
+      ],
+      "officialUrl": "https://www.portolamusicfestival.com/general-info/",
+      "sourceLabel": "Portola · Goldenvoice",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-portola",
+      "relatedGuideSlug": "bay-area-without-car-guide",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "minAge": 21,
+        "reservation": "required"
+      }
+    },
+    {
+      "id": "presidio-chuseok-festival-2026",
+      "title": "Presidio Chuseok：在大草坪体验韩国秋夕",
+      "startDate": "2026-09-26",
+      "endDate": "2026-09-26",
+      "dateLabel": "9 月 26 日 · 11:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Main Parade Lawn · 105 Montgomery Street, Presidio",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮与购物另付",
+      "summary": "韩国秋夕节走进 Presidio：在草坪上看文化演出，逛摊位，认识韩国的收获节传统。官方将第八届活动列为面向全年龄的免费庆典，适合亲友一起参加。",
+      "plan": [
+        "Presidio 官方列明 9 月 26 日 11:00–16:00、免费入场；当前未列观众必须预约，个别体验按主办方现场安排。",
+        "活动在 Main Parade Lawn，定位可用 105 Montgomery Street；餐饮及商品需另付，免费入场不等于免费餐食。",
+        "官方提供 Muni 43 与 Presidio GO 的到达提示；开车则要另算停车费，返程前再核对班次。"
+      ],
+      "audience": [
+        "文化体验",
+        "亲子家庭",
+        "草坪周末"
+      ],
+      "officialUrl": "https://presidio.gov/explore/events/chuseok-festival-2026",
+      "sourceLabel": "Presidio · Korean Center, Inc.",
+      "imageKey": "sep26-chuseok",
+      "verifiedAt": "2026-09-11",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sonoma-farm-trails-fall-tour-2026",
+      "title": "Sonoma Farm Trails：跟着收获季，去农场过一个秋天",
+      "startDate": "2026-09-26",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 26–27 日 · 各农场时间不同",
+      "region": "north-bay",
+      "city": "Sonoma County",
+      "venue": "Sonoma County 多个参与农场 · 以登记后路线目录为准",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "免费登记且必须登记 · 部分农场体验另收费或预约",
+      "summary": "秋季开放农场周末让你认识种植者、看看农场动物，也有收获季主题体验。它是一条自己安排的乡间路线，每一站的开放日、收费和项目各不相同。",
+      "plan": [
+        "必须先在官方页面免费登记，主办方会发送参与农场目录与地图；部分热门体验仍需向农场另行预约。",
+        "逐站核对开放日期、时间和费用，不要把免费登记理解成所有采摘、体验或农产品都免费。",
+        "编辑建议挑地理位置接近的两三站，穿适合土路的鞋；动物接触、采摘与停车按各农场说明进行。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "秋季出游",
+        "农场体验"
+      ],
+      "officialUrl": "https://www.farmtrails.org/experience/weekend-along-the-farm-trails/",
+      "sourceLabel": "Sonoma County Farm Trails",
+      "imageKey": "sep26-farm-trails",
+      "verifiedAt": "2026-09-11",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "novato-youth-folk-dance-2026",
+      "title": "Novato 国际青少年民间舞蹈节",
+      "startDate": "2026-09-27",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 27 日 · 11:30 开始",
+      "region": "north-bay",
+      "city": "Novato",
+      "venue": "Nativity of Christ Greek Orthodox Church · 1110 Highland Drive",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "社区活动免费 · 餐饮另购",
+      "summary": "Minoan Dancers 邀请湾区家庭观看不同传统的青少年舞蹈演出，并参加亲子手工。现场有希腊风味餐食，把周日午间留给一场小型社区文化交流。",
+      "plan": [
+        "活动于 11:30 开始；在主办方网页登记同行人数，帮助准备儿童手工材料。",
+        "表演及社区活动免费，gyros、spanakopita、baklava 等餐食另售；按家庭需要预留餐饮预算。",
+        "编辑建议带孩子先看一段舞蹈，再参加手工；官方未公布结束时间，返程前再看当日通知。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "社区文化"
+      ],
+      "officialUrl": "https://www.minoans.com/youth-festival",
+      "sourceLabel": "Minoan Dancers",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "petaluma-fall-antique-faire-2026",
+      "title": "Petaluma 秋季古董集市：把周日留给旧物寻宝",
+      "startDate": "2026-09-27",
+      "endDate": "2026-09-27",
+      "dateLabel": "9 月 27 日 · 08:00–16:00",
+      "region": "north-bay",
+      "city": "Petaluma",
+      "venue": "Historic Downtown Petaluma",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 购物与餐饮自理",
+      "summary": "古董首饰、旧书、餐具、布艺与家具摊位走进 Petaluma 的历史街区。第 40 届秋季集市不必买东西也能逛，喜欢复古家居的人尤其容易发现小惊喜。",
+      "plan": [
+        "活动免费入场，官网未列观众预约要求；网页上的摊位候补名单针对商家，不影响普通访客逛集市。",
+        "9 月 27 日 08:00–16:00，雨天照常；编辑建议先定购物预算，想买家具时带好尺寸，提前考虑如何运回。",
+        "主办方提醒现场拥挤，宠物请留在家中；逛完可在周边咖啡馆休息，餐饮需另行付款。"
+      ],
+      "audience": [
+        "复古家居",
+        "旧物寻宝",
+        "小城散步"
+      ],
+      "officialUrl": "https://petalumadowntown.com/antique-show",
+      "sourceLabel": "Petaluma Downtown Association",
+      "imageKey": "sep26-petaluma-antique",
+      "verifiedAt": "2026-09-11",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "ai-conference-sf-2026",
+      "title": "The AI Conference：从研究到实际产品",
+      "startDate": "2026-09-29",
+      "endDate": "2026-10-01",
+      "dateLabel": "9 月 29 日–10 月 1 日 · 分日议程，非连续开放",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Pier 48 · Shed A & B",
+      "cost": "paid",
+      "costLabel": "付费会议 · 依票种包含不同日期与项目",
+      "summary": "三天会议涵盖 AI 应用、基础设施、研究与企业实践。9 月 29 日为 Day ZERØ，正式大会在 9 月 30 日与 10 月 1 日；先按自己的目标选择票种和议程。",
+      "plan": [
+        "官网确认地点为 Pier 48 的 Shed A 与 B；每天报到、演讲及晚间项目各有时段。",
+        "先核对 Day ZERØ 与两日大会的票种范围，周边活动不能凭活动周名称默认入场。",
+        "编辑建议选两条最相关的议题线，给交流和返程留出空档。"
+      ],
+      "audience": [
+        "AI 从业者",
+        "产品与创业团队"
+      ],
+      "officialUrl": "https://aiconference.com/",
+      "sourceLabel": "The AI Conference",
+      "location": {
+        "lat": 37.7758086,
+        "lng": -122.3853487,
+        "label": "Pier 48",
+        "sourceUrl": "https://luma.com/tzsufkl6",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "pyladies-snowflake-ai-data-2026",
+      "title": "PyLadies：AI 时代的数据科学职业与实践",
+      "startDate": "2026-09-30",
+      "endDate": "2026-09-30",
+      "dateLabel": "9 月 30 日 · 18:00–20:30 PDT",
+      "region": "peninsula",
+      "city": "Menlo Park",
+      "venue": "Snowflake Silicon Valley AI Hub · 135 Constitution Dr, 8th Floor",
+      "cost": "free",
+      "costLabel": "免费 · 需提前登记并遵守社区行为准则",
+      "summary": "听数据科学工作者讨论 AI 如何改变分析工作、团队技能和系统可信度。适合数据分析、产品及希望了解这一领域的人，活动由支持女性等边缘性别人群的 PyLadies 社区组织。",
+      "plan": [
+        "18:00 报到，地点为 135 Constitution Dr 八楼；主办方列出旁边车库可自行停车。",
+        "提前在官方页面登记，并阅读 PyLadies 行为准则；不把登记理解为招聘或面试安排。",
+        "编辑建议准备一个关于自己工作流程或学习方向的问题，讨论时更容易获得具体反馈。"
+      ],
+      "audience": [
+        "数据与产品从业者",
+        "职业探索"
+      ],
+      "officialUrl": "https://luma.com/693643qu",
+      "sourceLabel": "PyLadies San Francisco",
+      "location": {
+        "lat": 37.4850527,
+        "lng": -122.1762167,
+        "label": "135 Constitution Dr",
+        "sourceUrl": "https://luma.com/693643qu",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor"
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "llmday-san-francisco-q4-2026",
+      "title": "LLMday：智能体、评测与 AI 工程实践",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-01",
+      "dateLabel": "10 月 1 日 · 09:00–17:30 PDT 议程",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Harness SF HQ · 55 Stockton St",
+      "cost": "paid",
+      "costLabel": "学生／求职者 $49，自费 $99，企业 $299 · 资格依票种",
+      "summary": "两条并行议程讨论大模型、智能体安全、检索和评测。当前主办方确认地点已在旧金山 55 Stockton St，不要沿用旧日历里的 Redwood City 地址。",
+      "plan": [
+        "主办方议程为 09:00–17:30，Luma 登记窗口写至 18:00；出发前复核更新。",
+        "自费票限个人付款，学生／求职者票有资格条件；Community Hero 免费名额需要推广协助与批准。",
+        "编辑建议从两条议程里选一条主线，带笔记本记录可回去试用的方法。"
+      ],
+      "audience": [
+        "开发者与工程团队",
+        "学生与求职者"
+      ],
+      "officialUrl": "https://llmday.com/2026-san-francisco-q4/",
+      "sourceLabel": "LLMday / SREday",
+      "location": {
+        "lat": 37.7863267,
+        "lng": -122.4066852,
+        "label": "Harness SF HQ",
+        "sourceUrl": "https://luma.com/llmday-2026-san-francisco-q4",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor"
+      }
+    },
+    {
+      "id": "mill-valley-film-festival-2026",
+      "title": "Mill Valley Film Festival：北湾电影之旅",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-11",
+      "dateLabel": "10 月 1–11 日 · 按影片场次",
+      "region": "north-bay",
+      "city": "Mill Valley / San Rafael / Larkspur",
+      "venue": "Sequoia Cinema · Smith Rafael Film Center · Lark Theater; selected screenings at BAMPFA",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "按场次购票 · 特别活动单独计价",
+      "summary": "第 49 届电影节把独立电影、世界电影和创作者交流带到 Marin 各影院，也有 Berkeley 场次。挑一部想看的片，再安排附近用餐，比跨城赶多场更从容。",
+      "plan": [
+        "日期已公布为 10 月 1–11 日；购票时看清影院城市，同一电影节的场地并不相邻。",
+        "在官方片单选择语言、字幕及场次；门票、通票和特别晚会的入场范围分别核对。",
+        "编辑建议只安排同一城市内的场次，为停车、检票和散场留出时间。"
+      ],
+      "audience": [
+        "电影爱好者",
+        "朋友约会"
+      ],
+      "officialUrl": "https://www.mvff.com/press-info/",
+      "sourceLabel": "California Film Institute / Mill Valley Film Festival",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "cinema-night",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "runtime-modal-sf-2026",
+      "title": "Runtime by Modal：AI 基础设施交流日",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-01",
+      "dateLabel": "10 月 1 日 · 08:30–18:30 PDT",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "The Midway · 900 Marin St",
+      "cost": "free",
+      "costLabel": "免费申请 · 需主办方批准",
+      "summary": "Modal 在 The Midway 举办面向 AI 开发者的线下活动。想了解部署、推理和工程基础设施的人，可先查看主办方议程，再决定是否申请参加。",
+      "plan": [
+        "报名页要求主办方批准，收到确认后再安排到场；本页不显示实时余位。",
+        "登记时段为 08:30–18:30，具体讲座与报到要求按主办方更新。",
+        "编辑建议把当天留给这一场，避免与同日的 LLMday 或大会全日票重复安排。"
+      ],
+      "audience": [
+        "开发者与工程团队"
+      ],
+      "officialUrl": "https://luma.com/runtime-by-modal",
+      "sourceLabel": "Modal",
+      "location": {
+        "lat": 37.7492774,
+        "lng": -122.3856944,
+        "label": "The Midway",
+        "sourceUrl": "https://luma.com/runtime-by-modal",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "santa-rosa-pumpkins-parks-2026",
+      "title": "Santa Rosa 公园南瓜寻宝",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-30",
+      "dateLabel": "10 月 1–30 日 · 公园日出至日落开放",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Participating Santa Rosa city parks · Prize pickup: Finley Community Center, 2060 W. College Avenue",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "寻宝免费 · 找到后须由成人陪同领奖",
+      "summary": "在指定市立公园寻找隐藏的南瓜卡片，把日常散步变成亲子寻宝。找到后按背面说明去 Finley Community Center 领奖，适合住在 Sonoma County 的家庭分次参与。",
+      "plan": [
+        "先从官网选择参与公园；仅在公园日出至日落的开放时间寻找，不能把全市任意公园都当作活动点。",
+        "南瓜卡片会重新藏放至 10 月 23 日；10 月 30 日为最后领奖日，月底前往不保证仍有卡片。",
+        "领奖地点为 Finley Community Center 前台，周一至周五 08:00–18:00，须有成人在场；周末寻宝后另排工作日领奖。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "公园散步"
+      ],
+      "officialUrl": "https://www.srcity.org/Calendar.aspx?EID=2289&calType=0&day=23&month=10&year=2026",
+      "sourceLabel": "City of Santa Rosa",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "garden-walk",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "fremont-finding-nemo-outdoor-movie-2026",
+      "title": "Fremont 星空电影：《海底总动员》",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-02",
+      "dateLabel": "10 月 2 日 · 活动 18:00–22:00，日落后放映",
+      "region": "east-bay",
+      "city": "Fremont",
+      "venue": "Central Park Performance Pavilion · Lake Elizabeth",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费观影 · 自带零食",
+      "summary": "在 Lake Elizabeth 旁的户外舞台草地看《海底总动员》。这是市政府秋季星空电影的十月场，适合吃过晚饭后带毯子出门。",
+      "plan": [
+        "市历活动时间为 18:00–22:00，电影日落后开始；现场有字幕。",
+        "官方建议自带毯子、低背沙滩椅和零食；本系列没有餐车。",
+        "编辑建议提前到场，带一件保暖外套并确认散场后的回程交通。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "东湾居民"
+      ],
+      "officialUrl": "https://www.fremont.gov/government/departments/parks-recreation/events/movies-under-the-stars",
+      "sourceLabel": "City of Fremont",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "outdoor-cinema",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "hardly-strictly-bluegrass-2026",
+      "title": "Hardly Strictly Bluegrass 免费音乐节",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 2–4 日 · 连续三天",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Hellman Hollow, Lindley & Marx Meadows · Golden Gate Park",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 不需要门票",
+      "summary": "金门公园的草地音乐节回到十月第一个周末。可以只挑半天和一两个舞台，带着野餐垫听音乐；不用先买音乐节门票。",
+      "plan": [
+        "周五入口 11:00 开放，周六、周日 09:00 开放；每天演出至 19:00。",
+        "2026 演出时间表与可打印日程已上线；先选舞台和场次，再核对入口与携包要求。",
+        "官方鼓励公共交通；自行车和滑板等不能带入场内，骑车者先查外围停放点。"
+      ],
+      "audience": [
+        "音乐爱好者",
+        "朋友出游"
+      ],
+      "officialUrl": "https://hardlystrictlybluegrass.com/info-faq-2026/",
+      "sourceLabel": "Hardly Strictly Bluegrass",
+      "relatedGuideSlug": "golden-gate-park-free-car-free-day-guide",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "oakland-civic-ai-design-sprint-2026",
+      "title": "Oakland Civic Tech Design Sprint：用 AI 回应社区问题",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-02",
+      "dateLabel": "10 月 2 日 · 13:00–17:00 PDT",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Community Hub · 1955 Broadway",
+      "cost": "free",
+      "costLabel": "免费 · 需提前登记",
+      "summary": "/dev/color 与 Dream Machine Academy 邀请技术、设计和社区参与者，一起围绕 Oakland Civic Assembly 提出的问题做设计冲刺。重点是理解需求、原型与反馈。",
+      "plan": [
+        "这是 Oakland Tech Week 的具体场次，也列于 AI Week SF 日历；不要把两个活动周当成同一张通票。",
+        "在官方 Luma 页面登记，13:00 到 Community Hub 参加跨专业协作。",
+        "编辑建议带一个你观察到的社区问题；无需把自己包装成 AI 专家才参与讨论。"
+      ],
+      "audience": [
+        "社区参与者",
+        "设计与产品"
+      ],
+      "officialUrl": "https://luma.com/cgx812ka",
+      "sourceLabel": "/dev/color / Dream Machine Academy",
+      "location": {
+        "lat": 37.808664,
+        "lng": -122.2687041,
+        "label": "Community Hub",
+        "sourceUrl": "https://luma.com/cgx812ka",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "rio-vista-bass-derby-2026",
+      "title": "Rio Vista Bass Derby：三角洲小镇周末",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 2–4 日 · 主要街区活动在周六",
+      "region": "north-bay",
+      "city": "Rio Vista",
+      "venue": "Downtown Main Street · Sacramento River waterfront",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "钓鱼赛成人 $55、儿童 $10 · 餐饮另付",
+      "summary": "Solano County 河边小镇的传统钓鱼赛今年安排在十月第一个周末，周六可看车展、听现场音乐并逛本地店。2026 年活动已调整，不包含主办方烟花。",
+      "plan": [
+        "比赛为 10 月 2–4 日；周六车展 09:00–15:00，市中心音乐另按官网节目表。",
+        "参赛报名及年龄分组另有规则；只逛市区不等于报名参赛，也不包含餐厅消费。",
+        "编辑建议把周六作为小镇半日游，直接查看 2026 调整公告，不沿用往年烟花和大型摊位区行程。"
+      ],
+      "audience": [
+        "小镇漫游",
+        "户外爱好者"
+      ],
+      "officialUrl": "https://www.bassfestival.com/bass-festival",
+      "sourceLabel": "Rio Vista Chamber of Commerce",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "clayton-oktoberfest-2026",
+      "title": "Clayton Oktoberfest：山脚下的秋日街庆",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 3–4 日 · 周六 11–20 时，周日 11–18 时",
+      "region": "east-bay",
+      "city": "Clayton",
+      "venue": "Main Street · Downtown Clayton",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "免费入场 · 酒票只在现场售卖，游乐另付",
+      "summary": "到 Contra Costa County 的 Clayton 听巴伐利亚音乐、逛街区和嘉年华。活动由社区协会筹办，适合把东湾小镇散步与节庆放在同一天。",
+      "plan": [
+        "10 月 3 日 11:00–20:00，10 月 4 日 11:00–18:00；嘉年华的独立时段以其官网页面为准。",
+        "官方明确入场免费，酒票仅活动现场出售；不要向网上私信卖家付款购买入场或酒票。",
+        "官方列出 Diablo View Middle School 免费停车与接驳；出发前核对当日末班车时间。"
+      ],
+      "audience": [
+        "Contra Costa 居民",
+        "朋友出游"
+      ],
+      "officialUrl": "https://claytonoktoberfest.com/info/",
+      "sourceLabel": "Clayton Business and Community Association",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "oakland-oaktoberfest-2026",
+      "title": "Oakland Oaktoberfest：Dimond 街区啤酒节",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 3–4 日 · 周六 11–19 时，周日 10–17 时",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Dimond District · Fruitvale Avenue & MacArthur Boulevard",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "各年龄免费入场 · 餐饮及品酒另付",
+      "summary": "Dimond 街区的秋季社区节庆，有德国风味餐饮、多个音乐舞台和亲子活动区。可以免费逛摊听歌，也可以按预算选择饮品套餐。",
+      "plan": [
+        "周六 11:00–19:00，周日 10:00–17:00；两天起止时间不同。",
+        "免费入场与付费饮品套餐分开，儿童活动区并不需要购买品酒套餐才能进入节庆。",
+        "编辑建议先选一段音乐和亲子区，再留时间逛 Dimond 本地商户；饮酒者提前安排回程。"
+      ],
+      "audience": [
+        "东湾居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.oaktoberfest.org/",
+      "sourceLabel": "Oaktoberfest / Dimond community associations",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "redwood-city-portfest-2026",
+      "title": "Redwood City PortFest：走进湾边工作港口",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10 月 3 日 · 10:30–15:30",
+      "region": "peninsula",
+      "city": "Redwood City",
+      "venue": "Port of Redwood City · 475 Seaport Court",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费社区节庆 · 餐饮购物另付，研究船参观需预约",
+      "summary": "在港口听音乐、逛海事机构展位，了解货运港的日常。亲子活动和餐车也在现场，适合把半岛周末安排到平时较少走访的滨水区。",
+      "plan": [
+        "活动入口为 475 Seaport Court，时间 10:30–15:30。",
+        "想参观 Robert G. Brownlee 研究船，先从官网预约具体时段，不把免费节庆理解为随到随上船。",
+        "编辑建议先安排研究船时段，再留时间听音乐和逛展位；海边带防风外套。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "海事与科学"
+      ],
+      "officialUrl": "https://www.redwoodcityport.com/portfest2026",
+      "sourceLabel": "Port of Redwood City",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-african-arts-festival-2026",
+      "title": "非洲艺术节：草坪上的鼓乐、舞蹈与市集",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10 月 3 日 · 11:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Great Lawn · Yerba Buena Gardens",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 官网有 RSVP，食品和商品另付",
+      "summary": "湾区的非洲及非洲裔文化团体在 Yerba Buena Gardens 带来现场音乐和舞蹈，也有儿童互动与摊位。可以边听鼓乐边认识不同文化传统。",
+      "plan": [
+        "活动在 Great Lawn，11:00–16:00；从官网查看更新并使用免费 RSVP 入口。",
+        "餐饮和商品另售；参加舞蹈、鼓乐等互动项目按现场安排。",
+        "编辑建议带野餐垫和外套，挑几段演出慢慢看。"
+      ],
+      "audience": [
+        "社区文化",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://ybgfestival.org/event/african-arts-festival-2026/",
+      "sourceLabel": "Yerba Buena Gardens Festival / Duniya Dance and Drum Company",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sunnyvale-diwali-2026",
+      "title": "Sunnyvale Diwali：市中心印度文化节",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10 月 3 日 · 11:30–19:30",
+      "region": "south-bay",
+      "city": "Sunnyvale",
+      "venue": "Downtown · 230 S. Murphy Avenue",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "所有人免费入场 · 餐饮、购物及部分体验另付",
+      "summary": "SACAS 把印度古典舞、宝莱坞表演、手作和美食带到 Murphy Avenue。带孩子可以先看儿童区，也适合朋友午后吃饭、听音乐和逛街。",
+      "plan": [
+        "活动为 10 月 3 日 11:30–19:30；这是社区节庆日期，按主办方日程安排出行。",
+        "基础入场免费；Diya 彩绘比赛、摊位购物和餐饮按各项目说明参加。",
+        "编辑建议从 Sunnyvale 市中心步行进入活动区，带水和防晒，先选一段感兴趣的表演。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "文化体验"
+      ],
+      "officialUrl": "https://www.sacas.org/",
+      "sourceLabel": "South Asian Cultural Association of Sunnyvale",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "tiburon-wine-festival-2026",
+      "title": "Tiburon Wine Festival：北湾品酒午后",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10 月 3 日 · 13:00–16:00",
+      "region": "north-bay",
+      "city": "Tiburon",
+      "venue": "Downtown Tiburon · check ticket for event entrance",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "需购票 · 仅限 21 岁及以上",
+      "summary": "Tiburon 商会的年度品酒节集合酒庄、本地餐厅与现场音乐，适合成年朋友安排一个三小时的慢节奏午后。参加前先确认门票及渡轮回程。",
+      "plan": [
+        "10 月 3 日 13:00–16:00；票价及包含项目在官方售票入口查看。",
+        "主办方要求年满 21 岁并携带政府签发照片证件；婴儿、推车和动物不能进入场内。",
+        "活动风雨照常、门票不退款；乘渡轮时自行核对当天往返时刻，不只看单程班次。"
+      ],
+      "audience": [
+        "21 岁以上",
+        "朋友约会"
+      ],
+      "officialUrl": "https://www.tiburonchamber.org/tiburon-wine-festival/",
+      "sourceLabel": "Tiburon Peninsula Chamber of Commerce",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "vacaville-learn-your-colors-run-2026",
+      "title": "Vacaville 亲子彩色跑",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10 月 3 日 · 09:00–12:00",
+      "region": "north-bay",
+      "city": "Vacaville",
+      "venue": "Will C. Wood High School",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "需报名 · 6 岁以下免费，其余见市府报名页",
+      "summary": "Kiwanis 与 Vacaville 市府合作的首届彩色跑，设 1 英里和 5K 路线，不计时，走跑皆可。收益支持本地学前教育及青少年服务项目。",
+      "plan": [
+        "10 月 3 日上午举行，所有参与者都应按官方入口报名；6 岁以下的免费资格不要当成免登记。",
+        "每位参与者含一件白色活动 T 恤；有彩粉环节，穿能弄脏的衣服并自带替换衣物。",
+        "1 英里路线适合较短行程和推车家庭；对彩粉敏感或需要无障碍安排时，先联系主办方。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "Solano County 居民"
+      ],
+      "officialUrl": "https://color-run.vacavillekiwanis.org/",
+      "sourceLabel": "Kiwanis Club of Vacaville / City of Vacaville",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "litquake-out-loud-2026",
+      "title": "Litquake Out Loud 与独立出版书市",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 4 日 · 11:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Yerba Buena Gardens · Esplanade stage · 750 Howard Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "活动免费 · 鼓励登记，非强制",
+      "summary": "湾区有色人种与 LGBTQ+ 写作者带来户外文学活动，同场有独立出版社书市和现场音乐。适合发现本地小出版社、听朗读，也可只留一两个小时逛书。",
+      "plan": [
+        "到 Yerba Buena Gardens 的 Esplanade 舞台区域，活动为 11:00–16:00；注意与同月其他 Litquake 场次区分。",
+        "可通过主办方免费登记，现场参与不以登记为前提；买书另行支付。",
+        "编辑建议带外套和装书的袋子；详细策展人与音乐名单仍待公布，出发前看官方更新。"
+      ],
+      "audience": [
+        "读者与写作者",
+        "社区文化"
+      ],
+      "officialUrl": "https://www.litquake.org/events-1/litquake-out-loud-1",
+      "sourceLabel": "Litquake",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "little-italy-san-jose-festival-2026",
+      "title": "San Jose Little Italy 十周年街头节",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-04",
+      "dateLabel": "10 月 4 日 · 11:00–19:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "Little Italy business district · 323 Sharks Way",
+      "category": "food",
+      "cost": "mixed",
+      "costLabel": "现场演出免费 · 餐饮、品酒等另付",
+      "summary": "Little Italy 的十周年节庆把意大利餐饮、汽车展示、手工艺和音乐放在同一片街区。适合先吃午餐，再选一段现场演出慢慢听。",
+      "plan": [
+        "节庆 11:00–19:00，开幕式 11:30；官网有分时段演出表。",
+        "官方明确现场娱乐免费；品酒、餐饮及其他体验应另查价格，不能理解为全场免费消费。",
+        "编辑建议到场先看车展区域，再挑一场音乐；需要公共交通时查看官方 Parking & Public Transit 页。"
+      ],
+      "audience": [
+        "美食爱好者",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.littleitalysj.com/little-italy-san-jose-festival",
+      "sourceLabel": "Little Italy San Jose",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-francisco-fleet-week-2026",
+      "title": "San Francisco Fleet Week：海湾与城市活动周",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-12",
+      "dateLabel": "10 月 4–12 日 · 各项目日期不同",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "San Francisco waterfront · Fisherman's Wharf / Pier 27 and other venues",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "部分城市活动免费 · 指定航空展观赏区售票",
+      "summary": "Fleet Week 包含舰船参观、音乐会、航空展及社区展示。官方已确认活动周和 10 月 10–11 日免费 Fleet Fest；按想看的项目选一天即可。",
+      "plan": [
+        "活动周为 10 月 4–12 日，不代表每天都有航空表演；出发前查看官方 Calendar of Events。",
+        "免费 Fleet Fest 标注 10 月 10–11 日，场地包括 Fisherman's Wharf SkyStar Wheel 与 Pier 27。",
+        "指定观赏区门票不等于全周通票；编辑建议搭公共交通、带防风衣，节目以当天公告为准。"
+      ],
+      "audience": [
+        "航空爱好者",
+        "城市漫游"
+      ],
+      "officialUrl": "https://fleetweeksf.org/",
+      "sourceLabel": "San Francisco Fleet Week Association",
+      "relatedGuideSlug": "sf-fishermans-wharf-pier39-guide",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "sf-wharf",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "n8n-sf-tech-week-workshop-2026",
+      "title": "n8n 实作夜：做一个能带走的自动化流程",
+      "startDate": "2026-10-05",
+      "endDate": "2026-10-05",
+      "dateLabel": "10 月 5 日 · 18:00–21:00 PDT",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Digital Jungle SF · 972 Mission St",
+      "cost": "free",
+      "costLabel": "免费活动 · 需登记，工具服务费用另计",
+      "summary": "n8n 社区大使带领参与者了解工作流和 AI 智能体，并留出动手构建与问答时间。适合刚接触自动化的人，也适合想把现有流程改得更顺手的开发者。",
+      "plan": [
+        "主办方要求带笔记本电脑和 n8n 账户；Cloud 免费试用可用，Claude Code 不是必需。",
+        "活动登记免费，不代表第三方模型、云服务或试用期后的使用也免费。",
+        "编辑建议先选一个简单任务，使用虚构联系人练习，演示前检查自动发送的收件人。"
+      ],
+      "audience": [
+        "自动化入门",
+        "开发者与工程团队"
+      ],
+      "officialUrl": "https://luma.com/n8n-ntlt",
+      "sourceLabel": "n8n Community Events",
+      "location": {
+        "lat": 37.7817154,
+        "lng": -122.4083666,
+        "label": "Digital Jungle SF",
+        "sourceUrl": "https://luma.com/n8n-ntlt",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "surrealdb-mastra-shared-memory-2026",
+      "title": "SurrealDB × Mastra：智能体共享记忆与生产实践",
+      "startDate": "2026-10-05",
+      "endDate": "2026-10-05",
+      "dateLabel": "10 月 5 日 · 17:00–20:30 PDT",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "AWS Builder Loft · 525 Market St, Courtyard Entrance",
+      "cost": "free",
+      "costLabel": "免费申请 · 18 岁以上，需批准及实体照片证件",
+      "summary": "开发者交流智能体如何共享上下文，以及事实更新后怎样保持回答可靠。主办方安排演讲、现场演示、问答和交流，适合已开始搭建智能体系统的人。",
+      "plan": [
+        "17:00 开门，18:00 欢迎环节，20:30 结束；地点使用 525 Market St 的庭院入口。",
+        "须年满 18 岁并先获得报名批准；报到需政府签发的实体照片证件，不接受电子证件。",
+        "编辑建议准备一个记忆更新、权限或检索问题，听完演示后再讨论实现取舍。"
+      ],
+      "audience": [
+        "开发者与工程团队"
+      ],
+      "officialUrl": "https://luma.com/surrealdb-gs07",
+      "sourceLabel": "SurrealDB / Mastra",
+      "location": {
+        "lat": 37.7904122,
+        "lng": -122.3993448,
+        "label": "AWS Builder Loft",
+        "sourceUrl": "https://luma.com/surrealdb-gs07",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "minAge": 18,
+        "reservation": "required"
+      }
+    },
+    {
+      "id": "sf-quinteto-latino-lunchtime-2026",
+      "title": "Quinteto Latino：午休听一小时木管五重奏",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "dateLabel": "10 月 8 日 · 12:30–13:30",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Great Lawn · Yerba Buena Gardens",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费户外演出",
+      "summary": "湾区室内乐团 Quinteto Latino 用长笛、双簧管、单簧管、圆号和巴松管演绎拉丁美洲音乐。适合在市中心上班的人把午休留给现场音乐。",
+      "plan": [
+        "12:30 准时开演，地点在 Mission Street 第三、第四街之间的花园大草坪。",
+        "主办方提供草坪座位，椅子有限，可带低背草坪椅或野餐垫。",
+        "编辑建议提前买好午餐并留出回办公室的时间，避免把一小时演出排得太赶。"
+      ],
+      "audience": [
+        "午休出游",
+        "室内乐爱好者"
+      ],
+      "officialUrl": "https://ybgfestival.org/event/quinteto-latino-2026/",
+      "sourceLabel": "Yerba Buena Gardens Festival",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "silicon-valley-african-film-festival-2026",
+      "title": "Silicon Valley African Film Festival",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-11",
+      "dateLabel": "10 月 8–11 日 · 按场次",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "Historic Hoover Theater",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "电影及活动按票种入场",
+      "summary": "通过非洲及非洲侨民电影人的作品认识不同地区的故事。四天活动包含电影放映与文化交流，适合在南湾安排一次有讨论空间的观影。",
+      "plan": [
+        "官方确认 10 月 8–11 日在 Historic Hoover Theater 举行；具体片单和时刻以购票页为准。",
+        "挑选影片时核对语言、字幕、适龄信息以及映后交流；不要把不同活动的门票混用。",
+        "编辑建议先定一场主要放映，再为映后交流和附近用餐留出时间。"
+      ],
+      "audience": [
+        "电影爱好者",
+        "文化体验"
+      ],
+      "officialUrl": "https://svaff.org/programs/annual-film-festival",
+      "sourceLabel": "Silicon Valley African Film Festival",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "cinema-night",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "marinwood-halloween-harvest-2026",
+      "title": "Marinwood 万圣节收获庆典",
+      "startDate": "2026-10-09",
+      "endDate": "2026-10-09",
+      "dateLabel": "10 月 9 日 · 17:00–18:30",
+      "region": "north-bay",
+      "city": "San Rafael",
+      "venue": "Marinwood Park · 775 Miller Creek Road",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "儿童 $25 · 成人免费 · 兄弟姐妹优惠 $5",
+      "summary": "放学后到 Marinwood Park 玩嘉年华游戏、装饰南瓜，提前感受万圣节。主办方面向 10 岁及以下儿童，推荐年龄为 3–10 岁。",
+      "plan": [
+        "票在活动现场购买，成人免费；儿童票 $25，兄弟姐妹优惠 $5。",
+        "每名儿童的南瓜装饰项目含一个南瓜；充气游乐设施视天气安排，饮料另购。",
+        "编辑建议穿方便活动的装扮并带外套，17:00 到场可从容参加项目。"
+      ],
+      "audience": [
+        "3–10 岁儿童",
+        "北湾家庭"
+      ],
+      "officialUrl": "https://www.marinwood.org/event/halloween-harvest-festival",
+      "sourceLabel": "Marinwood Community Services District",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "category": "culture",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "september-edition",
+      "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "id": "oss4ai-agent-day-menlo-park-2026",
+      "title": "SF Tech Week Agent Day：开源 AI 演讲、演示与工作坊",
+      "startDate": "2026-10-09",
+      "endDate": "2026-10-09",
+      "dateLabel": "10 月 9 日 · 12:00–18:00 PDT",
+      "region": "peninsula",
+      "city": "Menlo Park",
+      "venue": "Silicon Valley AI Hub · 135 Constitution Dr",
+      "cost": "free",
+      "costLabel": "免费申请 · 需主办方批准",
+      "summary": "Open Source for AI 在 Menlo Park 安排技术演讲、项目演示与并行工作坊。想认识湾区开源社区，或了解搜索、数据流与智能体工程，可从这场开始选题。",
+      "plan": [
+        "12:00 报到与午餐，13:00 起有演讲和工作坊，16:00–17:00 为项目演示；以更新议程为准。",
+        "报名须经批准；参加活动、申请演讲和申请展示项目是不同入口。",
+        "编辑建议选择一场工作坊或一段演讲，不把两间同时进行的内容都排进自己的日程。"
+      ],
+      "audience": [
+        "开发者与工程团队",
+        "开源社区"
+      ],
+      "officialUrl": "https://luma.com/7wn8tsf7",
+      "sourceLabel": "Open Source for AI",
+      "location": {
+        "lat": 37.4850527,
+        "lng": -122.1762167,
+        "label": "Silicon Valley AI Hub",
+        "sourceUrl": "https://luma.com/7wn8tsf7",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor"
+      }
+    },
+    {
+      "id": "burlingame-mandarin-storytime-2026",
+      "title": "Burlingame 图书馆中英双语故事时间",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 11:00 开始",
+      "region": "peninsula",
+      "city": "Burlingame",
+      "venue": "Burlingame Main Library · Children's Room · 480 Primrose Road",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆免费活动 · 限 0–6 岁儿童与照护者",
+      "summary": "Jamie Gao 用普通话与英语带孩子听故事，把语言练习和想象力放进周六上午。适合希望在半岛找到中文活动的幼儿家庭。",
+      "plan": [
+        "10 月 10 日 11:00 到主图书馆儿童室；不要把活动地点误认成 Easton 分馆。",
+        "面向 0–6 岁儿童及照护者；未带儿童的成人不能参加，请按年龄选择家庭成员。",
+        "编辑建议稍早到馆找好座位，结束后让孩子选一本双语绘本；借书需要适用的图书证。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "中文学习"
+      ],
+      "officialUrl": "https://burlingame.org/356/Events",
+      "sourceLabel": "Burlingame Public Library",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "minAge": 0,
+        "maxAge": 6
+      }
+    },
+    {
+      "id": "cupertino-pooch-plunge-2026",
+      "title": "Cupertino Pooch Plunge：狗狗专属游泳场",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 09:00–12:45，按 45 分钟场次",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "venue": "Blackberry Farm Park · 21979 San Fernando Avenue",
+      "category": "outdoors",
+      "cost": "paid",
+      "costLabel": "每只狗单独付费报名 · 按居民资格核对当前票价",
+      "summary": "Blackberry Farm 的泳池为狗狗开放四个短时段，主人在岸边陪同。适合习惯水和其他狗狗的宠物，报名时先选好场次。",
+      "plan": [
+        "场次从 09:00、10:00、11:00、12:00 开始，每场 45 分钟；每只狗须单独登记。",
+        "一名带领者最多照看两只狗；人不能下水，狗狗须完成应有疫苗接种。",
+        "不能强迫狗狗入水；编辑建议带毛巾和饮水，狗狗不适应时在岸边休息。"
+      ],
+      "audience": [
+        "养狗家庭",
+        "南湾周末"
+      ],
+      "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/Pooch-Plunge",
+      "sourceLabel": "City of Cupertino",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "napa-musictime-halloween-2026",
+      "title": "Napa 图书馆 MusicTime：万圣节音乐故事",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 10:30 开始",
+      "region": "north-bay",
+      "city": "Napa",
+      "venue": "Napa County Library · 580 Coombs Street",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费入场 · 儿童须有成人陪同",
+      "summary": "Festival Napa Valley 的免费亲子音乐项目，由巴松管和键盘演奏带来带点神秘、又轻松好玩的万圣节声音。适合把图书馆当作周六上午的小小音乐厅。",
+      "plan": [
+        "10 月 10 日 10:30 在 Napa County Library 开始；官方没有列结束时间，不预设演出时长。",
+        "活动免费，所有儿童都必须有成人陪同；到场后按图书馆工作人员指引入座。",
+        "编辑建议演出前后留一点借阅时间，再安排市中心短步行；无需为听音乐购买酒庄体验。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "Napa County 居民"
+      ],
+      "officialUrl": "https://www.festivalnapavalley.org/calendar/musictime-napa-jay-benson-jesse-micek/",
+      "sourceLabel": "Festival Napa Valley / Napa County Library",
+      "relatedGuideSlug": "bay-area-library-starter-guide",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "novato-nostalgia-days-2026",
+      "title": "Novato Nostalgia Days 经典车展",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 10:00–16:00",
+      "region": "north-bay",
+      "city": "Novato",
+      "venue": "Grant Avenue · Redwood Boulevard to 7th Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "观众入场免费 · 餐饮购物另付",
+      "summary": "Downtown Novato 的 Grant Avenue 变成经典车、改装车与现场音乐的步行展区。带长辈看老车、和孩子找喜欢的颜色，能排成轻松的 Marin 周六半日游。",
+      "plan": [
+        "本条收录 10 月 10 日白天车展，开放 10:00–16:00；10 月 9 日晚另有巡游，不能沿用白天时段。",
+        "免费参观车辆，现场餐饮、摊位消费及参展车辆报名另算；不要把免费观众入场理解成免费参展。",
+        "编辑建议按 Grant Avenue 步行路线安排集合点；现场音乐后可留到 15:30 颁奖，再避开散场一起找车。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "汽车爱好者"
+      ],
+      "officialUrl": "https://www.downtownnovato.com/events",
+      "sourceLabel": "Downtown Novato Business Association",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "palo-alto-scare-faire-2026",
+      "title": "Palo Alto Scare Faire：交换万圣节服装",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 13:00–15:00",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "venue": "Museum of American Heritage · 351 Homer Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费 · 欢迎自愿捐款",
+      "summary": "把闲置的成人或儿童装扮带来，让它们再过一次万圣节。现场还有布料手作、社区互动和音乐，没有旧服装也可以参加。",
+      "plan": [
+        "13:00 带状况良好的服装或装饰品到场领号，13:15 开始选取。",
+        "活动免费，捐款自愿；没有可交换物品也欢迎来，但剩余服装不保证尺寸和数量。",
+        "编辑建议先整理家中可再次使用的物品，带购物袋装好换回的服装。"
+      ],
+      "audience": [
+        "节省家庭开支",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://transitionpaloalto.org/2026/08/18/sunday-october-10-2026-1-3pm-scare-faire-and-costume-swap/",
+      "sourceLabel": "Transition Palo Alto / Museum of American Heritage",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "san-carlos-art-wine-faire-2026",
+      "title": "San Carlos Art & Wine Faire：半岛秋日艺术节",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-11",
+      "dateLabel": "10 月 10–11 日 · 10:00–18:00",
+      "region": "peninsula",
+      "city": "San Carlos",
+      "venue": "Laurel Street & San Carlos Avenue · Downtown",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮、酒饮及购物另付",
+      "summary": "沿 Laurel Street 逛艺术、手作和特色食品摊位，再听一段音乐。两天都有亲子活动区域，住半岛的人可以用 Caltrain 串联一个不用赶路的周末。",
+      "plan": [
+        "两天都是 10:00–18:00；活动沿 Laurel Street 与 San Carlos Avenue 展开。",
+        "可先查 Caltrain 或 SamTrans；2026 官方合作方列有免费停车接驳，地点及班次出发前再确认。",
+        "编辑建议按预算选择一两件手作或餐饮；基础入场免费不包含摊位消费。"
+      ],
+      "audience": [
+        "半岛居民",
+        "艺术爱好者"
+      ],
+      "officialUrl": "https://pacificfinearts.com/festival/san-carlos-art-wine-faire/",
+      "sourceLabel": "Pacific Fine Arts Festivals / City of San Carlos",
+      "relatedGuideSlug": "bay-area-without-car-guide",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sonoma-harvest-fair-gala-2026",
+      "title": "Sonoma County Harvest Fair 颁奖品酒晚会",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10 月 10 日 · 入场时刻见官方门票",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Sonoma County Fair & Event Center",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "售票活动 · 价格及年龄要求见官方售票页",
+      "summary": "以 Sonoma County 本地葡萄酒、农业和餐饮为主题的 Harvest Fair，今年公布 10 月 10 日举办颁奖晚会。适合想认识本地酒乡出品的成年人提前查看票种。",
+      "plan": [
+        "官网确认的是 10 月 10 日 Awards Gala；不要按夏季 Sonoma County Fair 的游乐园安排前往。",
+        "通过主办方链接购票，核对当晚时刻、年龄要求、品酒范围和最终总价；本站不沿用往年票价。",
+        "编辑建议饮酒同行者安排指定司机或预约接送，把跨湾回程也计入预算。"
+      ],
+      "audience": [
+        "21 岁以上",
+        "美食爱好者"
+      ],
+      "officialUrl": "https://harvestfair.org/",
+      "sourceLabel": "Sonoma County Harvest Fair",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-ybg-dance-day-2026",
+      "title": "YBG Dance Day：免费试跳不同舞风",
+      "startDate": "2026-10-11",
+      "endDate": "2026-10-11",
+      "dateLabel": "10 月 11 日 · 10:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Yerba Buena Gardens · Great Lawn / East Plaza / Crepe Myrtle Garden",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费参加 · 官网提供 RSVP",
+      "summary": "从 Rhythm & Motion 到 Jazz Funk、Bachata 和 Soul Line Dance，花园里的一小时体验课欢迎新手。可以选一堂课，也可以把周日留给舞蹈。",
+      "plan": [
+        "先看官网课程表，课程分布在 East Plaza 与 Crepe Myrtle Garden；演出在 Great Lawn。",
+        "活动免费，官网有 RSVP；不同课程部分同时进行，编辑建议提前挑好最想尝试的一堂。",
+        "官方建议穿舒适鞋并带水；按体力休息，最后一堂课后还有庆祝演出。"
+      ],
+      "audience": [
+        "舞蹈入门",
+        "朋友结伴"
+      ],
+      "officialUrl": "https://ybgfestival.org/event/ybg-dance-day-2026/",
+      "sourceLabel": "Yerba Buena Gardens Festival / Rhythm & Motion",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-indigenous-peoples-day-2026",
+      "title": "旧金山原住民日：艺术、音乐与社区聚会",
+      "startDate": "2026-10-12",
+      "endDate": "2026-10-12",
+      "dateLabel": "10 月 12 日 · 12:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Great Lawn · Yerba Buena Gardens",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费活动 · 官网有 RSVP，摊位消费另付",
+      "summary": "在 Yerba Buena Gardens 参加原住民日文化活动，认识原住民艺术、音乐和社区摊位；官方公布 Jeremy Dutcher 特别演出。",
+      "plan": [
+        "官方十月日历与独立页面均列 10 月 12 日 12:00–16:00；从主办方入口查看节目更新。",
+        "活动免费，商品与餐饮按摊位收费；个人消费另列预算。",
+        "编辑建议尊重表演、仪式和作品的拍摄说明，先聆听再拍照。"
+      ],
+      "audience": [
+        "社区文化",
+        "音乐爱好者"
+      ],
+      "officialUrl": "https://ybgfestival.org/event/sf-indigenous-peoples-day-2026/",
+      "sourceLabel": "Yerba Buena Gardens Festival",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "oakland-autumn-lights-festival-2026",
+      "title": "Oakland Autumn Lights：湖畔花园灯光夜",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-17",
+      "dateLabel": "10 月 15–17 日 · 夜场时刻见门票",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "The Gardens at Lake Merritt",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "花园募款活动 · 需按日期购票",
+      "summary": "Lake Merritt 花园的年度夜间灯光活动，为志愿者维护的主题花园筹款。适合朋友选择一晚慢慢逛，把白天的湖边散步接到夜间艺术体验。",
+      "plan": [
+        "2026 日期为 10 月 15–17 日；按主办方 Get Tickets 入口选择日期及入场时间。",
+        "官网当前展示的部分装置照片是 2025 回顾；今年参展内容、票价及适龄条款以售票页为准。",
+        "编辑建议穿适合花园步道的鞋，傍晚带外套；把夜间回程和停车时间一起规划。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "朋友约会"
+      ],
+      "officialUrl": "https://gardensatlakemerritt.org/autumn-lights-festival-2026/",
+      "sourceLabel": "Friends of the Gardens at Lake Merritt",
+      "relatedGuideSlug": "oakland-lake-merritt-omca-half-day",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "region-lake-merritt",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "piedmont-wonka-outdoor-movie-2026",
+      "title": "Piedmont 草坪免费电影：《Wonka》",
+      "startDate": "2026-10-16",
+      "endDate": "2026-10-16",
+      "dateLabel": "10 月 16 日 · 约 18:40、日落后放映",
+      "region": "east-bay",
+      "city": "Piedmont",
+      "venue": "Piedmont Park · Main lawn",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费 · 面向所有人",
+      "summary": "在 Piedmont Park 主草坪看《Wonka》，把东湾周五晚安排成低预算户外电影夜。市府欢迎所有人参加，放映随日落开始。",
+      "plan": [
+        "市府列出的 2026 年开场时间为 18:40，实际随日落；建议提前到主草坪选位置。",
+        "自带毯子或低矮沙滩椅，不需要为本场电影购买门票。",
+        "编辑建议备好保暖层，把随身物品集中放好；回程经过住宅区时降低音量。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "免费出游"
+      ],
+      "officialUrl": "https://piedmont.ca.gov/cms/One.aspx?pageId=21392954&portalId=13659823",
+      "sourceLabel": "City of Piedmont",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "outdoor-cinema",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "walnut-creek-diablo-improv-2026",
+      "title": "Walnut Creek Diablo Improv：即兴喜剧周末",
+      "startDate": "2026-10-16",
+      "endDate": "2026-10-18",
+      "dateLabel": "10 月 16–18 日 · 按演出与工作坊场次",
+      "region": "east-bay",
+      "city": "Walnut Creek",
+      "venue": "Lesher Center for the Arts · 1601 Civic Drive",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "演出、工作坊及套票分别购票",
+      "summary": "三天即兴戏剧节把演出、工作坊和开放即兴场放到 Lesher Center。可以先买一场喜剧，也可以选适合新手的课程亲自参与。",
+      "plan": [
+        "从官方 Schedule 查看 2026 场次，再进入 Lesher Center 选择单场或套票。",
+        "10 月 18 日 16:00–18:00 的 Open Jam 官方标为 $35，观看和参与均需票；其他项目价格不同。",
+        "编辑建议核对课程经验要求与票种所含项目，跨场预留用餐和休息时间。"
+      ],
+      "audience": [
+        "喜剧爱好者",
+        "创意体验"
+      ],
+      "officialUrl": "https://diabloimprovfestival.org/",
+      "sourceLabel": "Diablo Improv Festival / Lesher Center for the Arts",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "berkeley-harvest-festival-2026",
+      "title": "Berkeley 免费丰收节与种子交换",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "10 月 17 日 · 11:00–16:00",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "venue": "Cedar Rose Park · 1300 Rose Street",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "社区节庆免费 · 餐车消费另付",
+      "summary": "Cedar Rose Park 的秋季社区节庆有现场音乐、种子交换、食物比赛与儿童活动。适合想在东湾认识邻里、让孩子玩户外项目的家庭。",
+      "plan": [
+        "11:00–16:00 到 Cedar Rose Park；市府提供免费自行车寄存，也可选 AC Transit 52 路或步行接驳 North Berkeley BART。",
+        "带毯子或草地椅听音乐；餐车餐饮自费，参与种子交换前先看官方当天安排。",
+        "如参加食物比赛，09:00–11:30 送交作品、12:00 评审；志愿者须提前报名，现场不受理。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "园艺爱好者"
+      ],
+      "officialUrl": "https://berkeleyca.gov/community-recreation/events/harvest-festival-1",
+      "sourceLabel": "City of Berkeley",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "campbell-oktoberfest-2026",
+      "title": "Campbell Oktoberfest 德式街区嘉年华",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-18",
+      "dateLabel": "10 月 17–18 日 · 周六 10:00–18:00，周日 10:00–17:00",
+      "region": "south-bay",
+      "city": "Campbell",
+      "venue": "Downtown Campbell · East Campbell Avenue",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "街区入场免费 · 酒饮、餐食与儿童项目另付",
+      "summary": "Campbell 历史街区集合手工艺摊位、多个音乐舞台、德式餐食和社区演出。免费入场让不喝酒的家庭也能逛街听歌，消费项目按兴趣挑选。",
+      "plan": [
+        "周六 10:00–18:00，周日 10:00–17:00；先选一天，按官方节目表挑想看的舞台。",
+        "免费入场不包括饮品、杯具、Kinderplatz 儿童项目或部分比赛；需要时从官方链接购票。",
+        "编辑建议白天带孩子逛手工摊位、休息后再听音乐；品酒同行者提前安排回程交通。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "美食与音乐"
+      ],
+      "officialUrl": "https://campbelloktoberfest.com/",
+      "sourceLabel": "Campbell Chamber of Commerce",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "half-moon-bay-pumpkin-festival-2026",
+      "title": "Half Moon Bay Art & Pumpkin Festival",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-18",
+      "dateLabel": "10 月 17–18 日 · 09:00–17:00",
+      "region": "peninsula",
+      "city": "Half Moon Bay",
+      "venue": "Main Street · Downtown Half Moon Bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮、购物及部分体验另付",
+      "summary": "半月湾秋季的大型南瓜主题街庆，结合艺术手作与海岸小镇氛围。日期已确定为 10 月 17–18 日，适合提前安排交通而不是当天临时赶场。",
+      "plan": [
+        "两天 09:00–17:00，在市中心 Main Street 举行；巨型南瓜称重是 10 月 12 日的另一场活动。",
+        "免费入场不含停车、餐饮或收费体验；官方部分详情仍标注沿用 2025，临近出发再查新版日程。",
+        "编辑建议早到并只选一条主街路线；把 Highway 92、Highway 1 的通行与返程时间留足。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "秋季出游"
+      ],
+      "officialUrl": "https://www.hmbpumpkinfest.com/",
+      "sourceLabel": "Half Moon Bay Beautification Committee",
+      "relatedGuideSlug": "half-moon-bay-pumpkin-season-2026-guide",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "fresh-pumpkin-parade",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-bay-area-science-festival-2026",
+      "title": "湾区科学节：到 UCSF 动手做实验",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "10 月 17 日 · 11:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "UCSF Mission Bay Campus · Koret Quad",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费科学节 · 具体参观项目按官方安排",
+      "summary": "UCSF Mission Bay 的科学节把实验、演示、游戏和科学工作者带到同一校园。适合好奇的孩子与成年人，用半天看看科学如何进入生活。",
+      "plan": [
+        "活动在 Koret Quad，11:00–16:00；先看 Festival Guide 与地图挑选项目。",
+        "官方列明免费；实验室参观、舞台及其他项目的名额和参加方式分别查看官方说明。",
+        "编辑建议先选两三个最感兴趣的展位，带水并给步行、排队与休息留时间。"
+      ],
+      "audience": [
+        "科学好奇心",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://bayareasciencefestival.org/",
+      "sourceLabel": "UCSF Science & Health Education Partnership",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "bay-area-musical-improv-festival-2026",
+      "title": "Oakland 音乐即兴剧节",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-25",
+      "dateLabel": "10 月 22–25 日 · 演出与工作坊各有场次",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "All Out Comedy Theater · Uptown Oakland",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "演出票已开售 · 工作坊另行报名，部分已满",
+      "summary": "第二届音乐即兴剧节把湾区与外地团队带到 Uptown Oakland，现场看故事和歌曲即兴成形。除了观演，也可选择适合自身经验的工作坊。",
+      "plan": [
+        "节期 10 月 22–25 日；主办方列有九场演出和多项工作坊，具体安排按官网选择。",
+        "官网已开放演出票；工作坊页有部分售罄标记，报名时分别核对经验要求、票价及剩余名额。",
+        "编辑建议初次体验先选一场演出，想参与即兴再看工作坊要求；晚场预留回程交通。"
+      ],
+      "audience": [
+        "剧场爱好者",
+        "朋友出游"
+      ],
+      "officialUrl": "https://bayareamusicalimprov.com/festival",
+      "sourceLabel": "Bay Area Musical Improv",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "cupertino-hidden-treasures-2026",
+      "title": "Cupertino Hidden Treasures：社区旧物寻宝",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-22",
+      "dateLabel": "10 月 22 日 · 09:00–14:00",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "venue": "Cupertino Senior Center · 21251 Stevens Creek Boulevard",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 商品另购",
+      "summary": "到 Senior Center 淘家居、饰品、艺术品和手作材料，让旧物获得新用途。适合喜欢二手寻宝，也想认识社区志愿项目的居民。",
+      "plan": [
+        "活动在 21251 Stevens Creek Boulevard，09:00–14:00，市府标明免费入场。",
+        "免费入场不包含购物；编辑建议先定预算，带购物袋并量好家中摆放空间。",
+        "想捐赠物品须另查接受清单；本届最后接收捐赠日为 10 月 2 日，不在销售当天直接带大件过去。"
+      ],
+      "audience": [
+        "旧物寻宝",
+        "本地生活"
+      ],
+      "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/Hidden-Treasures/Hidden-Treasures-Event",
+      "sourceLabel": "City of Cupertino",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "san-jose-short-film-festival-2026",
+      "title": "San Jose 国际短片电影节",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-25",
+      "dateLabel": "10 月 22–25 日 · 按放映单元",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "CineArts Santana Row",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "按单元、日票或通票购票 · 开售状态见官网",
+      "summary": "四天集中看世界各地短片，适合喜欢一场里体验多种故事的人。电影节设不同主题单元，可以把 Santana Row 的一顿饭和一个放映单元组合起来。",
+      "plan": [
+        "2026 官方日期为 10 月 22–25 日，场地 CineArts Santana Row；逐场时刻仍以最新片单为准。",
+        "官网票务页区分单元票、日票与 VIP 通票，部分单票仍显示待开售；付款前核对 2026 日期和费用。",
+        "编辑建议按题材和年龄提示选单元，为开场前检票留时间，不把通票当作自动预留每场座位。"
+      ],
+      "audience": [
+        "电影爱好者",
+        "朋友约会"
+      ],
+      "officialUrl": "https://sjsff.com/tickets/",
+      "sourceLabel": "San Jose International Short Film Festival",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "cinema-night",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "calistoga-eleanor-alberga-2026",
+      "title": "Calistoga 室内乐：Eleanor Alberga 与 Green Room Ensemble",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-23",
+      "dateLabel": "10 月 23 日 · 19:30 开演",
+      "region": "north-bay",
+      "city": "Calistoga",
+      "venue": "Brannan Center · 1407 Third Street",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "自选票价，$5 起 · 需购票",
+      "summary": "在 Calistoga 的 Brannan Center 听弦乐与钢琴，作曲家 Eleanor Alberga 亲自演奏。场地方提供 $5 起自选票价，适合想尝试室内乐的听众。",
+      "plan": [
+        "10 月 23 日 19:30 开演；从场地方官方链接选票，不把自选票价理解为免票。",
+        "节目含弦乐四重奏及第二钢琴五重奏世界首演；具体曲目以演出页为准。",
+        "编辑建议把晚餐安排在开演前，给上 Napa Valley 的车程和停车留足时间。"
+      ],
+      "audience": [
+        "室内乐爱好者",
+        "北湾约会"
+      ],
+      "officialUrl": "https://www.brannancenter.org/events/eleanor-alberga-the-green-room-ensemble",
+      "sourceLabel": "Brannan Center / Festival Napa Valley",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "emeryville-art-exhibition-closing-2026",
+      "title": "Emeryville 年度艺术展闭幕周末",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-25",
+      "dateLabel": "10 月 23–25 日 · 每日 11:00–18:00",
+      "region": "east-bay",
+      "city": "Emeryville",
+      "venue": "Public Market Emeryville · 5905 Shellmound Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "展览免费开放",
+      "summary": "第 40 届 Emeryville 年度艺术展在 Public Market 举办，本条挑出最后三个开放日。把本地艺术与附近用餐串起来，也适合想找安静室内行程的周末。",
+      "plan": [
+        "闭幕周末 10 月 23–25 日均为 11:00–18:00，地址是 5905 Shellmound Street。",
+        "全展期其实为 10 月 3–25 日、每周三至周日；若想提前去，周一与周二不要按此条日历出发。",
+        "编辑建议先看主办方艺术家名单，留一小时慢慢逛；购餐与停车按现场规则另行安排。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "室内出游"
+      ],
+      "officialUrl": "https://www.emeryarts.org/",
+      "sourceLabel": "Emeryville Celebration of the Arts",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor"
+      }
+    },
+    {
+      "id": "fremont-trick-or-treat-2026",
+      "title": "Fremont 市中心 Trick-or-Treat",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-23",
+      "dateLabel": "10 月 23 日 · 17:00–21:00",
+      "region": "east-bay",
+      "city": "Fremont",
+      "venue": "Downtown Event Center & Plaza",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "室内讨糖每名儿童 $15、仅预售 · 其他项目另付",
+      "summary": "市府与 Fremont 商会合办万圣节晚间活动，有音乐、餐车、摊位和装扮比赛。室内讨糖采用预售票，适合先买好票再带孩子穿好服装出门。",
+      "plan": [
+        "10 月 23 日 17:00–21:00，在 Downtown Event Center & Plaza 举行。",
+        "室内讨糖面向 2–10 岁儿童，须成人陪同；每票预约 30 分钟，含 20 处讨糖、礼袋及 10 项嘉年华游戏。",
+        "预售于 9 月 21 日 09:00 开始，名额有限；先确认仍可购买的时段，餐车与其他现场项目另列预算。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "东湾居民"
+      ],
+      "officialUrl": "https://www.fremont.gov/government/departments/parks-recreation/events/trick-or-treat-event",
+      "sourceLabel": "City of Fremont",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-family-connections-halloween-2026",
+      "title": "旧金山 Portola 社区万圣节手工与游戏",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-23",
+      "dateLabel": "10 月 23 日 · 16:30–18:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Family Connections Portola · 2565 San Bruno Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费社区活动 · 从官方链接登记",
+      "summary": "Family Connections 在 Portola 社区中心举办手工、游戏、零食与奖品活动，鼓励孩子穿上装扮。放学后能参加的小型社区聚会，适合旧金山南部家庭。",
+      "plan": [
+        "16:30–18:00 到 2565 San Bruno Avenue 的 Portola 中心，不是 Mission Street 的 Excelsior 中心。",
+        "活动免费；从机构网页进入报名链接，确认当时的登记与名额信息。",
+        "所有儿童必须由成人陪同；编辑建议选择方便做手工和走动的服装，有饮食需求先向机构确认。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "邻里活动"
+      ],
+      "officialUrl": "https://fccenters.org/event/halloween-2026/",
+      "sourceLabel": "Family Connections Centers",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "family-workshop",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "cupertino-monster-mash-2026",
+      "title": "Cupertino Monster Mash：傍晚万圣节亲子场",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 17:00–20:00",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "venue": "Quinlan Community Center · 10185 North Stelling Road",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "10 月 19 日前居民 $17／非居民 $21 · 每份含一名儿童及两位成人",
+      "summary": "到 Quinlan Community Center 参加游戏、讨糖、手工和南瓜装饰。室外活动从傍晚开始，适合想在正式万圣节前先穿一次装扮的家庭。",
+      "plan": [
+        "每份登记包含一名 2 岁及以上儿童与两位成人；儿童必须报名且有成人陪同，成人无需另登记。",
+        "官方列 10 月 19 日前居民 $17／非居民 $21，之后为 $22／$26；临界日期按购票页显示核价。",
+        "活动在户外且雨天照常；编辑建议给装扮配保暖层和防滑鞋。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "南湾家庭"
+      ],
+      "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/Monster-Mash/Monster-Mash-Event",
+      "sourceLabel": "City of Cupertino",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "foster-city-halloween-festival-2026",
+      "title": "Foster City 万圣节：讨糖步道与装扮比赛",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 11:00–14:00，讨糖至 13:00",
+      "region": "peninsula",
+      "city": "Foster City",
+      "venue": "Leo J. Ryan Park · Meadow / Amphitheater",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "儿童居民 $10／非居民 $12 · 成人 $5／$7，须预登记",
+      "summary": "Leo J. Ryan Park 的白天庆典为 2–12 岁儿童安排讨糖、装扮比赛和魔术表演。儿童和陪同成人都要登记，适合提前安排的半岛家庭周末。",
+      "plan": [
+        "9 月 28 日开放登记；10 岁以下儿童须由持有效成人票的成人陪同，全家均应预先登记。",
+        "讨糖步道 11:00–13:00，每名儿童限走一次；装扮比赛 12:45 截止现场报名，13:30 开始魔术表演。",
+        "10 月 19 日起可在指定工作日 14:00–17:00 到 Community Center 取腕带；也可活动当天签到领取。"
+      ],
+      "audience": [
+        "2–12 岁儿童",
+        "半岛家庭"
+      ],
+      "officialUrl": "https://www.fostercity.org/1248/2026-Halloween-Festival",
+      "sourceLabel": "City of Foster City",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "menlo-park-halloween-hoopla-2026",
+      "title": "Menlo Park 万圣节游行与嘉年华",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 11:00–14:00",
+      "region": "peninsula",
+      "city": "Menlo Park",
+      "venue": "Maloney Street Parking Lot #1 → Santa Cruz Avenue → Fremont Park",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费 · 游行参加者 10:45 前集合",
+      "summary": "从市中心装扮游行走到 Fremont Park，继续玩嘉年华游戏、看表演和做手工。活动也设宠物装扮队列，适合全家安排一个白天的万圣节。",
+      "plan": [
+        "参加游行者 10:45 前到 Maloney Street 的 Parking Lot #1；11:00 沿 Santa Cruz Avenue 出发。",
+        "嘉年华在 Fremont Park，活动至 14:00；这里是 Menlo Park 的公园，不是 Fremont 市的 Central Park。",
+        "带狗加入 Howl-o-ween Walkers 队列须全程牵绳并清理排泄物；编辑建议准备步行鞋与饮水。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "半岛居民"
+      ],
+      "officialUrl": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261024-Halloween-Hoopla-Parade-and-Carnival",
+      "sourceLabel": "City of Menlo Park",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "petaluma-witches-wizards-water-2026",
+      "title": "Petaluma 水上巫师与女巫派对",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 11:00–14:00",
+      "region": "north-bay",
+      "city": "Petaluma",
+      "venue": "Petaluma River Turning Basin · The Floathouse",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "活动免费 · 自备船板，租赁另付",
+      "summary": "把万圣节服装穿到船或桨板上，沿 Petaluma 河参加水上讨糖路线与装扮展示。活动本身免费，已有划行经验的人可以自备装备，租赁则要提前安排。",
+      "plan": [
+        "10 月 24 日 11:00–14:00；按 The Floathouse 的当日路线领取地图、参加水上活动。",
+        "自备人力船板或从 The Floathouse 租赁；租船不是免费项目，需预先确认库存、年龄和装备要求。",
+        "码头已更新为 Turning Basin 区域入口；使用官方 Weller Street / River Plaza 坡道说明，不只依赖旧地址。"
+      ],
+      "audience": [
+        "户外爱好者",
+        "秋季出游"
+      ],
+      "officialUrl": "https://www.thefloathousepetaluma.org/events/witches-wizards-on-the-water-2026",
+      "sourceLabel": "The Floathouse Petaluma",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "santa-rosa-halloween-howarth-2026",
+      "title": "Santa Rosa Howarth Park 万圣节",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 11:30–14:30 分时签到",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Howarth Park · 630 Summerfield Road",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "基础票 $7 · 豪华票 $25，须选签到时段",
+      "summary": "12 岁及以下儿童可以在公园讨糖，并参加 Fun Zone 的手工、脸部彩绘等项目。想坐小火车、旋转木马和小马的家庭可选择包含指定乘坐项目的豪华票。",
+      "plan": [
+        "通过市府购票页面选择一个签到时段，最早 11:30、最后一组 14:00–14:30；不要把签到窗口当作整场开放时间。",
+        "$7 基础票含讨糖和 Fun Zone；$25 豪华票另含火车、旋转木马及一圈小马，火车和木马可带两名成人，额外成人另付。",
+        "票于 7 月 30 日开售且可能售罄；雨天早晨看市府 Facebook 或致电 707-543-3425 确认活动状态。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "北湾家庭"
+      ],
+      "officialUrl": "https://www.srcity.org/2164/Halloween-at-Howarth",
+      "sourceLabel": "City of Santa Rosa",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "family-workshop",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "windsor-trick-or-treat-trail-2026",
+      "title": "Windsor 免费预约讨糖步道",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10 月 24 日 · 12:00–16:00，按预约入场",
+      "region": "north-bay",
+      "city": "Windsor",
+      "venue": "Keiser Park",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费 · 必须预先登记，名额有限",
+      "summary": "Keiser Park 的四分之一英里讨糖步道由装饰摊点串起，为 12 岁以下儿童与成年陪同者设计。短路线适合想避开大型夜场的北湾家庭。",
+      "plan": [
+        "Windsor 居民 9 月 15 日 10:00 开放登记，非居民 9 月 16 日 10:00 开放；免费也必须预约。",
+        "注册前在儿童休闲活动账户签好 waiver，并核对所选入场时段；活动范围为 12:00–16:00。",
+        "儿童全程须由成人看护；编辑建议带轻便糖袋及适合走短步道的鞋。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "北湾家庭"
+      ],
+      "officialUrl": "https://www.townofwindsor.com/trickortreat",
+      "sourceLabel": "Town of Windsor Parks and Recreation",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "garden-walk",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "oakland-omca-dia-muertos-2026",
+      "title": "OMCA 亡灵节社区庆典：祭坛、音乐与创作",
+      "startDate": "2026-10-25",
+      "endDate": "2026-10-25",
+      "dateLabel": "10 月 25 日 · 11:00–16:00",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Oakland Museum of California · 1000 Oak Street",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "活动及展厅通票 $10 · 会员免费，需按官方票种预约",
+      "summary": "第 32 届社区庆典以巡游、音乐、手工和社区祭坛纪念家人与祖先。可以留一个下午体验文化活动，再走进展厅。",
+      "plan": [
+        "11:00–16:00 在 OMCA 举行，官方列 $10 含节庆及展厅；会员使用免费会员票入口。",
+        "现场 mercado 有本地手作及祭坛用品，购物和餐饮另付；官方欢迎自带野餐。",
+        "花园和露天剧场舞台提供 ASL 口译；编辑建议尊重祭坛与纪念活动的现场拍摄指引。"
+      ],
+      "audience": [
+        "社区文化",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://museumca.org/press/omca-announces-public-programs-and-events-for-october-2026/",
+      "sourceLabel": "Oakland Museum of California",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "location": {
+        "lat": 37.798641,
+        "lng": -122.263611,
+        "label": "Oakland Museum of California",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q877714",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 10,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "menlo-park-trunk-or-treat-2026",
+      "title": "Menlo Park Belle Haven 车尾箱讨糖",
+      "startDate": "2026-10-28",
+      "endDate": "2026-10-28",
+      "dateLabel": "10 月 28 日 · 16:30–18:00",
+      "region": "peninsula",
+      "city": "Menlo Park",
+      "venue": "Belle Haven Community Campus · 100 Terminal Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费参加 · 提供讨糖袋",
+      "summary": "Belle Haven Community Campus 的社区万圣节，把车尾箱布置成不同主题的讨糖站。时间较早，适合放学后参加一段有音乐和糖果的邻里活动。",
+      "plan": [
+        "采用市府独立活动页最新日期：10 月 28 日周三，16:30–18:00。",
+        "地点为 100 Terminal Avenue；官方列明免费，并向讨糖儿童提供袋子。",
+        "编辑建议让儿童与同行成人一起依路线参加，选择便于走动的服装，放学后从容抵达。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "半岛居民"
+      ],
+      "officialUrl": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261028-Trunk-or-Treat",
+      "sourceLabel": "City of Menlo Park",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sunnyvale-spooky-storywalk-2026",
+      "title": "Sunnyvale Spooky StoryWalk：穿着装扮读故事",
+      "startDate": "2026-10-28",
+      "endDate": "2026-10-28",
+      "dateLabel": "10 月 28 日 · 16:00–18:00",
+      "region": "south-bay",
+      "city": "Sunnyvale",
+      "venue": "Columbia Park · 789 Morse Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费图书馆活动 · 无需报名，材料有限",
+      "summary": "沿 Columbia Park 的故事步道边走边读，终点还有手工。这个放学后的小活动面向各年龄儿童及照护者，鼓励穿装扮、带讨糖袋。",
+      "plan": [
+        "活动地点是 Columbia Park，不是主图书馆；10 月 28 日 16:00–18:00。",
+        "无需报名，但手工材料数量有限；不要把参加活动理解为保证领取材料。",
+        "编辑建议准备轻便装扮和糖袋，先完成故事步道，再视剩余材料参加手工。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "放学后活动"
+      ],
+      "officialUrl": "https://www.library.sunnyvale.ca.gov/Home/Components/Calendar/Event/12565/74?curm=10&cury=2026",
+      "sourceLabel": "Sunnyvale Public Library",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "benicia-farmers-market-final-2026",
+      "title": "Benicia 周四农贸市场季末场",
+      "startDate": "2026-10-29",
+      "endDate": "2026-10-29",
+      "dateLabel": "10 月 29 日 · 16:00–19:00",
+      "region": "north-bay",
+      "city": "Benicia",
+      "venue": "Downtown Benicia · Historic Waterfront",
+      "category": "food",
+      "cost": "mixed",
+      "costLabel": "食材、餐饮与商品按摊位收费",
+      "summary": "Benicia Main Street 公布的 2026 周四农贸市场季到 10 月 29 日结束。下班后采购当季农产、逛手工摊位，顺便走走 Solano County 的历史滨水街区。",
+      "plan": [
+        "本条收录 10 月 29 日季末场；9–10 月周四市场为 16:00–19:00，不沿用夏季 20:00 收市时间。",
+        "购物与餐食按各摊位价格购买；先看当日摊位，再决定需要现金还是电子支付。",
+        "编辑建议带购物袋并先买需要的食材，再安排滨水散步；天气或摊位调整以主办方当天公告为准。"
+      ],
+      "audience": [
+        "本地买菜",
+        "下班后出游"
+      ],
+      "officialUrl": "https://www.beniciamainstreet.org/event-details/benicia-certified-farmers-market-2",
+      "sourceLabel": "Benicia Main Street",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "napa-harvest-after-dark-2026",
+      "title": "21+ · Napa Harvest After Dark 面具晚宴",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-30",
+      "dateLabel": "10 月 30 日 · 18:00–21:00",
+      "region": "north-bay",
+      "city": "Napa",
+      "venue": "The Duckhorn Collection at Paraduxx · 7257 Silverado Trail",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "普通票 $175 加税 · 会员票 $150 加税，限会员权益范围",
+      "summary": "在 Napa 的葡萄酒接待与家庭式晚餐中迎接收获季，主办方鼓励面具或盛装。适合提前安排的成年朋友聚会或纪念日晚餐。",
+      "plan": [
+        "仅限 21 岁及以上；普通票每人 $175 加税，会员价 $150 加税，每份会员最多四张。",
+        "官方说明所有售票不可退款，不允许宠物；购票前核对同行人数、菜单和饮食需求。",
+        "编辑建议提前安排不饮酒驾驶者或其他返程交通，为 Silverado Trail 夜间行程留足时间。"
+      ],
+      "audience": [
+        "21 岁及以上",
+        "酒乡晚餐"
+      ],
+      "officialUrl": "https://www.theduckhorncollection.com/blogs/events/harvest-after-dark-a-halloween-masquerade-dinner",
+      "sourceLabel": "The Duckhorn Collection",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "oakland-omca-friday-finale-2026",
+      "title": "OMCA 周五夜季末场：LA GENTE SF 现场音乐",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-30",
+      "dateLabel": "10 月 30 日 · 17:00–21:00",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Oakland Museum of California · 1000 Oak Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "户外音乐免费 · 展厅门票、餐饮和停车另付",
+      "summary": "用 LA GENTE SF 的 Cumbia、Salsa 与 Reggaeton 给十月周五收尾。博物馆的社区夜还有 DJ 和餐车，可以下班后只来听一段音乐。",
+      "plan": [
+        "总活动 17:00–21:00，LA GENTE SF 在 Garden Stage 的时段为 18:15–19:15。",
+        "免费户外演出与付费展厅分开；Gallery Chats 随展厅门票，餐车消费另付。",
+        "主办方列车库当晚至 22:00 为 $10 固定停车费；编辑建议也比较公共交通返程。"
+      ],
+      "audience": [
+        "下班后出游",
+        "现场音乐"
+      ],
+      "officialUrl": "https://museumca.org/event/friday-nights-at-omca-with-la-gente-sf/",
+      "sourceLabel": "Oakland Museum of California",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "location": {
+        "lat": 37.798641,
+        "lng": -122.263611,
+        "label": "Oakland Museum of California",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q877714",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "palo-alto-addams-family-opening-2026",
+      "title": "Palo Alto《亚当斯一家》：万圣节开演周末",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-31",
+      "dateLabel": "10 月 30–31 日 · 晚场 19:30",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "venue": "Lucie Stern Theater · 1305 Middlefield Road",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "按场次购票 · 10 月 30 日预演为自选票价夜",
+      "summary": "Palo Alto Players 用音乐喜剧迎接万圣节。十月先看预演或开幕夜；10 月 31 日演出后庭院庆祝活动包含在当晚票内。",
+      "plan": [
+        "本卡精选 10 月 30–31 日；完整演期到 11 月 15 日，演出约 2.5 小时含中场。",
+        "官方建议 8 岁以上，3 岁以下不准入场；含黑色幽默和影射内容，带孩子前先读演出说明。",
+        "10 月 30 日预演按官网提供的自选票价购票；10 月 31 日庭院庆祝需持当晚演出票。"
+      ],
+      "audience": [
+        "音乐剧爱好者",
+        "万圣节约会"
+      ],
+      "officialUrl": "https://paplayers.org/show/the-addams-family/",
+      "sourceLabel": "Palo Alto Players",
+      "verifiedAt": "2026-09-23",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "minAge": 3
+      }
+    },
+    {
+      "id": "san-jose-avenida-altares-2026",
+      "title": "San José Avenida de Altares 亡灵节文化夜",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "dateLabel": "10 月 31 日 · 17:30–22:30",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "Mexican Heritage Plaza · 1700 Alum Rock Avenue",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 摊位消费另付",
+      "summary": "Mexican Heritage Plaza 第十届 Avenida de Altares 以社区祭坛、亲子艺术活动和手工市集庆祝 Día de los Muertos。把万圣节夜晚留给东 San José 的纪念传统与社区创作。",
+      "plan": [
+        "10 月 31 日 17:30–22:30，地址为 1700 Alum Rock Avenue；免费活动，购买摊位商品另算。",
+        "主要活动在户外，部分项目在室内；编辑建议为孩子准备外套，并先逛祭坛与手工区。",
+        "现场表演名单仍待公布；出发前看主办方更新，拍摄祭坛或参与者时先尊重现场说明与意愿。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "社区文化"
+      ],
+      "officialUrl": "https://mhplaza.org/allevents/avenida26",
+      "sourceLabel": "School of Arts and Culture at Mexican Heritage Plaza",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-halloween-hoopla-2026",
+      "title": "旧金山 Halloween Hoopla：儿童装扮大游行",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "dateLabel": "10 月 31 日 · 12:00–15:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Children's Garden, Yerba Buena Gardens · 799 Howard Street",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费 · 官网提供 RSVP 入口",
+      "summary": "万圣节当天的白天亲子活动，面向 10 岁以下儿童与同行成人。Circus Bella 的表演和现场音乐之后，还有所有孩子都能加入的装扮游行。",
+      "plan": [
+        "10 月 31 日 12:00–15:00，在 799 Howard Street 的 Children’s Garden 举行。",
+        "官网提供免费 RSVP，出发前确认天气和节目；儿童博物馆等周边场馆的门票不包含在活动内。",
+        "编辑建议穿便于活动的装扮、带外套和水，提前到场找到适合孩子看演出的位置。"
+      ],
+      "audience": [
+        "10 岁以下儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://ybgfestival.org/event/halloween-hoopla-2026/",
+      "sourceLabel": "Yerba Buena Gardens Festival / Circus Bella",
+      "verifiedAt": "2026-09-15",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0
+      }
+    }
+  ],
+  "places": [
+    {
+      "id": "golden-gate",
+      "title": "金门大桥与 Fort Point",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "把看桥和走桥分开安排，出发前确认步道与堡垒开放。",
+      "guideSlug": "sf-golden-gate-bridge-fort-point-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.80779,
+        "lng": -122.47484,
+        "label": "Golden Gate Bridge Welcome Center",
+        "sourceUrl": "https://presidio.gov/explore/attractions/golden-gate-bridge-welcome-center",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.goldengate.org/bridge/visiting-the-bridge/bikes-pedestrians/",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "pier39",
+      "title": "渔人码头与 PIER 39",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "海狮与滨水散步可免费欣赏，游船和馆内项目另购票。",
+      "guideSlug": "sf-fishermans-wharf-pier39-guide",
+      "cost": "mixed",
+      "location": {
+        "lat": 37.809992,
+        "lng": -122.410357,
+        "label": "PIER 39",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q1856083",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.pier39.com/frequently-asked-questions/",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "alcatraz",
+      "title": "恶魔岛 Alcatraz",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "提前订含登岛的船票；地图指向 Pier 33 登船处。",
+      "guideSlug": "sf-alcatraz-booking-day-guide",
+      "cost": "paid",
+      "location": {
+        "lat": 37.80767,
+        "lng": -122.404663,
+        "label": "Pier 33 · Alcatraz Landing area",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q66079565",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.nps.gov/alca/planyourvisit/fees.htm",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "chinatown",
+      "title": "唐人街与 North Beach",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "从牌楼走进街巷，把吃饭和小店停留留在行程里。",
+      "guideSlug": "sf-chinatown-north-beach-walk-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.790685,
+        "lng": -122.405585,
+        "label": "Dragon Gate",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q40729318",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.sftravel.com/neighborhoods/visit-chinatown",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "palace",
+      "title": "艺术宫与 Marina",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "外部环湖散步与建筑观赏免费，演出和私人活动另计。",
+      "guideSlug": "sf-palace-fine-arts-marina-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.802778,
+        "lng": -122.448333,
+        "label": "Palace of Fine Arts",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q966263",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.sftravel.com/article/guide-to-san-franciscos-palace-fine-arts",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "golden-gate-park",
+      "title": "金门公园与 JFK Promenade",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "先逛免费户外区域，花园与博物馆分别查票。",
+      "guideSlug": "golden-gate-park-free-car-free-day-guide",
+      "cost": "mixed",
+      "location": {
+        "lat": 37.772,
+        "lng": -122.46,
+        "label": "Conservatory of Flowers area",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q5163145",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.sfrecpark.org/1538/JFK-Promenade",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "presidio",
+      "title": "Presidio Tunnel Tops",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "草坡、湾景和野餐；带外套，并确认餐桌使用规则。",
+      "guideSlug": "presidio-picnic-day-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.80277777777778,
+        "lng": -122.45611111111111,
+        "label": "Presidio Tunnel Tops",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q121870410",
+        "precision": "area"
+      },
+      "officialUrl": "https://presidio.gov/explore/attractions/presidio-tunnel-tops",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "berkeley",
+      "title": "Berkeley 校园与植物园",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "summary": "校园和山上植物园是两个停留点，植物园需要门票。",
+      "guideSlug": "berkeley-campus-botanical-garden-half-day",
+      "cost": "mixed",
+      "location": {
+        "lat": 37.870218,
+        "lng": -122.259481,
+        "label": "Sather Gate",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q2226051",
+        "precision": "venue"
+      },
+      "officialUrl": "https://visit.berkeley.edu/sites/default/files/berkeley-self-guided-tour-map-2021.pdf",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "lake-merritt",
+      "title": "Lake Merritt 与 OMCA",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "湖畔散步搭配加州故事，博物馆门票与开放日另查。",
+      "guideSlug": "oakland-lake-merritt-omca-half-day",
+      "cost": "mixed",
+      "location": {
+        "lat": 37.798641,
+        "lng": -122.263611,
+        "label": "Oakland Museum of California",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q877714",
+        "precision": "venue"
+      },
+      "officialUrl": "https://museumca.org/visit/",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "redwood",
+      "title": "Reinhardt Redwood 红杉林",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "选适合自己的短步道；停车费用和步道公告单独确认。",
+      "guideSlug": "reinhardt-redwood-first-walk-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.80692,
+        "lng": -122.14813,
+        "label": "Reinhardt Redwood · park access area",
+        "sourceUrl": "https://www.ebparks.org/sites/default/files/2021-Trails-Challenge-Guidebook--2020-12-07.pdf",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.ebparks.org/parks/reinhardt-redwood",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "stanford",
+      "title": "Stanford 与 Cantor 艺术馆",
+      "region": "peninsula",
+      "city": "Stanford",
+      "summary": "校园建筑与艺术馆慢慢看，留意闭馆日和停车规则。",
+      "guideSlug": "stanford-cantor-campus-art-walk",
+      "cost": "free",
+      "location": {
+        "lat": 37.432982,
+        "lng": -122.170844,
+        "label": "Cantor Arts Center",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q1672708",
+        "precision": "venue"
+      },
+      "officialUrl": "https://museum.stanford.edu/visit",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "filoli",
+      "title": "Filoli 庄园与花园",
+      "region": "peninsula",
+      "city": "Woodside",
+      "summary": "按入场时段订票，花园状态随季节变化。",
+      "guideSlug": "filoli-house-garden-day-trip",
+      "cost": "paid",
+      "location": {
+        "lat": 37.470389,
+        "lng": -122.310694,
+        "label": "Filoli",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q478408",
+        "precision": "venue"
+      },
+      "officialUrl": "https://filoli.org/visit/opening-times/",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "half-moon-bay",
+      "title": "Half Moon Bay 海岸",
+      "region": "peninsula",
+      "city": "Half Moon Bay",
+      "summary": "海风与沙滩适合留白；停车另计，下海前查海况。",
+      "guideSlug": "half-moon-bay-coastal-half-day-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.4665,
+        "lng": -122.445,
+        "label": "Half Moon Bay State Beach · park access area",
+        "sourceUrl": "https://www.parks.ca.gov/?page_id=531",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.parks.ca.gov/?page_id=531",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "baylands",
+      "title": "Palo Alto Baylands 湿地",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "summary": "观鸟和短途散步，先读当前部分步道封闭提醒。",
+      "guideSlug": "palo-alto-baylands-family-walk-guide",
+      "cost": "free",
+      "location": {
+        "lat": 37.4574977,
+        "lng": -122.107554,
+        "label": "Lucy Evans Baylands Nature Interpretive Center",
+        "sourceUrl": "https://www.paloalto.gov/Departments/Public-Works/Engineering-Services/Engineering-Projects/Baylands",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.paloalto.gov/Departments/Community-Services/Parks-Open-Space-Golf-Division/Neighborhood-Parks/Baylands-Nature-Preserve",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "san-jose",
+      "title": "San Jose 科技馆与日本城",
+      "region": "south-bay",
+      "city": "San Jose",
+      "summary": "科技馆需票，日本城街区可自由散步；两地间预留交通。",
+      "guideSlug": "san-jose-tech-japantown-day-trip",
+      "cost": "mixed",
+      "location": {
+        "lat": 37.3316,
+        "lng": -121.89,
+        "label": "The Tech Interactive",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q7768226",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.thetech.org/visit/",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed"
+      }
+    },
+    {
+      "id": "hakone",
+      "title": "Saratoga 的 Hakone Gardens",
+      "region": "south-bay",
+      "city": "Saratoga",
+      "summary": "日式庭园短程，先确认坡道、池塘整修与优惠资格。",
+      "guideSlug": "hakone-gardens-saratoga-half-day",
+      "cost": "paid",
+      "location": {
+        "lat": 37.2524,
+        "lng": -122.041,
+        "label": "Hakone Gardens",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q890625",
+        "precision": "venue"
+      },
+      "officialUrl": "https://www.hakone.com/visitor-info",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "muir-woods",
+      "title": "Muir Woods 红杉森林",
+      "region": "north-bay",
+      "city": "Mill Valley",
+      "summary": "停车或接驳需预约，与公园门票分开；提前安排返程。",
+      "guideSlug": "muir-woods-reservation-day-trip",
+      "cost": "paid",
+      "location": {
+        "lat": 37.892835,
+        "lng": -122.572559,
+        "label": "Muir Woods · entry area",
+        "sourceUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=D6FD5106-D812-D8ED-F4B055B57E1D4B35",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.nps.gov/muwo/planyourvisit/fees.htm",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor"
+      }
+    },
+    {
+      "id": "sausalito",
+      "title": "Sausalito 渡轮与海滨",
+      "region": "north-bay",
+      "city": "Sausalito",
+      "summary": "海滨散步免费，船票另付；先确认返程码头和班次。",
+      "guideSlug": "sausalito-waterfront-ferry-half-day",
+      "cost": "free",
+      "location": {
+        "lat": 37.856,
+        "lng": -122.479,
+        "label": "Sausalito Ferry Terminal area",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q30642905",
+        "precision": "area"
+      },
+      "officialUrl": "https://www.goldengate.org/ferry/schedules-maps/",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor"
+      }
+    }
+  ],
+  "guides": [
+    {
+      "slug": "bay-area-rental-scam-guide",
+      "title": "湾区租房防骗指南：看房、转账、签合同前先检查什么"
+    },
+    {
+      "slug": "bay-area-newcomer-first-month-checklist",
+      "title": "新来湾区第一个月 checklist：租房、交通、手机、生活怎么安排"
+    },
+    {
+      "slug": "bay-area-roommate-guide",
+      "title": "湾区找室友避坑指南：合租前先讲清楚这些事"
+    },
+    {
+      "slug": "bay-area-commute-guide",
+      "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选"
+    },
+    {
+      "slug": "bay-area-used-trading-safety-guide",
+      "title": "湾区二手交易安全指南：面交、转账、验货怎么做"
+    },
+    {
+      "slug": "rental-lease-checklist-before-signing",
+      "title": "租房合同签字前 checklist：哪些条款一定要看"
+    },
+    {
+      "slug": "move-in-move-out-checklist",
+      "title": "租客搬入搬出 checklist：押金、拍照、交接怎么做"
+    },
+    {
+      "slug": "local-service-safety-guide",
+      "title": "湾区找搬家、清洁、维修服务，怎么判断靠不靠谱"
+    },
+    {
+      "slug": "peninsula-living-guide",
+      "title": "Peninsula 生活指南：San Mateo、Millbrae、Burlingame 怎么选"
+    },
+    {
+      "slug": "south-bay-living-guide",
+      "title": "南湾居住指南：Cupertino、Sunnyvale、San Jose 怎么选"
+    },
+    {
+      "slug": "bay-area-regions-explained",
+      "title": "湾区区域怎么分：旧金山、半岛、南湾、东湾、北湾适合谁？"
+    },
+    {
+      "slug": "bay-area-where-to-live-first-month",
+      "title": "刚来湾区住哪里比较稳：按通勤、预算、是否有车来选区域"
+    },
+    {
+      "slug": "bay-area-first-rental-process",
+      "title": "湾区第一次租房流程：从看区域、看房、签约到搬入"
+    },
+    {
+      "slug": "baylink-safety-guide",
+      "title": "BAYLINK 安全使用指南：手机验证、资料审核、举报和屏蔽怎么用"
+    },
+    {
+      "slug": "bay-area-without-car-guide",
+      "title": "湾区没有车怎么生活：BART、Caltrain、公交、接送和买菜怎么安排"
+    },
+    {
+      "slug": "bay-area-moving-checklist",
+      "title": "湾区搬家怎么安排：找搬家、买二手家具、清洁、交接一次讲清"
+    },
+    {
+      "slug": "bay-area-used-furniture-appliance-guide",
+      "title": "湾区买二手家具家电指南：床、桌子、冰箱、洗衣机怎么避坑"
+    },
+    {
+      "slug": "baylink-posting-guide-for-trust",
+      "title": "在 BAYLINK 发布房源 / 服务怎么写，更容易被信任和联系？"
+    },
+    {
+      "slug": "san-francisco-guide",
+      "title": "旧金山攻略"
+    },
+    {
+      "slug": "san-jose-guide",
+      "title": "圣何塞攻略"
+    },
+    {
+      "slug": "bay-area-airport-arrival-guide",
+      "title": "湾区机场落地怎么回家：SFO、SJC、OAK 接送与公共交通准备清单"
+    },
+    {
+      "slug": "bay-area-part-time-job-safety-guide",
+      "title": "在湾区找兼职：先问清工作，再识别押金、刷单和假支票骗局"
+    },
+    {
+      "slug": "bay-area-cleaning-quote-checklist",
+      "title": "在湾区找清洁：把工作范围写清楚，报价才有得比"
+    },
+    {
+      "slug": "bay-area-repair-request-guide",
+      "title": "家里东西坏了，怎么报修才少跑一趟？"
+    },
+    {
+      "slug": "bay-area-translation-service-guide",
+      "title": "在湾区找翻译：先确认用途，再谈报价和交付"
+    },
+    {
+      "slug": "bay-area-library-starter-guide",
+      "title": "湾区图书馆不只借书：把办卡、学习和数字资源真正用起来"
+    },
+    {
+      "slug": "east-bay-first-weekend-guide",
+      "title": "东湾的第一个周末：Oakland 湖边与 Berkeley 校园，两条慢路线"
+    },
+    {
+      "slug": "north-bay-car-free-day-guide",
+      "title": "无车去北湾：坐渡轮到 Sausalito，给海边留一整天"
+    },
+    {
+      "slug": "bay-area-utilities-address-change-guide",
+      "title": "湾区搬家后怎么开通水电网、更新地址：从交接到第一张账单"
+    },
+    {
+      "slug": "california-driver-license-id-preparation-guide",
+      "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料"
+    },
+    {
+      "slug": "half-moon-bay-coastal-half-day-guide",
+      "title": "Half Moon Bay 海边半日：从 Francis Beach 出发，走累了就回头"
+    },
+    {
+      "slug": "reinhardt-redwood-first-walk-guide",
+      "title": "第一次走红杉步道：Reinhardt Redwood 从短程往返开始"
+    },
+    {
+      "slug": "presidio-picnic-day-guide",
+      "title": "Presidio 野餐半日：先选坐下来的地方，再安排散步"
+    },
+    {
+      "slug": "bay-area-farmers-market-shopping-guide",
+      "title": "第一次逛湾区农夫市集：买回这一周真正会吃的东西"
+    },
+    {
+      "slug": "rainy-day-museum-family-guide",
+      "title": "湾区雨天带孩子去哪：OMCA 与 The Tech，两种半日备选"
+    },
+    {
+      "slug": "bay-area-dog-park-first-outing-guide",
+      "title": "带狗去湾区公园：先看管理边界，再决定能不能松绳"
+    },
+    {
+      "slug": "bay-area-freebies-deals-2026-09",
+      "title": "2026 年 9 月剩余湾区优惠：Target 样品盒、$1 冷萃与 25¢ 咖啡"
+    },
+    {
+      "slug": "golden-gate-park-free-car-free-day-guide",
+      "title": "不买门票的金门公园半日：白色温室、街头钢琴和草坪午餐"
+    },
+    {
+      "slug": "palo-alto-baylands-family-walk-guide",
+      "title": "离开屏幕两小时：带孩子去 Palo Alto Baylands 找鸟的三种动作"
+    },
+    {
+      "slug": "sf-golden-gate-bridge-fort-point-guide",
+      "title": "金门大桥半日：桥上看结构，Fort Point 看尺度，Crissy Field 看海"
+    },
+    {
+      "slug": "sf-fishermans-wharf-pier39-guide",
+      "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择"
+    },
+    {
+      "slug": "sf-alcatraz-booking-day-guide",
+      "title": "恶魔岛 Alcatraz 实用攻略：先认官方船票，再安排岛上半天"
+    },
+    {
+      "slug": "sf-chinatown-north-beach-walk-guide",
+      "title": "唐人街到 North Beach：从龙门走到广场，读懂两个生活街区"
+    },
+    {
+      "slug": "sf-palace-fine-arts-marina-guide",
+      "title": "艺术宫与 Marina 半日：绕湖看柱廊，再去海边坐下来"
+    },
+    {
+      "slug": "berkeley-campus-botanical-garden-half-day",
+      "title": "从校园钟楼到山中植物园：Berkeley 的两种慢生活"
+    },
+    {
+      "slug": "oakland-lake-merritt-omca-half-day",
+      "title": "Oakland 不必绕湖一整圈：Lake Merritt 与 OMCA 的松弛半日"
+    },
+    {
+      "slug": "stanford-cantor-campus-art-walk",
+      "title": "Stanford 的免费艺术下午：Main Quad、Cantor 与一小段校园散步"
+    },
+    {
+      "slug": "filoli-house-garden-day-trip",
+      "title": "Filoli 不只是一张花园照：把老宅、花径和林间留成半天"
+    },
+    {
+      "slug": "san-jose-tech-japantown-day-trip",
+      "title": "San Jose 一天，两种节奏：The Tech 动手玩，再去 Japantown 散步"
+    },
+    {
+      "slug": "hakone-gardens-saratoga-half-day",
+      "title": "Saratoga 山脚的安静下午：Hakone 的池桥、竹影与慢步"
+    },
+    {
+      "slug": "muir-woods-reservation-day-trip",
+      "title": "第一次去 Muir Woods：先订停车，再用短环线走进红木林"
+    },
+    {
+      "slug": "sausalito-waterfront-ferry-half-day",
+      "title": "坐船去 Sausalito 发半天呆：海滨、长椅和一段小镇散步"
+    },
+    {
+      "slug": "half-moon-bay-pumpkin-season-2026-guide",
+      "title": "南瓜季已经开始：九月去 Half Moon Bay，十月再看巨型南瓜"
+    },
+    {
+      "slug": "bay-area-new-openings-2026-09",
+      "title": "九月湾区新店手册：水岸晚餐、街角烘焙与下一站期待"
+    },
+    {
+      "slug": "bay-area-october-weekend-planner-2026",
+      "title": "十月周末怎么排：从南湾老街到北湾海边，一周只选一个方向"
+    },
+    {
+      "slug": "half-moon-bay-october-pumpkin-coast-guide-2026",
+      "title": "十月去 Half Moon Bay：买南瓜、逛节庆和海岸散步怎么分开排"
+    },
+    {
+      "slug": "san-jose-october-family-history-farm-guide-2026",
+      "title": "南湾亲子半日：在 San José 找旧街景、农场和一片能慢玩的草地"
+    },
+    {
+      "slug": "east-bay-tilden-october-family-guide-2026",
+      "title": "东湾 Tilden 两小时：看动物、读森林，也把最新关闭信息带上"
+    },
+    {
+      "slug": "north-bay-china-camp-october-culture-guide-2026",
+      "title": "北湾 China Camp 半日：从华人捕虾村走进海湾生活史"
+    },
+    {
+      "slug": "bay-area-october-library-museum-pass-guide-2026",
+      "title": "十月文化出行怎么省：先用图书馆查馆票，再排半日路线"
+    },
+    {
+      "slug": "bay-area-freebies-deals-2026-10",
+      "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票"
+    },
+    {
+      "slug": "bay-area-october-muni-clipper-payment-update-2026",
+      "title": "十月坐 Muni 怎么付款：单程票已退出 MuniMobile，换乘先选对卡"
+    },
+    {
+      "slug": "sf-sunset-dunes-october-coastal-walk-2026",
+      "title": "Sunset Dunes 秋日海边散步：从 Noriega 出发，给风和夕阳留点余地"
+    },
+    {
+      "slug": "san-mateo-japanese-garden-october-guide-2026",
+      "title": "San Mateo 花园一小时：看锦鲤和竹影，先避开 Central Park 施工区"
+    },
+    {
+      "slug": "alviso-marina-october-birdwatching-guide-2026",
+      "title": "南湾 Alviso 观鸟入门：从县公园开始，不把盐池大环线当必走"
+    },
+    {
+      "slug": "fremont-ardenwood-october-farm-guide-2026",
+      "title": "Fremont Ardenwood 秋日农场：先选对星期，再安排火车和老屋"
+    },
+    {
+      "slug": "richmond-rosie-free-history-october-guide-2026",
+      "title": "Richmond 免费文化半日：在 Rosie 展馆读懂湾区工厂与家庭"
+    },
+    {
+      "slug": "martinez-shoreline-october-short-walk-guide-2026",
+      "title": "Martinez 海岸短走：不到一英里的环线，看湿地也看关门时间"
+    },
+    {
+      "slug": "pleasanton-saturday-market-museum-guide-october-2026",
+      "title": "Pleasanton 周六上午：农夫市集买两餐，再进免费社区博物馆"
+    },
+    {
+      "slug": "marin-sunday-market-october-local-guide-2026",
+      "title": "Marin 周日市集半日：在 Civic Center 买菜，也学会读一张农场标签"
+    },
+    {
+      "slug": "sonoma-plaza-history-october-day-guide-2026",
+      "title": "Sonoma 不只品酒：围绕 Plaza 看老建筑，安排一段加州历史散步"
+    },
+    {
+      "slug": "napa-bothe-october-redwood-picnic-guide-2026",
+      "title": "Napa 秋日森林半日：Bothe 红杉短走，加一顿自带午餐"
+    },
+    {
+      "slug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "title": "第一次参加湾区 AI 活动：从选场、报名到带走一个成果"
+    }
+  ]
+}

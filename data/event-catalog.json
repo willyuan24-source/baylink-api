@@ -54,10 +54,34 @@
     "endDate": "2026-09-27"
   },
   {
+    "id": "ai-conference-sf-2026",
+    "title": "The AI Conference：从研究到实际产品",
+    "startDate": "2026-09-29",
+    "endDate": "2026-10-01"
+  },
+  {
+    "id": "pyladies-snowflake-ai-data-2026",
+    "title": "PyLadies：AI 时代的数据科学职业与实践",
+    "startDate": "2026-09-30",
+    "endDate": "2026-09-30"
+  },
+  {
+    "id": "llmday-san-francisco-q4-2026",
+    "title": "LLMday：智能体、评测与 AI 工程实践",
+    "startDate": "2026-10-01",
+    "endDate": "2026-10-01"
+  },
+  {
     "id": "mill-valley-film-festival-2026",
     "title": "Mill Valley Film Festival：北湾电影之旅",
     "startDate": "2026-10-01",
     "endDate": "2026-10-11"
+  },
+  {
+    "id": "runtime-modal-sf-2026",
+    "title": "Runtime by Modal：AI 基础设施交流日",
+    "startDate": "2026-10-01",
+    "endDate": "2026-10-01"
   },
   {
     "id": "santa-rosa-pumpkins-parks-2026",
@@ -76,6 +100,12 @@
     "title": "Hardly Strictly Bluegrass 免费音乐节",
     "startDate": "2026-10-02",
     "endDate": "2026-10-04"
+  },
+  {
+    "id": "oakland-civic-ai-design-sprint-2026",
+    "title": "Oakland Civic Tech Design Sprint：用 AI 回应社区问题",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
   },
   {
     "id": "rio-vista-bass-derby-2026",
@@ -144,6 +174,18 @@
     "endDate": "2026-10-12"
   },
   {
+    "id": "n8n-sf-tech-week-workshop-2026",
+    "title": "n8n 实作夜：做一个能带走的自动化流程",
+    "startDate": "2026-10-05",
+    "endDate": "2026-10-05"
+  },
+  {
+    "id": "surrealdb-mastra-shared-memory-2026",
+    "title": "SurrealDB × Mastra：智能体共享记忆与生产实践",
+    "startDate": "2026-10-05",
+    "endDate": "2026-10-05"
+  },
+  {
     "id": "sf-quinteto-latino-lunchtime-2026",
     "title": "Quinteto Latino：午休听一小时木管五重奏",
     "startDate": "2026-10-08",
@@ -158,6 +200,12 @@
   {
     "id": "marinwood-halloween-harvest-2026",
     "title": "Marinwood 万圣节收获庆典",
+    "startDate": "2026-10-09",
+    "endDate": "2026-10-09"
+  },
+  {
+    "id": "oss4ai-agent-day-menlo-park-2026",
+    "title": "SF Tech Week Agent Day：开源 AI 演讲、演示与工作坊",
     "startDate": "2026-10-09",
     "endDate": "2026-10-09"
   },
