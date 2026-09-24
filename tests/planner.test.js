@@ -59,6 +59,7 @@ test('Chinese and mixed language filters resolve Pacific dates, region, budget, 
   assert.equal(inferFilters('带五岁孩子', '2026-09-23').childAge, 5);
   assert.equal(inferFilters('October 3 San Francisco', '2026-09-23').date, '2026-10-03');
   assert.equal(inferFilters('星期五', '2026-09-23').date, '2026-09-25');
+  assert.deepEqual(inferFilters('週六帶五歲孩子，從 Fremont 出發，預算 $50，室內公共交通', '2026-09-23'), { date: '2026-09-26', region: 'east-bay', budget: 50, childAge: 5, setting: 'indoor', travelMode: 'transit' });
   assert.equal(inferFilters('这周末', '2026-09-27').date, '2026-09-27');
   assert.equal(inferFilters('下周六', '2026-09-27').date, '2026-10-03');
   assert.throws(() => inferFilters('2026-02-30 Fremont', '2026-09-23'), /日期无效/);

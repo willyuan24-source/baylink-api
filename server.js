@@ -23,6 +23,7 @@ const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
+const { registerLocalAi } = require('./lib/localAi');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -78,6 +79,8 @@ const SEARCH_KEYWORD_MAX_LENGTH = 80;
 
 app.use(apiSecurityHeaders(config.NODE_ENV === 'production'));
 app.use(cors({ origin: corsOriginCheck, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'Authorization'], maxAge: 600 }));
+// Vision payloads have a dedicated bound; do not inherit the legacy upload limit.
+app.use('/api/ai/event-extract', express.json({ limit: '4200kb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -1589,6 +1592,7 @@ const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdm
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
 registerPostTranslation(app, { Post, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
+registerLocalAi(app, { Conversation, Message, UserBlock, Quota: PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai, isTest, now: options.localAiNow });
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -3502,8 +3506,8 @@ const AI_POST_ASSIST_REWRITE_GUIDE = {
 const buildAiPostAssistSystem = () => `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
 
 通用规则：
-- 中文优先（除非用户明确要求英文）。
-- 标题 5-80 字；正文 80-600 字，不要重复标题，不要把用户原句原样粘贴到正文末尾。
+- 严格遵循 language：zh 时所有文案使用简体中文；en 时 title、description、budget、timeInfo、quickTags、safetyTip 全部使用自然英文；bilingual 时这些文案中英文对应呈现，先中文后英文。不要因用户需求是中文而忽略 language。area 与 category/type 的系统值仍遵循以下约定。
+- 标题 5-80 个字符；正文严格遵循本次长度要求，不要重复标题，不要把用户原句原样粘贴到正文末尾。
 - 必须根据用户提供的 tone 和 rewriteMode（如有）调整标题与正文风格与长度。
 - category 只能是：rent, used, moving, cleaning, ride, repair, translation, part-time, other
 - type 只能是 client（求帮助/求服务）或 provider（提供服务/出租）
@@ -3548,7 +3552,7 @@ const buildAiPostAssistUserMessage = ({ intent, type, categoryHint, areaHint, la
   const styleLines = [
     `【语气 tone=${tone}】${toneGuide}`,
     rewriteGuide ? `【重写 rewriteMode=${rewriteMode}】${rewriteGuide}` : null,
-    `【正文长度】description 控制在 ${lengthGuide.min}-${lengthGuide.max} 字（中文字符计）；rewriteMode 若与 tone 冲突，以 rewriteMode 为准。`,
+    `【正文长度】description 控制在 ${lengthGuide.min}-${lengthGuide.max} 个字符（英文含空格，双语为两种语言合计）；rewriteMode 若与 tone 冲突，以 rewriteMode 为准。`,
     '请根据 tone 与 rewriteMode 调整 title 和 description 的写法，其他字段照常填写。',
   ].filter(Boolean);
 
@@ -3714,7 +3718,9 @@ const normalizeAiPostDraft = (raw, defaults) => {
   let title = clampStr(raw?.title, 80);
   if (title.length < 5) {
     const signals = inferIntentSignals(intent);
-    if (signals.rentSeeking) title = '求租信息';
+    if (defaults.language === 'en') title = signals.rentSeeking ? 'Looking for a rental' : signals.rentOffering ? 'Rental available' : 'Bay Area community post';
+    else if (defaults.language === 'bilingual') title = signals.rentSeeking ? '求租信息 · Looking for a rental' : signals.rentOffering ? '房源出租 · Rental available' : '湾区生活 · Bay Area community';
+    else if (signals.rentSeeking) title = '求租信息';
     else if (signals.rentOffering) title = '房源出租';
     else title = '湾区生活信息';
   }
@@ -3722,6 +3728,7 @@ const normalizeAiPostDraft = (raw, defaults) => {
   const descMax = defaults.descMax ?? 600;
   let description = sanitizeAiDescription(clampStr(raw?.description, descMax), title, intent);
   // Preserve concrete facts in short requests instead of padding them with generic copy.
+  if (!description && defaults.language !== 'zh') throw new Error('AI did not return a description in the requested language');
   description = clampStr(description || intent, descMax);
 
   const quickTags = Array.isArray(raw?.quickTags)
@@ -3741,7 +3748,7 @@ const normalizeAiPostDraft = (raw, defaults) => {
     budget: clampStr(raw?.budget, 30),
     timeInfo: clampStr(raw?.timeInfo, 120),
     quickTags,
-    safetyTip: clampStr(raw?.safetyTip, 200, '线下交易与签约请注意核实信息，重要事项以合同与官方信息为准。'),
+    safetyTip: clampStr(raw?.safetyTip, 200, defaults.language === 'en' ? 'Verify details before meeting or signing. Check the contract and official information for important terms.' : defaults.language === 'bilingual' ? '交易前请核实资料。Verify details before meeting or signing.' : '线下交易与签约请注意核实信息，重要事项以合同与官方信息为准。'),
     coverSuggestion,
   };
 };
@@ -3760,8 +3767,8 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
     },
     body: JSON.stringify({
       model,
-      temperature: 0.5,
-      max_tokens: maxTokens,
+      ...(/^(?:gpt-5(?:[.-]|$)|o[134](?:[.-]|$))/.test(model) ? { reasoning_effort: 'low' } : { temperature: 0.5 }),
+      max_completion_tokens: maxTokens + 1000,
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: buildAiPostAssistSystem() },
@@ -3815,10 +3822,12 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
     if (hint && AI_POST_ASSIST_CATEGORIES.has(hint)) categoryHint = hint;
 
     const areaHint = clampStr(req.body?.areaHint, 80);
-    const language = req.body?.language === 'en' ? 'en' : 'zh';
+    if (req.body?.language !== undefined && !['zh', 'en', 'bilingual'].includes(req.body.language)) return res.status(400).json({ ok: false, error: '请选择中文、英文或双语。' });
+    const language = req.body?.language || 'zh';
     const tone = normalizeAiTone(req.body?.tone);
     const rewriteMode = normalizeAiRewriteMode(req.body?.rewriteMode);
-    const lengthGuide = getAiDescriptionLengthGuide(tone, rewriteMode);
+    const baseLengthGuide = getAiDescriptionLengthGuide(tone, rewriteMode);
+    const lengthGuide = language === 'zh' ? baseLengthGuide : { min: baseLengthGuide.min, max: Math.min(baseLengthGuide.max * (language === 'bilingual' ? 4 : 3), 2000) };
 
     const rawDraft = await callOpenAiPostAssist({
       intent,
@@ -3833,6 +3842,7 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
 
     const draft = normalizeAiPostDraft(rawDraft, {
       intent,
+      language,
       type,
       categoryHint: categoryHint || 'other',
       areaHint,
