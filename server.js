@@ -22,6 +22,7 @@ const { registerEventEngagement } = require('./lib/eventEngagement');
 const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
+const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -440,6 +441,7 @@ const ContactRequest = model('ContactRequest', ContactRequestSchema);
 const ModerationLog = model('ModerationLog', ModerationLogSchema);
 const RevokedSession = model('RevokedSession', RevokedSessionSchema);
 const EventInterest = model('EventInterest', EventInterestSchema);
+const { PostTranslation, PostTranslationQuota } = createPostTranslationModels(mongoose, injectedModels);
 const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
 
@@ -1586,6 +1588,7 @@ registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkA
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
+registerPostTranslation(app, { Post, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -4458,7 +4461,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ProductMetric, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4472,6 +4475,8 @@ async function startProduction(config = process.env) {
   await application.models.EventInterest.init();
   await application.models.PlannerAccount.init();
   await application.models.ProductMetric.init();
+  await application.models.PostTranslation.init();
+  await application.models.PostTranslationQuota.init();
   await application.models.SourceMonitorSnapshot.init();
   await application.models.SourceMonitorLease.init();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
