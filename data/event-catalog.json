@@ -1,65 +1,5 @@
 [
   {
-    "id": "flower-piano-2026",
-    "title": "Flower Piano：在植物园里听一场钢琴",
-    "startDate": "2026-09-10",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "newark-days-2026",
-    "title": "Newark Days：巡游、游乐设施与社区舞台，选半天就能玩",
-    "startDate": "2026-09-17",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "bark-in-the-park-san-jose-2026",
-    "title": "Bark in the Park：和狗狗过节",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-19"
-  },
-  {
-    "id": "lafayette-art-wine-2026",
-    "title": "Lafayette 艺术与葡萄酒节",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "mill-valley-fall-arts-2026",
-    "title": "Mill Valley 林间秋季艺术节",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "muni-heritage-2026",
-    "title": "Muni Heritage：坐一次会行驶的城市历史",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "santa-clara-art-wine-2026",
-    "title": "Santa Clara Art & Wine：在 Central Park 逛手作、听音乐",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "sf-autumn-moon-2026",
-    "title": "唐人街秋月节：看舞狮，找一口中秋味道",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-20"
-  },
-  {
-    "id": "treasure-island-coastal-cleanup-2026",
-    "title": "Coastal Cleanup Day：一起照顾 Treasure Island 海岸",
-    "startDate": "2026-09-19",
-    "endDate": "2026-09-19"
-  },
-  {
-    "id": "san-rafael-porchfest-2026",
-    "title": "San Rafael PorchFest：街坊门廊就是音乐舞台",
-    "startDate": "2026-09-20",
-    "endDate": "2026-09-20"
-  },
-  {
     "id": "petaluma-pumpkin-patch-2026",
     "title": "Petaluma 南瓜田与玉米迷宫",
     "startDate": "2026-09-25",
@@ -70,6 +10,12 @@
     "title": "Redwood City Oktoberfest：收官周末，去广场听一场巴伐利亚音乐",
     "startDate": "2026-09-25",
     "endDate": "2026-09-27"
+  },
+  {
+    "id": "cupertino-fall-bike-fest-2026",
+    "title": "Cupertino 秋季自行车节：骑车去市政广场",
+    "startDate": "2026-09-26",
+    "endDate": "2026-09-26"
   },
   {
     "id": "pacific-coast-fog-fest-2026",
@@ -150,6 +96,18 @@
     "endDate": "2026-10-04"
   },
   {
+    "id": "redwood-city-portfest-2026",
+    "title": "Redwood City PortFest：走进湾边工作港口",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03"
+  },
+  {
+    "id": "sf-african-arts-festival-2026",
+    "title": "非洲艺术节：草坪上的鼓乐、舞蹈与市集",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03"
+  },
+  {
     "id": "sunnyvale-diwali-2026",
     "title": "Sunnyvale Diwali：市中心印度文化节",
     "startDate": "2026-10-03",
@@ -186,14 +144,32 @@
     "endDate": "2026-10-12"
   },
   {
+    "id": "sf-quinteto-latino-lunchtime-2026",
+    "title": "Quinteto Latino：午休听一小时木管五重奏",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08"
+  },
+  {
     "id": "silicon-valley-african-film-festival-2026",
     "title": "Silicon Valley African Film Festival",
     "startDate": "2026-10-08",
     "endDate": "2026-10-11"
   },
   {
+    "id": "marinwood-halloween-harvest-2026",
+    "title": "Marinwood 万圣节收获庆典",
+    "startDate": "2026-10-09",
+    "endDate": "2026-10-09"
+  },
+  {
     "id": "burlingame-mandarin-storytime-2026",
     "title": "Burlingame 图书馆中英双语故事时间",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "cupertino-pooch-plunge-2026",
+    "title": "Cupertino Pooch Plunge：狗狗专属游泳场",
     "startDate": "2026-10-10",
     "endDate": "2026-10-10"
   },
@@ -210,6 +186,12 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "palo-alto-scare-faire-2026",
+    "title": "Palo Alto Scare Faire：交换万圣节服装",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
     "id": "san-carlos-art-wine-faire-2026",
     "title": "San Carlos Art & Wine Faire：半岛秋日艺术节",
     "startDate": "2026-10-10",
@@ -222,6 +204,18 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "sf-ybg-dance-day-2026",
+    "title": "YBG Dance Day：免费试跳不同舞风",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-11"
+  },
+  {
+    "id": "sf-indigenous-peoples-day-2026",
+    "title": "旧金山原住民日：艺术、音乐与社区聚会",
+    "startDate": "2026-10-12",
+    "endDate": "2026-10-12"
+  },
+  {
     "id": "oakland-autumn-lights-festival-2026",
     "title": "Oakland Autumn Lights：湖畔花园灯光夜",
     "startDate": "2026-10-15",
@@ -232,6 +226,12 @@
     "title": "Piedmont 草坪免费电影：《Wonka》",
     "startDate": "2026-10-16",
     "endDate": "2026-10-16"
+  },
+  {
+    "id": "walnut-creek-diablo-improv-2026",
+    "title": "Walnut Creek Diablo Improv：即兴喜剧周末",
+    "startDate": "2026-10-16",
+    "endDate": "2026-10-18"
   },
   {
     "id": "berkeley-harvest-festival-2026",
@@ -252,16 +252,34 @@
     "endDate": "2026-10-18"
   },
   {
+    "id": "sf-bay-area-science-festival-2026",
+    "title": "湾区科学节：到 UCSF 动手做实验",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
     "id": "bay-area-musical-improv-festival-2026",
     "title": "Oakland 音乐即兴剧节",
     "startDate": "2026-10-22",
     "endDate": "2026-10-25"
   },
   {
+    "id": "cupertino-hidden-treasures-2026",
+    "title": "Cupertino Hidden Treasures：社区旧物寻宝",
+    "startDate": "2026-10-22",
+    "endDate": "2026-10-22"
+  },
+  {
     "id": "san-jose-short-film-festival-2026",
     "title": "San Jose 国际短片电影节",
     "startDate": "2026-10-22",
     "endDate": "2026-10-25"
+  },
+  {
+    "id": "calistoga-eleanor-alberga-2026",
+    "title": "Calistoga 室内乐：Eleanor Alberga 与 Green Room Ensemble",
+    "startDate": "2026-10-23",
+    "endDate": "2026-10-23"
   },
   {
     "id": "emeryville-art-exhibition-closing-2026",
@@ -280,6 +298,18 @@
     "title": "旧金山 Portola 社区万圣节手工与游戏",
     "startDate": "2026-10-23",
     "endDate": "2026-10-23"
+  },
+  {
+    "id": "cupertino-monster-mash-2026",
+    "title": "Cupertino Monster Mash：傍晚万圣节亲子场",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "foster-city-halloween-festival-2026",
+    "title": "Foster City 万圣节：讨糖步道与装扮比赛",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
   },
   {
     "id": "menlo-park-halloween-hoopla-2026",
@@ -306,8 +336,20 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "oakland-omca-dia-muertos-2026",
+    "title": "OMCA 亡灵节社区庆典：祭坛、音乐与创作",
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-25"
+  },
+  {
     "id": "menlo-park-trunk-or-treat-2026",
     "title": "Menlo Park Belle Haven 车尾箱讨糖",
+    "startDate": "2026-10-28",
+    "endDate": "2026-10-28"
+  },
+  {
+    "id": "sunnyvale-spooky-storywalk-2026",
+    "title": "Sunnyvale Spooky StoryWalk：穿着装扮读故事",
     "startDate": "2026-10-28",
     "endDate": "2026-10-28"
   },
@@ -316,6 +358,24 @@
     "title": "Benicia 周四农贸市场季末场",
     "startDate": "2026-10-29",
     "endDate": "2026-10-29"
+  },
+  {
+    "id": "napa-harvest-after-dark-2026",
+    "title": "21+ · Napa Harvest After Dark 面具晚宴",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-30"
+  },
+  {
+    "id": "oakland-omca-friday-finale-2026",
+    "title": "OMCA 周五夜季末场：LA GENTE SF 现场音乐",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-30"
+  },
+  {
+    "id": "palo-alto-addams-family-opening-2026",
+    "title": "Palo Alto《亚当斯一家》：万圣节开演周末",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-31"
   },
   {
     "id": "san-jose-avenida-altares-2026",
