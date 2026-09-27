@@ -195,3 +195,35 @@ test('school hiring and repairs retain their marketplace intent', async t => {
   assert.equal(repair.data.responseMode, 'search');
   assert.ok(repair.data.suggestedActions.every(action => !action.category || action.category === 'repair'));
 });
+
+test('invented regional school-district names fall back to published sources instead of becoming authorities', async t => {
+  let inventedName;
+  const request = await fixture(t, { guideChat: async () => ({ answer: `The first two enrollment steps for the ${inventedName} are to prepare documents and apply online.` }) }, require('../data/guide-catalog.json'), require('../data/guide-catalog.en.json'));
+  for (const name of ['Peninsula School District', 'east BAY School District', 'South Bay School District', 'North Bay School District', 'Bay Area School District']) {
+    inventedName = name;
+    const response = await request({ message: 'San Mateo school enrollment steps', locale: 'en' });
+    assert.equal(response.status, 200);
+    assert.equal(response.data.responseMode, 'fallback', name);
+    assert.equal(response.data.degraded, true);
+    assert.equal(response.data.suggestedGuides[0]?.slug, 'peninsula-school-district-enrollment-guide');
+    assert.doesNotMatch(response.data.answer, /\b(?:Peninsula|East Bay|South Bay|North Bay|Bay Area) School District\b/i);
+    assert.match(response.data.answer, /A city is not a school district/);
+    assert.match(response.data.answer, /This is not a live check/);
+  }
+});
+
+test('real district names and plural regional descriptions remain unchanged in school answers', async t => {
+  const answer = 'Check San Mateo-Foster City School District and San Mateo Union High School District separately by grade. East Bay school districts also vary by address; Fremont Unified School District is a real district name.';
+  const request = await fixture(t, { guideChat: async () => ({ answer }) });
+  const response = await request({ message: 'San Mateo school enrollment', locale: 'en' });
+  assert.equal(response.data.responseMode, 'ai');
+  assert.equal(response.data.degraded, false);
+  assert.equal(response.data.answer, answer);
+});
+
+test('school-article summaries also reject an invented regional district in the safety note', async t => {
+  const request = await fixture(t, { guideChat: async () => ({ answer: 'Read the current application checklist and confirm your grade.', safetyNote: 'Ask the Peninsula School District.' }) }, require('../data/guide-catalog.json'), require('../data/guide-catalog.en.json'));
+  const response = await request({ message: 'Summarize this guide', locale: 'en', context: { currentPath: '/guides/peninsula-school-district-enrollment-guide' } });
+  assert.equal(response.data.responseMode, 'fallback');
+  assert.doesNotMatch(`${response.data.answer} ${response.data.safetyNote}`, /Peninsula School District/);
+});
