@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
 const { inferFilters, loadPlannerCatalog, recommend } = require('../lib/planner');
+const { MAX_EVENT_IDS_PER_REQUEST } = require('../lib/eventEngagement');
 
 const NOW = Date.parse('2026-09-23T19:00:00Z');
 const SECRET = 'isolated-planner-tests-only-not-a-real-key';
@@ -87,6 +88,19 @@ test('AI output cannot inject IDs, fake price facts, forbidden dates or bypass e
   assert.ok(!JSON.stringify(response).includes('five-minute'));
   const failed = await recommend({ body: { filters: { date: '2026-09-26' }, message: 'Saturday' }, catalog, now: () => NOW, ai: async () => { throw new Error('timeout'); } });
   assert.equal(failed.responseMode, 'rules');
+});
+
+test('planner excludes every ID up to the batch maximum and rejects overflow or malformed final entries', async t => {
+  const events = Array.from({ length: MAX_EVENT_IDS_PER_REQUEST + 1 }, (_, index) => event(`bounded-event-${index}`));
+  const { request } = await fixture(t, { catalog: { ...catalog, events } });
+  const excluded = events.slice(0, MAX_EVENT_IDS_PER_REQUEST).map(row => row.id);
+  const post = excludeEventIds => request('/recommend', { method: 'POST', body: { filters: { date: '2026-09-26' }, excludeEventIds } });
+  const accepted = await post(excluded);
+  assert.equal(accepted.status, 200);
+  assert.deepEqual(accepted.data.suggestions.map(row => row.eventId), [events.at(-1).id]);
+  for (const invalid of [events.map(row => row.id), Array(MAX_EVENT_IDS_PER_REQUEST + 1).fill(events[0].id), [...excluded.slice(0, -1), '$bad'], [...excluded.slice(0, -1), { $ne: null }], [...excluded.slice(0, -1), 'x'.repeat(121)]]) {
+    assert.equal((await post(invalid)).status, 400);
+  }
 });
 
 test('past Pacific dates are rejected while the current local final date is eligible', async () => {

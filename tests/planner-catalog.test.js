@@ -78,6 +78,13 @@ test('published AWS Builder Loft event cannot be recommended to an underage grou
   assert.deepEqual(adults.suggestions.map(row => row.eventId), [event.id]);
 });
 
+test('excluding the complete published event catalog returns no substitute or excluded event', async () => {
+  const current = checkedCatalog();
+  const response = await request({ excludeEventIds: current.events.map(row => row.id) });
+  assert.deepEqual(response.suggestions, []);
+  assert.ok(response.notices.some(note => note.includes('暂无符合条件')));
+});
+
 test('published nearby stops never invent coordinates or attach distant and approximate places', async () => {
   const current = checkedCatalog();
   const dates = [...new Set(current.events.map(row => row.startDate).filter(day => day >= current.checkedAt))];

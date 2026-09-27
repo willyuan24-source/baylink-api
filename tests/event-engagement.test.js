@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
-const { loadEventCatalog, bayAreaDate } = require('../lib/eventEngagement');
+const { loadEventCatalog, bayAreaDate, MAX_EVENT_IDS_PER_REQUEST } = require('../lib/eventEngagement');
 
 const SECRET = 'isolated-event-test-secret-with-more-than-32-characters';
 const NOW = Date.parse('2026-10-15T19:00:00Z');
@@ -97,7 +97,7 @@ test('unknown events, Mongo-shaped input, forged identity and non-booleans canno
   const invalid = [null, [], {}, { interested: true }, { interested: 'true', lookingForBuddy: false }, { interested: 1, lookingForBuddy: false }, { interested: false, lookingForBuddy: true }, { interested: { $ne: false }, lookingForBuddy: false }, { interested: true, lookingForBuddy: true, userId: 'other' }];
   for (const body of invalid) assert.equal((await put(body)).status, 400);
   assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', 'fake-event')).status, 404);
-  for (const path of ['/events/engagement', '/events/engagement?ids=', '/events/engagement?ids[$ne]=x', '/events/engagement?ids=a&ids=b', '/events/engagement?ids=future-festival,', `/events/engagement?ids=${Array(101).fill('today-event').join(',')}`]) assert.equal((await request(path)).status, 400, path);
+  for (const path of ['/events/engagement', '/events/engagement?ids=', '/events/engagement?ids[$ne]=x', '/events/engagement?ids=a&ids=b', '/events/engagement?ids=future-festival,', `/events/engagement?ids=${Array(MAX_EVENT_IDS_PER_REQUEST + 1).fill('today-event').join(',')}`]) assert.equal((await request(path)).status, 400, path);
   assert.equal((await request('/events/engagement?ids=fake-event')).status, 404);
   assert.equal((await request('/events/fake-event/buddies')).status, 404);
   assert.equal(models.EventInterest.rows.length, 0);
@@ -243,15 +243,34 @@ test('Mongoose validates the buddy invariant and declares a unique event/member 
   assert.equal(writes.length, 1, 'invalid state must fail before reaching the database adapter');
 });
 
+test('engagement batches accept the bounded maximum without dropping final rows and reject overflow or invalid tail IDs', async t => {
+  assert.equal(MAX_EVENT_IDS_PER_REQUEST, 200, 'the public batch contract stays explicitly bounded');
+  const catalog = Array.from({ length: MAX_EVENT_IDS_PER_REQUEST + 1 }, (_, index) => ({ ...CATALOG[0], id: `batch-event-${index}` }));
+  const ids = catalog.slice(0, MAX_EVENT_IDS_PER_REQUEST).map(row => row.id);
+  const { request, models } = await fixture(t, { catalog, interests: [interest('owner', { eventId: ids.at(-1), lookingForBuddy: true })] });
+  const fetchIds = values => request(`/events/engagement?ids=${encodeURIComponent(values.join(','))}`, { as: 'owner' });
+  const full = await fetchIds(ids);
+  assert.equal(full.status, 200);
+  assert.deepEqual(full.data.events.map(row => row.eventId), ids);
+  assert.deepEqual(full.data.events.at(-1), { eventId: ids.at(-1), interestedCount: 1, buddyCount: 1, me: { interested: true, lookingForBuddy: true } });
+  assert.equal((await fetchIds(catalog.map(row => row.id))).status, 400);
+  assert.equal((await fetchIds(Array(MAX_EVENT_IDS_PER_REQUEST + 1).fill(ids[0]))).status, 400, 'duplicate IDs do not bypass the raw request-size bound');
+  assert.equal((await fetchIds([...ids.slice(0, -1), 'bad$id'])).status, 400);
+  assert.equal((await fetchIds([...ids.slice(0, -1), 'x'.repeat(121)])).status, 400);
+  assert.equal((await fetchIds([...ids.slice(0, -1), 'unknown-event'])).status, 404);
+  assert.equal(models.EventInterest.rows.length, 1, 'batch reads never mutate participation');
+});
+
 test('the exported official catalog is accepted as one complete frontend engagement batch', async t => {
   const catalog = require('../data/event-catalog.json');
   const checked = loadEventCatalog();
   assert.ok(checked);
   assert.equal(checked.size, catalog.length);
-  assert.ok(catalog.length <= 100, 'the current frontend requests its calendar in one batch');
+  assert.ok(catalog.length <= MAX_EVENT_IDS_PER_REQUEST, 'the current frontend requests its calendar in one bounded batch');
   const { request } = await fixture(t, { catalog });
   const result = await request(`/events/engagement?ids=${encodeURIComponent(catalog.map(row => row.id).join(','))}`);
   assert.equal(result.status, 200);
   assert.deepEqual(result.data.events.map(row => row.eventId), catalog.map(row => row.id));
   assert.ok(result.data.events.every(row => row.interestedCount === 0 && row.buddyCount === 0 && row.me === null));
+  t.diagnostic(`${catalog.length} published events returned without truncation`);
 });

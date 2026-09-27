@@ -126,6 +126,12 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "oakland-first-fridays-health-harmony-2026",
+    "title": "Oakland First Fridays：艺术与街区夜市",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
+  },
+  {
     "id": "oakland-oacc-mending-circle-2026",
     "title": "Oakland 免费缝补圈：带一件想修的旧衣服",
     "startDate": "2026-10-02",
@@ -146,6 +152,12 @@
   {
     "id": "san-jose-sofa-pocket-market-2026",
     "title": "San José 花园小市集：艺术、手作与预约餐券",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02"
+  },
+  {
+    "id": "san-mateo-curiodyssey-spooky-science-2026",
+    "title": "CuriOdyssey 十月科学夜：动物、幻觉与南瓜实验",
     "startDate": "2026-10-02",
     "endDate": "2026-10-02"
   },
@@ -219,7 +231,22 @@
     "id": "san-francisco-fleet-week-2026",
     "title": "San Francisco Fleet Week：海湾与城市活动周",
     "startDate": "2026-10-04",
-    "endDate": "2026-10-12"
+    "endDate": "2026-10-12",
+    "occurrenceDates": [
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-12"
+    ]
+  },
+  {
+    "id": "sf-castro-street-fair-2026",
+    "title": "Castro 街区节：在音乐与市集中认识社区",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-04"
   },
   {
     "id": "n8n-sf-tech-week-workshop-2026",
@@ -234,6 +261,16 @@
     "endDate": "2026-10-05"
   },
   {
+    "id": "napa-water-wise-workshops-oct2026",
+    "title": "Napa 节水花园讲座：先养土，再选耐旱植物",
+    "startDate": "2026-10-07",
+    "endDate": "2026-10-14",
+    "occurrenceDates": [
+      "2026-10-07",
+      "2026-10-14"
+    ]
+  },
+  {
     "id": "sf-quinteto-latino-lunchtime-2026",
     "title": "Quinteto Latino：午休听一小时木管五重奏",
     "startDate": "2026-10-08",
@@ -243,7 +280,11 @@
     "id": "silicon-valley-african-film-festival-2026",
     "title": "Silicon Valley African Film Festival",
     "startDate": "2026-10-08",
-    "endDate": "2026-10-11"
+    "endDate": "2026-10-11",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-11"
+    ]
   },
   {
     "id": "marinwood-halloween-harvest-2026",
@@ -256,6 +297,12 @@
     "title": "SF Tech Week Agent Day：开源 AI 演讲、演示与工作坊",
     "startDate": "2026-10-09",
     "endDate": "2026-10-09"
+  },
+  {
+    "id": "berkeley-indigenous-peoples-powwow-2026",
+    "title": "Berkeley 原住民日 Powwow：舞蹈、鼓声与文化市集",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
   },
   {
     "id": "burlingame-mandarin-storytime-2026",
@@ -274,6 +321,12 @@
     "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
     "startDate": "2026-10-10",
     "endDate": "2026-10-11"
+  },
+  {
+    "id": "napa-beyond-bin-oct10-2026",
+    "title": "Beyond the Bin：看看回收物离开家后去了哪里",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
   },
   {
     "id": "napa-musictime-halloween-2026",
@@ -346,6 +399,12 @@
     "title": "Piedmont 草坪免费电影：《Wonka》",
     "startDate": "2026-10-16",
     "endDate": "2026-10-16"
+  },
+  {
+    "id": "san-jose-waterways-art-climate-2026",
+    "title": "San José 水道与气候艺术论坛：从展厅走向 Coyote Creek",
+    "startDate": "2026-10-16",
+    "endDate": "2026-10-17"
   },
   {
     "id": "walnut-creek-diablo-improv-2026",
@@ -474,6 +533,22 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "san-carlos-hiller-halloween-paint-plane-2026",
+    "title": "Hiller 万圣节 Paint-A-Plane：给飞机添上节日颜色",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-25",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-25"
+    ]
+  },
+  {
+    "id": "san-jose-sjma-dia-muertos-community-2026",
+    "title": "San José 美术馆免费社区日：亡灵节艺术与文化",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "san-mateo-boos-brews-2026",
     "title": "San Mateo B Street 万圣节：要糖、手作与音乐",
     "startDate": "2026-10-24",
@@ -482,6 +557,12 @@
   {
     "id": "santa-rosa-halloween-howarth-2026",
     "title": "Santa Rosa Howarth Park 万圣节",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "sf-fishermans-wharf-chowder-fest-2026",
+    "title": "渔人码头 Chowder Fest：浓汤比赛与海边市集",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
   },
@@ -500,6 +581,12 @@
   {
     "id": "sf-world-of-dumplings-2026",
     "title": "旧金山世界饺子节：在 Ferry Building 尝不同文化",
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-25"
+  },
+  {
+    "id": "srsymphony-boo-dance-oct25-2026",
+    "title": "Boo! Let’s Dance：和 Snoopy 一起听交响乐",
     "startDate": "2026-10-25",
     "endDate": "2026-10-25"
   },
