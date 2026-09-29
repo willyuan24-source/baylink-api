@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "responseMode": "web",
+  "checkedAt": "2026-09-29T19:07:13.859Z",
+  "answer": "[1]\n\nGott's Roadside 位于旧金山 Ferry Building，地址是 1 Ferry Building #6，San Francisco, CA 94111。 [2]根据其官方网站，餐厅的营业时间如下：\n\n- 星期日到星期三：上午 10 点至晚上 9 点\n- 星期四到星期六：上午 10 点至晚上 10 点\n\n因此，2026 年 10 月 3 日（星期六），Gott's Roadside 的营业时间为上午 10 点至晚上 10 点。 [2]\n\nBAYLINK 核对提醒：所选日期 2026-10-03 的实际营业、余票和临时调整仍需向来源确认；常规每周时段不保证当日营业。以上时间为网页查询结果，不是 BAYLINK 的当天确认。",
+  "sources": [
+    {
+      "title": "Gott's Roadside, Ferry Building",
+      "url": "https://www.google.com/maps/search/Gott%27s+Roadside%2C+Ferry+Building?utm_source=openai"
+    },
+    {
+      "title": "Hours & Location - Gott's Ferry Building",
+      "url": "https://www.gotts.com/location/sfferrybuilding/?utm_source=openai"
+    }
+  ],
+  "candidateStatus": "unverified",
+  "cached": false
+}
