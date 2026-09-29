@@ -43,6 +43,24 @@ test('only completed tool citations become sources, numbered in the answer witho
   const noCitations = raw(); noCitations.output[1].content[0].annotations = [];
   await assert.rejects(extractSearchResult(noCitations, { lookup }), error => error.status === 503);
 });
+
+test('real-style heading and citation debris is cleaned without losing text or rebinding sources', async () => {
+  const text = '##[venue])\n\nGott’s Ferry Building：普通周六 10:00–22:00（非 10/3 当天保证）。[hours]\n地图位置（入口需核实）：[map]\n儿童规则（5–12 岁）仍需核实。([again])\n##\n)\n### 出发前再查临时调整';
+  const annotations = [
+    ['[venue]', 'https://www.gotts.com/locations', 'Gott’s official locations'],
+    ['[hours]', 'https://www.gotts.com/locations', 'Gott’s official hours'],
+    ['[map]', 'https://maps.google.com/', 'Google Maps'],
+    ['[again]', 'https://maps.google.com/', 'Google Maps'],
+  ].map(([marker, url, title]) => ({ type: 'url_citation', url, title, start_index: text.indexOf(marker), end_index: text.indexOf(marker) + marker.length }));
+  const response = raw(); response.output[1].content[0] = { type: 'output_text', text, annotations };
+  const result = await extractSearchResult(response, { lookup, now: () => NOW });
+  assert.equal(result.answer, '[1]\n\nGott’s Ferry Building：普通周六 10:00–22:00（非 10/3 当天保证）。[1]\n地图位置（入口需核实）：[2]\n儿童规则（5–12 岁）仍需核实。([2])\n\n出发前再查临时调整');
+  assert.deepEqual(result.sources, [
+    { title: 'Gott’s official locations', url: 'https://www.gotts.com/locations' },
+    { title: 'Google Maps', url: 'https://maps.google.com/' },
+  ]);
+  assert.equal(result.checkedAt, '2026-09-29T19:00:00.000Z');
+});
 test('provider request uses Responses web_search once, low context and no persisted conversation', async () => {
   let request;
   const input = validateSearchInput({ query: 'SF museums', locale: 'en' });
@@ -54,6 +72,10 @@ test('provider request uses Responses web_search once, low context and no persis
   assert.equal(request.body.store, false); assert.equal(request.body.tool_choice, 'required'); assert.equal(request.body.max_tool_calls, 1);
   assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'low', external_web_access: true }]);
   assert.equal(request.body.input, JSON.stringify(input)); assert.ok(request.signal instanceof AbortSignal);
+  assert.match(request.body.instructions, /plain text: no Markdown headings/);
+  assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
+  assert.match(request.body.instructions, /temporary changes.*official site/);
+  assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
   assert.equal(result.responseMode, 'web');
 });
 test('same query cache preserves original checkedAt and same in-flight query spends only one call', async t => {
