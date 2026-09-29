@@ -78,6 +78,24 @@ test('provider request uses Responses web_search once, low context and no persis
   assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
   assert.equal(result.responseMode, 'web');
 });
+test('dated searches always append an application reminder in the requested language even if the model omits it', async () => {
+  const response = raw(); const part = response.output[1].content[0];
+  part.text = '因此 2026-10-03 营业 10:00–22:00。[source]';
+  part.annotations[0].start_index = part.text.indexOf('[source]');
+  part.annotations[0].end_index = part.text.length;
+  const options = { ai: async () => response, lookup, now: () => NOW };
+  const extracted = await extractSearchResult(response, options);
+  const reminders = {
+    'zh-Hans': 'BAYLINK 核对提醒：所选日期 2026-10-03 的实际营业、余票和临时调整仍需向来源确认；常规每周时段不保证当日营业。以上时间为网页查询结果，不是 BAYLINK 的当天确认。',
+    'zh-Hant': 'BAYLINK 核對提醒：所選日期 2026-10-03 的實際營業、餘票和臨時調整仍需向來源確認；常規每週時段不保證當日營業。以上時間為網頁查詢結果，不是 BAYLINK 的當天確認。',
+    en: "BAYLINK verification reminder: Confirm actual opening hours, ticket availability and temporary changes for your selected date 2026-10-03 with the sources; regular weekly hours do not guarantee opening that day. The times above are web-search results, not BAYLINK's confirmation for that day.",
+  };
+  for (const [locale, reminder] of Object.entries(reminders)) {
+    const result = await requestSearch({ query: 'Gott’s hours', date: '2026-10-03', locale }, options);
+    assert.deepEqual(result, { ...extracted, answer: `${extracted.answer}\n\n${reminder}` });
+  }
+  assert.deepEqual(await requestSearch({ query: 'Gott’s hours', locale: 'en' }, options), extracted);
+});
 test('same query cache preserves original checkedAt and same in-flight query spends only one call', async t => {
   let calls = 0; let time = NOW;
   const { request, models } = await fixture(t, { ai: async () => { calls++; await new Promise(resolve => setTimeout(resolve, 20)); return raw(); }, now: () => time });
