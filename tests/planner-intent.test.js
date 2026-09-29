@@ -191,3 +191,21 @@ test('automatically added nearby stops preserve free-only, remaining admission b
   const total = await recommendWithPlaces([place('ten', { planning: { admissionUsd: 10 } })], { budget: 100, partySize: 4, budgetScope: 'total' });
   assert.deepEqual(total.suggestions[0].placeIds, []);
 });
+
+test('an explicit family-activity exclusion removes real family events but not an optional no-children outing', async () => {
+  const published = loadPlannerCatalog();
+  const rejectFamilies = await recommend({ body: { message: '不要亲子活动，东湾' }, catalog: published, now });
+  assert.ok(rejectFamilies.suggestions.length > 0);
+  for (const suggestion of rejectFamilies.suggestions) {
+    const row = published.events.find(item => item.id === suggestion.eventId);
+    assert.notEqual(row.category, 'family');
+    assert.ok(!/亲子|親子/.test([row.title, ...(row.audience || [])].join(' ')));
+  }
+  const optionalChildren = await recommend({ body: { message: '不带孩子也可以，东湾' }, catalog: published, now });
+  assert.ok(optionalChildren.suggestions.some(suggestion => published.events.find(item => item.id === suggestion.eventId).category === 'family'));
+  const allAgesMusic = event('all-ages-concert', { title: 'All-ages concert', category: 'culture', planning: { allAges: true, admissionUsd: 0 } });
+  const concert = await run([allAgesMusic, event('family')], { message: 'no family events' });
+  assert.deepEqual(concert.suggestions.map(row => row.eventId), ['all-ages-concert']);
+  const noPositiveFamilyIntent = await run([event('business', { category: 'culture', audience: ['Business owners'] }), event('family')], { message: '不想参加亲子活动' });
+  assert.deepEqual(noPositiveFamilyIntent.suggestions.map(row => row.eventId), ['business']);
+});
