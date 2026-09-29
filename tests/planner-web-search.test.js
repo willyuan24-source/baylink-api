@@ -11,8 +11,8 @@ function raw(url = 'https://museum.org/visit') {
   return { status: 'completed', output: [{ type: 'web_search_call', status: 'completed', action: { type: 'search', sources: [{ type: 'url', url }] } },
     { type: 'message', role: 'assistant', content: [{ type: 'output_text', text, annotations: [{ type: 'url_citation', url, title: 'Official visitor page', start_index: text.indexOf('[source]'), end_index: text.length }] }] }] };
 }
-function structured(rows, citations = {}, answer = '已找到有来源的地点；详情仍需核对。[answer]', legacy = false) {
-  const response = raw(); const text = legacy ? `${answer}\nBAYLINK_CANDIDATES_V1\n${JSON.stringify(rows)}\nEND_BAYLINK_CANDIDATES_V1` : JSON.stringify({ answer, candidates: rows });
+function structured(rows, citations = {}, answer = '已找到有来源的地点；详情仍需核对。[answer]') {
+  const response = raw(); const text = `${answer}\nBAYLINK_CANDIDATES_V1\n${JSON.stringify(rows)}\nEND_BAYLINK_CANDIDATES_V1`;
   const annotations = Object.entries({ '[answer]': 'https://museum.org/visit', ...citations }).flatMap(([marker, url]) => {
     const items = []; let at = text.indexOf(marker);
     while (at >= 0) { items.push({ type: 'url_citation', url, title: `Source for ${marker}`, start_index: at, end_index: at + marker.length }); at = text.indexOf(marker, at + marker.length); }
@@ -112,17 +112,6 @@ test('candidate protocol is bounded and malformed blocks preserve the cited answ
     assert.deepEqual(fallback.candidates, []);
   }
   assert.equal('candidates' in await extractSearchResult(raw(), { lookup, now: () => NOW }), false, 'legacy prose is never parsed into cards');
-  const legacy = await extractSearchResult(structured([rows[0]], { '[venue]': 'https://venue.org/' }, 'Legacy answer [answer]', true), { lookup, now: () => NOW });
-  assert.equal(legacy.answer, 'Legacy answer [1]'); assert.equal(legacy.candidates[0].name, 'Venue 0');
-});
-test('invalid structured envelopes cannot leak raw JSON or fabricate candidates', async () => {
-  for (const envelope of [{ answer: 'Answer [source]' }, { answer: 'Answer [source]', candidates: {}, inventedSources: [] }]) {
-    const response = raw(); const part = response.output[1].content[0]; part.text = JSON.stringify(envelope);
-    part.annotations[0].start_index = part.text.indexOf('[source]'); part.annotations[0].end_index = part.annotations[0].start_index + 8;
-    await assert.rejects(extractSearchResult(response, { lookup }), error => error.status === 503);
-  }
-  const malformed = structured([]); malformed.output[1].content[0].text = malformed.output[1].content[0].text.slice(0, -1);
-  await assert.rejects(extractSearchResult(malformed, { lookup }), error => error.status === 503);
 });
 test('provider request uses Responses web_search once, low context and no persisted conversation', async () => {
   let request;
@@ -134,19 +123,12 @@ test('provider request uses Responses web_search once, low context and no persis
   assert.equal(request.body.model, 'gpt-4.1-mini');
   assert.equal(request.body.store, false); assert.equal(request.body.tool_choice, 'required'); assert.equal(request.body.max_tool_calls, 1);
   assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'low', external_web_access: true }]);
-  assert.deepEqual(request.body.input[1], { role: 'user', content: JSON.stringify(input) });
-  assert.equal(request.body.input[0].role, 'developer');
-  assert.match(request.body.input[0].content, /Both keys are mandatory/); assert.ok(request.signal instanceof AbortSignal);
+  assert.equal(request.body.input, JSON.stringify(input)); assert.ok(request.signal instanceof AbortSignal);
   assert.match(request.body.instructions, /plain text: no Markdown headings/);
   assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
   assert.match(request.body.instructions, /temporary changes.*official site/);
   assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
-  assert.equal(request.body.text.format.type, 'json_schema'); assert.equal(request.body.text.format.strict, true);
-  assert.deepEqual(request.body.text.format.schema.required, ['answer', 'candidates']);
-  assert.equal(request.body.text.format.schema.additionalProperties, false);
-  assert.equal(request.body.text.format.schema.properties.candidates.maxItems, 5);
-  assert.deepEqual(request.body.text.format.schema.properties.candidates.items.required, ['name', 'city', 'summary', 'timeSummary', 'priceSummary']);
-  assert.equal(request.body.text.format.schema.properties.candidates.items.additionalProperties, false);
+  assert.match(request.body.instructions, /BAYLINK_CANDIDATES_V1/);
   assert.match(request.body.instructions, /at most two short sentences/);
   assert.match(request.body.instructions, /Prefer only 2 concise records/);
   assert.equal(request.body.max_output_tokens, 1800);
