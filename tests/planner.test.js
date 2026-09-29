@@ -72,8 +72,7 @@ test('real IDs, indoor/date/age constraints and unknown cost survive recommendat
   assert.equal(response.responseMode, 'rules');
   assert.deepEqual(response.suggestions.map(row => row.eventId), ['free', 'known', 'unknown']);
   assert.match(response.suggestions[2].unknowns.join(' '), /not verified within your budget/);
-  assert.deepEqual(response.suggestions[1].placeIds, ['nearby']);
-  assert.match(response.suggestions[1].unknowns.join(' '), /hours, admission and route/);
+  assert.deepEqual(response.suggestions[1].placeIds, [], 'unknown nearby admission must not be automatically added under a budget');
   assert.ok(!JSON.stringify(response).includes('expensive'));
 });
 
@@ -184,7 +183,7 @@ test('AI receives confirmed occurrence dates and cannot recover exhausted or unc
 
 test('unrestricted UI defaults never hide natural date, city, budget, age, setting or travel mode', async () => {
   const response = await recommend({ body: { message: '周六Fremont\n带五岁孩子\t预算40室内公共交通', filters: { region: 'all', budget: null, childAge: null, setting: 'any', travelMode: 'any' } }, catalog, now: () => NOW });
-  assert.deepEqual(response.filters, { region: 'east-bay', city: 'Fremont', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit', date: '2026-09-26' });
+  assert.deepEqual(response.filters, { region: 'east-bay', city: 'Fremont', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit', date: '2026-09-26', budgetScope: 'person', freeOnly: false, topic: 'any' });
   assert.ok(response.suggestions.every(row => !row.eventId.includes('adults') && !row.eventId.includes('outside')));
   assert.ok(response.suggestions.every(row => row.unknowns.some(note => note.includes('成人陪同要求'))));
   assert.ok(response.suggestions.every(row => !/适合.{0,8}孩子/.test(row.reason)));
