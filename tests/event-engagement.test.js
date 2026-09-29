@@ -261,16 +261,23 @@ test('engagement batches accept the bounded maximum without dropping final rows 
   assert.equal(models.EventInterest.rows.length, 1, 'batch reads never mutate participation');
 });
 
-test('the exported official catalog is accepted as one complete frontend engagement batch', async t => {
+test('the complete exported catalog is returned through bounded frontend engagement batches', async t => {
   const catalog = require('../data/event-catalog.json');
   const checked = loadEventCatalog();
   assert.ok(checked);
   assert.equal(checked.size, catalog.length);
-  assert.ok(catalog.length <= MAX_EVENT_IDS_PER_REQUEST, 'the current frontend requests its calendar in one bounded batch');
+  const batchSize = 100;
+  assert.ok(batchSize <= MAX_EVENT_IDS_PER_REQUEST, 'the frontend batch size stays within the unchanged server limit');
   const { request } = await fixture(t, { catalog });
-  const result = await request(`/events/engagement?ids=${encodeURIComponent(catalog.map(row => row.id).join(','))}`);
-  assert.equal(result.status, 200);
-  assert.deepEqual(result.data.events.map(row => row.eventId), catalog.map(row => row.id));
-  assert.ok(result.data.events.every(row => row.interestedCount === 0 && row.buddyCount === 0 && row.me === null));
-  t.diagnostic(`${catalog.length} published events returned without truncation`);
+  const returned = [];
+  for (let offset = 0; offset < catalog.length; offset += batchSize) {
+    const ids = catalog.slice(offset, offset + batchSize).map(row => row.id);
+    const result = await request(`/events/engagement?ids=${encodeURIComponent(ids.join(','))}`);
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.data.events.map(row => row.eventId), ids);
+    assert.ok(result.data.events.every(row => row.interestedCount === 0 && row.buddyCount === 0 && row.me === null));
+    returned.push(...result.data.events.map(row => row.eventId));
+  }
+  assert.deepEqual(returned, catalog.map(row => row.id), 'every published event is returned once without truncation');
+  t.diagnostic(`${catalog.length} published events returned in ${Math.ceil(catalog.length / batchSize)} bounded batches`);
 });

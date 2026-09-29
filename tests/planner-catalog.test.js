@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPlannerCatalog, recommend, distanceKm } = require('../lib/planner');
+const { loadPlannerCatalog, recommend, distanceKm, priceOf, REGIONS } = require('../lib/planner');
+const { MAX_EVENT_IDS_PER_REQUEST } = require('../lib/eventEngagement');
 
 // This smoke test exercises the same exported, published catalog production loads.
 // It is intentionally deterministic: no AI provider, network or account/database writes.
@@ -53,7 +54,14 @@ test('live Fremont five-year-old regression returns Nemo alone and cannot be bro
     assert.ok(response.notices.some(note => note.includes('只有 1 项')));
   }
   const eastBay = await request({ message: '10月2日在东湾带五岁孩子' });
-  assert.deepEqual(eastBay.suggestions.map(row => row.eventId), ['fremont-finding-nemo-outdoor-movie-2026']);
+  assert.ok(eastBay.suggestions.some(row => row.eventId === 'fremont-finding-nemo-outdoor-movie-2026'));
+  for (const suggestion of eastBay.suggestions) {
+    const event = catalog.events.find(row => row.id === suggestion.eventId);
+    assert.equal(event.region, 'east-bay');
+    assert.equal(event.category, 'family', 'additional regional options retain explicit family evidence');
+    assert.ok(!event.planning?.minAge || event.planning.minAge <= 5);
+    assert.ok(!event.planning?.maxAge || event.planning.maxAge >= 5);
+  }
   const oakland = await request({ message: '10月2日在Oakland带五岁孩子' });
   assert.deepEqual(oakland.suggestions, []);
   const adult = await request({ message: '10月2日在Oakland参加AI技术活动' });
@@ -74,15 +82,40 @@ test('published AWS Builder Loft event cannot be recommended to an underage grou
   assert.equal(event.planning?.minAge, 18);
   const response = await request({ filters: { date: event.startDate, region: event.region, childAge: 17 } });
   assert.ok(!response.suggestions.some(row => row.eventId === event.id));
-  const adults = await request({ filters: { date: event.startDate, region: event.region }, excludeEventIds: catalog.events.filter(row => row.id !== event.id).map(row => row.id) });
+  const otherRegionalIds = catalog.events.filter(row => row.region === event.region && row.id !== event.id).map(row => row.id);
+  assert.ok(otherRegionalIds.length <= MAX_EVENT_IDS_PER_REQUEST);
+  const adults = await request({ filters: { date: event.startDate, region: event.region }, excludeEventIds: otherRegionalIds });
   assert.deepEqual(adults.suggestions.map(row => row.eventId), [event.id]);
 });
 
-test('excluding the complete published event catalog returns no substitute or excluded event', async () => {
+test('excluding every published event in each selected region returns no substitute or excluded event', async () => {
   const current = checkedCatalog();
-  const response = await request({ excludeEventIds: current.events.map(row => row.id) });
-  assert.deepEqual(response.suggestions, []);
-  assert.ok(response.notices.some(note => note.includes('暂无符合条件')));
+  for (const region of REGIONS) {
+    const ids = current.events.filter(row => row.region === region).map(row => row.id);
+    assert.ok(ids.length > 0 && ids.length <= MAX_EVENT_IDS_PER_REQUEST);
+    assert.ok((await request({ filters: { region } })).suggestions.length > 0, `${region} has real candidates before exclusions`);
+    const response = await request({ filters: { region }, excludeEventIds: ids });
+    assert.deepEqual(response.suggestions, [], `${region} exclusions cannot introduce a substitute from another region`);
+    assert.ok(response.notices.some(note => note.includes('暂无符合条件')));
+  }
+});
+
+test('published unknown admission stays unknown rather than becoming a free or budget-confirmed recommendation', async () => {
+  const current = checkedCatalog();
+  const unknown = current.events.filter(row => row.cost === 'unknown');
+  assert.ok(unknown.length > 0, 'the released catalog includes explicit unknown fees');
+  for (const event of unknown) {
+    assert.equal(event.planning?.admissionUsd, null, event.id);
+    assert.equal(priceOf(event), null, event.id);
+  }
+  const target = unknown.find(row => row.startDate >= current.checkedAt && row.occurrenceDates === undefined);
+  assert.ok(target);
+  const excluded = current.events.filter(row => row.region === target.region && row.id !== target.id).map(row => row.id);
+  assert.ok(excluded.length <= MAX_EVENT_IDS_PER_REQUEST);
+  const response = await request({ filters: { date: target.startDate, region: target.region, budget: 0 }, excludeEventIds: excluded });
+  assert.deepEqual(response.suggestions.map(row => row.eventId), [target.id]);
+  assert.ok(response.suggestions[0].unknowns.some(note => note.includes('不能认定符合预算')));
+  assert.ok(!response.suggestions[0].reasons.some(note => note.includes('免费入场')));
 });
 
 test('published nearby stops never invent coordinates or attach distant and approximate places', async () => {
