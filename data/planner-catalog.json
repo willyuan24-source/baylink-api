@@ -264,8 +264,46 @@
       "sourceLabel": "foodwise.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.7953186,
+        "lng": -122.3936029,
+        "label": "Ferry Plaza Farmers Market",
+        "sourceUrl": "https://foodwise.org/markets/ferry-plaza-farmers-market/visitor-info/",
+        "precision": "venue"
+      },
       "planning": {
-        "admissionUsd": 0
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/markets/ferry-plaza-farmers-market/visitor-info/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [],
+            "1": [],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ],
+            "3": [],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ],
+            "5": [],
+            "6": [
+              {
+                "open": "08:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "市集每周二、四、六举行，风雨照常；此时间不代表 Ferry Building 内所有商家营业时间。购物与餐饮另付费。"
+        }
       }
     },
     {
@@ -1099,9 +1137,31 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
-        "minAge": 18
+        "minAge": 18,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/visit/calendar/after-dark-echoes",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-01",
+          "validThrough": "2026-10-01",
+          "dates": {
+            "2026-10-01": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
       }
     },
     {
@@ -1233,7 +1293,20 @@
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
       "planning": {
-        "admissionUsd": null
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.theoaklandarena.com/events/detail/billy-strings",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-02",
+          "validThrough": "2026-10-02",
+          "sessions": [
+            {
+              "date": "2026-10-02",
+              "start": "19:30"
+            }
+          ],
+          "note": "本页当前仅确认 10/2：18:30 开门、19:30 开演；结束时间未公布。其他场次须查对应票面与官方页面。"
+        }
       }
     },
     {
@@ -1577,8 +1650,31 @@
       "sourceLabel": "sjmusart.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "location": {
+        "lat": 37.333726,
+        "lng": -121.889925,
+        "label": "San José Museum of Art · 110 S Market Street",
+        "sourceUrl": "https://www.sanjose.org/listings/san-jose-museum-art",
+        "precision": "venue"
+      },
       "planning": {
-        "admissionUsd": 0
+        "admissionUsd": 0,
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://sjmusart.org/event/first-friday-new-ballet-season-preview",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-02",
+          "validThrough": "2026-10-02",
+          "dates": {
+            "2026-10-02": [
+              {
+                "open": "18:00",
+                "close": "21:00"
+              }
+            ]
+          },
+          "note": "18:00–21:00 为免费美术馆之夜；芭蕾演出所在教室 19:25 开门，座位先到先得。演出开始及结束钟点未单独公布；提前登记可加快入馆。"
+        }
       }
     },
     {
@@ -3173,9 +3269,31 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
-        "minAge": 18
+        "minAge": 18,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/visit/calendar/after-dark-unplug-play-oct2026",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "dates": {
+            "2026-10-08": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
       }
     },
     {
@@ -4751,9 +4869,31 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
-        "minAge": 18
+        "minAge": 18,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/visit/calendar/after-dark-speak-easy",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-15",
+          "validThrough": "2026-10-15",
+          "dates": {
+            "2026-10-15": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
       }
     },
     {
@@ -6491,9 +6631,31 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
-        "minAge": 18
+        "minAge": 18,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/visit/calendar/after-dark-death-and-life",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-22",
+          "validThrough": "2026-10-22",
+          "dates": {
+            "2026-10-22": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
       }
     },
     {
@@ -7347,8 +7509,30 @@
       "sourceLabel": "sjmusart.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "location": {
+        "lat": 37.333726,
+        "lng": -121.889925,
+        "label": "San José Museum of Art · 110 S Market Street",
+        "sourceUrl": "https://www.sanjose.org/listings/san-jose-museum-art",
+        "precision": "venue"
+      },
       "planning": {
-        "admissionUsd": 0
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://sjmusart.org/programs-at-sjma/community-days/dia-de-los-muertos",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "11:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "社区活动 11:00–16:00，全天免费入馆；可提前登记，也欢迎直接到场。具体节目表尚未公布。"
+        }
       }
     },
     {
@@ -7643,7 +7827,22 @@
       },
       "planning": {
         "admissionUsd": 10,
-        "setting": "mixed"
+        "setting": "mixed",
+        "schedule": {
+          "sourceUrl": "https://museumca.org/press/omca-announces-public-programs-and-events-for-october-2026/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-25",
+          "validThrough": "2026-10-25",
+          "dates": {
+            "2026-10-25": [
+              {
+                "open": "11:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "社区庆典整体窗口；普通票 $10 含庆典与展厅，会员免费，餐饮另付费。"
+        }
       }
     },
     {
@@ -8279,9 +8478,31 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
-        "minAge": 18
+        "minAge": 18,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/visit/calendar/after-dark-creepatorium",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-29",
+          "validThrough": "2026-10-29",
+          "dates": {
+            "2026-10-29": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
       }
     },
     {
@@ -8452,7 +8673,22 @@
       },
       "planning": {
         "admissionUsd": 0,
-        "setting": "outdoor"
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://museumca.org/event/friday-nights-at-omca-with-la-gente-sf/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-30",
+          "validThrough": "2026-10-30",
+          "dates": {
+            "2026-10-30": [
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ]
+          },
+          "note": "此为周五夜整体活动窗口；音乐与展厅活动各有安排。餐饮、馆内展览及特别展的费用与时间请另查。"
+        }
       }
     },
     {
@@ -8780,6 +9016,8 @@
       "city": "San Francisco",
       "summary": "把看桥和走桥分开安排，出发前确认步道与堡垒开放。",
       "guideSlug": "sf-golden-gate-bridge-fort-point-guide",
+      "path": "/guides/sf-golden-gate-bridge-fort-point-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.80779,
@@ -8801,6 +9039,8 @@
       "city": "San Francisco",
       "summary": "海狮与滨水散步可免费欣赏，游船和馆内项目另购票。",
       "guideSlug": "sf-fishermans-wharf-pier39-guide",
+      "path": "/guides/sf-fishermans-wharf-pier39-guide",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.809992,
@@ -8822,6 +9062,8 @@
       "city": "San Francisco",
       "summary": "提前订含登岛的船票；地图指向 Pier 33 登船处。",
       "guideSlug": "sf-alcatraz-booking-day-guide",
+      "path": "/guides/sf-alcatraz-booking-day-guide",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.80767,
@@ -8843,6 +9085,8 @@
       "city": "San Francisco",
       "summary": "从牌楼走进街巷，把吃饭和小店停留留在行程里。",
       "guideSlug": "sf-chinatown-north-beach-walk-guide",
+      "path": "/guides/sf-chinatown-north-beach-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.790685,
@@ -8864,6 +9108,8 @@
       "city": "San Francisco",
       "summary": "外部环湖散步与建筑观赏免费，演出和私人活动另计。",
       "guideSlug": "sf-palace-fine-arts-marina-guide",
+      "path": "/guides/sf-palace-fine-arts-marina-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.802778,
@@ -8885,6 +9131,8 @@
       "city": "San Francisco",
       "summary": "先逛免费户外区域，花园与博物馆分别查票。",
       "guideSlug": "golden-gate-park-free-car-free-day-guide",
+      "path": "/guides/golden-gate-park-free-car-free-day-guide",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.772,
@@ -8906,6 +9154,8 @@
       "city": "San Francisco",
       "summary": "草坡、湾景和野餐；带外套，并确认餐桌使用规则。",
       "guideSlug": "presidio-picnic-day-guide",
+      "path": "/guides/presidio-picnic-day-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.80277777777778,
@@ -8927,6 +9177,8 @@
       "city": "Berkeley",
       "summary": "校园和山上植物园是两个停留点，植物园需要门票。",
       "guideSlug": "berkeley-campus-botanical-garden-half-day",
+      "path": "/guides/berkeley-campus-botanical-garden-half-day",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.870218,
@@ -8948,6 +9200,8 @@
       "city": "Oakland",
       "summary": "湖畔散步搭配加州故事，博物馆门票与开放日另查。",
       "guideSlug": "oakland-lake-merritt-omca-half-day",
+      "path": "/guides/oakland-lake-merritt-omca-half-day",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.798641,
@@ -8969,6 +9223,8 @@
       "city": "Oakland",
       "summary": "选适合自己的短步道；停车费用和步道公告单独确认。",
       "guideSlug": "reinhardt-redwood-first-walk-guide",
+      "path": "/guides/reinhardt-redwood-first-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.80692,
@@ -8990,6 +9246,8 @@
       "city": "Stanford",
       "summary": "校园建筑与艺术馆慢慢看，留意闭馆日和停车规则。",
       "guideSlug": "stanford-cantor-campus-art-walk",
+      "path": "/guides/stanford-cantor-campus-art-walk",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.432982,
@@ -9011,6 +9269,8 @@
       "city": "Woodside",
       "summary": "按入场时段订票，花园状态随季节变化。",
       "guideSlug": "filoli-house-garden-day-trip",
+      "path": "/guides/filoli-house-garden-day-trip",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.470389,
@@ -9022,7 +9282,59 @@
       "officialUrl": "https://filoli.org/visit/opening-times/",
       "planning": {
         "admissionUsd": null,
-        "setting": "mixed"
+        "setting": "mixed",
+        "schedule": {
+          "sourceUrl": "https://filoli.org/visit/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "仅普通日间入园；步道提前 30 分钟关闭，夜场另票。建议提前预约，并在所选一小时窗口内抵达。特殊日期请再查官网。"
+        },
+        "reservation": "optional"
       }
     },
     {
@@ -9032,6 +9344,8 @@
       "city": "Half Moon Bay",
       "summary": "海风与沙滩适合留白；停车另计，下海前查海况。",
       "guideSlug": "half-moon-bay-coastal-half-day-guide",
+      "path": "/guides/half-moon-bay-coastal-half-day-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.4665,
@@ -9053,6 +9367,8 @@
       "city": "Palo Alto",
       "summary": "观鸟和短途散步，先读当前部分步道封闭提醒。",
       "guideSlug": "palo-alto-baylands-family-walk-guide",
+      "path": "/guides/palo-alto-baylands-family-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.4574977,
@@ -9074,6 +9390,8 @@
       "city": "San Jose",
       "summary": "科技馆需票，日本城街区可自由散步；两地间预留交通。",
       "guideSlug": "san-jose-tech-japantown-day-trip",
+      "path": "/guides/san-jose-tech-japantown-day-trip",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.3316,
@@ -9095,6 +9413,8 @@
       "city": "Saratoga",
       "summary": "日式庭园短程，先确认坡道、池塘整修与优惠资格。",
       "guideSlug": "hakone-gardens-saratoga-half-day",
+      "path": "/guides/hakone-gardens-saratoga-half-day",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.2524,
@@ -9106,7 +9426,65 @@
       "officialUrl": "https://www.hakone.com/visitor-info",
       "planning": {
         "admissionUsd": null,
-        "setting": "outdoor"
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://www.hakone.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "17:00",
+                "lastEntry": "16:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "17:00",
+                "lastEntry": "16:30"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "17:00",
+                "lastEntry": "16:30"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "17:00",
+                "lastEntry": "16:30"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "17:00",
+                "lastEntry": "16:30"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "17:00",
+                "lastEntry": "16:30"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "17:00",
+                "lastEntry": "16:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
       }
     },
     {
@@ -9116,6 +9494,8 @@
       "city": "Mill Valley",
       "summary": "停车或接驳需预约，与公园门票分开；提前安排返程。",
       "guideSlug": "muir-woods-reservation-day-trip",
+      "path": "/guides/muir-woods-reservation-day-trip",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.892835,
@@ -9137,6 +9517,8 @@
       "city": "Sausalito",
       "summary": "海滨散步免费，船票另付；先确认返程码头和班次。",
       "guideSlug": "sausalito-waterfront-ferry-half-day",
+      "path": "/guides/sausalito-waterfront-ferry-half-day",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.856,
@@ -9158,6 +9540,8 @@
       "city": "San Francisco",
       "summary": "柏树林间看海与浴场遗址；无障碍短段之后有台阶，下到遗址需走陡坡。",
       "guideSlug": "sf-lands-end-sutro-baths-walk-guide",
+      "path": "/guides/sf-lands-end-sutro-baths-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.779732,
@@ -9179,6 +9563,8 @@
       "city": "San Francisco",
       "summary": "在草坡看天际线，再读 Mission 社区壁画；公园与公共街巷免费，社区导览另计。",
       "guideSlug": "sf-mission-dolores-murals-walk-guide",
+      "path": "/guides/sf-mission-dolores-murals-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.759851,
@@ -9200,6 +9586,8 @@
       "city": "Alameda",
       "summary": "看飞机与历史舰船，再到海岸放松；航母需票且通行有限，海岸是独立转场。",
       "guideSlug": "alameda-uss-hornet-shoreline-day-guide",
+      "path": "/guides/alameda-uss-hornet-shoreline-day-guide",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.7727,
@@ -9221,6 +9609,8 @@
       "city": "Fremont",
       "summary": "看鸟、读 Ohlone 文化与走湿地短线；停车另计，铺装环线也要按坡度与体力选段。",
       "guideSlug": "fremont-coyote-hills-short-walk-guide",
+      "path": "/guides/fremont-coyote-hills-short-walk-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 37.553623,
@@ -9242,6 +9632,8 @@
       "city": "San Carlos",
       "summary": "飞机与航空互动适合慢慢看，项目开放另查；车站到馆还有一段接驳。",
       "guideSlug": "san-carlos-hiller-aviation-half-day-guide",
+      "path": "/guides/san-carlos-hiller-aviation-half-day-guide",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.5118,
@@ -9263,6 +9655,8 @@
       "city": "San Mateo",
       "summary": "户外散步加选另售票的 CuriOdyssey；车辆入园另收费，先查游乐场施工封闭。",
       "guideSlug": "san-mateo-coyote-point-bayfront-guide",
+      "path": "/guides/san-mateo-coyote-point-bayfront-guide",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.5865,
@@ -9284,6 +9678,8 @@
       "city": "Mountain View",
       "summary": "以需票的计算机历史馆为主，机器演示另查排期，湖边需独立安排交通。",
       "guideSlug": "mountain-view-computer-history-shoreline-guide",
+      "path": "/guides/mountain-view-computer-history-shoreline-guide",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.4143,
@@ -9305,6 +9701,8 @@
       "city": "San Jose",
       "summary": "博物馆需票，花园散步免费；两处需街区转场，推车不能使用馆内轮椅升降平台。",
       "guideSlug": "san-jose-egyptian-museum-rose-garden-guide",
+      "path": "/guides/san-jose-egyptian-museum-rose-garden-guide",
+      "category": "attraction",
       "cost": "mixed",
       "location": {
         "lat": 37.3333,
@@ -9326,6 +9724,8 @@
       "city": "Olema",
       "summary": "从游客中心、地震短线与林间散步开始；轮椅和推车先查实际路面，往返交通另计。",
       "guideSlug": "point-reyes-bear-valley-first-visit-guide",
+      "path": "/guides/point-reyes-bear-valley-first-visit-guide",
+      "category": "attraction",
       "cost": "free",
       "location": {
         "lat": 38.040643,
@@ -9347,6 +9747,8 @@
       "city": "Tiburon",
       "summary": "船票、入园和馆内参观分别核对；先定回程船，再按坡度与台阶选择路线。",
       "guideSlug": "angel-island-ferry-first-day-guide",
+      "path": "/guides/angel-island-ferry-first-day-guide",
+      "category": "attraction",
       "cost": "paid",
       "location": {
         "lat": 37.87288,
@@ -9359,6 +9761,1665 @@
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor"
+      }
+    },
+    {
+      "id": "opening-walnut-creek-vici-new-store-2026",
+      "title": "VICI Walnut Creek",
+      "region": "east-bay",
+      "city": "Walnut Creek",
+      "summary": "服饰品牌回到 Walnut Creek；本地报道列 9 月 10 日试营业、9 月 12 日开业庆祝，官方现已列出这家门店。",
+      "guideSlug": "",
+      "path": "/openings/walnut-creek-vici-new-store-2026",
+      "officialUrl": "https://www.vicicollection.com/pages/stores",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "1366 N Main Street, Walnut Creek, CA 94596",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "openedOn": "2026-09-10",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.vicicollection.com/pages/stores",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-san-jose-bitterbuck-soft-opening-2026",
+      "title": "BitterBuck",
+      "region": "south-bay",
+      "city": "San Jose",
+      "summary": "白天手冲咖啡、傍晚转为amaro与spritz的小店，为Fountain Alley补充早间和晚间聚会选择。",
+      "guideSlug": "",
+      "path": "/openings/san-jose-bitterbuck-soft-opening-2026",
+      "officialUrl": "https://www.bitterbucksj.com/",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "30 Fountain Alley, Suite 170, San Jose, CA 95113",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "soft_open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-santa-clara-cider-valley-fair-opening-2026",
+      "title": "Cider at Westfield Valley Fair",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "服装品牌在Valley Fair开设美国第二家常设店，包含试衣与数字互动空间。",
+      "guideSlug": "",
+      "path": "/openings/santa-clara-cider-valley-fair-opening-2026",
+      "officialUrl": "https://au.shopcider.com/stores/bay-area-valley-fair",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-hijau-san-jose-storefront",
+      "title": "Hijau Coffee",
+      "region": "south-bay",
+      "city": "San Jose",
+      "summary": "San Carlos街的新咖啡空间，以印尼咖啡及文化活动为特色；这条保留9月大开幕活动作为新店档案。",
+      "guideSlug": "",
+      "path": "/openings/hijau-san-jose-storefront",
+      "officialUrl": "https://pusakasunda.org/show/hijau-coffee-grand-opening/",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "1432 W San Carlos St, Suite 70, San Jose, CA 95126",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-kaiyo-handroll-union",
+      "title": "Kaiyō Handroll Bar",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "原 Union Street 店换成日式与秘鲁风味手卷概念，提供吧台和桌边手卷车服务。",
+      "guideSlug": "",
+      "path": "/openings/kaiyo-handroll-union",
+      "officialUrl": "https://www.kaiyosf.com/archive",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1838 Union St, San Francisco, CA 94123",
+      "imageKey": "opening-kaiyo-handroll",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-santa-clara-rhone-valley-fair-new-store-2026",
+      "title": "Rhone at Westfield Valley Fair",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "运动与日常服装品牌新店位于Valley Fair一层Bloomingdale’s附近，可作为零售探索补充。",
+      "guideSlug": "",
+      "path": "/openings/santa-clara-rhone-valley-fair-new-store-2026",
+      "officialUrl": "https://www.westfield.com/en/united-states/valleyfair/events/now-open-or-rhone/138806",
+      "cost": "unknown",
+      "category": "shop",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-walnut-creek-saatva-new-store-2026",
+      "title": "Saatva Viewing Room",
+      "region": "east-bay",
+      "city": "Walnut Creek",
+      "summary": "Saatva 新开床垫体验店；9 月 14 日官方公告已确认门店营业，可现场体验产品。",
+      "guideSlug": "",
+      "path": "/openings/walnut-creek-saatva-new-store-2026",
+      "officialUrl": "https://www.saatva.com/press-room/announcements/new-saatva-location-walnut-creek-california/",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "1619 Mount Diablo Boulevard, Walnut Creek, CA 94596",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.saatva.com/press-room/announcements/new-saatva-location-walnut-creek-california/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-yutori-palo-alto-restaurant",
+      "title": "Yutori · Restaurant & Bar",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "summary": "既有日式咖啡与市场空间新增正餐餐厅及酒吧，可体验不同于白天咖啡区的用餐服务。",
+      "guideSlug": "",
+      "path": "/openings/yutori-palo-alto-restaurant",
+      "officialUrl": "https://www.yutori-pa.com/restaurant-bar/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "3375 El Camino Real, Palo Alto, CA 94306",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "openedOn": "2026-09-24",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-berkeley-world-of-hoagies-opening-2026",
+      "title": "Hoagie’s World of Hoagies",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "summary": "新开长面包三明治店，有肉类和植物性选项。",
+      "guideSlug": "",
+      "path": "/openings/berkeley-world-of-hoagies-opening-2026",
+      "officialUrl": "https://www.worldofhoagies.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "2618 Telegraph Ave, Berkeley, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "openedOn": "2026-09-22",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-sergeant-ma",
+      "title": "Sergeant Ma",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "9 月开业的水岸餐厅，将加州食材与亚洲风味结合，适合朋友聚餐或球赛前后安排。",
+      "guideSlug": "",
+      "path": "/openings/sergeant-ma",
+      "officialUrl": "https://www.sergeantma.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "185 Berry Street, San Francisco, CA 94107",
+      "imageKey": "sep26-open-sergeant-ma",
+      "openingStatus": "open",
+      "openedOn": "2026-09-09",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.sergeantma.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [],
+            "1": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "16:00",
+                "close": "21:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-oakland-55-coffee-pop-up-2026",
+      "title": "55 Coffee Co.／The Saap Avenue",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "咖啡、抹茶与越式三明治快闪。",
+      "guideSlug": "",
+      "path": "/openings/oakland-55-coffee-pop-up-2026",
+      "officialUrl": "https://www.instagram.com/p/DdHqD-WT72f/?hl=en",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "4395 Piedmont Ave, Oakland, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-anya-gifting-larkspur",
+      "title": "Anya’s Gifting Agency",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "summary": "礼品、皮革手袋与可个性化产品。商场当前标注新开业，但本次未确认确切开业月份。",
+      "guideSlug": "",
+      "path": "/openings/anya-gifting-larkspur",
+      "officialUrl": "https://marincountrymart.com/anya-hindmarch-gifting-agency",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "2417 Larkspur Landing Circle, Larkspur, CA 94939",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/anya-hindmarch-gifting-agency",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "12:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-sf-athanor-new-restaurant-2026",
+      "title": "Athanor",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "Anomaly 主厨的新餐厅，通过发酵与不同烹饪技术提供十道式晚餐，适合有预算的特别聚餐。",
+      "guideSlug": "",
+      "path": "/openings/sf-athanor-new-restaurant-2026",
+      "officialUrl": "https://www.athanorsf.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "2600 Sutter Street, San Francisco, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.athanorsf.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [],
+            "1": [],
+            "2": [
+              {
+                "open": "19:00",
+                "close": "23:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "18:00",
+                "close": "23:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "18:00",
+                "close": "23:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "18:00",
+                "close": "23:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "18:00",
+                "close": "23:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-berkeley-cere-tea-opening-2026",
+      "title": "Ceré Tea",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "summary": "新开茶饮店，提供抹茶、焙茶等饮品。",
+      "guideSlug": "",
+      "path": "/openings/berkeley-cere-tea-opening-2026",
+      "officialUrl": "https://www.ceretea.com/",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "2106 Shattuck Ave, Berkeley, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "soft_open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-oakland-chez-maeju-soft-opening-2026",
+      "title": "Chez Maeju",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "以韩式发酵酱料为特色，试营业菜单较精简。",
+      "guideSlug": "",
+      "path": "/openings/oakland-chez-maeju-soft-opening-2026",
+      "officialUrl": "https://chezmaeju.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "6200 Claremont Ave, Oakland, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "soft_open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-oakland-delage-reopening-2026",
+      "title": "Delage",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "既有寿司店换团队后重新开业，属于重新开业而非全新品牌。",
+      "guideSlug": "",
+      "path": "/openings/oakland-delage-reopening-2026",
+      "officialUrl": "https://www.delagesushi.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "536 Ninth St, Oakland, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "location": {
+        "lat": 37.8017048,
+        "lng": -122.275086,
+        "label": "Delage · 536 Ninth Street",
+        "sourceUrl": "https://www.delagesushi.com/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.delagesushi.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "1": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              },
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ]
+          },
+          "note": "官网列周一至周六午、晚餐，15:00–17:00 不营业；周日时间未确认。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-ignite-san-pedro-square",
+      "title": "IGNITE",
+      "region": "south-bay",
+      "city": "San Jose",
+      "summary": "原 Sushi Confidential 空间换为供应烤串、汉堡、分享菜及鸡尾酒的餐厅，并设户外用餐区。",
+      "guideSlug": "",
+      "path": "/openings/ignite-san-pedro-square",
+      "officialUrl": "https://www.eatatignite.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "26 N San Pedro Street, San Jose, CA 95113",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "location": {
+        "lat": 37.3365,
+        "lng": -121.8947,
+        "label": "IGNITE · 26 N San Pedro Street",
+        "sourceUrl": "https://www.eatatignite.com/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-alameda-juxi-soft-opening-2026",
+      "title": "JuXi",
+      "region": "east-bay",
+      "city": "Alameda",
+      "summary": "Alameda 新餐厅处于试营业阶段。",
+      "guideSlug": "",
+      "path": "/openings/alameda-juxi-soft-opening-2026",
+      "officialUrl": "https://www.juxialameda.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1231 Park St, Alameda, CA 94501",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "soft_open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.juxialameda.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "2": [
+              {
+                "open": "17:00",
+                "close": "21:30"
+              }
+            ],
+            "3": [
+              {
+                "open": "17:00",
+                "close": "21:30"
+              }
+            ],
+            "4": [
+              {
+                "open": "17:00",
+                "close": "21:30"
+              }
+            ],
+            "5": [
+              {
+                "open": "17:00",
+                "close": "21:30"
+              }
+            ],
+            "6": [
+              {
+                "open": "17:00",
+                "close": "21:30"
+              }
+            ]
+          },
+          "note": "试营业期间官网列周二至周六晚餐；周日、周一时间未确认。建议查看订位与当日安排。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-margaux-larkspur",
+      "title": "Margaux",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "summary": "女性鞋履品牌；可现场了解尺码及宽度选择。商场当前标注新开业，但本次未确认确切开业月份。",
+      "guideSlug": "",
+      "path": "/openings/margaux-larkspur",
+      "officialUrl": "https://marincountrymart.com/margaux",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "2207 Larkspur Landing Circle, Larkspur, CA 94939",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/margaux",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-pittsburg-nekter-opening-2026",
+      "title": "Nékter Juice Bar",
+      "region": "east-bay",
+      "city": "Pittsburg",
+      "summary": "新设果汁与 smoothie 分店。",
+      "guideSlug": "",
+      "path": "/openings/pittsburg-nekter-opening-2026",
+      "officialUrl": "https://www.nekterjuicebar.com/",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "2261 West Leland Road, Pittsburg, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-berkeley-top-dog-downtown-opening-2026",
+      "title": "Top Dog／The BreakRoom",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "summary": "老字号热狗品牌进驻台球与鸡尾酒场地的新分店。",
+      "guideSlug": "",
+      "path": "/openings/berkeley-top-dog-downtown-opening-2026",
+      "officialUrl": "https://www.topdoghotdogs.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "2021 Shattuck Ave, Berkeley, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-varley-larkspur",
+      "title": "Varley",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "summary": "针织、外套与日常服饰。商场当前标注新开业，但本次未确认确切开业月份。",
+      "guideSlug": "",
+      "path": "/openings/varley-larkspur",
+      "officialUrl": "https://marincountrymart.com/varley",
+      "cost": "unknown",
+      "category": "shop",
+      "address": "2409 Larkspur Landing Circle, Larkspur, CA 94939",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/varley",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-raising-canes-jefferson-sf",
+      "title": "Raising Cane’s · Fisherman’s Wharf",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "Raising Cane’s 在渔人码头开出旧金山首店，主打炸鸡柳、薯条、Texas toast 与蘸酱套餐。9 月 21 日开门已有当地媒体现场报道，品牌门店页也列出当前营业与点餐入口，可作为码头散步时的快餐新选择。",
+      "guideSlug": "",
+      "path": "/openings/raising-canes-jefferson-sf",
+      "officialUrl": "https://locations.raisingcanes.com/ca/san-francisco/211-jefferson-st",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "211 Jefferson Street, San Francisco, CA 94133",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "openedOn": "2026-09-21",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-game-parlour-oakland",
+      "title": "The Game Parlour · Oakland",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "The Game Parlour 从旧金山扩展到 Uptown Oakland，把桌游、咸味华夫饼三明治、甜味麻糬华夫饼和饮品放在同一空间。Nosh 确认 9/8 试营业，品牌官网已列 Oakland 门店地址与试营业时段，适合朋友约一局或家庭一起玩。",
+      "guideSlug": "",
+      "path": "/openings/game-parlour-oakland",
+      "officialUrl": "https://www.thegameparlour.com/",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "2300 Valdez Street, Suite B, Oakland, CA 94612",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "soft_open",
+      "openedOn": "2026-09-08",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-panama-hotel-restaurant-reopened-sep2026",
+      "title": "Panama Hotel Restaurant",
+      "region": "north-bay",
+      "city": "San Rafael",
+      "summary": "Gerstle Park 街区的历史旅馆餐厅恢复营业，由曾在这里工作的 Hiram Diaz 以合伙人和主厨身份带领厨房。餐单延续部分经典菜，也加入加州海岸与跨文化风味，花园露台仍是看点。",
+      "guideSlug": "",
+      "path": "/openings/panama-hotel-restaurant-reopened-sep2026",
+      "officialUrl": "https://panamahotel.com/a-new-chapter-begins-at-the-historic-panama-hotel-restaurant/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "4 Bayview Street, San Rafael, CA 94901",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "openedOn": "2026-09-01",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-aliotos-focacceria-san-rafael",
+      "title": "Alioto’s Focacceria · San Rafael",
+      "region": "north-bay",
+      "city": "San Rafael",
+      "summary": "主厨 Alexander Alioto 把原 The Kitchen Table 改成轻松的意式熟食店，主打佛卡夏三明治、pinsa 披萨，也提供鲜意面、酱料与面包外带。适合在 Fourth Street 办事或逛街时安排午餐。",
+      "guideSlug": "",
+      "path": "/openings/aliotos-focacceria-san-rafael",
+      "officialUrl": "https://www.aliotosfocacceria.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1574 4th Street, San Rafael, CA 94901",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-asia-live-valley-fair",
+      "title": "Asia Live · Valley Fair",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "George Chen 团队在 Valley Fair 开设的亚洲餐饮空间，餐厅、开放式厨房与酱料零售放在同一处。商场当前明确标注已开放，适合南湾聚餐或逛街时安排一顿饭。",
+      "guideSlug": "",
+      "path": "/openings/asia-live-valley-fair",
+      "officialUrl": "https://asialivesv.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-chicha-san-chen-pleasanton",
+      "title": "CHICHA San Chen · Pleasanton",
+      "region": "east-bay",
+      "city": "Pleasanton",
+      "summary": "吃茶三千在 Pacific Pearl 新增 Pleasanton 门店，北加州官网已开放该店点单入口；官方近期 Instagram 也确认新店营业。适合 Tri-Valley 居民顺路尝试现萃茶、奶茶和水果茶。",
+      "guideSlug": "",
+      "path": "/openings/chicha-san-chen-pleasanton",
+      "officialUrl": "https://chichasanchennorcal.com/locations",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "2709 Stoneridge Drive, Suite 102, Pleasanton, CA 94588",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-hey-yogurt-san-mateo",
+      "title": "Hey Yogurt · San Mateo",
+      "region": "peninsula",
+      "city": "San Mateo",
+      "summary": "San Mateo 市中心新增水果酸奶甜品店。品牌官网已列出 310 S San Mateo Drive 门店与 9/1 开业庆典，可在逛街或吃饭后顺路买一杯酸奶饮品。",
+      "guideSlug": "",
+      "path": "/openings/hey-yogurt-san-mateo",
+      "officialUrl": "https://www.heyyogurtus.com/contact-us",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "310 S San Mateo Drive, San Mateo, CA 94401",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-broken-dreams-oakland",
+      "title": "Broken Dreams",
+      "region": "east-bay",
+      "city": "Oakland",
+      "summary": "Oakland 市中心的新越南餐厅，以 cơm tấm 碎米饭、烤肉和米粉碗为主，也有越南咖啡、鲜榨果汁与甜品。位置就在 12th Street BART 出口旁。",
+      "guideSlug": "",
+      "path": "/openings/broken-dreams-oakland",
+      "officialUrl": "https://www.brokendreamsoakland.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1312 Broadway, Oakland, CA 94612",
+      "imageKey": "opening-broken-dreams",
+      "openingStatus": "open",
+      "openedOn": "2026-08-10",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.brokendreamsoakland.com/contact",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [],
+            "6": []
+          },
+          "note": "官网确认暂时周末休息；工作日开门时间同时出现 11:00 与 12:00，尚待商家确认。"
+        }
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-boulangerie-eria-celebration",
+      "title": "La Boulangerie at ERIA Marina",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "商家官网确认 ERIA Marina 门店已营业，目前列出每日 7:00–14:30，周末供应 brunch。9 月 12 日开业庆典已结束，首日营业日期未核实。",
+      "guideSlug": "",
+      "path": "/openings/boulangerie-eria-celebration",
+      "officialUrl": "https://www.laboulangeriesf.com/locations-hours",
+      "cost": "unknown",
+      "category": "cafe",
+      "address": "2300 Chestnut Street, San Francisco, CA 94123",
+      "imageKey": "sep26-open-boulangerie-eria",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-mess-hall-presidio-breadwinner",
+      "title": "The Mess Hall · Breadwinner",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "Presidio Tunnel Tops 旁的新餐饮空间，官网已确认首期 Breadwinner 供应汉堡、三明治和沙拉。Boda 与 Dayboat Seafood 仍标记即将开放。",
+      "guideSlug": "",
+      "path": "/openings/mess-hall-presidio-breadwinner",
+      "officialUrl": "https://www.messhallpresidio.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "201 Halleck Street, San Francisco, CA 94129",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "restaurant-gotts-ferry-building",
+      "title": "Gott’s Roadside · Ferry Building",
+      "region": "sf",
+      "city": "San Francisco",
+      "category": "restaurant",
+      "summary": "Ferry Building 的汉堡、沙拉与奶昔餐厅，可接在市集前后用餐。座位先到先得，餐费按点单另计。",
+      "address": "1 Ferry Building #6, San Francisco, CA 94111",
+      "officialUrl": "https://www.gotts.com/location/sfferrybuilding/",
+      "location": {
+        "lat": 37.796048,
+        "lng": -122.394166,
+        "label": "Gott’s Roadside · Ferry Building #6",
+        "sourceUrl": "https://www.gotts.com/location/sfferrybuilding/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [],
+      "path": "https://www.gotts.com/location/sfferrybuilding/",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.gotts.com/location/sfferrybuilding/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:00",
+                "close": "21:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "21:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "21:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "21:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "22:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "22:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      }
+    },
+    {
+      "id": "restaurant-el-cafecito-sjma",
+      "title": "El Cafecito · San José Museum of Art",
+      "region": "south-bay",
+      "city": "San Jose",
+      "category": "restaurant",
+      "summary": "美术馆内面向公众的咖啡餐厅，提供简餐；无需购买美术馆门票，餐饮另付费。位置标记为所在美术馆，馆内请按指示找店。",
+      "address": "110 S Market Street, San Jose, CA 95113",
+      "officialUrl": "https://sjmusart.org/visit",
+      "location": {
+        "lat": 37.333726,
+        "lng": -121.889925,
+        "label": "El Cafecito · 所在 San José Museum of Art",
+        "sourceUrl": "https://www.sanjose.org/listings/san-jose-museum-art",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [],
+      "path": "https://sjmusart.org/visit",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://sjmusart.org/visit",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "note": "美术馆咖啡餐厅营业时间，入店无需美术馆门票；特别活动营业可能调整。周一未列时间。"
+        }
+      }
+    },
+    {
+      "id": "restaurant-town-fare-omca",
+      "title": "Town Fare · Oakland Museum of California",
+      "region": "east-bay",
+      "city": "Oakland",
+      "category": "restaurant",
+      "summary": "OMCA 中层餐厅，供应午餐及周日 brunch；无需博物馆门票，餐费另计。堂食须在 15:15 前点单，周日排队时间需自行预留。位置标记为所在博物馆。",
+      "address": "1000 Oak Street, Oakland, CA 94607",
+      "officialUrl": "https://museumca.org/visit/",
+      "location": {
+        "lat": 37.798641,
+        "lng": -122.263611,
+        "label": "Town Fare · 所在 Oakland Museum of California",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q877714",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [],
+      "path": "https://museumca.org/visit/",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://museumca.org/visit/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "16:00",
+                "lastOrder": "15:15"
+              }
+            ],
+            "1": [],
+            "2": [],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "16:00",
+                "lastOrder": "15:15"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "16:00",
+                "lastOrder": "15:15"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "16:00",
+                "lastOrder": "15:15"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "16:00",
+                "lastOrder": "15:15"
+              }
+            ]
+          },
+          "note": "堂食最晚 15:15 点单；无需博物馆门票。周日 brunch 先到先得、不接受预约；临时及特殊活动安排另查官网。"
+        }
+      }
+    },
+    {
+      "id": "restaurant-eureka-cupertino",
+      "title": "Eureka! · Cupertino",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "category": "restaurant",
+      "summary": "Main Street Cupertino 的美式餐厅，有汉堡及露台座位；周三指定汉堡薯条优惠需按门店条款使用，餐费不会自动计为半价。",
+      "address": "19369 Stevens Creek Boulevard, Suite 130, Cupertino, CA 95014",
+      "officialUrl": "https://eurekarestaurantgroup.com/locations/cupertino",
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [
+        "cupertino-eureka-wednesday-burger-ongoing"
+      ],
+      "path": "https://eurekarestaurantgroup.com/locations/cupertino",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://eurekarestaurantgroup.com/locations/cupertino",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "23:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "11:00",
+                "close": "23:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "23:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "23:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "23:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "24:00"
+              }
+            ]
+          },
+          "note": "周五营业时间尚待确认；周六营业至午夜，优惠适用时段须另看具体条件。"
+        }
+      }
+    },
+    {
+      "id": "restaurant-pacific-catch-mountain-view",
+      "title": "Pacific Catch · Mountain View",
+      "region": "peninsula",
+      "city": "Mountain View",
+      "category": "restaurant",
+      "summary": "San Antonio 商圈的海鲜餐厅，提供室内与带顶露台座位；Aloha Hour 有特定时段，实际消费按菜单与适用条件计算。",
+      "address": "545 San Antonio Road, Suite 34, Mountain View, CA 94040",
+      "officialUrl": "https://www.pacificcatch.com/location/mountain-view/",
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [
+        "mountain-view-pacific-catch-aloha-hour-ongoing"
+      ],
+      "path": "https://www.pacificcatch.com/location/mountain-view/",
+      "planning": {
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.pacificcatch.com/location/mountain-view/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "22:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
+        }
+      }
+    },
+    {
+      "id": "venue-exploratorium-daytime",
+      "title": "Exploratorium · 日间科学探索馆",
+      "region": "sf",
+      "city": "San Francisco",
+      "category": "attraction",
+      "summary": "Pier 15 的互动科学馆，可搭配 Ferry Plaza 市集与附近用餐。这里是日间参观；周四成人夜场、Tactile Dome 的门票与预约另计。实际票价取决于年龄和优惠资格。",
+      "address": "Pier 15, Embarcadero at Green Street, San Francisco, CA 94111",
+      "officialUrl": "https://www.exploratorium.edu/visit",
+      "location": {
+        "lat": 37.8016649,
+        "lng": -122.397348,
+        "label": "Exploratorium · Pier 15",
+        "sourceUrl": "https://www.exploratorium.edu/visit",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [
+        "exploratorium-for-all-five"
+      ],
+      "path": "https://www.exploratorium.edu/visit",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.exploratorium.edu/hours",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "12:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "普通日间门票时段；周日 10:00–12:00 仅日间会员及捐助者。周四 18 岁以上夜场另票；Tactile Dome 另需预约与购票。10/1、10/7、10/8、10/21 部分展厅有临时关闭安排，出发前查官网。",
+          "dates": {
+            "2026-10-12": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "venue-sjma",
+      "title": "San José Museum of Art · 美术馆",
+      "region": "south-bay",
+      "city": "San Jose",
+      "category": "attraction",
+      "summary": "San José 市中心的现代与当代艺术馆。普通参观与社区活动采用不同票务安排；馆内咖啡餐厅可单独消费，10 人及以上团体须预约。",
+      "address": "110 S Market Street, San Jose, CA 95113",
+      "officialUrl": "https://sjmusart.org/visit",
+      "location": {
+        "lat": 37.333726,
+        "lng": -121.889925,
+        "label": "San José Museum of Art · 110 S Market Street",
+        "sourceUrl": "https://www.sanjose.org/listings/san-jose-museum-art",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [
+        "sjma-free-oct2"
+      ],
+      "path": "https://sjmusart.org/visit",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://sjmusart.org/hours-and-admissions",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "普通展馆时段；官网此表未列周一时间。10 人及以上团体须提前预约；首个周五 18:00 后免费，其他时段依本人票种与资格购票。"
+        }
+      }
+    },
+    {
+      "id": "venue-omca",
+      "title": "Oakland Museum of California · OMCA 展馆",
+      "region": "east-bay",
+      "city": "Oakland",
+      "category": "attraction",
+      "summary": "在 OMCA 看加州艺术、历史与自然展览，普通门票包括特别展。首个周日免费；周五夜与社区庆典的节目、费用及预约另查，不等同于整片 Lake Merritt 湖区。",
+      "address": "1000 Oak Street, Oakland, CA 94607",
+      "officialUrl": "https://museumca.org/visit/",
+      "location": {
+        "lat": 37.798641,
+        "lng": -122.263611,
+        "label": "Oakland Museum of California · OMCA 展馆",
+        "sourceUrl": "https://www.wikidata.org/wiki/Q877714",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [
+        "omca-free-oct4"
+      ],
+      "path": "https://museumca.org/visit/",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://museumca.org/visit/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [],
+            "2": [],
+            "3": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:00",
+                "close": "21:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "仅 OMCA 展馆，不代表 Lake Merritt 湖区开放时间。普通票含特别展；首个周日免费。10/25 社区庆典有专门票种，团体与特别活动请另查预约条件。"
+        }
       }
     }
   ],

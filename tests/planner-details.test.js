@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
+const { loadPlannerCatalog } = require('../lib/planner');
 
 const NOW = Date.parse('2026-09-29T19:00:00Z');
 const SECRET = 'isolated-planner-details-tests-not-a-real-key';
@@ -17,9 +18,9 @@ const details = () => ({ startTime: '14:00', finishBy: '18:00', partySize: 4, to
     setting: 'indoor', travelMode: 'transit', partySize: 4, budgetScope: 'total', freeOnly: false, topic: 'arts' },
 });
 
-async function fixture(t, sharedModels) {
+async function fixture(t, sharedModels, suppliedCatalog = catalog) {
   const models = sharedModels || createMemoryModels({ User: ['owner', 'other'].map(id => ({ id, email: `${id}@private.test`, accountStatus: 'active', password: 'private' })) });
-  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET }, models, plannerCatalog: catalog, plannerNow: () => NOW });
+  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET }, models, plannerCatalog: suppliedCatalog, plannerNow: () => NOW });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
   const request = async (path, { as = 'owner', method = 'GET', body } = {}) => {
@@ -175,4 +176,79 @@ test('invalid details updates cannot alter saved values or advance the version',
     assert.equal((await request(path, { method: 'PUT', body: { ...plan, details: value, version: 1 } })).status, 400);
   }
   assert.deepEqual((await request('/me')).data.plans, [saved]);
+});
+
+test('meal and rest blocks plus itemized costs survive private saves and legacy updates', async t => {
+  const { request, create } = await fixture(t);
+  const value = { ...details(), extraCostUsd: 36.75, costBreakdown: { foodUsd: 25, transportUsd: 10.5, otherUsd: 1.25 },
+    stopSettings: details().stopSettings.map((stop, index) => ({ ...stop, breakBeforeMinutes: index ? 45 : 10, breakLabel: index ? 'meal' : 'rest' })),
+  };
+  const saved = await create({ ...plan, details: value });
+  assert.equal(saved.status, 201);
+  assert.deepEqual(saved.data.plan.details, value);
+  const legacy = await request(`/plans/${saved.data.plan.id}`, { method: 'PUT', body: { ...plan, version: 1 } });
+  assert.equal(legacy.status, 200);
+  assert.deepEqual(legacy.data.plan.details, value);
+  assert.deepEqual((await request('/me')).data.plans[0].details, value);
+  assert.deepEqual((await request('/me', { as: 'other' })).data.plans, []);
+});
+
+test('cost breakdowns and break settings reject mismatches, coercion and nested fields without changing a saved plan', async t => {
+  const { request, create } = await fixture(t);
+  const saved = (await create({ ...plan, details: details() })).data.plan;
+  const invalidBreakdowns = [null, [], {}, { foodUsd: 12.25, transportUsd: 0 }, { foodUsd: 10, transportUsd: 0, otherUsd: 0 },
+    { foodUsd: '12.25', transportUsd: 0, otherUsd: 0 }, { foodUsd: -1, transportUsd: 13.25, otherUsd: 0 },
+    { foodUsd: 12.25, transportUsd: 0, otherUsd: 0, verified: true }, { foodUsd: { $gt: 0 }, transportUsd: 0, otherUsd: 0 }];
+  const invalid = invalidBreakdowns.map(costBreakdown => ({ ...details(), costBreakdown }));
+  for (const patch of [...[-1, 181, 30.5, '30', null].map(breakBeforeMinutes => ({ breakBeforeMinutes })), ...['lunch', '', null, {}].map(breakLabel => ({ breakLabel }))]) {
+    invalid.push({ ...details(), stopSettings: [{ ...details().stopSettings[0], ...patch }] });
+  }
+  for (const value of invalid) assert.equal((await request(`/plans/${saved.id}`, { method: 'PUT', body: { ...plan, version: 1, details: value } })).status, 400);
+  assert.deepEqual((await request('/me')).data.plans, [saved]);
+  const zero = { ...details(), extraCostUsd: 0, costBreakdown: { foodUsd: 0, transportUsd: 0, otherUsd: 0 }, stopSettings: [{ ...details().stopSettings[0], breakBeforeMinutes: 0, breakLabel: 'rest' }] };
+  assert.equal((await create({ ...plan, details: zero })).status, 201);
+});
+
+test('new restaurant catalog entries remain place references and accept verified schedules without a new stop kind', async t => {
+  const restaurant = { id: 'opening-verified-cafe', title: 'Verified cafe', city: 'Oakland', region: 'east-bay', category: 'cafe', path: '/openings/verified-cafe', address: 'Test address', offerIds: [],
+    planning: { schedule: { sourceUrl: 'https://example.com/hours', verifiedAt: '2026-09-29', weekly: { 6: [{ open: '10:00', close: '17:00' }] } } },
+  };
+  const { create } = await fixture(t, undefined, { ...catalog, places: [...catalog.places, restaurant] });
+  const result = await create({ ...plan, stops: [...plan.stops, { kind: 'place', id: restaurant.id }] });
+  assert.equal(result.status, 201);
+  assert.deepEqual(result.data.plan.stops.at(-1), { kind: 'place', id: restaurant.id });
+  assert.equal((await create({ ...plan, stops: [{ kind: 'restaurant', id: restaurant.id }] })).status, 400);
+});
+
+test('the exported Ferry full-day catalog and itemized details round trip through the planner API', async t => {
+  const published = loadPlannerCatalog();
+  assert.ok(published);
+  const eventId = 'ferry-plaza-farmers-market-2026-autumn';
+  const restaurantId = 'restaurant-gotts-ferry-building';
+  const venueId = 'venue-exploratorium-daytime';
+  for (const id of [restaurantId, venueId]) {
+    const place = published.places.find(item => item.id === id);
+    assert.ok(place?.planning?.schedule?.sourceUrl);
+    assert.equal(place.guideSlug, '');
+    assert.equal(place.cost, 'unknown');
+    assert.equal(place.planning.admissionUsd, null);
+  }
+  assert.equal(published.events.find(item => item.id === 'san-jose-first-friday-ballet-2026')?.planning?.programTimeUnconfirmed, true);
+  assert.equal(published.places.find(item => item.id === 'restaurant-town-fare-omca')?.planning?.schedule?.weekly?.[0]?.[0]?.lastOrder, '15:15');
+  const { create, request } = await fixture(t, undefined, published);
+  const value = { title: 'Ferry market, lunch and science museum', date: '2026-10-03',
+    stops: [{ kind: 'event', id: eventId }, { kind: 'place', id: restaurantId }, { kind: 'place', id: venueId }],
+    details: { startTime: '10:00', finishBy: '15:00', partySize: 2, totalBudgetUsd: null, extraCostUsd: 50.5,
+      costBreakdown: { foodUsd: 40, transportUsd: 10.5, otherUsd: 0 }, travelMode: 'walk',
+      constraints: { date: '2026-10-03', partySize: 2, travelMode: 'walk' },
+      stopSettings: [{ kind: 'event', id: eventId, durationMinutes: 90, travelMinutes: 0, fixedStartTime: '10:00' },
+        { kind: 'place', id: restaurantId, durationMinutes: 60, travelMinutes: 30 },
+        { kind: 'place', id: venueId, durationMinutes: 90, travelMinutes: 30 }],
+    },
+  };
+  const saved = await create(value);
+  assert.equal(saved.status, 201);
+  assert.deepEqual(saved.data.plan.stops, value.stops);
+  assert.deepEqual(saved.data.plan.details, value.details);
+  assert.deepEqual((await request('/me')).data.plans[0].details, value.details);
 });
