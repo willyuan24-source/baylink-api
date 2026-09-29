@@ -73,6 +73,17 @@ test('region, setting, all child ages, group admission caps and free-only remain
   const free = await request([place('unknown', { cost: 'unknown', planning: {} }), place('paid', { cost: 'paid', planning: { admissionUsd: 10 } }), place('free')], { filters: { date, freeOnly: true } });
   assert.deepEqual(free.placeSuggestions.map(row => row.placeId), ['free']);
 });
+test('both admission budget scopes retain unknown-price anchors as unverified alternatives', async () => {
+  const places = [place('unknown-museum', { cost: 'unknown', planning: { schedule: hours } }), place('over-budget', { cost: 'paid', planning: { admissionUsd: 100, schedule: hours } })];
+  for (const budgetScope of ['person', 'total']) {
+    const result = await request(places, { message: '推荐景点', filters: { date, budget: 20, budgetScope, partySize: 4 } });
+    assert.deepEqual(result.placeSuggestions.map(row => row.placeId), ['unknown-museum']);
+    assert.equal(result.placeSuggestions[0].budgetStatus, 'unknown');
+    assert.ok(result.placeSuggestions[0].unknowns.some(note => /入场金额尚未确认/.test(note)));
+    assert.equal(result.filters.budgetScope, budgetScope);
+  }
+  assert.deepEqual((await request(places, { message: '推荐景点', filters: { date, budget: 20, freeOnly: true } })).placeSuggestions, []);
+});
 test('AI place ordering can use only filtered and actually supplied IDs', async () => {
   let payload;
   const places = Array.from({ length: 100 }, (_, i) => place(`place-${String(i).padStart(3, '0')}`));

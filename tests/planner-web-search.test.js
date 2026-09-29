@@ -11,6 +11,16 @@ function raw(url = 'https://museum.org/visit') {
   return { status: 'completed', output: [{ type: 'web_search_call', status: 'completed', action: { type: 'search', sources: [{ type: 'url', url }] } },
     { type: 'message', role: 'assistant', content: [{ type: 'output_text', text, annotations: [{ type: 'url_citation', url, title: 'Official visitor page', start_index: text.indexOf('[source]'), end_index: text.length }] }] }] };
 }
+function structured(rows, citations = {}, answer = '已找到有来源的地点；详情仍需核对。[answer]') {
+  const response = raw(); const text = `${answer}\nBAYLINK_CANDIDATES_V1\n${JSON.stringify(rows)}\nEND_BAYLINK_CANDIDATES_V1`;
+  const annotations = Object.entries({ '[answer]': 'https://museum.org/visit', ...citations }).flatMap(([marker, url]) => {
+    const items = []; let at = text.indexOf(marker);
+    while (at >= 0) { items.push({ type: 'url_citation', url, title: `Source for ${marker}`, start_index: at, end_index: at + marker.length }); at = text.indexOf(marker, at + marker.length); }
+    return items;
+  });
+  response.output[1].content[0] = { type: 'output_text', text, annotations };
+  return response;
+}
 async function fixture(t, options = {}) {
   const models = options.models || createMemoryModels();
   const app = express(); app.use(express.json());
@@ -61,6 +71,48 @@ test('real-style heading and citation debris is cleaned without losing text or r
   ]);
   assert.equal(result.checkedAt, '2026-09-29T19:00:00.000Z');
 });
+test('only explicit structured fields with their own actual citations become place cards', async () => {
+  const response = structured([
+    { name: 'Gott’s "Ferry" [venue]', city: 'San Francisco [venue]', summary: '湾边餐厅 [venue]', timeSummary: '普通周六 10–22，所选日期临时调整待核。[hours]', priceSummary: null },
+    { name: 'Second cafe [cafe]', city: 'San Francisco', summary: 'An uncited description [1]', timeSummary: null, priceSummary: '消费金额未知' },
+    { name: 'Invented place [1]', city: null, summary: null, timeSummary: null, priceSummary: null },
+  ], { '[venue]': 'https://www.gotts.com/locations', '[hours]': 'https://www.gotts.com/hours', '[cafe]': 'https://cafe.org/' });
+  const result = await extractSearchResult(response, { lookup, now: () => NOW });
+  assert.equal(result.answer, '已找到有来源的地点；详情仍需核对。[1]');
+  assert.equal(result.candidates.length, 2);
+  assert.deepEqual(result.candidates[0], {
+    id: result.candidates[0].id, name: 'Gott’s "Ferry"', city: 'San Francisco', summary: '湾边餐厅', timeSummary: '普通周六 10–22，所选日期临时调整待核。', priceSummary: null,
+    sourceUrls: ['https://www.gotts.com/locations', 'https://www.gotts.com/hours'],
+  });
+  assert.match(result.candidates[0].id, /^web-[a-f0-9]{24}$/);
+  assert.deepEqual(result.candidates[1], { id: result.candidates[1].id, name: 'Second cafe', city: null, summary: null, timeSummary: null, priceSummary: null, sourceUrls: ['https://cafe.org/'] });
+  for (const card of result.candidates) assert.ok(card.sourceUrls.every(url => result.sources.some(source => source.url === url)));
+  assert.deepEqual((await extractSearchResult(response, { lookup, now: () => NOW })).candidates, result.candidates, 'server-only citation tokens must not change candidate IDs');
+});
+test('unsafe, forged, oversized or unexpected candidate details cannot be promoted', async () => {
+  const response = structured([
+    { name: 'Private venue [private]', city: null },
+    { name: 'Explicit coordinate injection [venue]', lat: 37.7, lng: -122.4 },
+    { name: 'X'.repeat(161) + ' [venue]' },
+    { name: 'Safe venue [venue]', city: 'Hidden city [private]', summary: 'A'.repeat(401) + ' [venue]', timeSummary: 'Open all day [2]', priceSummary: 'Food from $20; admission is not specified. [price]' },
+  ], { '[private]': 'http://127.0.0.1/', '[venue]': 'https://venue.org/', '[price]': 'https://venue.org/menu' });
+  const result = await extractSearchResult(response, { lookup, now: () => NOW });
+  assert.equal(result.candidates.length, 1);
+  assert.deepEqual(result.candidates[0], { id: result.candidates[0].id, name: 'Safe venue', city: null, summary: null, timeSummary: null, priceSummary: 'Food from $20; admission is not specified.', sourceUrls: ['https://venue.org/', 'https://venue.org/menu'] });
+  assert.ok(result.sources.every(source => !source.url.includes('127.0.0.1')));
+});
+test('candidate protocol is bounded and malformed blocks preserve the cited answer without guessed cards', async () => {
+  const rows = Array.from({ length: 7 }, (_, i) => ({ name: `Venue ${i} [venue]`, city: null, summary: null, timeSummary: null, priceSummary: null }));
+  const result = await extractSearchResult(structured([rows[0], ...rows], { '[venue]': 'https://venue.org/' }), { lookup, now: () => NOW });
+  assert.equal(result.candidates.length, 5); assert.equal(new Set(result.candidates.map(row => row.id)).size, 5);
+  for (const broken of ['[broken JSON]', '[{"name":"Unfinished']) {
+    const response = raw(); response.output[1].content[0].text += `\nBAYLINK_CANDIDATES_V1\n${broken}${broken.endsWith(']') ? '\nEND_BAYLINK_CANDIDATES_V1' : ''}`;
+    const fallback = await extractSearchResult(response, { lookup, now: () => NOW });
+    assert.equal(fallback.answer, 'Public hours and prices need confirmation. [1]');
+    assert.deepEqual(fallback.candidates, []);
+  }
+  assert.equal('candidates' in await extractSearchResult(raw(), { lookup, now: () => NOW }), false, 'legacy prose is never parsed into cards');
+});
 test('provider request uses Responses web_search once, low context and no persisted conversation', async () => {
   let request;
   const input = validateSearchInput({ query: 'SF museums', locale: 'en' });
@@ -76,6 +128,11 @@ test('provider request uses Responses web_search once, low context and no persis
   assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
   assert.match(request.body.instructions, /temporary changes.*official site/);
   assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
+  assert.match(request.body.instructions, /BAYLINK_CANDIDATES_V1/);
+  assert.match(request.body.instructions, /at most two short sentences/);
+  assert.match(request.body.instructions, /Prefer only 2 concise records/);
+  assert.equal(request.body.max_output_tokens, 1800);
+  assert.match(request.body.instructions, /Every non-null string must contain its own real inline search citation/);
   assert.equal(result.responseMode, 'web');
 });
 test('dated searches always append an application reminder in the requested language even if the model omits it', async () => {
@@ -107,6 +164,16 @@ test('same query cache preserves original checkedAt and same in-flight query spe
   assert.equal(cached.cacheControl, 'no-store'); assert.equal(models.PostTranslationQuota.rows[0].count, 1);
   time += 600000;
   assert.equal((await request({ query: 'SF museums' })).data.cached, false); assert.equal(calls, 2);
+});
+test('candidate cards use the same provider call and quota reservation and survive response caching', async t => {
+  let calls = 0;
+  const { request, models } = await fixture(t, { ai: async () => { calls++; return structured([{ name: 'Cited cafe [cafe]', city: null, summary: null, timeSummary: null, priceSummary: null }], { '[cafe]': 'https://cafe.org/' }); } });
+  const first = await request({ query: 'Find a local cafe', date: '2026-10-03', locale: 'en' });
+  const cached = await request({ query: 'Find a local cafe', date: '2026-10-03', locale: 'en' });
+  assert.equal(first.status, 200); assert.equal(first.data.candidates[0].name, 'Cited cafe');
+  assert.match(first.data.answer, /BAYLINK verification reminder:/);
+  assert.deepEqual(cached.data, { ...first.data, cached: true });
+  assert.equal(calls, 1); assert.equal(models.PostTranslationQuota.rows[0].count, 1);
 });
 test('atomic global daily allowance is shared across instances and failed calls consume their reservation', async t => {
   const models = createMemoryModels(); let calls = 0;

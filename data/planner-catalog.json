@@ -10137,6 +10137,13 @@
       "address": "2417 Larkspur Landing Circle, Larkspur, CA 94939",
       "imageKey": "autumn-new-shops",
       "openingStatus": "open",
+      "location": {
+        "lat": 37.947038,
+        "lng": -122.509429,
+        "label": "Anya Hindmarch · Marin Country Mart",
+        "sourceUrl": "https://marincountrymart.com/anya-hindmarch-gifting-agency",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
         "schedule": {
@@ -10592,6 +10599,13 @@
       "address": "2409 Larkspur Landing Circle, Larkspur, CA 94939",
       "imageKey": "autumn-new-shops",
       "openingStatus": "open",
+      "location": {
+        "lat": 37.9468868,
+        "lng": -122.5088522,
+        "label": "Varley · 2409 Larkspur Landing Circle",
+        "sourceUrl": "https://marincountrymart.com/varley",
+        "precision": "venue"
+      },
       "planning": {
         "admissionUsd": null,
         "schedule": {
@@ -11421,6 +11435,692 @@
           "note": "仅 OMCA 展馆，不代表 Lake Merritt 湖区开放时间。普通票含特别展；首个周日免费。10/25 社区庆典有专门票种，团体与特别活动请另查预约条件。"
         }
       }
+    },
+    {
+      "id": "shop-book-passage-ferry-building",
+      "title": "Book Passage · Ferry Building 书店",
+      "region": "sf",
+      "city": "San Francisco",
+      "category": "shop",
+      "summary": "Ferry Building #37A 的独立书店，可搭配市集、海滨用餐与科学馆。购书和作家活动另查费用与场次；地图标记所在建筑，入内按 #37A 找店。",
+      "address": "1 Ferry Building #37A, San Francisco, CA 94111",
+      "officialUrl": "https://www.ferrybuildingmarketplace.com/shops/book-passage/",
+      "location": {
+        "lat": 37.7954425,
+        "lng": -122.3936136,
+        "label": "Book Passage · 所在 Ferry Building，店铺 #37A",
+        "sourceUrl": "https://www.ferrybuildingmarketplace.com/visit/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.ferrybuildingmarketplace.com/shops/book-passage/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "09:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "Ferry Building #37A 的普通书店营业时间，不是作家活动场次。购物另付；商场提醒营业时间可能调整。位置标记所在 Ferry Building，入内按 #37A 找店。"
+        }
+      },
+      "path": "https://www.ferrybuildingmarketplace.com/shops/book-passage/"
+    },
+    {
+      "id": "venue-oakland-main-library",
+      "title": "Oakland Main Library · 奥克兰主图书馆",
+      "region": "east-bay",
+      "city": "Oakland",
+      "category": "attraction",
+      "summary": "在 Downtown 与 Lake Merritt 之间的公共阅览站，可接在 OMCA 前后安静阅读或休息。普通入馆免费；历史中心、活动、打印和停车采用各自规则。",
+      "address": "125 14th Street, Oakland, CA 94612",
+      "officialUrl": "https://oaklandlibrary.org/locations/XXA/",
+      "location": {
+        "lat": 37.80094379066671,
+        "lng": -122.26367525522537,
+        "label": "Oakland Main Library · 125 14th Street",
+        "sourceUrl": "https://oaklandlibrary.org/locations/XXA/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "free",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://oaklandlibrary.org/locations/XXA/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:00",
+                "close": "17:30"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "12:00",
+                "close": "17:30"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "17:30"
+              }
+            ]
+          },
+          "note": "主馆公共阅览开放时间，普通入馆免费；历史中心、活动与会议室可能另有开放及预约安排，复印、打印、停车另计。"
+        }
+      },
+      "path": "https://oaklandlibrary.org/locations/XXA/"
+    },
+    {
+      "id": "venue-sj-king-library",
+      "title": "Dr. Martin Luther King, Jr. Library · 圣何塞公共图书馆",
+      "region": "south-bay",
+      "city": "San Jose",
+      "category": "attraction",
+      "summary": "San José 市中心的公共图书馆，可安排阅读、公共艺术与短暂停留，普通入馆免费。周日 13:00 开门；儿童区、特藏和 AI Center 的开放及活动安排需另查。",
+      "address": "150 E San Fernando Street, San Jose, CA 95112",
+      "officialUrl": "https://www.sjpl.org/locations/king/",
+      "location": {
+        "lat": 37.3356906,
+        "lng": -121.8852558,
+        "label": "Dr. Martin Luther King, Jr. Library · 150 E San Fernando Street",
+        "sourceUrl": "https://www.sjpl.org/locations/king/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "free",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://www.sjpl.org/locations/king/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "13:00",
+                "close": "18:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "08:00",
+                "close": "20:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "08:00",
+                "close": "20:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "08:00",
+                "close": "20:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "08:00",
+                "close": "20:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "08:00",
+                "close": "18:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "08:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "公共图书馆普通开放时间，入馆免费；儿童区周一至周六 10:00 才开放，周日 13:00 开放。特藏、AI Center、活动与服务柜台另有时间，不能据此假定随时可参加；停车等另计。"
+        }
+      },
+      "path": "https://www.sjpl.org/locations/king/"
+    },
+    {
+      "id": "restaurant-farmshop-marin",
+      "title": "Farmshop · Marin Country Mart",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "category": "restaurant",
+      "summary": "Larkspur 的 Farmshop Marin 餐厅，可与同一商场的书店、烘焙店及新店组合。可由官网查看菜单与订位入口；餐费、供餐阶段及座位仍需确认。商场有停车时限。",
+      "address": "2233 Larkspur Landing Circle, Larkspur, CA 94939",
+      "officialUrl": "https://marincountrymart.com/farmshop",
+      "location": {
+        "lat": 37.9473194,
+        "lng": -122.5088889,
+        "label": "Farmshop Marin · 2233 Larkspur Landing Circle",
+        "sourceUrl": "https://marincountrymart.com/farmshop",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "planning": {
+        "setting": "mixed",
+        "admissionUsd": null,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/farmshop",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:30",
+                "close": "21:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "11:30",
+                "close": "21:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "11:30",
+                "close": "21:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "11:30",
+                "close": "21:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "11:30",
+                "close": "21:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "11:30",
+                "close": "21:30"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:30",
+                "close": "21:30"
+              }
+            ]
+          },
+          "note": "Marin 门店普通营业窗口；菜单、供餐阶段及餐桌余位请查看订位页，未作任何订位。餐费按点单另付，不能把营业窗口当作已确认座位。"
+        }
+      },
+      "path": "https://marincountrymart.com/farmshop"
+    },
+    {
+      "id": "cafe-rustic-bakery-larkspur",
+      "title": "Rustic Bakery · Marin Country Mart",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "category": "cafe",
+      "summary": "Marin Country Mart 的烘焙咖啡站，提供面包、糕点和简餐，可搭配附近书店及新店。咖啡、餐点另付，座位与排队未确认；这是 Larkspur Landing 门店。",
+      "address": "2017 Larkspur Landing Circle, Larkspur, CA 94939",
+      "officialUrl": "https://marincountrymart.com/rustic-bakery",
+      "location": {
+        "lat": 37.9470678,
+        "lng": -122.5095934,
+        "label": "Rustic Bakery · 2017 Larkspur Landing Circle",
+        "sourceUrl": "https://marincountrymart.com/rustic-bakery",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "planning": {
+        "setting": "mixed",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/rustic-bakery",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "只对应 2017 Larkspur Landing Circle 的 Marin Country Mart 门店；普通营业时间，点餐、排队与座位待确认，餐饮另付。"
+        }
+      },
+      "path": "https://marincountrymart.com/rustic-bakery"
+    },
+    {
+      "id": "shop-copperfields-larkspur",
+      "title": "Copperfield’s Books · Larkspur 书店",
+      "region": "north-bay",
+      "city": "Larkspur",
+      "category": "shop",
+      "summary": "Marin Country Mart 的独立书店，可与同一商场的餐厅、烘焙店及新店一起安排。按普通逛店计划，购书、作家活动和座位以店方安排为准。",
+      "address": "2419 Larkspur Landing Circle, Larkspur, CA 94939",
+      "officialUrl": "https://marincountrymart.com/copperfields-books",
+      "location": {
+        "lat": 37.946846,
+        "lng": -122.5090725,
+        "label": "Copperfield’s Books · 2419 Larkspur Landing Circle",
+        "sourceUrl": "https://marincountrymart.com/copperfields-books",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://marincountrymart.com/copperfields-books",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "Larkspur 门店普通营业时间，不代表当天有作家活动；购书和活动费用按商家条款确认。"
+        }
+      },
+      "path": "https://marincountrymart.com/copperfields-books"
+    },
+    {
+      "id": "venue-san-mateo-history-museum",
+      "title": "San Mateo County History Museum · 半岛历史博物馆",
+      "region": "peninsula",
+      "city": "Redwood City",
+      "category": "attraction",
+      "summary": "位于 Redwood City 老法院的半岛历史博物馆。普通成人票 $6，长者及学生 $4，5 岁及以下免费；须按同行者资格核算。周一闭馆，15:45 最后入馆；档案室须预约。",
+      "address": "2200 Broadway, Redwood City, CA 94063",
+      "officialUrl": "https://historysmc.org/plan-your-visit/",
+      "location": {
+        "lat": 37.486708,
+        "lng": -122.2296696,
+        "label": "San Mateo County History Museum · 2200 Broadway",
+        "sourceUrl": "https://historysmc.org/maps-directions/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "paid",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://historysmc.org/plan-your-visit/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ],
+            "1": [],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "16:00",
+                "lastEntry": "15:45"
+              }
+            ]
+          },
+          "note": "只对应 Redwood City 的 History Museum 展馆：成人普通票 $6，长者及学生 $4，5 岁及以下免费，会员及其他优惠另按资格。人数和票种待确认，未套用统一票价；团体参观需另查预约。档案室仅预约开放，不能按展馆时间访问。"
+        }
+      },
+      "path": "https://historysmc.org/plan-your-visit/"
+    },
+    {
+      "id": "cafe-coupa-marston",
+      "title": "Coupa Cafe · Redwood City Marston",
+      "region": "peninsula",
+      "city": "Redwood City",
+      "category": "cafe",
+      "summary": "Main Street 的 Marston 门店，适合在市中心博物馆或图书馆前后喝咖啡、吃简餐。普通营业到 17:00，餐费按点单另计，座位与排队仍需确认。",
+      "address": "695 Main Street, Redwood City, CA 94063",
+      "officialUrl": "https://www.coupacafe.com/Locations/redwood-city-marston",
+      "location": {
+        "lat": 37.4878393,
+        "lng": -122.2261795,
+        "label": "Coupa Cafe Marston · 695 Main Street",
+        "sourceUrl": "https://www.coupacafe.com/Locations/redwood-city-marston",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "unknown",
+      "planning": {
+        "setting": "mixed",
+        "admissionUsd": null,
+        "schedule": {
+          "sourceUrl": "https://www.coupacafe.com/Locations/redwood-city-marston",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "07:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "只对应 695 Main Street 的 Marston 门店；普通营业时间，菜单、座位与排队待确认，餐饮按点单另付。"
+        }
+      },
+      "path": "https://www.coupacafe.com/Locations/redwood-city-marston"
+    },
+    {
+      "id": "venue-redwood-city-library",
+      "title": "Redwood City Downtown Library · 市中心图书馆",
+      "region": "peninsula",
+      "city": "Redwood City",
+      "category": "attraction",
+      "summary": "市中心公共图书馆，可搭配附近历史博物馆和咖啡店安排阅读停留，普通入馆免费。周日中午开门，10/19 员工培训闭馆；Local History Room 须预约，停车另计。",
+      "address": "1044 Middlefield Road, Redwood City, CA 94063",
+      "officialUrl": "https://www.redwoodcity.org/departments/library/locations-and-hours",
+      "location": {
+        "lat": 37.4840501,
+        "lng": -122.2273354,
+        "label": "Redwood City Public Library · 1044 Middlefield Road",
+        "sourceUrl": "https://www.google.com/maps?cid=2747244861800554380",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "cost": "free",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://www.redwoodcity.org/departments/library/locations-and-hours",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-09-29",
+          "validThrough": "2026-10-31",
+          "weekly": {
+            "0": [
+              {
+                "open": "12:00",
+                "close": "17:00"
+              }
+            ],
+            "1": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "2": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "3": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "4": [
+              {
+                "open": "10:00",
+                "close": "20:00"
+              }
+            ],
+            "5": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "6": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "Downtown Library 普通公共阅览开放时间，入馆免费；Local History Room 仅预约开放，活动、会议室及打印另查规则，停车另计。9/29 上午员工培训，10/19 全日员工培训闭馆。",
+          "dates": {
+            "2026-09-29": [
+              {
+                "open": "12:00",
+                "close": "20:00"
+              }
+            ],
+            "2026-10-19": []
+          }
+        }
+      },
+      "path": "https://www.redwoodcity.org/departments/library/locations-and-hours"
     }
   ],
   "guides": [
