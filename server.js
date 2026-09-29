@@ -20,6 +20,7 @@ const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, gui
 const { PROFILE_THEMES, MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 const { registerEventEngagement } = require('./lib/eventEngagement');
 const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
+const { registerPlannerWebSearch } = require('./lib/plannerWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
@@ -1588,6 +1589,7 @@ const authenticateToken = async (req, res, next) => {
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
 registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
+registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.plannerWebSearch, isTest, now: options.plannerNow, lookup: options.plannerWebLookup });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });

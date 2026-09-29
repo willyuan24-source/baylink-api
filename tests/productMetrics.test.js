@@ -60,7 +60,7 @@ test('public product events persist only daily event/locale buckets with no iden
   }
   // Public ingestion has no authentication dependency, including expired UI sessions.
   assert.deepEqual((await post({ event: 'plan_saved', locale: 'zh-Hant' }, { auth: 'Bearer invalid' })).data, { ok: true });
-  assert.equal(ProductMetric.rows.length, 13);
+  assert.equal(ProductMetric.rows.length, PRODUCT_EVENTS.length * 2 + 1);
   for (const row of ProductMetric.rows) {
     assert.deepEqual(Object.keys(row).sort(), ['_id', 'count', 'day', 'event', 'expiresAt', 'locale']);
     assert.equal(row._id, `${row.day}:${row.event}:${row.locale}`);
@@ -80,6 +80,17 @@ test('unknown dimensions, injected fields and invalid event or locale types cann
   for (const body of invalid) assert.equal((await post(body)).status, 400, JSON.stringify(body));
   assert.equal(ProductMetric.rows.length, 0);
   assert.equal(ProductMetric.writes.length, 0);
+});
+
+test('new planner actions remain anonymous counts and reject query, plan or source payloads', async t => {
+  const { post, ProductMetric } = await fixture(t);
+  for (const event of ['planner_outing_adopted', 'planner_edit_applied', 'planner_web_search']) {
+    assert.equal((await post({ event, locale: 'en' })).status, 200);
+    for (const field of ['query', 'message', 'plan', 'stops', 'userId', 'sourceUrl', 'answer', 'filters']) assert.equal((await post({ event, locale: 'en', [field]: 'private' })).status, 400);
+  }
+  assert.equal(ProductMetric.rows.length, 3);
+  assert.ok(ProductMetric.rows.every(row => row.count === 1));
+  assert.ok(!JSON.stringify(ProductMetric.writes).includes('private'));
 });
 
 test('atomic increments preserve concurrent actions and recover a unique-key insertion race once', async t => {
