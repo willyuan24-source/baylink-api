@@ -2156,6 +2156,57 @@
       }
     },
     {
+      "id": "redwood-city-fixit-clinic-oct-2026",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "occurrenceDates": [
+        "2026-10-03"
+      ],
+      "region": "peninsula",
+      "city": "Redwood City",
+      "venue": "Downtown Library Makerspace · 1044 Middlefield Road",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "refresh-makers",
+      "officialUrl": "https://www.redwoodcity.org/Home/Components/Calendar/Event/95144/2638?curdate=8-28-2026&curm=10&cury=2026&widgetId=5678",
+      "sourceLabel": "City of Redwood City / San Mateo County Sustainability",
+      "verifiedAt": "2026-09-29",
+      "title": "Redwood City 免费维修诊断：Fixit Clinic",
+      "dateLabel": "10 月 3 日 · 10:30–12:30",
+      "costLabel": "免费维修诊断与指导 · 建议预登记，可直接到场",
+      "summary": "带一件能自行搬来的损坏家用品，到图书馆和志愿者一起找原因、尝试修理。适合想减少浪费，也想学一点维修方法的居民。",
+      "plan": [
+        "只接收可自行携带的物品，不接超大件；志愿者会协助诊断和尝试维修，不能保证修好。",
+        "从官方详情中的登记入口提前说明物品问题；未登记也可到场。",
+        "免费服务不等于免费更换全部零件或上门搬运；如需零件，现场核对处理方式。"
+      ],
+      "audience": [
+        "生活维修",
+        "减少浪费"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.redwoodcity.org/Home/Components/Calendar/Event/95144/2638?curdate=8-28-2026&curm=10&cury=2026&widgetId=5678",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-03",
+          "validThrough": "2026-10-03",
+          "dates": {
+            "2026-10-03": [
+              {
+                "open": "10:30",
+                "close": "12:30"
+              }
+            ]
+          },
+          "note": "Makerspace 10:30–12:30 免费维修诊断与指导；建议预登记，也接待直接到场。只接收可自行携带的物品；维修成功、全部零件免费及上门搬运均不保证。"
+        }
+      }
+    },
+    {
       "id": "redwood-city-portfest-2026",
       "title": "Redwood City PortFest：走进湾边工作港口",
       "startDate": "2026-10-03",
@@ -2310,6 +2361,64 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "sonoma-valley-book-sale-free-child-book-2026",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "occurrenceDates": [
+        "2026-10-03",
+        "2026-10-04"
+      ],
+      "region": "north-bay",
+      "city": "Sonoma",
+      "venue": "Sonoma Valley Regional Library · 755 West Napa Street",
+      "category": "culture",
+      "cost": "mixed",
+      "imageKey": "refresh-community-swap",
+      "officialUrl": "https://events.sonomalibrary.org/event/friends-library-book-sale-120268",
+      "sourceLabel": "Sonoma County Library / Sonoma Valley Friends of the Library",
+      "verifiedAt": "2026-09-29",
+      "title": "Sonoma 图书馆书展：儿童免费一本，教师购书半价",
+      "dateLabel": "10 月 3 日 11:00–16:00；10 月 4 日 13:00–16:00",
+      "costLabel": "到场儿童每人免费一本 · 教育工作者购书半价，其他购书付费",
+      "summary": "到 Sonoma Valley 图书馆书展挑书，每位到场儿童可获一本免费书，教育工作者另有半价优惠。普通购书仍付费，不是整场书籍免费领取。",
+      "plan": [
+        "10 月 3 日为 11:00–16:00；10 月 4 日为 13:00–16:00，两天开始时间不同。",
+        "儿童免费书的可选范围与现场余量由主办方安排；不能保证任意书目都有。",
+        "教育工作者可享 50% 折扣；官网未列资格证明规则，领取优惠前向现场工作人员核对。"
+      ],
+      "audience": [
+        "亲子阅读",
+        "教育工作者"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/friends-library-book-sale-120268",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-03",
+          "validThrough": "2026-10-04",
+          "dates": {
+            "2026-10-03": [
+              {
+                "open": "11:00",
+                "close": "16:00"
+              }
+            ],
+            "2026-10-04": [
+              {
+                "open": "13:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "10/3 为 11:00–16:00，10/4 为 13:00–16:00。每位到场儿童可领一本免费书、教育工作者购书半价；其他购书付费，数量与资格证明另核。这些是购书福利，活动入场费未单独确认。"
+        }
       }
     },
     {
@@ -2502,6 +2611,110 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "berkeley-cal-sailing-open-house-oct4-2026",
+      "title": "Cal Sailing 免费帆船开放日",
+      "kind": "event",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-04",
+      "occurrenceDates": [
+        "2026-10-04"
+      ],
+      "dateLabel": "10/4（日）一般为 13:00–15:00；13:00–14:30 现场登记",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "venue": "Cal Sailing Club · 124 University Avenue, Berkeley Marina",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费体验约半小时；现场先到先得，不保证船位。",
+      "summary": "跟随志愿船员体验海湾帆船，认识水上安全与湾区生态。活动可能受风雨和潮汐影响。",
+      "plan": [
+        "建议 13:00 到俱乐部门前排队，登记时段为 13:00–14:30；船位先到先得，潮汐可能使活动早于 15:00 结束。",
+        "儿童须至少 5 岁并由成人陪同；所有参加者须签免责文件，未满 18 岁由家长或监护人签署。 必须穿救生衣，现场可借用；穿可能打湿的鞋和防风外套，建议带备用衣物。",
+        "大雨或强风可能取消活动，潮汐也可能缩短开放时段；出发前查看主办方公告，不把 15:00 当作保证的末班船。"
+      ],
+      "audience": [
+        "5 岁以上及成人",
+        "户外体验"
+      ],
+      "officialUrl": "https://www.cal-sailing.org/activities/csc-open-house",
+      "sourceLabel": "Cal Sailing Club",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "refresh-sailing",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 5,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.cal-sailing.org/activities/csc-open-house",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-04",
+          "validThrough": "2026-10-04",
+          "dates": {
+            "2026-10-04": [
+              {
+                "open": "13:00",
+                "close": "15:00",
+                "lastEntry": "14:30"
+              }
+            ]
+          },
+          "note": "官网通常开放时段为 13:00–15:00；现场登记仅 13:00–14:30，先到先得，建议 13:00 抵达。单次航行约 30 分钟，排队时长未知。5 岁以上儿童须成人陪同，需签免责文件并穿救生衣；强风、大雨或潮汐可能取消或提前结束，不保证船位与结束时间。"
+        }
+      }
+    },
+    {
+      "id": "berkeley-crowden-community-music-day-oct4-2026",
+      "title": "Crowden 免费社区音乐日：试奏乐器与亲子音乐会",
+      "kind": "event",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-04",
+      "occurrenceDates": [
+        "2026-10-04"
+      ],
+      "dateLabel": "10/4（日）10:00–14:00",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "venue": "Crowden School · 1475 Rose Street, Berkeley, CA 94702",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费入场；部分限额弦乐示范课需提前预约。",
+      "summary": "摸一摸、试一试管弦乐器，参加短音乐会和乐器手作，在校园里听本地音乐人演出。",
+      "plan": [
+        "官网提供免费报名；弦乐示范适合 3 岁以上，每组 4 人、每节 15 分钟，名额有限须提前预约；旁观示范无须该节门票。 小提琴示范为 10:00–12:00，大提琴示范为 10:00–14:00；以官网预约的具体时段为准。",
+        "Very First Concerts 在 10:15、11:00、11:45 开演，每场约 20 分钟，面向婴儿至 7 岁儿童及家长；这不是整个音乐日的年龄上限。",
+        "演出与示范分散在校园内；先查看当天节目表，给场地间移动留时间。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "音乐爱好者"
+      ],
+      "officialUrl": "https://www.crowden.org/community-music-day/",
+      "sourceLabel": "Crowden School",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "refresh-music",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.crowden.org/community-music-day/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-04",
+          "validThrough": "2026-10-04",
+          "dates": {
+            "2026-10-04": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "这是整个校园音乐日的开放窗口。短音乐会另在 10:15、11:00、11:45 开演，每场约 20 分钟，适合婴儿至 7 岁及家长；3 岁以上弦乐示范需另选 15 分钟时段预约，不代表整场活动限制年龄。"
+        }
       }
     },
     {
@@ -2806,6 +3019,64 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "santa-rosa-big-book-sale-discount-days-2026",
+      "kind": "event",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-05",
+      "occurrenceDates": [
+        "2026-10-04",
+        "2026-10-05"
+      ],
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Veterans Memorial Hall · 1351 Maple Avenue",
+      "category": "culture",
+      "cost": "paid",
+      "imageKey": "refresh-community-swap",
+      "officialUrl": "https://events.sonomalibrary.org/event/friends-santa-rosa-libraries-big-book-sale-veterans-memorial-hall-120393",
+      "sourceLabel": "Sonoma County Library / Friends of the Santa Rosa Libraries",
+      "verifiedAt": "2026-09-29",
+      "title": "Santa Rosa 大型书展优惠日：半价与 $5 一袋",
+      "dateLabel": "10 月 4 日 10:00–16:00；10 月 5 日 14:00–18:00",
+      "costLabel": "10 月 4 日半价购书 · 10 月 5 日 $5/袋",
+      "summary": "Santa Rosa 书展的最后两天分别提供半价与按袋购书优惠。活动在 Veterans Memorial Hall，适合按阅读清单补书，所有优惠都属于付费购书。",
+      "plan": [
+        "10 月 4 日半价日为 10:00–16:00；10 月 5 日 $5/袋时段为 14:00–18:00。",
+        "地点为 1351 Maple Avenue 的 Veterans Memorial Hall，不在 Santa Rosa 图书馆馆内。",
+        "袋子规格、可装书目与现场库存以主办方规则为准；每袋 $5 不等于不限数量免费拿书。"
+      ],
+      "audience": [
+        "阅读爱好者",
+        "优惠购书"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/friends-santa-rosa-libraries-big-book-sale-veterans-memorial-hall-120393",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-04",
+          "validThrough": "2026-10-05",
+          "dates": {
+            "2026-10-04": [
+              {
+                "open": "10:00",
+                "close": "16:00"
+              }
+            ],
+            "2026-10-05": [
+              {
+                "open": "14:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "10/4 半价日为 10:00–16:00；10/5 为 14:00–18:00，购书 $5/袋。地点是 Veterans Memorial Hall。袋价是商品价格，不是门票；袋规格、书目和库存现场确认，活动入场费未单独确认。"
+        }
       }
     },
     {
@@ -3151,6 +3422,56 @@
       }
     },
     {
+      "id": "san-lorenzo-banned-books-storytime-oct7-2026",
+      "title": "San Lorenzo 阅读自由故事会与赠书",
+      "kind": "event",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-07",
+      "occurrenceDates": [
+        "2026-10-07"
+      ],
+      "dateLabel": "10/7（三）11:00–11:30；活动室提前 10 分钟开放",
+      "region": "east-bay",
+      "city": "San Lorenzo",
+      "venue": "San Lorenzo Library · Greenhouse Community Room · 395 Paseo Grande, San Lorenzo, CA 94580",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "费用待核：故事会未列票价；现场赠书免费，送完为止。",
+      "summary": "以受到挑战或禁令的绘本和歌曲认识阅读自由，故事会后可领取一本主题书籍，数量有限。",
+      "plan": [
+        "主要面向幼儿与学龄前儿童，其他年龄也欢迎；家长或照顾者须在场陪伴并参与。",
+        "活动限额，入场票在前台领取；满场时可能无法进入，不保证随到随进。",
+        "Greenhouse Community Room 于 10:50 开放；免费赠书送完为止，参加故事会的费用请向分馆确认。"
+      ],
+      "audience": [
+        "幼儿与学龄前儿童",
+        "家长与照顾者"
+      ],
+      "officialUrl": "https://aclibrary.bibliocommons.com/events/6a8e1732392e9c02993c8c9a",
+      "sourceLabel": "Alameda County Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://aclibrary.bibliocommons.com/events/6a8e1732392e9c02993c8c9a",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-07",
+          "validThrough": "2026-10-07",
+          "sessions": [
+            {
+              "date": "2026-10-07",
+              "start": "11:00",
+              "end": "11:30"
+            }
+          ],
+          "note": "故事会固定为 11:00–11:30，活动室 10:50 开放；须在前台领取限额入场票，满场可能无法进入，不是网上预约。主要面向幼儿与学龄前儿童，照顾者须在场参与。赠书免费、送完为止；故事会票价未列明。"
+        }
+      }
+    },
+    {
       "id": "sf-ai-infra-scale-dinner-2026",
       "title": "AI 基础设施扩展问题交流晚餐",
       "startDate": "2026-10-07",
@@ -3241,6 +3562,159 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "stanford-noon-guitar-oct-2026",
+      "kind": "performance",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-07",
+      "occurrenceDates": [
+        "2026-10-07"
+      ],
+      "region": "peninsula",
+      "city": "Stanford",
+      "venue": "Campbell Recital Hall · Braun Music Center · 541 Lasuen Mall",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "refresh-music",
+      "officialUrl": "https://music.stanford.edu/events/noon-concert-guitar-students-charles-ferguson",
+      "sourceLabel": "Stanford Department of Music",
+      "verifiedAt": "2026-09-29",
+      "title": "Stanford 免费午间音乐会：吉他学生演出",
+      "dateLabel": "10 月 7 日 · 12:30–14:00",
+      "costLabel": "免费入场 · 工作日校园停车需许可",
+      "summary": "Charles Ferguson 的吉他学生在 Campbell Recital Hall 带来午间演出。把一段校园散步与现场音乐放在同一个下午。",
+      "plan": [
+        "演出为 12:30–14:00，地点在 Braun Music Center 内的 Campbell Recital Hall。",
+        "官方列免费入场，未公布需要预约；到场座位以现场安排为准。",
+        "工作日白天校园停车需要停车许可，免费演出不包含停车费用；出发前查看 Stanford 停车说明。"
+      ],
+      "audience": [
+        "音乐爱好者",
+        "校园短途"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://music.stanford.edu/events/noon-concert-guitar-students-charles-ferguson",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-07",
+          "validThrough": "2026-10-07",
+          "sessions": [
+            {
+              "date": "2026-10-07",
+              "start": "12:30",
+              "end": "14:00"
+            }
+          ],
+          "note": "免费音乐会固定为 12:30–14:00，位于 Campbell Recital Hall。官网未列必须预约，座位以现场为准；工作日校园停车须另查许可，不包含免费停车。"
+        }
+      }
+    },
+    {
+      "id": "corte-madera-wooden-sugar-skull-painting-2026",
+      "kind": "event",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "occurrenceDates": [
+        "2026-10-08"
+      ],
+      "region": "north-bay",
+      "city": "Corte Madera",
+      "venue": "Corte Madera Library · 707 Meadowsweet Drive",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-makers",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6ab577fe001a4a0e055bd0a9",
+      "sourceLabel": "Marin County Free Library",
+      "verifiedAt": "2026-09-29",
+      "title": "Corte Madera 免费手作：木制糖骷髅彩绘",
+      "dateLabel": "10 月 8 日 · 15:30–16:30",
+      "costLabel": "5–14 岁免费 · 材料提供，无需报名",
+      "summary": "孩子们在图书馆为木制糖骷髅造型上色，用手作认识节庆装饰。全部材料由主办方提供，这是木制艺术项目，不是领取糖果或食品。",
+      "plan": [
+        "面向 5–14 岁，15:30–16:30 在 Corte Madera Library 举行。",
+        "无需报名，全部手作材料由主办方提供。",
+        "参加木制彩绘项目，按图书馆现场安排使用画具与材料。"
+      ],
+      "audience": [
+        "5–14 岁儿童",
+        "艺术手作"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "minAge": 5,
+        "maxAge": 14,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6ab577fe001a4a0e055bd0a9",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "sessions": [
+            {
+              "date": "2026-10-08",
+              "start": "15:30",
+              "end": "16:30"
+            }
+          ],
+          "note": "15:30–16:30 固定手作场，仅面向 5–14 岁；无需报名，材料提供。项目为木制造型彩绘，不是食物领取。"
+        }
+      }
+    },
+    {
+      "id": "san-rafael-civic-center-puzzle-swap-2026",
+      "kind": "event",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "occurrenceDates": [
+        "2026-10-08"
+      ],
+      "region": "north-bay",
+      "city": "San Rafael",
+      "venue": "Civic Center Library · 3501 Civic Center Drive, Room 427",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "refresh-community-swap",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6a0c9526c7d3cd58005a3480",
+      "sourceLabel": "Marin County Free Library",
+      "verifiedAt": "2026-09-29",
+      "title": "San Rafael 免费拼图交换：不必捐赠也能参加",
+      "dateLabel": "10 月 8 日 · 13:00–16:00",
+      "costLabel": "免费 · 可带完整拼图交换，也可直接来选",
+      "summary": "把已经拼完的拼图带到 Civic Center Library，换一种图案继续挑战。没有可捐拼图也欢迎参加，现场可选款式随余量变化。",
+      "plan": [
+        "活动时段为 13:00–16:00；请按当前官方页面的时间到场。",
+        "如带拼图捐赠，须完整且没有缺件；不要求先捐赠才能挑选。",
+        "现场款式和余量不保证，按图书馆当日安排挑选。"
+      ],
+      "audience": [
+        "拼图爱好者",
+        "物品交换"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6a0c9526c7d3cd58005a3480",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "dates": {
+            "2026-10-08": [
+              {
+                "open": "13:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "13:00–16:00 免费交换；可直接来选，无须先捐赠。带来交换的拼图须完整无缺件，款式与数量随现场余量变化。"
+        }
       }
     },
     {
@@ -3983,6 +4457,64 @@
       }
     },
     {
+      "id": "mountain-view-oktoberfest-2026",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-11"
+      ],
+      "region": "south-bay",
+      "city": "Mountain View",
+      "venue": "Downtown Mountain View · Castro Street",
+      "category": "food",
+      "cost": "free",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://www.mvoktoberfest.com/",
+      "sourceLabel": "Mountain View Chamber of Commerce",
+      "verifiedAt": "2026-09-29",
+      "title": "Mountain View Oktoberfest：免费入场的街区啤酒节",
+      "dateLabel": "10 月 10、11 日 · 每天 11:00–19:00",
+      "costLabel": "入场免费 · 餐饮另购，饮酒须满 21 岁并购买杯具与酒票",
+      "summary": "Castro Street 的两日社区节庆有德国音乐、舞蹈、比赛与餐饮摊位。可以免费逛场、听音乐，再按预算决定是否购买食物和饮品。",
+      "plan": [
+        "两天均为 11:00–19:00，地点在 Downtown Mountain View 的 Castro Street。",
+        "各年龄均可入场；饮酒者须取得 21 岁以上手环，并另购杯具和酒票。",
+        "食品、饮品和杯具价格按现场公布；免费入场不包含免费啤酒或餐食。"
+      ],
+      "audience": [
+        "社区节庆",
+        "音乐与美食"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.mvoktoberfest.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-11",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "11:00",
+                "close": "19:00"
+              }
+            ],
+            "2026-10-11": [
+              {
+                "open": "11:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "10/10、10/11 均为 11:00–19:00，免费入场、各年龄均可参加。21 岁仅为饮酒资格，不是入场年龄下限；杯具、酒票与餐饮另购。"
+        }
+      }
+    },
+    {
       "id": "napa-beyond-bin-oct10-2026",
       "title": "Beyond the Bin：看看回收物离开家后去了哪里",
       "startDate": "2026-10-10",
@@ -4300,6 +4832,57 @@
       "relatedGuideSlug": "bay-area-without-car-guide",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-lorenzo-metal-milagros-oct10-2026",
+      "title": "San Lorenzo 墨西哥 Milagros 金属浮雕手工",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "occurrenceDates": [
+        "2026-10-10"
+      ],
+      "dateLabel": "10/10（六）15:00–16:00；14:30 开始发入场票",
+      "region": "east-bay",
+      "city": "San Lorenzo",
+      "venue": "San Lorenzo Library · Greenhouse Community Room · 395 Paseo Grande, San Lorenzo, CA 94580",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "费用待核：官方未列明收费；材料提供，数量有限。",
+      "summary": "认识墨西哥与拉丁美洲民间艺术中的 milagros 小饰物，尝试金属压纹、图样和配色。",
+      "plan": [
+        "适合 8 岁以上儿童及家人；请按年龄要求参加。",
+        "材料提供但数量有限；开场前 30 分钟，即 14:30 开始发票，请为领票留时间。",
+        "活动在 San Lorenzo Library 的 Greenhouse Community Room，现场名额以分馆安排为准。"
+      ],
+      "audience": [
+        "8 岁以上儿童及家人",
+        "手作与文化"
+      ],
+      "officialUrl": "https://aclibrary.bibliocommons.com/events/6a8e175a392e9c02993c8cd5",
+      "sourceLabel": "Alameda County Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "minAge": 8,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://aclibrary.bibliocommons.com/events/6a8e175a392e9c02993c8cd5",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-10",
+          "sessions": [
+            {
+              "date": "2026-10-10",
+              "start": "15:00",
+              "end": "16:00"
+            }
+          ],
+          "note": "15:00–16:00 固定手作场，面向 8 岁以上儿童及家人；14:30 开始现场发票，材料与名额有限。不是提前网上购票，官方未列明活动费用。"
+        }
       }
     },
     {
@@ -4650,6 +5233,61 @@
       }
     },
     {
+      "id": "stanford-art-for-all-oct-2026",
+      "kind": "event",
+      "startDate": "2026-10-11",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-11"
+      ],
+      "region": "peninsula",
+      "city": "Stanford",
+      "venue": "Cantor Arts Center / Anderson Collection · 328 Lomita Drive",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "culture-visit",
+      "officialUrl": "https://museum.stanford.edu/events/family-programs",
+      "sourceLabel": "Cantor Arts Center / Anderson Collection",
+      "verifiedAt": "2026-09-29",
+      "title": "Stanford Art for All：免费家庭艺术日",
+      "dateLabel": "10 月 11 日 · 10:00–12:00 或 13:00–15:00",
+      "costLabel": "免费 · 名额有限，只登记上午或下午其中一场",
+      "summary": "在 Cantor 与 Anderson 之间参加手作和现场音乐，再进展厅听故事、做寻宝。活动面向儿童、家庭和照护者，也设有较安静的休息空间。",
+      "plan": [
+        "从官网选择 10:00–12:00 或 13:00–15:00 一场登记；携报名确认到 Lomita Drive 旁的欢迎帐篷签到。",
+        "名额有限，已登记者优先；本场不接受宠物。",
+        "主办方列出 Lomita Drive 和 Roth Way Garage 一楼的指定访客免费停车，使用前核对现场标识。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "艺术手作"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "mixed",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://museum.stanford.edu/events/family-programs",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-11",
+          "validThrough": "2026-10-11",
+          "sessions": [
+            {
+              "date": "2026-10-11",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-10-11",
+              "start": "13:00",
+              "end": "15:00"
+            }
+          ],
+          "note": "只登记 10:00–12:00 或 13:00–15:00 其中一场，不能将 12:00–13:00 当作连续活动。名额有限，已报名者优先；携确认到 Lomita Drive 旁帐篷签到。活动涉及室外区域及展厅，不接受宠物。"
+        }
+      }
+    },
+    {
       "id": "uptown-killer-queen-a-tribute-to-queen-ft-patrick-myers-as-freddie-mercury-2026",
       "title": "Killer Queen：Queen 致敬演出",
       "startDate": "2026-10-11",
@@ -4775,6 +5413,56 @@
       }
     },
     {
+      "id": "san-rafael-norcal-bats-library-2026",
+      "kind": "event",
+      "startDate": "2026-10-14",
+      "endDate": "2026-10-14",
+      "occurrenceDates": [
+        "2026-10-14"
+      ],
+      "region": "north-bay",
+      "city": "San Rafael",
+      "venue": "Civic Center Library · 3501 Civic Center Drive, Room 427",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-bats",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6a3af9e8f56bd86e00b8a467",
+      "sourceLabel": "Marin County Free Library / NorCal Bats",
+      "verifiedAt": "2026-09-29",
+      "title": "San Rafael 免费动物科普：认识本地蝙蝠",
+      "dateLabel": "10 月 14 日 · 14:30–15:30",
+      "costLabel": "免费亲子科普 · 无需报名",
+      "summary": "NorCal Bats 到 Civic Center Library 介绍本地蝙蝠与它们的生态作用。适合家庭和儿童一起观察、提问，了解夜行动物。",
+      "plan": [
+        "14:30–15:30 举行，馆方列为家庭、学龄前及儿童项目。",
+        "活动免费，无需报名；按现场安排就座。",
+        "观察和互动以讲师指引为准，不包含自行触摸或喂食动物。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "自然科普"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6a3af9e8f56bd86e00b8a467",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-14",
+          "validThrough": "2026-10-14",
+          "sessions": [
+            {
+              "date": "2026-10-14",
+              "start": "14:30",
+              "end": "15:30"
+            }
+          ],
+          "note": "14:30–15:30 固定科普场，适合家庭、学龄前及儿童，无需报名。动物观察与互动按讲师指引，不包含自行触摸或喂食。"
+        }
+      }
+    },
+    {
       "id": "east-bay-disney-on-ice-presents-find-your-hero-2026",
       "title": "Disney On Ice：Find Your Hero 冰上演出",
       "startDate": "2026-10-15",
@@ -4809,6 +5497,58 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "novato-teen-ai-literacy-escape-room-2026",
+      "kind": "event",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-15",
+      "occurrenceDates": [
+        "2026-10-15"
+      ],
+      "region": "north-bay",
+      "city": "Novato",
+      "venue": "Novato Library · 1720 Novato Boulevard",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "everyday",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6aa31dedca248a002914f7c5",
+      "sourceLabel": "Marin County Free Library",
+      "verifiedAt": "2026-09-29",
+      "title": "Novato 青少年 AI 游戏：密室逃脱与信息辨识",
+      "dateLabel": "10 月 15 日 · 17:00–18:30",
+      "costLabel": "11–18 岁免费参加 · 提供零食",
+      "summary": "通过密室逃脱形式的游戏和讨论，练习识别 AI 信息、思考数字内容。图书馆为 11–18 岁青少年安排这场免费活动，并提供零食。",
+      "plan": [
+        "17:00–18:30 在 Novato Library 举行，参加年龄为 11–18 岁。",
+        "官方正文未列必须报名；参加前查看活动页是否有临时更新。",
+        "现场提供零食，具体种类未公布；有饮食限制者可事先向馆方了解。"
+      ],
+      "audience": [
+        "11–18 岁青少年",
+        "AI 与数字素养"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "minAge": 11,
+        "maxAge": 18,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6aa31dedca248a002914f7c5",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-15",
+          "validThrough": "2026-10-15",
+          "sessions": [
+            {
+              "date": "2026-10-15",
+              "start": "17:00",
+              "end": "18:30"
+            }
+          ],
+          "note": "17:00–18:30 固定活动，仅面向 11–18 岁；官网未列必须报名。现场有零食但种类未公布，有饮食限制请向馆方确认。"
+        }
       }
     },
     {
@@ -4893,6 +5633,57 @@
             ]
           },
           "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
+      }
+    },
+    {
+      "id": "sf-main-halloween-costume-swap-oct15-2026",
+      "title": "SF Main Library 儿童万圣节服装交换",
+      "kind": "event",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-15",
+      "occurrenceDates": [
+        "2026-10-15"
+      ],
+      "dateLabel": "10/15（四）16:00–17:30",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "SF Main Library · Children's Creative Center, 2nd Floor · 100 Larkin Street, San Francisco, CA 94102",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "费用待核：官方活动页未列明收费，也未要求必须先捐一件才能领取。",
+      "summary": "为孩子寻找新的万圣节造型，或带来洁净、轻度使用的服装交换；道具与配件也欢迎。",
+      "plan": [
+        "面向儿童及照顾者，活动在 Main Library 二楼儿童创意中心；不是 Marina 分馆或 San Leandro 的交换会。",
+        "按官网参加规则，无须预约；可带洁净、轻度使用的服装、配件或道具。",
+        "官网没有公布一换一、尺码或每人领取数量规则；服装选择以现场为准。"
+      ],
+      "audience": [
+        "儿童与照顾者",
+        "旧物交换"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/15/activity-halloween-costume-swap",
+      "sourceLabel": "San Francisco Public Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "refresh-community-swap",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/15/activity-halloween-costume-swap",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-15",
+          "validThrough": "2026-10-15",
+          "dates": {
+            "2026-10-15": [
+              {
+                "open": "16:00",
+                "close": "17:30"
+              }
+            ]
+          },
+          "note": "Main Library 二楼儿童创意中心 16:00–17:30，儿童及照顾者可直接到场。可带洁净、轻度使用的服装或配件；没有公布必须捐赠、一换一或领取数量规则。官方未列明收费。"
         }
       }
     },
@@ -5290,6 +6081,57 @@
       }
     },
     {
+      "id": "berkeley-borp-adaptive-sports-expo-oct17-2026",
+      "title": "BORP 无障碍体育体验日与社区庆祝",
+      "kind": "sports",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10/17（六）主场 10:00–15:00；社区庆祝 15:30–17:30",
+      "region": "east-bay",
+      "city": "Berkeley",
+      "venue": "James Kenney Community Center · 1720 8th Street, Berkeley；另有两个分场地",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "入场与体育体验免费；午餐餐车另购，现场有免费零食和补水。",
+      "summary": "在教练协助下尝试轮椅球类、适应性骑行、皮划艇和攀岩。不同残障人士、家人朋友与初次参加者都受欢迎。",
+      "plan": [
+        "主场 James Kenney Community Center（1720 8th Street）10:00–15:00；各项体育活动有独立时段，不能保证任何时间都能体验全部项目。 骑行与皮划艇在 BORP Adaptive Cycling Center（80 Bolivar Drive）10:00–13:00；攀岩在 Berkeley Ironworks（800 Potter Street）12:00–15:00，需另预留转场时间。",
+        "提前报名强烈建议；交通和攀岩必须登记。无障碍免费接驳连接 North Berkeley BART 与三个场地，名额有限须预留；攀岩另需签免责文件。 其他体验可到场填简表；欢迎无残障社区成员参与或观看。官网未公布统一最低年龄，应按所选运动向主办方确认。",
+        "主场 15:30–17:30 有免费社区庆祝、食物、音乐和游戏；这是另一个时段，不代表白天午餐免费。"
+      ],
+      "audience": [
+        "无障碍运动",
+        "家庭与朋友"
+      ],
+      "officialUrl": "https://www.borp.org/expo/",
+      "sourceLabel": "BORP Adaptive Sports and Recreation",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "weekend",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.borp.org/expo/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "10:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "note": "这里只核对 1720 8th Street 主场 10:00–15:00。80 Bolivar Drive 骑行／皮划艇为 10:00–13:00，800 Potter Street 攀岩为 12:00–15:00，须另安排转场。交通及攀岩必须登记；其他项目建议报名，可现场填表。主场 15:30–17:30 免费社区庆祝另计时段；白天餐车午餐另购。"
+        }
+      }
+    },
+    {
       "id": "berkeley-harvest-festival-2026",
       "title": "Berkeley 免费丰收节与种子交换",
       "startDate": "2026-10-17",
@@ -5418,6 +6260,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "fairfax-kids-halloween-costume-swap-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "region": "north-bay",
+      "city": "Fairfax",
+      "venue": "Fairfax Library · 2097 Sir Francis Drake Boulevard",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-community-swap",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6aa9d3b6ab7a8e0037c21af9",
+      "sourceLabel": "Marin County Free Library",
+      "verifiedAt": "2026-09-29",
+      "title": "Fairfax 儿童万圣节服装交换：免费来挑一套",
+      "dateLabel": "10 月 17 日 · 14:00–16:00",
+      "costLabel": "免费 · 可带儿童服装交换，也可直接来挑选",
+      "summary": "把孩子穿不下的万圣节服装带到 Fairfax Library，或直接来寻找合适的一套。此场专门面向儿童服装，不接收成人或恐怖装扮。",
+      "plan": [
+        "14:00–16:00 在 Fairfax Library 举行；没有服装可带也欢迎到场。",
+        "仅接收适合儿童的服装，不接受恐怖服装或成人服装。",
+        "可选尺寸和数量视现场余量而定，不能保证每一种款式都有。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "服装再利用"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6aa9d3b6ab7a8e0037c21af9",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "14:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "14:00–16:00 儿童服装交换，没有服装可带也欢迎；不接收恐怖装扮或成人服装。限制的是服装种类，不是陪同成人入场；尺寸和库存不保证。"
+        }
       }
     },
     {
@@ -5617,6 +6510,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "point-reyes-halloween-clothing-swap-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "region": "north-bay",
+      "city": "Point Reyes Station",
+      "venue": "Point Reyes Library · 11431 State Route One",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-community-swap",
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/69b1b1b1cd3d863bd924a338",
+      "sourceLabel": "Marin County Free Library",
+      "verifiedAt": "2026-09-29",
+      "title": "Point Reyes 免费万圣节服装交换：成人、儿童与宠物",
+      "dateLabel": "10 月 17 日 · 10:00–12:00",
+      "costLabel": "免费挑选或交换 · 无需捐赠，无最低捐赠数量",
+      "summary": "给闲置万圣节服装找新主人，也为家人或宠物挑选另一套。没有服装可带也能参加，现场按年龄整理，款式和尺寸随余量变化。",
+      "plan": [
+        "活动为 10:00–12:00，地点在 Point Reyes Library。",
+        "接受干净、轻度使用的成人、儿童及宠物万圣节服装；无需捐赠也可挑选。",
+        "现场数量、尺寸与款式不保证，请按馆方安排挑选。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "服装再利用"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/69b1b1b1cd3d863bd924a338",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "10:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "note": "10:00–12:00 免费交换，成人、儿童与宠物服装均可；接受洁净、轻度使用服装，无须捐赠也可挑选。尺寸、款式和余量不保证。"
+        }
       }
     },
     {
@@ -5933,6 +6877,108 @@
       "imageKey": "culture-visit",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-halloween-broadside-printing-oct17-2026",
+      "title": "万圣节活版印刷：体验 1909 年手压印刷机",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10/17（六）14:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "SF Main Library · Book Arts & Special Collections · 100 Larkin Street, San Francisco, CA 94102",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "费用待核：官方活动页未列明入场费；纪念印张限前 100 位。",
+      "summary": "在印刷工作者协助下体验图书馆的 Albion 手压印刷机，制作万圣节纪念印张。",
+      "plan": [
+        "American Printing History Association 的 NorCal 分会提供印刷协助；按现场工作人员指导操作设备。",
+        "活动适合成人，官网正文也欢迎其他年龄参加；儿童操作设备请听从工作人员指导。",
+        "无需预约；可带走的印张只限前 100 位，不保证所有到场者都能领取。"
+      ],
+      "audience": [
+        "印刷与手作",
+        "文化体验"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/17/activity-halloween-broadside-printing-event",
+      "sourceLabel": "San Francisco Public Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "october-library-culture",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/activity-halloween-broadside-printing-event",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "14:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "14:00–16:00 可到场体验；印张限前 100 位，无须预约。活动适合成人，正文也欢迎其他年龄，儿童操作须按工作人员指导；官网未列活动费用。"
+        }
+      }
+    },
+    {
+      "id": "sf-marina-library-open-house-oct17-2026",
+      "title": "Marina 图书馆开放日：音乐、手工与赠书",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10/17（六）11:00–15:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Marina Branch Library · 1890 Chestnut Street, San Francisco, CA 94123",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "费用待核：官方活动页未列明入场费；赠书数量未公布。",
+      "summary": "在分馆和院落听音乐、做书签与徽章，还可参加服装交换、宾果及社区资源活动。",
+      "plan": [
+        "面向家庭与所有年龄；按官网参加规则，可直接到场，无须预约。",
+        "安排包括 Megan Schoenbohm 现场音乐、自行车果昔体验、消防车来访、儿童与宠物服装交换、泡泡及赠书。",
+        "各活动的具体时刻和赠书库存未公布；请以分馆当天安排为准，不保证每人都能领到书。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "社区居民"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/17/celebration-open-house",
+      "sourceLabel": "San Francisco Public Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/celebration-open-house",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "11:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "note": "分馆及院落活动整体为 11:00–15:00，面向所有年龄，可直接到场。各项目时刻与赠书余量未公布；官方未列明活动入场费，费用待核。"
+        }
       }
     },
     {
@@ -7029,6 +8075,57 @@
       }
     },
     {
+      "id": "springline-barks-boos-2026",
+      "kind": "event",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-23",
+      "occurrenceDates": [
+        "2026-10-23"
+      ],
+      "region": "peninsula",
+      "city": "Menlo Park",
+      "venue": "The Glade Dog Park at Springline · 1300 El Camino Real",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-pets",
+      "officialUrl": "https://www.eventbrite.com/e/barks-boos-tickets-2002304500662",
+      "sourceLabel": "Springline Menlo Park",
+      "verifiedAt": "2026-09-29",
+      "title": "Springline Barks & Boos：宠物装扮与免费社区聚会",
+      "dateLabel": "10 月 23 日 · 17:00–19:30",
+      "costLabel": "活动免费，请 RSVP · 有免费食物，饮料与商品另购",
+      "summary": "傍晚带狗到 Springline 听 DJ、看装扮比赛、逛宠物摊位。主办方公布提供免费食物，但菜单、数量和领取限制未说明。",
+      "plan": [
+        "请通过主办方 Eventbrite 页面 RSVP；活动在 The Glade Dog Park。",
+        "仅在狗公园内可脱绳，其他公共活动区域须牵绳；饮料和商家商品另外购买。",
+        "地下停车场前 2 小时免费；活动共 2.5 小时，超过免费时长的费用另查现场标识。"
+      ],
+      "audience": [
+        "养狗家庭",
+        "社区聚会"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.eventbrite.com/e/barks-boos-tickets-2002304500662",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-23",
+          "validThrough": "2026-10-23",
+          "dates": {
+            "2026-10-23": [
+              {
+                "open": "17:00",
+                "close": "19:30"
+              }
+            ]
+          },
+          "note": "17:00–19:30 在 The Glade Dog Park 举行，主办方要求 RSVP。免费食物数量未公布，饮料与商品另购；仅狗公园内可脱绳。停车仅前 2 小时免费，不包含整场 2.5 小时。"
+        }
+      }
+    },
+    {
       "id": "stanford-football-nc-state-2026",
       "title": "Stanford 橄榄球主场对 NC State",
       "startDate": "2026-10-23",
@@ -7287,6 +8384,57 @@
       "imageKey": "autumn-neighbors",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "mountain-view-monster-bash-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "occurrenceDates": [
+        "2026-10-24"
+      ],
+      "region": "south-bay",
+      "city": "Mountain View",
+      "venue": "Rengstorff Park · 201 S Rengstorff Avenue",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://www.mountainview.gov/our-city/departments/community-services/special-events/monster-bash",
+      "sourceLabel": "City of Mountain View",
+      "verifiedAt": "2026-09-29",
+      "title": "Mountain View Monster Bash：免费万圣节亲子庆典",
+      "dateLabel": "10 月 24 日 · 10:00–14:00",
+      "costLabel": "公众免费参加 · 食品和饮料另购",
+      "summary": "Rengstorff Park 的万圣节庆典有要糖路线、游戏、现场表演与充气游乐区。可穿喜欢的装扮，让全家一起参加上午的社区活动。",
+      "plan": [
+        "活动为 10:00–14:00，适合各年龄；具体游戏和演出按现场安排。",
+        "Food Zone 的食品和饮料另外购买，不包含在免费活动内。",
+        "Community Center 和 Senior Center 停车位有限，市方建议步行或骑车到场。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "万圣节"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.mountainview.gov/our-city/departments/community-services/special-events/monster-bash",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "公园活动窗口为 10:00–14:00，公众免费、适合各年龄，具体演出与游戏另有安排。Food Zone 食品饮料另购；场地停车有限。"
+        }
       }
     },
     {
@@ -7598,6 +8746,57 @@
       }
     },
     {
+      "id": "sf-bay-beats-bandshell-oct24-2026",
+      "title": "Bay Beats 金门公园免费音乐会",
+      "kind": "performance",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "occurrenceDates": [
+        "2026-10-24"
+      ],
+      "dateLabel": "10/24（六）14:00–18:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Golden Gate Bandshell · 75 Hagiwara Tea Garden Dr, San Francisco, CA 94118",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费音乐会；页面未列强制报名要求，座位不保证。",
+      "summary": "在金门公园露天音乐台听 Bay Beats 本地音乐人现场演出，适合与朋友安排一个音乐下午。",
+      "plan": [
+        "已公布艺人包括 Frankie Maston、Skip The Needle、Spencer Noble 和 William Johnston’s Extravagant Superband。",
+        "地点是 Golden Gate Bandshell，不是 Main Library；按音乐台地址规划抵达。",
+        "主办方仍在补充节目详情；各艺人的开演时刻及现场安排以最新公告为准。"
+      ],
+      "audience": [
+        "音乐爱好者",
+        "朋友结伴"
+      ],
+      "officialUrl": "https://illuminate.org/event/bay-beats-at-the-bandshell-october-24/",
+      "sourceLabel": "Illuminate",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://illuminate.org/event/bay-beats-at-the-bandshell-october-24/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "14:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "免费音乐会的整体窗口为 14:00–18:00；地点为 Golden Gate Bandshell。各艺人的具体开演时刻尚未列明，座位和现场安排未确认。"
+        }
+      }
+    },
+    {
       "id": "sf-exploratorium-family-science-oct24-2026",
       "title": "Exploratorium 家庭科学日：蝴蝶手作与乐团排练",
       "startDate": "2026-10-24",
@@ -7626,6 +8825,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-financial-planning-day-oct24-2026",
+      "title": "Financial Planning Day：免费财务讲座与一对一咨询",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "occurrenceDates": [
+        "2026-10-24"
+      ],
+      "dateLabel": "10/24（六）10:00–17:00；部分讲座同步 Zoom",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "SF Main Library · 100 Larkin Street, San Francisco, CA 94102",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "主办方报名票价为 $0；免费 CFP 咨询需预留名额，现场候补不保证接待。",
+      "summary": "参加投资、税务、房产传承与预算主题讲座，也可预约 CFP 专业人士的一对一咨询。",
+      "plan": [
+        "线下讲座在 Koret Auditorium，无须预约、座位先到先得；参加 Zoom 直播须按具体讲座报名。 官网活动页的 Register 按钮通往免费预约页面；先选讲座或咨询，再确认参加方式。",
+        "一对一咨询在 Main Library 的 Latino/Hispanic Meeting Room；预约于 10/22（周四）午夜截止，现场到访可候补但不保证有咨询时段。",
+        "投资讲座 10:15–11:45；房产税与代际转移 11:55–12:35；税务更新 12:45–14:15；经济公平资源 14:25–15:05；预算讲座 15:15–16:45。"
+      ],
+      "audience": [
+        "成人",
+        "实用生活"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/24/workshops-financial-planning-day",
+      "sourceLabel": "San Francisco Public Library",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/24/workshops-financial-planning-day",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "10:00–17:00 为整日活动窗口，不代表已预约咨询。线下讲座先到先得，Zoom 须报名；一对一咨询预约于 10/22 午夜截止，现场候补不保证接待。各讲座另有场次，请先选具体节目；主办方报名票价为 $0。"
+        }
       }
     },
     {
@@ -7754,6 +9004,57 @@
       "imageKey": "garden-walk",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "ameswell-barks-boos-2026",
+      "kind": "event",
+      "startDate": "2026-10-25",
+      "endDate": "2026-10-25",
+      "occurrenceDates": [
+        "2026-10-25"
+      ],
+      "region": "south-bay",
+      "city": "Mountain View",
+      "venue": "The Ameswell Hotel · 800 Moffett Boulevard",
+      "category": "family",
+      "cost": "free",
+      "imageKey": "refresh-pets",
+      "officialUrl": "https://www.theameswellhotel.com/experiences/happenings/barks-boos/",
+      "sourceLabel": "The Ameswell Hotel",
+      "verifiedAt": "2026-09-29",
+      "title": "Ameswell Barks & Boos：宠物巡游、装扮与市集",
+      "dateLabel": "10 月 25 日 · 11:00–14:00",
+      "costLabel": "入场免费 · 建议领免费到场票，装扮比赛须另行登记",
+      "summary": "在酒店户外场地逛本地摊位、看宠物巡游与装扮比赛，也可认识 Pets In Need 带来的待领养犬只。奖品属于获胜者，购物和餐饮另付。",
+      "plan": [
+        "观看无需票，但主办方建议领取免费到场票；想参加服装比赛须在 10 月 16 日前单独登记，名额有限。",
+        "宠物全程牵绳；停车前 3 小时免费，之后按 $10/天收费。",
+        "宠物巡游为 12:00–12:30，获奖公布为 12:30–13:00；领养费用和资格向 Pets In Need 核对。"
+      ],
+      "audience": [
+        "养狗家庭",
+        "宠物与市集"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.theameswellhotel.com/experiences/happenings/barks-boos/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-25",
+          "validThrough": "2026-10-25",
+          "dates": {
+            "2026-10-25": [
+              {
+                "open": "11:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "11:00–14:00 为户外活动窗口；观看无须票，免费到场票为建议，服装比赛须在 10/16 前另行登记。巡游 12:00–12:30，颁奖 12:30–13:00；宠物须牵绳。停车前 3 小时免费，之后 $10/天，餐饮与购物另付。"
+        }
       }
     },
     {
@@ -8787,6 +10088,56 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "stanford-halloween-concert-2026",
+      "kind": "performance",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-30",
+      "occurrenceDates": [
+        "2026-10-30"
+      ],
+      "region": "peninsula",
+      "city": "Stanford",
+      "venue": "Dinkelspiel Auditorium · 471 Lagunita Drive",
+      "category": "culture",
+      "cost": "mixed",
+      "imageKey": "refresh-music",
+      "officialUrl": "https://events.stanford.edu/event/2026-halloween-concert",
+      "sourceLabel": "Stanford University",
+      "verifiedAt": "2026-09-29",
+      "title": "Stanford 万圣节音乐会：交响乐与管乐团同台",
+      "dateLabel": "10 月 30 日 · 19:30–21:00",
+      "costLabel": "公众 $32；65+ 或外校学生 $27；Stanford 学生凭证免费",
+      "summary": "Stanford 交响乐团与管乐团带来万圣节主题夜场，观众可穿装扮参加。学生免费票和公众购票的条件不同，出发前按自己的票种安排。",
+      "plan": [
+        "演出为 19:30–21:00；公众 $32，65 岁及以上及非 Stanford 学生 $27，已含每票 $4 网上／电话手续费。",
+        "Stanford University 学生一证一张免费票，开演前一小时在场地开始发放；不代表向所有观众免费。",
+        "9 月 29 日核对时，官网列门票即将开放、曲目待公布；通过官方页确认开售和最新节目。"
+      ],
+      "audience": [
+        "音乐爱好者",
+        "学生优惠"
+      ],
+      "planning": {
+        "admissionUsd": 32,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://events.stanford.edu/event/2026-halloween-concert",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-30",
+          "validThrough": "2026-10-30",
+          "sessions": [
+            {
+              "date": "2026-10-30",
+              "start": "19:30",
+              "end": "21:00"
+            }
+          ],
+          "note": "19:30–21:00 固定音乐会。规划采用公众票 $32；65 岁以上或非 Stanford 学生 $27，均含网上／电话每票 $4 手续费。Stanford 学生一证一张免费票，开演前一小时到场领取；不能自动套用学生资格。核查时门票尚待开放，须再确认。"
+        }
       }
     },
     {
