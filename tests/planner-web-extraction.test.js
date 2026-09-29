@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { extractWebCandidates, validateExtractedCandidates } = require('../lib/plannerWebExtraction');
+const { extractWebCandidates, validateExtractedCandidates, citedNameFallback } = require('../lib/plannerWebExtraction');
 const { requestSearch, extractSearchResult } = require('../lib/plannerWebSearch');
 
 const ANSWER = "Gott's Roadside at San Francisco Ferry Building has regular Saturday hours of 10:00 AM to 10:00 PM; temporary changes still need checking. [1]";
@@ -30,11 +30,51 @@ test('uncited, changed, mismatched or invented evidence cannot create a field or
     { ...valid, name: { ...valid.name, evidenceQuote: ANSWER.replace('[1]', '') } },
     { ...valid, name: { ...valid.name, evidenceQuote: ANSWER.replace('Saturday', 'Sunday') } },
     { ...valid, name: { ...valid.name, evidenceQuote: 'Official location [1]' } },
+    { ...valid, name: { ...valid.name, text: 'Official location', evidenceQuote: 'Official location [1]' } },
     { ...valid, coordinates: { lat: 1, lng: 2 } },
   ];
   assert.deepEqual(validateExtractedCandidates({ candidates: bad }, result), []);
   const [card] = validateExtractedCandidates({ candidates: [{ ...valid, city: fact('旧金山'), timeSummary: fact('Open on October 3 from 10 AM to 10 PM'), priceSummary: fact('Free admission') }] }, result);
   assert.equal(card.city, null); assert.equal(card.timeSummary, null); assert.equal(card.priceSummary, null);
+});
+
+test('name evidence can be reconstructed from exact answer text but not a different citation or place section', () => {
+  const fixture = require('./fixtures/web-search-gotts-location-live.json');
+  const cards = validateExtractedCandidates({ candidates: [{ ...record(), name: { text: "Gott's Roadside", evidenceQuote: "Gott's Roadside [2]", sourceNumber: 2 } }] }, fixture);
+  assert.equal(cards[0].name, "Gott's Roadside", 'the quote is reconstructed from the real contiguous answer, not accepted as supplied');
+  const other = { answer: "Gott's Roadside is located at 1 Ferry Building.\n\nOther Cafe is located at 2 Main Street. [1]", sources: result.sources };
+  assert.equal(validateExtractedCandidates({ candidates: [{ name: { text: "Gott's Roadside", evidenceQuote: 'made up', sourceNumber: 1 } }] }, other).length, 0);
+  assert.deepEqual(citedNameFallback(other).map(row => row.name), ['Other Cafe']);
+  const heading = { answer: "Gott's Roadside is open today.\n\n## Another place\nIts address is unknown. [1]", sources: result.sources };
+  assert.deepEqual(citedNameFallback(heading), []);
+});
+
+test('original production answers yield a cited name card with no inferred hours, price, city or address', () => {
+  const fixtures = [require('./fixtures/web-search-gotts-open-live.json'), require('./fixtures/web-search-gotts-location-live.json')];
+  for (const fixture of fixtures) {
+    const cards = citedNameFallback(fixture);
+    assert.equal(cards.length, 1);
+    assert.equal(cards[0].name, "Gott's Roadside at the San Francisco Ferry Building");
+    assert.deepEqual(cards[0].sourceUrls, [fixture.sources[1].url]);
+    for (const field of ['city', 'summary', 'timeSummary', 'priceSummary']) assert.equal(cards[0][field], null);
+    assert.equal('address' in cards[0], false);
+  }
+  const short = { answer: "[1]\n\nGott's Roadside is located at 1 Ferry Building, #6, San Francisco, CA 94111. Their regular operating hours are:\n\n- Sunday to Wednesday: 10:00 AM – 9:00 PM\n- Thursday to Saturday: 10:00 AM – 10:00 PM\n\nFor more information, you can visit their official website at gotts.com. [2]", sources: fixtures[1].sources };
+  assert.equal(citedNameFallback(short)[0].name, "Gott's Roadside");
+  for (const answer of ['[1]', 'The restaurant is located at 1 Main Street. [1]', 'You should visit a waterfront restaurant. [1]', "Gott's Roadside is located at 1 Ferry Building.", "Gott's Roadside is open today. [9]"]) {
+    assert.deepEqual(citedNameFallback({ answer, sources: result.sources }), [], answer);
+  }
+});
+
+test('a production-shaped cited name card requires no extra formatter call', async () => {
+  const fixture = require('./fixtures/web-search-gotts-location-live.json');
+  const text = fixture.answer.split('\n\nBAYLINK verification reminder:')[0];
+  const annotations = [...text.matchAll(/\[(\d+)\]/g)].map(match => ({ type: 'url_citation', ...fixture.sources[Number(match[1]) - 1], start_index: match.index, end_index: match.index + match[0].length }));
+  const raw = { status: 'completed', output: [{ type: 'web_search_call', status: 'completed', action: { type: 'search' } }, { type: 'message', role: 'assistant', content: [{ type: 'output_text', text, annotations }] }] };
+  let extractions = 0;
+  const response = await requestSearch({ query: "Gott's Roadside", locale: 'en' }, { ai: async () => raw, extractAi: async () => { extractions++; throw Error('not needed'); }, lookup });
+  assert.equal(response.candidateStatus, 'ready'); assert.equal(response.candidates.length, 1); assert.equal(extractions, 0);
+  assert.equal(response.candidates[0].name, "Gott's Roadside at the San Francisco Ferry Building");
 });
 
 test('extraction uses one bounded text-only JSON request with an independent chat model', async () => {

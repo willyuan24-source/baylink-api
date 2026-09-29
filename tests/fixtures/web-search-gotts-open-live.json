@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "responseMode": "web",
+  "checkedAt": "2026-09-29T18:30:03.259Z",
+  "answer": "[1]\n\nGott's Roadside at the San Francisco Ferry Building is open on October 3, 2026, from 10:00 AM to 10:00 PM. Regular hours are Sunday to Wednesday from 10:00 AM to 9:00 PM, and Thursday to Saturday from 10:00 AM to 10:00 PM. [2]\n\nThe restaurant offers a spacious open-air patio with communal seating, high chairs, and ADA-accessible seating. It's located at 1 Ferry Building #6, San Francisco, CA 94111. For more information, you can contact them at 415-318-3423 or visit their website at gotts.com. [2]\n\nBAYLINK verification reminder: Confirm actual opening hours, ticket availability and temporary changes for your selected date 2026-10-03 with the sources; regular weekly hours do not guarantee opening that day. The times above are web-search results, not BAYLINK's confirmation for that day.",
+  "sources": [
+    {
+      "title": "Gott's Roadside at San Francisco Ferry Building",
+      "url": "https://www.google.com/maps/search/Gott%27s+Roadside+San+Francisco+Ferry+Building?utm_source=openai"
+    },
+    {
+      "title": "Hours & Location - Gott's Ferry Building",
+      "url": "https://www.gotts.com/location/sfferrybuilding/?utm_source=openai"
+    }
+  ],
+  "cached": false
+}
