@@ -104,7 +104,7 @@ test('unsafe, forged, oversized or unexpected candidate details cannot be promot
 test('candidate protocol is bounded and malformed blocks preserve the cited answer without guessed cards', async () => {
   const rows = Array.from({ length: 7 }, (_, i) => ({ name: `Venue ${i} [venue]`, city: null, summary: null, timeSummary: null, priceSummary: null }));
   const result = await extractSearchResult(structured([rows[0], ...rows], { '[venue]': 'https://venue.org/' }), { lookup, now: () => NOW });
-  assert.equal(result.candidates.length, 5); assert.equal(new Set(result.candidates.map(row => row.id)).size, 5);
+  assert.equal(result.candidates.length, 3); assert.equal(new Set(result.candidates.map(row => row.id)).size, 3);
   for (const broken of ['[broken JSON]', '[{"name":"Unfinished']) {
     const response = raw(); response.output[1].content[0].text += `\nBAYLINK_CANDIDATES_V1\n${broken}${broken.endsWith(']') ? '\nEND_BAYLINK_CANDIDATES_V1' : ''}`;
     const fallback = await extractSearchResult(response, { lookup, now: () => NOW });
@@ -117,6 +117,7 @@ test('provider request uses Responses web_search once, low context and no persis
   let request;
   const input = validateSearchInput({ query: 'SF museums', locale: 'en' });
   const result = await requestSearch(input, { config: { OPENAI_API_KEY: 'isolated-test-placeholder' }, lookup, now: () => NOW,
+    extractAi: async () => ({ candidates: [] }),
     fetchImpl: async (url, options) => { request = { url, body: JSON.parse(options.body), signal: options.signal }; return { ok: true, json: async () => raw() }; },
   });
   assert.equal(request.url, 'https://api.openai.com/v1/responses');
@@ -128,11 +129,8 @@ test('provider request uses Responses web_search once, low context and no persis
   assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
   assert.match(request.body.instructions, /temporary changes.*official site/);
   assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
-  assert.match(request.body.instructions, /BAYLINK_CANDIDATES_V1/);
-  assert.match(request.body.instructions, /at most two short sentences/);
-  assert.match(request.body.instructions, /Prefer only 2 concise records/);
+  assert.equal(request.body.text, undefined, 'the reliable search call must not require unsupported structured output');
   assert.equal(request.body.max_output_tokens, 1800);
-  assert.match(request.body.instructions, /Every non-null string must contain its own real inline search citation/);
   assert.equal(result.responseMode, 'web');
 });
 test('dated searches always append an application reminder in the requested language even if the model omits it', async () => {
@@ -149,9 +147,9 @@ test('dated searches always append an application reminder in the requested lang
   };
   for (const [locale, reminder] of Object.entries(reminders)) {
     const result = await requestSearch({ query: 'Gott’s hours', date: '2026-10-03', locale }, options);
-    assert.deepEqual(result, { ...extracted, answer: `${extracted.answer}\n\n${reminder}` });
+    assert.deepEqual(result, { ...extracted, candidateStatus: 'unavailable', answer: `${extracted.answer}\n\n${reminder}` });
   }
-  assert.deepEqual(await requestSearch({ query: 'Gott’s hours', locale: 'en' }, options), extracted);
+  assert.deepEqual(await requestSearch({ query: 'Gott’s hours', locale: 'en' }, options), { ...extracted, candidateStatus: 'unavailable' });
 });
 test('same query cache preserves original checkedAt and same in-flight query spends only one call', async t => {
   let calls = 0; let time = NOW;
@@ -167,13 +165,30 @@ test('same query cache preserves original checkedAt and same in-flight query spe
 });
 test('candidate cards use the same provider call and quota reservation and survive response caching', async t => {
   let calls = 0;
-  const { request, models } = await fixture(t, { ai: async () => { calls++; return structured([{ name: 'Cited cafe [cafe]', city: null, summary: null, timeSummary: null, priceSummary: null }], { '[cafe]': 'https://cafe.org/' }); } });
+  const { request, models } = await fixture(t, { ai: async () => { calls++; return structured([{ name: 'Cited cafe [cafe]', city: null, summary: null, timeSummary: null, priceSummary: null }], { '[cafe]': 'https://cafe.org/' }); }, extractAi: async () => assert.fail('existing valid candidates must skip extraction') });
   const first = await request({ query: 'Find a local cafe', date: '2026-10-03', locale: 'en' });
   const cached = await request({ query: 'Find a local cafe', date: '2026-10-03', locale: 'en' });
   assert.equal(first.status, 200); assert.equal(first.data.candidates[0].name, 'Cited cafe');
   assert.match(first.data.answer, /BAYLINK verification reminder:/);
   assert.deepEqual(cached.data, { ...first.data, cached: true });
   assert.equal(calls, 1); assert.equal(models.PostTranslationQuota.rows[0].count, 1);
+});
+test('one search plus one extraction is deduplicated, cached and charged as one search quota', async t => {
+  let searches = 0; let extractions = 0;
+  const response = raw(); const part = response.output[1].content[0];
+  part.text = 'Café Harbor in San Francisco serves breakfast. [source]';
+  part.annotations[0].start_index = part.text.indexOf('[source]'); part.annotations[0].end_index = part.text.length;
+  const { request, models } = await fixture(t, { ai: async () => { searches++; return response; }, extractAi: async payload => {
+    extractions++; await new Promise(resolve => setTimeout(resolve, 20));
+    const { answer } = JSON.parse(payload.messages[1].content);
+    return { candidates: [{ name: { text: 'Café Harbor', evidenceQuote: answer, sourceNumber: 1 }, city: null, summary: null, timeSummary: null, priceSummary: null }] };
+  } });
+  const [first, parallel] = await Promise.all([request({ query: 'Find a cafe' }), request({ query: 'Find a cafe' })]);
+  assert.equal(first.status, 200); assert.equal(parallel.status, 200); assert.equal(first.data.candidateStatus, 'ready');
+  assert.equal(first.data.candidates[0].name, 'Café Harbor');
+  const cached = await request({ query: 'Find a cafe' });
+  assert.deepEqual(cached.data, { ...first.data, cached: true });
+  assert.equal(searches, 1); assert.equal(extractions, 1); assert.equal(models.PostTranslationQuota.rows[0].count, 1);
 });
 test('atomic global daily allowance is shared across instances and failed calls consume their reservation', async t => {
   const models = createMemoryModels(); let calls = 0;
@@ -199,9 +214,11 @@ test('provider and body timeouts are bounded and never produce pretend results',
   await assert.rejects(requestSearch({ query: 'SF museums' }, { config: { OPENAI_API_KEY: 'fixture' }, timeoutMs: 20, fetchImpl: async () => ({ ok: true, json: () => new Promise(() => {}) }) }), error => error.status === 503 || /timed out/.test(error.message));
 });
 test('application registers the real web route with isolated provider and DNS dependencies', async t => {
-  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-tests' }, models: createMemoryModels(), ai: { plannerWebSearch: async () => raw() }, plannerWebLookup: lookup, plannerNow: () => NOW });
+  let extractions = 0;
+  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-tests' }, models: createMemoryModels(), ai: { plannerWebSearch: async () => raw(), plannerWebExtract: async () => { extractions++; return { candidates: [] }; } }, plannerWebLookup: lookup, plannerNow: () => NOW });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => app.io.close(resolve)));
   const response = await fetch(`http://127.0.0.1:${app.server.address().port}/api/planner/web-search`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: 'SF museums' }) });
-  assert.equal(response.status, 200); assert.equal((await response.json()).responseMode, 'web');
+  const data = await response.json();
+  assert.equal(response.status, 200); assert.equal(data.responseMode, 'web'); assert.equal(data.candidateStatus, 'none'); assert.equal(extractions, 1);
 });
