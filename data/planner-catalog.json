@@ -1165,6 +1165,57 @@
       }
     },
     {
+      "verifiedAt": "2026-09-29",
+      "kind": "event",
+      "id": "sf-nexus-party-oct1-2026",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-01",
+      "occurrenceDates": [
+        "2026-10-01"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Yerba Buena Center for the Arts · 701 Mission Street",
+      "category": "culture",
+      "cost": "paid",
+      "imageKey": "september-edition",
+      "officialUrl": "https://www.moadsf.org/event/moad-ybca-present-the-nexus-party-the-official-party-of-sf-bay-area-black-art-week",
+      "sourceLabel": "Museum of the African Diaspora / YBCA",
+      "title": "NEXUS Party：湾区黑人艺术周官方派对",
+      "dateLabel": "10 月 1 日 · 20:00–23:30",
+      "costLabel": "公众 $25 · MoAD 会员 $20，会员须验证资格",
+      "summary": "MoAD 与 YBCA 联合举办 NEXUS Party，由 DJ Kream 与 DJ Jihaari 带来音乐与舞蹈之夜。这是位于 YBCA 的单场派对，不是整个跨城市艺术周的通票。",
+      "plan": [
+        "活动为 20:00–23:30，前往 YBCA 的 701 Mission Street，不要误到 MoAD 的常设馆址。",
+        "公众票 $25；MoAD 会员票 $20，须使用会员邮箱或会员编号登录。下单前核对剩余票量、附加费及入场年龄条件，不能默认每位同行者享有会员价。",
+        "艺术周主站包含 2025 回顾和旧链接，本条只采用 2026 年 10 月 1 日这场官方活动的时间与票价；不承诺含饮品、餐食或其他展馆门票。"
+      ],
+      "audience": [
+        "音乐与夜生活",
+        "艺术爱好者"
+      ],
+      "planning": {
+        "admissionUsd": 25,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.moadsf.org/event/moad-ybca-present-the-nexus-party-the-official-party-of-sf-bay-area-black-art-week",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-01",
+          "validThrough": "2026-10-01",
+          "dates": {
+            "2026-10-01": [
+              {
+                "open": "20:00",
+                "close": "23:30"
+              }
+            ]
+          },
+          "note": "20:00–23:30 为 YBCA 单场派对；公众票 $25，会员 $20 须登录验证。规划按公众票计算，附加费、剩余票量及年龄条件待核，不含其他艺术周活动。"
+        }
+      }
+    },
+    {
       "id": "sf-symphony-fleming-strauss-2026",
       "title": "芮妮·弗莱明演唱施特劳斯",
       "startDate": "2026-10-01",
@@ -1678,6 +1729,64 @@
       }
     },
     {
+      "id": "san-jose-hellflowers-free-concert-oct2-2026",
+      "kind": "performance",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-02",
+      "occurrenceDates": [
+        "2026-10-02"
+      ],
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "Lake Cunningham Skate Park · 2305 South White Road",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "autumn-neighbors",
+      "title": "San Jose 免费摇滚夜：The Hellflowers 与 Knights of Molino",
+      "dateLabel": "10 月 2 日 · 18:00–22:00；18:30 开始演出",
+      "costLabel": "音乐会、停车与滑板免费 · 餐车食品另购",
+      "summary": "Fridays at the Lake 在 Lake Cunningham 滑板公园安排两支朋克乐队演出。主办方欢迎家庭参加，也可带滑板，在音乐与户外活动之间自由选择。",
+      "plan": [
+        "官方活动页列 18:00–22:00，18:00 开门、18:30 开始演出。各乐队的单独演出时间与结束时刻未列明，不把整个开放窗口当作单支乐队时长。",
+        "主办方明确音乐会、停车与滑板免费；食品餐车另外消费。是否仍需领取免费到场票及现场容量，请查看官方活动页。",
+        "活动适合家庭；参加滑板须遵守公园现场设备与安全规则。不能根据免费滑板推断包含器材借用、教学或全部护具。"
+      ],
+      "audience": [
+        "现场音乐",
+        "亲子家庭",
+        "滑板爱好者"
+      ],
+      "officialUrl": "https://www.eventbrite.com/e/the-hellflowers-and-knights-of-molino-free-concert-tickets-1996056752479",
+      "sourceLabel": "Filco Events · Fridays at the Lake",
+      "verifiedAt": "2026-09-29",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.eventbrite.com/e/the-hellflowers-and-knights-of-molino-free-concert-tickets-1996056752479",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-02",
+          "validThrough": "2026-10-02",
+          "dates": {
+            "2026-10-02": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-02",
+              "start": "18:30"
+            }
+          ],
+          "note": "活动窗口18:00–22:00，18:00 开门、18:30 开始演出；单独乐队场次及演出结束时间未公布，不把22:00写成已确认的演出结束时刻。音乐会、停车与滑板免费，餐车食品另付；器材借用与教学未确认包含。"
+        }
+      }
+    },
+    {
       "id": "san-jose-sofa-pocket-market-2026",
       "title": "San José 花园小市集：艺术、手作与预约餐券",
       "startDate": "2026-10-02",
@@ -1955,6 +2064,76 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "foster-city-water-lantern-festival-2026",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "occurrenceDates": [
+        "2026-10-03",
+        "2026-10-04"
+      ],
+      "region": "peninsula",
+      "city": "Foster City",
+      "venue": "Leo J. Ryan Park · 650 Shell Blvd",
+      "category": "family",
+      "cost": "mixed",
+      "imageKey": "water-lantern-festival-promo",
+      "officialUrl": "https://www.waterlanternfestival.com/events/san-francisco",
+      "sourceLabel": "Water Lantern Festival / City of Foster City",
+      "verifiedAt": "2026-09-29",
+      "title": "San Francisco 水灯节：Foster City 湖畔两晚",
+      "dateLabel": "10 月 3、4 日 · 夜间水灯活动 17:00–21:00",
+      "costLabel": "入场免费 · 制作与放灯体验须购票，餐饮另付；所选日期票价待确认",
+      "summary": "名称为 San Francisco Water Lantern Festival，实际在半岛 Foster City 的 Leo J. Ryan Park 举行。可以沿湖听音乐、逛餐车；想制作并放水灯，需要另购对应日期的体验票。",
+      "plan": [
+        "两天均为 17:00–21:00；19:30 制作水灯，20:00–21:00 放灯。购票时分别选择 10/3 或 10/4，不把单日票当作两日通票。",
+        "市府公告列明入场免费，水灯体验与放灯须购票：https://www.fostercity.org/Calendar.aspx?EID=1142 。主办方 FAQ 另写 8 岁以下免费且不需票、8 岁及以上需票；免费儿童入场不代表每人获赠一盏水灯，具体资格及套装内容须在所选日期售票页确认。",
+        "页面同时列有多种票档与套装，不把早鸟展示价当作当前可买价格；结账前核对日期、票价、附加费和所含用品。餐饮另购；雷电、强风等严重天气可能导致延期或改期，出发前查看主办方通知。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "艺术手作"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.waterlanternfestival.com/events/san-francisco",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-03",
+          "validThrough": "2026-10-04",
+          "dates": {
+            "2026-10-03": [
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ],
+            "2026-10-04": [
+              {
+                "open": "17:00",
+                "close": "21:00"
+              }
+            ]
+          },
+          "note": "两天均自 17:00 开放入场；规划按 19:30–21:00 的核心体验安排，19:30 制作水灯，20:00–21:00 放灯。购票须选定其中一天，不默认通用两日。市府列明免费入场，制作与放灯体验须购票，不能视作免费完整体验；所选日期的票价和附加费待确认，餐饮另购。主办方 FAQ 另写 8 岁以下免票、8 岁及以上需票，免费儿童入场不保证每人获赠水灯，具体资格与套装内容须查看售票页。严重天气可能延期或改期，出发前核对通知。",
+          "sessions": [
+            {
+              "date": "2026-10-03",
+              "start": "19:30",
+              "end": "21:00"
+            },
+            {
+              "date": "2026-10-04",
+              "start": "19:30",
+              "end": "21:00"
+            }
+          ]
+        }
       }
     },
     {
@@ -2330,6 +2509,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-foodwise-latine-makers-oct3-2026",
+      "title": "Foodwise Latine Makers：渡轮大厦拉丁裔创作者市集",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "occurrenceDates": [
+        "2026-10-03"
+      ],
+      "dateLabel": "10/3（六）09:00–14:00；烹饪演示分别在 11:00、12:00 开始",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Embarcadero Ferry Terminal Plaza (south of the Ferry Building) / Ferry Plaza Farmers Market",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "免费入场、面向公众；餐饮及商品另购。",
+      "summary": "在渡轮大厦南侧广场与农夫市集认识湾区拉丁裔创作者，逛食品和手工摊位，观看烹饪演示。这是 10/3 的特别主题活动。",
+      "plan": [
+        "市集开放时间为 09:00–14:00，可在此期间逛摊位；免费入场不代表食品、饮品或手工作品免费。",
+        "11:00 为 Amalia Avedano（Tonantzin）烹饪演示，12:00 为 Raquel Goldman（Norte54）烹饪演示，地点均为渡轮大厦正前方的 Foodwise Classroom。演示结束时间未公布；想观看请按具体开始时刻安排。",
+        "活动范围包括渡轮大厦南侧 Embarcadero Ferry Terminal Plaza 与 Ferry Plaza Farmers Market；烹饪演示在大厦正前方，请为不同区域间步行留时间。官网未列强制预约要求，现场安排以主办方通知为准。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "美食与手作"
+      ],
+      "officialUrl": "https://foodwise.org/events/pop-ups-on-the-plaza-celebrating-latine-makers/",
+      "sourceLabel": "Foodwise",
+      "verifiedAt": "2026-09-29",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/events/pop-ups-on-the-plaza-celebrating-latine-makers/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-03",
+          "validThrough": "2026-10-03",
+          "dates": {
+            "2026-10-03": [
+              {
+                "open": "09:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "09:00–14:00 为免费开放市集窗口，餐饮与商品另购。11:00 为 Amalia Avedano（Tonantzin）演示，12:00 为 Raquel Goldman（Norte54）演示，均在渡轮大厦正前方 Foodwise Classroom，结束时刻未公布；不是必须参加的整场固定场次。市集还覆盖大厦南侧 Embarcadero Ferry Terminal Plaza，跨区域需留步行时间。官网未列强制预约要求。"
+        }
       }
     },
     {
@@ -3253,6 +3483,57 @@
         "setting": "indoor",
         "minAge": 18,
         "reservation": "required"
+      }
+    },
+    {
+      "id": "woodside-djerassi-free-art-hike-oct5-2026",
+      "kind": "event",
+      "startDate": "2026-10-05",
+      "endDate": "2026-10-05",
+      "occurrenceDates": [
+        "2026-10-05"
+      ],
+      "region": "peninsula",
+      "city": "Woodside",
+      "venue": "Djerassi Resident Artists Program · 2325 Bear Gulch Road",
+      "category": "outdoors",
+      "cost": "free",
+      "imageKey": "garden-walk",
+      "title": "Woodside Djerassi 免费艺术徒步：预约进入山间创作园区",
+      "dateLabel": "10 月 5 日 · 10:00–12:00，须预约",
+      "costLabel": "此场免费 · 须提前预约，剩余名额未确认",
+      "summary": "在导览带领下认识 Djerassi 艺术家驻留园区的自然环境与户外艺术。这是官网明确列出的十月免费场，不能直接到访，也不代表其他秋季徒步日期免费。",
+      "plan": [
+        "10/5 单独列出的时间为 10:00–12:00；官网一般徒步介绍另写约 3 小时、3.5 英里，不能直接套用到这场两小时免费行程，实际路线与强度须向主办方确认。",
+        "官网列报名开放，但未核实实时余位；通过活动页 Register 预约。园区平时不向公众开放，没有预约、邀请或事先安排不能自行进入。",
+        "官方地址为 2325 Bear Gulch Road, Woodside，所有徒步在入口闸门集合。山路狭窄、双向通行，移动信号有限；按官方路线准备，不能用 Woodside 城市地图点导航到场。",
+        "出行说明：https://djerassi.org/about/directions/ 。本条只收录 10/5 免费场；最低年龄、无障碍条件和剩余名额未确认。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "徒步爱好者"
+      ],
+      "officialUrl": "https://djerassi.org/events/fall-art-hikes/",
+      "sourceLabel": "Djerassi Resident Artists Program",
+      "verifiedAt": "2026-09-29",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://djerassi.org/events/fall-art-hikes/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-05",
+          "validThrough": "2026-10-05",
+          "sessions": [
+            {
+              "date": "2026-10-05",
+              "start": "10:00",
+              "end": "12:00"
+            }
+          ],
+          "note": "10/5 免费导览固定为10:00–12:00，须预约；官网一般介绍的3小时、3.5英里不自动适用于此场。剩余名额、年龄和无障碍条件未确认。所有徒步在2325 Bear Gulch Road入口闸门集合，场地非公众随到随进，不使用Woodside城市参考点代替入口。"
+        }
       }
     },
     {
@@ -5171,6 +5452,57 @@
       }
     },
     {
+      "verifiedAt": "2026-09-29",
+      "kind": "event",
+      "id": "sf-inner-sunset-flea-oct11-2026",
+      "startDate": "2026-10-11",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-11"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Irving Street · 9th Avenue–11th Avenue",
+      "category": "family",
+      "cost": "unknown",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://sunsetmercantilesf.com/innersunsetflea/",
+      "sourceLabel": "Sunset Mercantile / Inner Sunset Park Neighbors",
+      "title": "Inner Sunset Flea：Tricks, Treats & Treasures 秋日市集",
+      "dateLabel": "10 月 11 日 · 10:00–16:00",
+      "costLabel": "官方列免费亲子活动 · 入场费未单列确认，餐饮购物另付",
+      "summary": "Irving Street 两个街段的秋日市集以 Tricks, Treats & Treasures 为主题，汇集二手与复古商品、手作摊位、社区组织及音乐。适合慢逛，找到喜欢的东西再决定购买。",
+      "plan": [
+        "主办方 2026 日历明确列 10/11，时间为 10:00–16:00；地点以更新后的 Irving Street 9th–11th Avenue 两个街段为准。",
+        "官方说明有免费亲子活动，但未单独列入场费；不把二手商品、食品或主题名称中的 treats 写成人人可领的免费赠品。",
+        "允许牵绳狗，现场没有专用停车场；建议乘公共交通前往，具体节目与摊位以当天安排为准。"
+      ],
+      "audience": [
+        "二手与手作",
+        "社区家庭"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://sunsetmercantilesf.com/innersunsetflea/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-11",
+          "validThrough": "2026-10-11",
+          "dates": {
+            "2026-10-11": [
+              {
+                "open": "10:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "10/11 的市集窗口为 10:00–16:00。主办方列免费亲子活动，入场费未单列确认；食品、二手商品和手作另购，不保证免费糖果或其他赠品。"
+        }
+      }
+    },
+    {
       "id": "sf-italian-heritage-parade-2026",
       "title": "旧金山意大利文化游行：从渔人码头走进 North Beach",
       "startDate": "2026-10-11",
@@ -5633,6 +5965,78 @@
             ]
           },
           "note": "18 岁以上活动开放窗口；具体节目另有时间。Tactile Dome 需另行预约与购票。"
+        }
+      }
+    },
+    {
+      "verifiedAt": "2026-09-29",
+      "kind": "event",
+      "id": "sf-fall-show-oct15-18-2026",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-18",
+      "occurrenceDates": [
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Festival Pavilion, Fort Mason Center · 2 Marina Boulevard",
+      "category": "culture",
+      "cost": "paid",
+      "imageKey": "culture-visit",
+      "officialUrl": "https://sffallshow.org/about/",
+      "sourceLabel": "The San Francisco Fall Show",
+      "title": "San Francisco Fall Show：艺术、古董与设计展",
+      "dateLabel": "10 月 15–17 日 10:30–19:00 · 10 月 18 日 11:00–17:00",
+      "costLabel": "须购展览门票 · 当前票价待确认，讲座另需票",
+      "summary": "Fort Mason 的艺术、古董与设计展以 Métallique Chic 为 2026 主题，集中呈现艺术作品、家具、珠宝与工艺。可以只安排逛展，讲座需另选场次。",
+      "plan": [
+        "10/15–10/17 为 10:30–19:00；10/18 为 11:00–17:00。本条不含 10/14 开幕晚宴。",
+        "展览与讲座分开售票：参加讲座须同时持展览票和对应讲座票；当前可购票档与最终金额在官方售票入口核对：https://sffallshow.org/tickets/ 。",
+        "主办方售票页正文与官网一致列明 10:30 开门，售票平台顶部的 10:00 不用于计划；停车付费，商品另购，门票条款列不退款。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "设计与古董"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://sffallshow.org/about/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-15",
+          "validThrough": "2026-10-18",
+          "dates": {
+            "2026-10-15": [
+              {
+                "open": "10:30",
+                "close": "19:00"
+              }
+            ],
+            "2026-10-16": [
+              {
+                "open": "10:30",
+                "close": "19:00"
+              }
+            ],
+            "2026-10-17": [
+              {
+                "open": "10:30",
+                "close": "19:00"
+              }
+            ],
+            "2026-10-18": [
+              {
+                "open": "11:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "10/15–10/17 开放 10:30–19:00；10/18 为 11:00–17:00。本条排除 10/14 晚宴。门票金额待核，讲座须另有对应票，停车另付；不采用售票页顶部的 10:00。"
         }
       }
     },
@@ -6229,6 +6633,57 @@
       }
     },
     {
+      "id": "daly-city-top-of-the-hill-festival-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "region": "peninsula",
+      "city": "Daly City",
+      "venue": "Mission Street × John Daly Boulevard",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "autumn-neighbors",
+      "title": "Daly City Top of the Hill：免费街区音乐与文化节",
+      "dateLabel": "10 月 17 日 · 12:00–18:00",
+      "costLabel": "全年龄免费入场 · 餐饮与购物另付",
+      "summary": "第三届 Top of the Hill Festival 回到 Mission Street 与 John Daly Boulevard 一带，用现场音乐、文化表演和本地商家摊位连接社区。",
+      "plan": [
+        "市府确认活动为 12:00–18:00；这是整场街庆的开放窗口，各舞台节目时刻请查看主办方更新。",
+        "县政府当年活动说明明确全年龄免费入场。免费入场不代表餐饮、商品或所有附加项目免费。",
+        "活动在 Mission Street 街区，不在 Daly City City Hall；现场人流与道路安排以市府公告为准，具体预约要求未公布。"
+      ],
+      "audience": [
+        "社区居民",
+        "全年龄"
+      ],
+      "officialUrl": "https://www.dalycity.org/1221/Daly-Citys-Top-of-the-Hill-Festival",
+      "sourceLabel": "City of Daly City / County of San Mateo",
+      "verifiedAt": "2026-09-29",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.dalycity.org/1221/Daly-Citys-Top-of-the-Hill-Festival",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "12:00",
+                "close": "18:00"
+              }
+            ]
+          },
+          "note": "12:00–18:00 是街庆整体开放窗口，免费入场；各舞台表演时间未公布，餐饮与购物另付。活动位于 Mission Street 与 John Daly Boulevard，不在市府大楼。"
+        }
+      }
+    },
+    {
       "id": "el-cerrito-garage-sale-2026",
       "title": "El Cerrito 全城庭院旧物市集",
       "startDate": "2026-10-17",
@@ -6786,6 +7241,57 @@
       }
     },
     {
+      "verifiedAt": "2026-09-29",
+      "kind": "event",
+      "id": "sausalito-toast-street-fair-oct17-2026",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "region": "north-bay",
+      "city": "Sausalito",
+      "venue": "Caledonia Street · Pine Street–Bee Street",
+      "category": "culture",
+      "cost": "mixed",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://www.sausalito.gov/departments/parks-and-recreation/events/a-toast-to-sausalito-beer-wine-spirits-festival",
+      "sourceLabel": "City of Sausalito Parks & Recreation",
+      "title": "A Toast to Sausalito：艺术街区节与品饮",
+      "dateLabel": "10 月 17 日 · 13:00–17:00",
+      "costLabel": "街区节免费入场 · 品饮手环 $40／$45／$55，另加手续费",
+      "summary": "Caledonia Street 的艺术街区节欢迎家庭免费入场，现场有音乐、艺术与商家摊位。啤酒、葡萄酒和烈酒品饮为另购手环的付费项目。",
+      "plan": [
+        "13:00–17:00，Caledonia Street 的 Pine Street 至 Bee Street。街区活动适合家庭，不能把品酒资格当成整场仅限成人。",
+        "品饮手环早鸟 $40 至 9/30，常规 $45、当天 $55，均另加手续费；共限量 1,000 个。品饮须按售票条款核对年龄及证件，购买后签免责文件，12:30–16:00 凭二维码领取。",
+        "餐饮与购物另付。市府请求不要携带宠物；网页下半部分仍标示为 2025 的舞蹈课、踩葡萄等安排，不当作已确认的 2026 节目。"
+      ],
+      "audience": [
+        "艺术与市集",
+        "社区家庭"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.sausalito.gov/departments/parks-and-recreation/events/a-toast-to-sausalito-beer-wine-spirits-festival",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "13:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "13:00–17:00 为街区节窗口，入场免费；规划只计免费逛街区，品饮手环与餐饮另付。手环早鸟 $40 至 9/30，常规 $45、当天 $55，另加手续费；2025 节目不可当作 2026 承诺。"
+        }
+      }
+    },
+    {
       "id": "sf-bay-area-science-festival-2026",
       "title": "湾区科学节：到 UCSF 动手做实验",
       "startDate": "2026-10-17",
@@ -6978,6 +7484,50 @@
             ]
           },
           "note": "分馆及院落活动整体为 11:00–15:00，面向所有年龄，可直接到场。各项目时刻与赠书余量未公布；官方未列明活动入场费，费用待核。"
+        }
+      }
+    },
+    {
+      "id": "sf-potrero-hill-festival-oct17-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "20th Street · Wisconsin Street–Missouri Street",
+      "category": "family",
+      "cost": "unknown",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://potrerofestival.com/",
+      "sourceLabel": "Potrero Hill Festival",
+      "verifiedAt": "2026-09-29",
+      "title": "Potrero Hill Festival：秋日街区节",
+      "dateLabel": "10 月 17 日 · 10:00 开始，结束时间待确认",
+      "costLabel": "入场费用未确认 · 餐饮和商品另购",
+      "summary": "20th Street 的 Potrero Hill Festival 将社区音乐、摊位和家庭活动聚在一起。日期和 10:00 开始时间已核对，主办方两个页面对结束时间仍有不同说明。",
+      "plan": [
+        "10/17，20th Street 的 Wisconsin Street 至 Missouri Street；主办方首页列 10:00–17:00，同站赞助 FAQ 列 10:00–16:00，所以暂不保证结束时间。",
+        "出发前核对主办方更新与 FAQ：https://potrerofestival.com/sponsorship-faqq/ 。计划不会把 16:00 或 17:00 自动认作已确认的闭场时间。",
+        "未找到明确的官方入场价；餐饮和商品另购。网页含往年回顾，本条不抄录未独立核对年份的表演阵容。"
+      ],
+      "audience": [
+        "社区家庭",
+        "街区音乐"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://potrerofestival.com/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "note": "已核 10/17 10:00 开始，但主办方首页列 17:00 结束，同站 FAQ 列 16:00；完整时段待核，不据此保证结束时间或生成已确认的访问窗口。入场费未知，餐饮和商品另购。"
         }
       }
     },
@@ -7274,6 +7824,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "verifiedAt": "2026-09-29",
+      "kind": "event",
+      "id": "sf-sunday-streets-excelsior-oct18-2026",
+      "startDate": "2026-10-18",
+      "endDate": "2026-10-18",
+      "occurrenceDates": [
+        "2026-10-18"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Mission Street · Avalon Avenue–Geneva Avenue",
+      "category": "outdoors",
+      "cost": "free",
+      "imageKey": "everyday",
+      "officialUrl": "https://sfrecpark.org/Calendar.aspx?EID=10817",
+      "sourceLabel": "San Francisco Recreation & Parks",
+      "title": "Sunday Streets Excelsior：免费街区运动日",
+      "dateLabel": "10 月 18 日 · 11:00–16:00",
+      "costLabel": "免费参加 · 餐饮与购物另付",
+      "summary": "Mission Street 的 Avalon 至 Geneva 路段迎来 Sunday Streets。SF Rec & Park 的 Mobile Rec 提供街区运动体验，适合把散步和户外活动放进同一天。",
+      "plan": [
+        "官方时段为 11:00–16:00，位置在 Mission Street 的 Avalon Avenue 至 Geneva Avenue；具体项目与排队安排现场确认。",
+        "市府列明免费；餐饮、购物和往返交通不包含在免费活动中。",
+        "Mobile Rec 的通用介绍涵盖多种运动，不代表每个设备都在这场街区活动出现；不承诺现场皮划艇或全部项目。"
+      ],
+      "audience": [
+        "户外散步",
+        "社区家庭"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://sfrecpark.org/Calendar.aspx?EID=10817",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-18",
+          "validThrough": "2026-10-18",
+          "dates": {
+            "2026-10-18": [
+              {
+                "open": "11:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "11:00–16:00 为免费街区活动窗口；具体设备、轮候与现场项目另核，餐饮和购物另付。"
+        }
       }
     },
     {
@@ -8320,6 +8921,58 @@
       "imageKey": "autumn-neighbors",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "fremont-fog-diwali-mela-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "occurrenceDates": [
+        "2026-10-24"
+      ],
+      "region": "east-bay",
+      "city": "Fremont",
+      "venue": "Washington High School · 38442 Fremont Boulevard",
+      "category": "culture",
+      "cost": "paid",
+      "imageKey": "autumn-neighbors",
+      "title": "Fremont FOG Diwali Mela：排灯节表演与市集",
+      "dateLabel": "10 月 24 日 · 10:00–19:00",
+      "costLabel": "付费入场 · 核查时早鸟 $4 + $0.22 手续费，票务正文列 $5；以购买时票档为准",
+      "summary": "FOG Silicon Valley 与 Fremont Hindu Temple 合办排灯节文化聚会，包含 Ramayana 激光表演、Garba 与 Dandiya 舞蹈、手作竞赛及印度市集。",
+      "plan": [
+        "活动在 Washington High School，10:00–19:00；官网页脚的 Kearney Street 办公地址不是活动地点。各表演和仪式的具体开场时间未公布。",
+        "主办方官网写免费登记与免费停车，但其链接的 EventMozo 售票页明确收费。不能把免费登记当免费入场；核查时早鸟为 $4 加 $0.22 手续费，正文另列 $5。",
+        "通过官网的 Buy Tickets 入口确认可售票档、最终费用和儿童规则；餐饮与市集购物另付。票务条款列不可转让、原则上不退款，并要求核对购票人与入场凭证。",
+        "票价核对来源：https://eventmozo.com/event/fog-diwali-mela-2026-224231788158445 。早鸟库存及结束时间未确认，不保证到访时仍能购买该价格。"
+      ],
+      "audience": [
+        "文化节庆",
+        "亲友结伴"
+      ],
+      "officialUrl": "https://fogsv.com/event/fog-diwali/",
+      "sourceLabel": "Festival of Globe / EventMozo",
+      "verifiedAt": "2026-09-29",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://fogsv.com/event/fog-diwali/",
+          "verifiedAt": "2026-09-29",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "10:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "10:00–19:00 为整体活动窗口，各表演时刻未公布。主办方官网免费登记与售票页收费存在差异；按付费活动处理，9/29 票务显示早鸟 $4 加 $0.22 手续费、正文列 $5，最终票档与附加费待购票时确认。免费停车不代表免费入场，餐饮购物另付。"
+        }
       }
     },
     {

@@ -249,6 +249,15 @@
     "endDate": "2026-10-01"
   },
   {
+    "id": "sf-nexus-party-oct1-2026",
+    "title": "NEXUS Party：湾区黑人艺术周官方派对",
+    "startDate": "2026-10-01",
+    "endDate": "2026-10-01",
+    "occurrenceDates": [
+      "2026-10-01"
+    ]
+  },
+  {
     "id": "sf-symphony-fleming-strauss-2026",
     "title": "芮妮·弗莱明演唱施特劳斯",
     "startDate": "2026-10-01",
@@ -365,6 +374,15 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "san-jose-hellflowers-free-concert-oct2-2026",
+    "title": "San Jose 免费摇滚夜：The Hellflowers 与 Knights of Molino",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02",
+    "occurrenceDates": [
+      "2026-10-02"
+    ]
+  },
+  {
     "id": "san-jose-sofa-pocket-market-2026",
     "title": "San José 花园小市集：艺术、手作与预约餐券",
     "startDate": "2026-10-02",
@@ -438,6 +456,16 @@
     "title": "Cupertino 夏威夷音乐与呼啦舞日",
     "startDate": "2026-10-03",
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "foster-city-water-lantern-festival-2026",
+    "title": "San Francisco 水灯节：Foster City 湖畔两晚",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-04",
+    "occurrenceDates": [
+      "2026-10-03",
+      "2026-10-04"
+    ]
   },
   {
     "id": "fremont-namiwalks-2026",
@@ -520,6 +548,15 @@
     "title": "迪士尼 Worlds Collide 演唱会",
     "startDate": "2026-10-03",
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "sf-foodwise-latine-makers-oct3-2026",
+    "title": "Foodwise Latine Makers：渡轮大厦拉丁裔创作者市集",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03",
+    "occurrenceDates": [
+      "2026-10-03"
+    ]
   },
   {
     "id": "sj-sharks-kings-2026",
@@ -708,6 +745,15 @@
     "title": "SurrealDB × Mastra：智能体共享记忆与生产实践",
     "startDate": "2026-10-05",
     "endDate": "2026-10-05"
+  },
+  {
+    "id": "woodside-djerassi-free-art-hike-oct5-2026",
+    "title": "Woodside Djerassi 免费艺术徒步：预约进入山间创作园区",
+    "startDate": "2026-10-05",
+    "endDate": "2026-10-05",
+    "occurrenceDates": [
+      "2026-10-05"
+    ]
   },
   {
     "id": "east-bay-aespa-live-tour-synk-complaexity-in-oakland-2026",
@@ -1102,6 +1148,15 @@
     "endDate": "2026-10-11"
   },
   {
+    "id": "sf-inner-sunset-flea-oct11-2026",
+    "title": "Inner Sunset Flea：Tricks, Treats & Treasures 秋日市集",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-11",
+    "occurrenceDates": [
+      "2026-10-11"
+    ]
+  },
+  {
     "id": "sf-italian-heritage-parade-2026",
     "title": "旧金山意大利文化游行：从渔人码头走进 North Beach",
     "startDate": "2026-10-11",
@@ -1187,6 +1242,18 @@
     "title": "Exploratorium After Dark：Speak Easy 沟通实验",
     "startDate": "2026-10-15",
     "endDate": "2026-10-15"
+  },
+  {
+    "id": "sf-fall-show-oct15-18-2026",
+    "title": "San Francisco Fall Show：艺术、古董与设计展",
+    "startDate": "2026-10-15",
+    "endDate": "2026-10-18",
+    "occurrenceDates": [
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18"
+    ]
   },
   {
     "id": "sf-main-halloween-costume-swap-oct15-2026",
@@ -1321,6 +1388,15 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "daly-city-top-of-the-hill-festival-2026",
+    "title": "Daly City Top of the Hill：免费街区音乐与文化节",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
     "id": "el-cerrito-garage-sale-2026",
     "title": "El Cerrito 全城庭院旧物市集",
     "startDate": "2026-10-17",
@@ -1441,6 +1517,15 @@
     ]
   },
   {
+    "id": "sausalito-toast-street-fair-oct17-2026",
+    "title": "A Toast to Sausalito：艺术街区节与品饮",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
     "id": "sf-bay-area-science-festival-2026",
     "title": "湾区科学节：到 UCSF 动手做实验",
     "startDate": "2026-10-17",
@@ -1470,6 +1555,15 @@
   {
     "id": "sf-marina-library-open-house-oct17-2026",
     "title": "Marina 图书馆开放日：音乐、手工与赠书",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
+    "id": "sf-potrero-hill-festival-oct17-2026",
+    "title": "Potrero Hill Festival：秋日街区节",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17",
     "occurrenceDates": [
@@ -1541,6 +1635,15 @@
     "title": "Petaluma 免费复古市集",
     "startDate": "2026-10-18",
     "endDate": "2026-10-18"
+  },
+  {
+    "id": "sf-sunday-streets-excelsior-oct18-2026",
+    "title": "Sunday Streets Excelsior：免费街区运动日",
+    "startDate": "2026-10-18",
+    "endDate": "2026-10-18",
+    "occurrenceDates": [
+      "2026-10-18"
+    ]
   },
   {
     "id": "sj-funeral-gangster-dinner-2026",
@@ -1764,6 +1867,15 @@
     "title": "Foster City 万圣节：讨糖步道与装扮比赛",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "fremont-fog-diwali-mela-2026",
+    "title": "Fremont FOG Diwali Mela：排灯节表演与市集",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24",
+    "occurrenceDates": [
+      "2026-10-24"
+    ]
   },
   {
     "id": "hayward-trunk-treat-mobile-rec-2026",
