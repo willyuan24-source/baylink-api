@@ -149,6 +149,42 @@ test('a clock correction cannot silently reuse the superseded appointment', asyn
   assert.equal(result.status, 200); assert.equal(result.data.draft.startTime, undefined); assert.equal(result.data.draft.endTime, undefined);
 });
 
+test('incomplete period corrections and undecided times withdraw the old appointment', async t => {
+  const { request } = await fixture(t);
+  for (const answer of ['改成上午，具体时间还没定', '改成晚上吧', '時間改為早上，幾點還沒決定', 'Actually make it evening.', '时间待定', 'The time is TBD.']) {
+    const result = await request({ intent, locale: 'zh-Hans', answers: [{ question: '什么时间？', answer }] });
+    assert.equal(result.status, 200, answer);
+    assert.equal(result.data.draft.startTime, undefined, answer);
+    assert.equal(result.data.draft.endTime, undefined, answer);
+    assert.equal(result.data.draft.date, '2026-10-17', answer);
+    assert.ok(result.data.missing.includes('startTime'), answer);
+  }
+});
+
+test('date-only corrections retain the appointment and later supplied clocks replace an undecided time', async t => {
+  const { request } = await fixture(t);
+  for (const answer of ['改到10月18日周日', '日期改为10月18日，时间不变。', 'Actually change the date to October 18; keep the time.', '改到10月18日，下午时间不变', 'Move to Oct 18, same afternoon time']) {
+    const result = await request({ intent, locale: 'zh-Hans', answers: [{ question: '改哪一天？', answer }] });
+    assert.equal(result.status, 200, answer);
+    assert.equal(result.data.draft.date, '2026-10-18', answer);
+    assert.equal(result.data.draft.startTime, '14:00', answer);
+    assert.equal(result.data.draft.endTime, '16:00', answer);
+  }
+  const updated = await fixture(t, { ai: () => ({ ...response, draft: { ...response.draft, startTime: '09:00', endTime: '11:00' } }) });
+  const result = await updated.request({ intent, locale: 'zh-Hans', answers: [{ question: '什么时间？', answer: '改为上午，时间待定。' }, { question: '上午几点？', answer: '09:00到11:00。' }] });
+  assert.equal(result.status, 200);
+  assert.equal(result.data.draft.startTime, '09:00');
+  assert.equal(result.data.draft.endTime, '11:00');
+});
+
+test('an explicit new clock still supersedes the old time alongside an unchanged-period statement', async t => {
+  const { request } = await fixture(t);
+  const result = await request({ intent, locale: 'zh-Hans', answers: [{ question: '什么时间？', answer: '仍在下午时间不变，但具体改为15:00到17:00。' }] });
+  assert.equal(result.status, 200);
+  assert.equal(result.data.draft.startTime, undefined);
+  assert.equal(result.data.draft.endTime, undefined);
+});
+
 test('the departure city cannot be substituted for the supplied meeting city', async () => {
   const idea = '10月17日从 Fremont 出发，在 San Francisco 的 Ferry Building 集合。';
   const result = await createOutingDraft({ ...input, intent: idea }, { ai: () => ({ ...response, draft: { city: 'Fremont', venue: 'Ferry Building' } }) });
