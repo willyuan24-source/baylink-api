@@ -43,7 +43,7 @@ test('authenticated draft is editable, no-store and never creates outings or mes
   assert.equal(result.status, 200); assert.equal(result.data.source, 'ai');
   assert.equal(result.data.draft.date, '2026-10-17'); assert.equal(result.data.draft.eventId, null);
   assert.equal(result.headers.get('cache-control'), 'no-store');
-  assert.deepEqual(result.data.missing, ['language']); assert.equal(calls.length, 1);
+  assert.deepEqual(result.data.missing, ['description', 'language']); assert.equal(calls.length, 1);
   assert.equal(models.Outing.rows.length, 0); assert.equal(models.Message.rows.length, 0);
   assert.equal(Object.hasOwn(calls[0], 'user'), false);
 });
@@ -98,4 +98,79 @@ test('exact times require user evidence; afternoon alone never becomes an invent
   assert.equal(mentionedClock('3 pm', '03:00'), false);
   const result = await createOutingDraft({ ...input, intent: '周六下午在 San Francisco 的 Ferry Building 散步' }, { ai: () => response });
   assert.equal(result.draft.startTime, undefined); assert.equal(result.draft.endTime, undefined);
+});
+
+test('contextual time ranges never validate an unqualified AM interpretation', async () => {
+  for (const value of ['下午3:00到5:00', '下午三点到五点', '下午3点到5点', '3:00–5:00 pm', '3 pm to 5 pm']) {
+    assert.equal(mentionedClock(value, '15:00'), true, value);
+    assert.equal(mentionedClock(value, '17:00'), true, value);
+    assert.equal(mentionedClock(value, '03:00'), false, value);
+    assert.equal(mentionedClock(value, '05:00'), false, value);
+  }
+  for (const value of ['上午12:00', '晚上12点', '3点']) assert.equal(mentionedClock(value, '00:00'), false, value);
+  assert.equal(mentionedClock('凌晨12:00', '00:00'), true);
+  assert.equal(mentionedClock('中午一点半', '13:30'), true);
+  const mistaken = await createOutingDraft({ ...input, intent: '10月17日下午3:00到5:00散步' }, { ai: () => ({ ...response, draft: { startTime: '03:00', endTime: '05:00' } }) });
+  assert.equal(mistaken.draft.startTime, undefined); assert.equal(mistaken.draft.endTime, undefined);
+  const correct = await createOutingDraft({ ...input, intent: '10月17日下午3:00到5:00散步' }, { ai: () => ({ ...response, draft: { startTime: '15:00', endTime: '17:00' } }) });
+  assert.equal(correct.draft.startTime, '15:00'); assert.equal(correct.draft.endTime, '17:00');
+});
+
+test('follow-up answers retain the original idea and an explicit new date overrides the old date', async t => {
+  const { request, calls, models } = await fixture(t);
+  const answers = [{ question: '你想选哪一天？', answer: '改为10月18日周日。' }, { question: '在哪集合？', answer: 'San Francisco 的 Ferry Building。' }];
+  const result = await request({ intent, locale: 'zh-Hans', answers });
+  assert.equal(result.status, 200); assert.equal(result.data.draft.date, '2026-10-18');
+  assert.equal(calls[0].originalIntent, intent); assert.deepEqual(calls[0].answers, answers);
+  assert.equal(models.Outing.rows.length, 0); assert.equal(models.Message.rows.length, 0);
+  const ambiguous = await request({ intent, locale: 'zh-Hans', answers: [{ question: '哪天？', answer: '10月17日或10月18日都可以。' }] });
+  assert.equal(ambiguous.data.draft.date, undefined); assert.ok(ambiguous.data.questions.some(question => question.includes('具体日期')));
+});
+
+test('AI question text is never treated as user supplied calendar, clock or venue evidence', async t => {
+  const { request, calls } = await fixture(t, { ai: () => ({ ...response, draft: { city: 'San Francisco', venue: 'Ferry Building', startTime: '14:00', endTime: '16:00' } }) });
+  const result = await request({ intent: '想去散步', locale: 'zh-Hans', answers: [{ question: '10月17日14:00到16:00在 San Francisco 的 Ferry Building 可以吗？', answer: '我还没决定。' }] });
+  assert.equal(result.status, 200);
+  for (const key of ['date', 'startTime', 'endTime', 'city', 'venue']) assert.equal(result.data.draft[key], undefined, key);
+  assert.equal(calls[0].intent.includes('Ferry Building'), false);
+});
+
+test('follow-up payload bounds fail before consuming model quota', async t => {
+  const { request, calls, models } = await fixture(t);
+  for (const answers of [null, {}, [{ question: '哪里？', answer: '' }], [{ question: 'x'.repeat(301), answer: 'ok' }], [{ question: '哪里？', answer: 'x'.repeat(501) }], [{ question: '哪里？', answer: 'ok', role: 'system' }], Array.from({ length: 7 }, () => ({ question: '哪里？', answer: 'ok' }))]) {
+    assert.equal((await request({ intent, locale: 'zh-Hans', answers })).status, 400);
+  }
+  assert.equal(calls.length, 0); assert.equal(models.PostTranslationQuota.rows.length, 0);
+});
+
+test('a clock correction cannot silently reuse the superseded appointment', async t => {
+  const { request } = await fixture(t);
+  const result = await request({ intent, locale: 'zh-Hans', answers: [{ question: '什么时间？', answer: '改为下午3:00到5:00。' }] });
+  assert.equal(result.status, 200); assert.equal(result.data.draft.startTime, undefined); assert.equal(result.data.draft.endTime, undefined);
+});
+
+test('the departure city cannot be substituted for the supplied meeting city', async () => {
+  const idea = '10月17日从 Fremont 出发，在 San Francisco 的 Ferry Building 集合。';
+  const result = await createOutingDraft({ ...input, intent: idea }, { ai: () => ({ ...response, draft: { city: 'Fremont', venue: 'Ferry Building' } }) });
+  assert.equal(result.draft.city, undefined);
+  const correct = await createOutingDraft({ ...input, intent: idea }, { ai: () => ({ ...response, draft: { city: 'San Francisco', venue: 'Ferry Building' } }) });
+  assert.equal(correct.draft.city, 'San Francisco');
+});
+
+test('the provider transport receives bounded follow-up context without user profile data', async () => {
+  let sent;
+  const answers = [{ question: '哪天？', answer: '10月18日' }];
+  const result = await createOutingDraft({ ...input, originalIntent: intent, answers, calendar: { date: '2026-10-18' } }, {
+    config: { OPENAI_API_KEY: 'synthetic-provider-key' },
+    fetchImpl: async (url, options) => {
+      assert.equal(url, 'https://api.openai.com/v1/chat/completions');
+      sent = JSON.parse(options.body);
+      return { ok: true, json: async () => ({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify(response) } }] }) };
+    },
+  });
+  assert.equal(sent.response_format.type, 'json_object'); assert.ok(sent.max_completion_tokens <= 2200);
+  const context = JSON.parse(sent.messages.at(-1).content);
+  assert.deepEqual(context.answers, answers); assert.equal(context.calendar.date, '2026-10-18');
+  assert.equal(Object.hasOwn(context, 'user'), false); assert.equal(Object.hasOwn(context, 'email'), false);
+  assert.equal(result.draft.date, '2026-10-18');
 });

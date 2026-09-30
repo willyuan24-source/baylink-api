@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { createMemoryModels } = require('./support/memory-models');
 const { createOutingModel, loadOutingCatalog, validateOutingInput } = require('../lib/outings');
+const { outingSearch, cityRegex } = require('../lib/outingSearch');
 
 const SECRET = 'outing-isolated-test-secret', START = Date.parse('2026-09-30T16:00:00Z');
 const catalog = [
@@ -298,4 +299,177 @@ test('async authorization cannot confirm attendance after the outing start deadl
   };
   const accepted = await f.accept(id, 'alice');
   assert.equal(accepted.status, 409); assert.equal(f.models.Outing.rows[0].members.find(row => row.userId === 'alice').status, 'requested');
+});
+
+test('full teams accept only explicit waitlist consent without seats or discussion access', async t => {
+  const f = await fixture(t), id = (await f.create({ capacity: 2 })).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice');
+  assert.equal((await f.act(id, 'request', 'bob')).status, 409, 'legacy full requests are unchanged');
+  assert.equal((await f.act(id, 'request', 'bob', { waitlist: false })).status, 409);
+  assert.equal((await f.act(id, 'request', 'bob', { waitlist: 'true' })).status, 400);
+  const queued = await f.act(id, 'request', 'bob', { waitlist: true, note: '候补备注' });
+  assert.equal(queued.status, 200); assert.equal(queued.data.outing.me.status, 'requested'); assert.equal(queued.data.outing.me.waitlisted, true);
+  assert.equal(queued.data.outing.confirmedCount, 2); assert.equal(queued.data.outing.members, undefined); assert.equal(queued.data.outing.waitlistCount, undefined);
+  assert.equal((await f.request(`/${id}/messages`, { as: 'bob' })).status, 403);
+  assert.equal((await f.message(id, 'bob')).status, 403);
+  const host = (await f.get(id)).data.outing;
+  assert.equal(host.requestCount, 1); assert.equal(host.waitlistCount, 1); assert.equal(host.waitlistReviewNeeded, false);
+  assert.equal(host.members.find(row => row.userId === 'bob').requestedAt, START);
+  assert.equal((await f.get(id, 'alice')).data.outing.members.some(row => row.userId === 'bob'), false);
+  const publicView = (await f.request(`/${id}`)).data.outing;
+  assert.equal(publicView.waitlistCount, undefined); assert.equal(publicView.waitlistReviewNeeded, undefined);
+  assert.doesNotMatch(JSON.stringify(publicView), /候补备注/);
+  assert.equal((await f.accept(id, 'bob')).status, 409);
+});
+
+test('vacancies notify the host but never auto-confirm waitlisted users, including after notice retry', async t => {
+  const f = await fixture(t), id = (await f.create({ capacity: 2 })).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice');
+  const body = { action: 'request', revision: (await f.get(id)).data.outing.revision, idempotencyKey: 'waitlist-retry-key', waitlist: true, adultConsent: true };
+  await f.request(`/${id}/actions`, { as: 'bob', method: 'POST', body });
+  assert.equal((await f.request(`/${id}/actions`, { as: 'bob', method: 'POST', body })).status, 200);
+  const notices = f.models.Message.rows.length;
+  await f.request(`/${id}/actions`, { as: 'bob', method: 'POST', body }); assert.equal(f.models.Message.rows.length, notices);
+  assert.equal((await f.request(`/${id}/actions`, { as: 'bob', method: 'POST', body: { ...body, waitlist: false } })).status, 409);
+  const withdraw = { action: 'withdraw', revision: (await f.get(id)).data.outing.revision, idempotencyKey: 'leave-once-key' };
+  await f.request(`/${id}/actions`, { as: 'alice', method: 'POST', body: withdraw });
+  assert.ok(f.models.Message.rows.some(message => /有空位请审核候补/.test(message.content)));
+  assert.equal((await f.get(id)).data.outing.waitlistReviewNeeded, true);
+  assert.equal((await f.get(id, 'bob')).data.outing.me.status, 'requested');
+  const count = f.models.Message.rows.length;
+  await f.request(`/${id}/actions`, { as: 'alice', method: 'POST', body: withdraw }); assert.equal(f.models.Message.rows.length, count);
+  assert.equal((await f.accept(id, 'bob')).status, 200);
+  const accepted = (await f.get(id, 'bob')).data.outing;
+  assert.equal(accepted.me.status, 'confirmed'); assert.equal(accepted.me.waitlisted, false); assert.equal(accepted.confirmedCount, 2);
+  assert.equal((await f.get(id)).data.outing.waitlistReviewNeeded, false);
+});
+
+test('waitlist permission, changed plan consent and concurrent last-seat approvals retain existing safeguards', async t => {
+  const f = await fixture(t), id = (await f.create({ capacity: 2 })).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice');
+  assert.equal((await f.act(id, 'request', 'bob', { waitlist: true, adultConsent: false })).status, 400);
+  await f.act(id, 'request', 'bob', { waitlist: true }); await f.act(id, 'request', 'carol', { waitlist: true });
+  const changed = await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { date: '2026-10-11', revision: (await f.get(id)).data.outing.revision, idempotencyKey: f.key() } });
+  assert.equal(changed.status, 200);
+  await f.act(id, 'withdraw', 'alice');
+  f.models.UserBlock.rows.push({ blockerId: 'bob', blockedUserId: 'host' });
+  assert.equal((await f.accept(id, 'bob')).status, 403); f.models.UserBlock.rows.length = 0;
+  const revision = (await f.get(id)).data.outing.revision;
+  const results = await Promise.all(['bob', 'carol'].map(userId => f.request(`/${id}/actions`, { as: 'host', method: 'POST', body: { action: 'accept', userId, revision, idempotencyKey: f.key() } })));
+  assert.deepEqual(results.map(row => row.status).sort(), [200, 409]);
+  const host = (await f.get(id)).data.outing, accepted = host.members.find(row => row.role !== 'host' && row.status === 'confirmed');
+  assert.equal(accepted.confirmedVersion, 1); assert.equal(host.planVersion, 2);
+  assert.equal((await f.message(id, accepted.userId)).status, 409);
+});
+
+test('host removal or expansion uses review hints without self-DMs, while queued withdrawal stays available', async t => {
+  const f = await fixture(t), id = (await f.create({ capacity: 2 })).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice'); await f.act(id, 'request', 'bob', { waitlist: true });
+  const previousNotices = f.models.Message.rows.length;
+  const expanded = await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { capacity: 3, revision: (await f.get(id)).data.outing.revision, idempotencyKey: f.key() } });
+  assert.equal(expanded.status, 200); assert.equal(expanded.data.outing.waitlistReviewNeeded, true);
+  assert.equal(f.models.Message.rows.length, previousNotices, 'host expansion does not fabricate a self conversation');
+  assert.equal((await f.get(id, 'bob')).data.outing.me.status, 'requested');
+  const removed = await f.act(id, 'remove', 'host', { userId: 'alice' }); assert.equal(removed.data.outing.waitlistReviewNeeded, true);
+  assert.equal(f.models.Conversation.rows.some(row => new Set(row.userIds).size !== 2), false);
+  assert.equal(f.models.Outing.rows[0].notices.some(row => row.actorId === row.targetId), false);
+  f.models.User.rows.find(row => row.id === 'bob').accountStatus = 'limited';
+  const left = await f.act(id, 'withdraw', 'bob'); assert.equal(left.status, 200); assert.equal(left.data.outing.me.waitlisted, false);
+  assert.equal((await f.get(id)).data.outing.waitlistCount, 0);
+  const ordinary = await f.act(id, 'request', 'carol', { waitlist: true });
+  assert.equal(ordinary.data.outing.me.waitlisted, false, 'explicit fallback is ordinary pending when there is room');
+  assert.equal((await f.act(id, 'withdraw', 'carol', { waitlist: false })).status, 400, 'flag is request-only');
+});
+
+async function discoverySeed(f, values) {
+  const created = await f.create({ eventId: null }); assert.equal(created.status, 200);
+  const template = JSON.parse(JSON.stringify(f.models.Outing.rows[0]));
+  f.models.Outing.rows.length = 0;
+  const rows = values.map((value, i) => {
+    const row = { ...JSON.parse(JSON.stringify(template)), _id: (10000 + i).toString(16).padStart(24, '0'), id: `outing_seed_${String(i).padStart(4, '0')}`, ...value };
+    if (value.date) { row.startAt = Date.parse(`${value.date}T17:00:00Z`); row.endAt = Date.parse(`${value.date}T19:00:00Z`); }
+    return row;
+  });
+  f.models.Outing.rows.push(...rows); return rows;
+}
+
+test('city aliases support English, simplified/traditional Chinese, case and accents without broad matching', async t => {
+  const f = await fixture(t);
+  await discoverySeed(f, ['San Francisco', 'South San Francisco', 'S.F.', '舊金山', 'San José', 'San Jose', '聖荷西', 'South San Jose'].map(city => ({ city })));
+  for (const city of ['SF', '旧金山', '舊金山', 'sAn fRaNcIsCo']) {
+    const result = await f.request(`?city=${encodeURIComponent(city)}`);
+    assert.equal(result.status, 200); assert.equal(result.data.outings.length, 3);
+    assert.equal(result.data.outings.some(row => row.city.includes('South')), false);
+  }
+  for (const city of ['SAN JOSÉ', 'san jose', '圣荷西', '聖何塞']) assert.equal((await f.request(`?city=${encodeURIComponent(city)}`)).data.outings.length, 3);
+  assert.equal((await f.request('?city=South%20SF')).data.outings.length, 1);
+  assert.equal(cityRegex('SF').test('South San Francisco'), false);
+  assert.equal(cityRegex('San José').test('San Jose\u0301'), true);
+});
+
+test('q is a bounded literal across title, description and locations, never executable regular expression', async t => {
+  const f = await fixture(t);
+  await discoverySeed(f, [{ title: 'Coffee [friends] (A+B).*' }, { description: 'Coffee time' }, { venue: 'Coffee Hall' }, { city: 'Coffee City' }, { title: 'Unrelated' }]);
+  assert.equal((await f.request('?q=coffee')).data.outings.length, 4);
+  const literal = await f.request(`?q=${encodeURIComponent('[friends] (A+B).*')}`);
+  assert.equal(literal.status, 200); assert.equal(literal.data.outings.length, 1);
+  assert.equal((await f.request('?q=%2E%2A')).data.outings.length, 1, 'wildcard syntax searches literally');
+  assert.equal((await f.request('?q=%5B')).status, 200, 'unbalanced regex metacharacter is still literal text');
+  assert.equal((await f.request(`?q=${'x'.repeat(121)}`)).status, 400);
+  assert.equal((await f.request('?q[$regex]=.*')).status, 400);
+});
+
+test('inclusive date ranges and language filters combine without changing the old exact date semantics', async t => {
+  const f = await fixture(t);
+  await discoverySeed(f, [{ date: '2026-10-03', language: 'zh' }, { date: '2026-10-04', language: 'en' }, { date: '2026-10-05', language: 'any' }, { date: '2026-10-06', language: 'zh' }]);
+  const range = await f.request('?dateFrom=2026-10-04&dateTo=2026-10-05&language=en'); assert.equal(range.data.outings.length, 2);
+  assert.equal((await f.request('?dateFrom=2026-10-04&dateTo=2026-10-05&language=zh')).data.outings.length, 1);
+  assert.equal((await f.request('?dateTo=2026-10-04')).data.outings.length, 2);
+  assert.equal((await f.request('?dateFrom=2026-10-05')).data.outings.length, 2);
+  assert.equal((await f.request('?date=2026-10-04')).data.outings.length, 1);
+  for (const query of ['date=2026-10-04&dateFrom=2026-10-04', 'dateFrom=2026-10-05&dateTo=2026-10-04', 'dateTo=2026-02-30', 'language=any', 'sort=random', 'seats=2']) assert.equal((await f.request(`?${query}`)).status, 400, query);
+});
+
+test('soonest pagination is stable on timestamp ties and bound to normalized filters with a signed v2 cursor', async t => {
+  const f = await fixture(t);
+  const rows = await discoverySeed(f, Array.from({ length: 45 }, (_, i) => ({ city: i % 2 ? 'SF' : 'San Francisco', date: i < 10 ? '2026-10-06' : '2026-10-04', title: 'Coffee meet' })));
+  const expected = [...rows].sort((a, b) => a.startAt - b.startAt || a.id.localeCompare(b.id)).map(row => row.id);
+  const first = await f.request('?sort=soonest&city=SF&q=coffee'); assert.equal(first.status, 200); assert.equal(first.data.outings.length, 20); assert.match(first.data.nextCursor, /^v2\./);
+  const next = await f.request(`?sort=soonest&city=${encodeURIComponent('舊金山')}&q=COFFEE&cursor=${first.data.nextCursor}`);
+  assert.equal(next.status, 200); assert.equal(next.data.outings.length, 20);
+  const final = await f.request(`?sort=soonest&city=San%20Francisco&q=coffee&cursor=${next.data.nextCursor}`);
+  assert.equal(final.status, 200); assert.equal(final.data.outings.length, 5); assert.equal(final.data.nextCursor, null);
+  assert.deepEqual([...first.data.outings, ...next.data.outings, ...final.data.outings].map(row => row.id), expected);
+  for (const changed of ['sort=soonest&city=South%20SF&q=coffee', 'city=SF&q=coffee', 'sort=soonest&city=SF&q=tea', 'sort=soonest&city=SF&q=coffee&language=en']) {
+    assert.equal((await f.request(`?${changed}&cursor=${first.data.nextCursor}`)).status, 400, changed);
+  }
+  const [prefix, encoded, sig] = first.data.nextCursor.split('.');
+  const tampered = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8')); tampered.startAt = 0;
+  const forged = `${prefix}.${Buffer.from(JSON.stringify(tampered)).toString('base64url')}.${sig}`;
+  assert.equal((await f.request(`?sort=soonest&city=SF&q=coffee&cursor=${forged}`)).status, 400);
+  assert.equal((await f.request(`?sort=soonest&city=SF&q=coffee&cursor=${first.data.nextCursor}=`)).status, 400);
+  assert.equal((await f.request('?sort=soonest&cursor=outing_seed_0010')).status, 400, 'legacy cursor cannot enter a v2 filter');
+});
+
+test('open-seat scan stays bounded and advances across a fully excluded page without dropping later matches', async t => {
+  const f = await fixture(t);
+  const fullMembers = ['host', 'alice'].map(userId => ({ userId, role: userId === 'host' ? 'host' : 'member', status: 'confirmed', confirmedVersion: 1 }));
+  const rows = await discoverySeed(f, Array.from({ length: 87 }, (_, i) => ({ capacity: 2, ...(i < 85 ? { members: fullMembers } : {}) })));
+  const find = f.models.Outing.find, observed = [];
+  f.models.Outing.find = query => { const result = find(query), limit = result.limit.bind(result); result.limit = value => { observed.push(value); return limit(value); }; return result; };
+  const first = await f.request('?seats=open&sort=soonest');
+  assert.equal(first.status, 200); assert.equal(first.data.outings.length, 0); assert.match(first.data.nextCursor, /^v2\./);
+  const second = await f.request(`?seats=open&sort=soonest&cursor=${first.data.nextCursor}`);
+  assert.equal(second.status, 200); assert.deepEqual(second.data.outings.map(row => row.id), rows.slice(85).map(row => row.id)); assert.equal(second.data.nextCursor, null);
+  assert.deepEqual(observed, [81, 81]);
+});
+
+test('default id pagination remains compatible while new id-ordered filters use bound v2 cursors', async t => {
+  const f = await fixture(t); await discoverySeed(f, Array.from({ length: 23 }, () => ({})));
+  const first = await f.request(''); assert.equal(first.data.nextCursor, 'outing_seed_0019');
+  const next = await f.request(`?cursor=${first.data.nextCursor}`); assert.equal(next.data.outings.length, 3); assert.equal(next.data.nextCursor, null);
+  const filtered = await f.request('?language=en'); assert.match(filtered.data.nextCursor, /^v2\./);
+  assert.equal((await f.request(`?language=en&cursor=${filtered.data.nextCursor}`)).data.outings.length, 3);
+  assert.equal((await f.request(`?language=zh&cursor=${filtered.data.nextCursor}`)).status, 400);
+  assert.throws(() => outingSearch({ cursor: 'v2.invalid.invalid', language: 'en' }, START, SECRET), /分页/);
 });

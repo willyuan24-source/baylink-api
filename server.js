@@ -1610,7 +1610,7 @@ registerServiceBookings(app, { Agenda: ServiceBookingAgenda, Post, User, UserBlo
   sendSms: !isTest && twilioClient && config.TWILIO_MESSAGING_SERVICE_SID
     ? ({ to, body }) => twilioClient.messages.create({ to, body, messagingServiceSid: config.TWILIO_MESSAGING_SERVICE_SID }) : undefined,
 });
-const outings = registerOutings(app, { Outing, User, UserBlock, Message, Conversation, Report, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp,
+const outings = registerOutings(app, { Outing, User, UserBlock, Message, Conversation, Report, authenticateToken, requireAdmin, config, checkRateLimit: checkAuthRateLimit, getClientIp,
   officialStatus: getOfficialVerificationStatus, openConversation: openOrCreateConversationBetween, emitMessage: emitMessageToUser, createModerationLog,
   catalog: options.outingCatalog, now: options.outingNow });
 registerOutingDraft(app, { authenticateToken, checkRateLimit: checkAuthRateLimit, Quota: PostTranslationQuota, config, ai: options.ai?.outingDraft, isTest, now: options.outingNow, catalog: outings.catalog });
