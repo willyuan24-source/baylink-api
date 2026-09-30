@@ -168,7 +168,7 @@ function memoryModel(name, seed = [], registry = {}) {
 
 function createMemoryModels(seed = {}) {
   const registry = {};
-  for (const name of ['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession', 'EventInterest', 'PostTranslation', 'PostTranslationQuota', 'PlannerAccount', 'ServiceBookingAgenda']) registry[name] = memoryModel(name, seed[name], registry);
+  for (const name of ['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession', 'EventInterest', 'PostTranslation', 'PostTranslationQuota', 'PlannerAccount', 'ServiceBookingAgenda', 'Outing']) registry[name] = memoryModel(name, seed[name], registry);
   return registry;
 }
 

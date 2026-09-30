@@ -26,6 +26,8 @@ const { createProductMetricModel, registerProductMetrics } = require('./lib/prod
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
+const { createOutingModel, registerOutings } = require('./lib/outings');
+const { registerOutingDraft } = require('./lib/outingDraft');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -340,10 +342,12 @@ const ReportSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   reporterId: String,
   reporterNickname: String,
-  targetType: { type: String, enum: ['post', 'user'], required: true },
+  targetType: { type: String, enum: ['post', 'user', 'outing', 'outing_message'], required: true },
   targetId: { type: String, required: true },
   targetPostId: { type: String, default: '' },
   targetUserId: { type: String, default: '' },
+  targetOutingId: { type: String, default: '' },
+  evidence: { type: mongoose.Schema.Types.Mixed, default: undefined },
   reason: {
     type: String,
     enum: ['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other'],
@@ -449,6 +453,7 @@ const EventInterest = model('EventInterest', EventInterestSchema);
 const { PostTranslation, PostTranslationQuota } = createPostTranslationModels(mongoose, injectedModels);
 const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 const ServiceBookingAgenda = createServiceBookingModel(mongoose, injectedModels);
+const Outing = createOutingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
@@ -688,10 +693,11 @@ const MODERATION_LOG_ACTIONS = new Set([
   'account_limited',
   'account_suspended',
   'account_restored',
+  'outing_cancelled',
 ]);
-const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification']);
+const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing']);
 
-const REPORT_TARGET_TYPES = new Set(['post', 'user']);
+const REPORT_TARGET_TYPES = new Set(['post', 'user', 'outing', 'outing_message']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
 const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed', 'all']);
 const REPORT_ADMIN_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
@@ -1139,6 +1145,7 @@ const formatAdminReportsList = async (docs) => {
     reporter: formatTrustUserSummary(userById.get(doc.reporterId)),
     targetUser: formatAdminUserSummary(userById.get(doc.targetUserId)),
     targetPost: formatAdminPostSummary(postById.get(doc.targetPostId)),
+    ...(doc.targetOutingId ? { outingId: doc.targetOutingId, evidence: doc.evidence || {} } : {}),
   }));
 };
 
@@ -1603,6 +1610,10 @@ registerServiceBookings(app, { Agenda: ServiceBookingAgenda, Post, User, UserBlo
   sendSms: !isTest && twilioClient && config.TWILIO_MESSAGING_SERVICE_SID
     ? ({ to, body }) => twilioClient.messages.create({ to, body, messagingServiceSid: config.TWILIO_MESSAGING_SERVICE_SID }) : undefined,
 });
+const outings = registerOutings(app, { Outing, User, UserBlock, Message, Conversation, Report, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp,
+  officialStatus: getOfficialVerificationStatus, openConversation: openOrCreateConversationBetween, emitMessage: emitMessageToUser, createModerationLog,
+  catalog: options.outingCatalog, now: options.outingNow });
+registerOutingDraft(app, { authenticateToken, checkRateLimit: checkAuthRateLimit, Quota: PostTranslationQuota, config, ai: options.ai?.outingDraft, isTest, now: options.outingNow, catalog: outings.catalog });
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -4492,7 +4503,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4506,6 +4517,7 @@ async function startProduction(config = process.env) {
   await application.models.EventInterest.init();
   await application.models.PlannerAccount.init();
   await application.models.ServiceBookingAgenda.init();
+  await application.models.Outing.init();
   await application.models.ProductMetric.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
