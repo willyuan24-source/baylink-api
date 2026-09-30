@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const copy = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 let nextObjectId = 0;
 const objectId = () => (++nextObjectId).toString(16).padStart(24, '0');
-const getPath = (value, path) => path.split('.').reduce((current, key) => current?.[key], value);
+const getPath = (value, path) => path.split('.').reduce((current, key) => Array.isArray(current) ? current.flatMap(item => item?.[key] ?? []) : current?.[key], value);
 function setPath(value, path, next, remove = false) {
   const parts = path.split('.');
   const last = parts.pop();
@@ -15,6 +15,7 @@ function applyUpdate(row, update) {
   for (const [path, value] of Object.entries(update.$set || {})) setPath(row, path, value);
   for (const path of Object.keys(update.$unset || {})) setPath(row, path, undefined, true);
   for (const [path, value] of Object.entries(update.$inc || {})) setPath(row, path, (getPath(row, path) || 0) + value);
+  for (const [path, value] of Object.entries(update.$max || {})) if (getPath(row, path) === undefined || getPath(row, path) < value) setPath(row, path, value);
   for (const [path, value] of Object.entries(update.$addToSet || {})) {
     const previous = getPath(row, path) || [];
     if (!previous.includes(value)) setPath(row, path, [...previous, value]);
@@ -167,7 +168,7 @@ function memoryModel(name, seed = [], registry = {}) {
 
 function createMemoryModels(seed = {}) {
   const registry = {};
-  for (const name of ['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession', 'EventInterest', 'PostTranslation', 'PostTranslationQuota', 'PlannerAccount']) registry[name] = memoryModel(name, seed[name], registry);
+  for (const name of ['User', 'Post', 'Ad', 'Conversation', 'Message', 'Content', 'Report', 'UserBlock', 'ContactRequest', 'ModerationLog', 'RevokedSession', 'EventInterest', 'PostTranslation', 'PostTranslationQuota', 'PlannerAccount', 'ServiceBookingAgenda']) registry[name] = memoryModel(name, seed[name], registry);
   return registry;
 }
 

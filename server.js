@@ -25,6 +25,7 @@ const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
+const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -447,6 +448,7 @@ const RevokedSession = model('RevokedSession', RevokedSessionSchema);
 const EventInterest = model('EventInterest', EventInterestSchema);
 const { PostTranslation, PostTranslationQuota } = createPostTranslationModels(mongoose, injectedModels);
 const PlannerAccount = createPlannerModel(mongoose, injectedModels);
+const ServiceBookingAgenda = createServiceBookingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
@@ -1595,6 +1597,12 @@ server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
 registerPostTranslation(app, { Post, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
 registerLocalAi(app, { Conversation, Message, UserBlock, Quota: PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai, isTest, now: options.localAiNow });
+registerServiceBookings(app, { Agenda: ServiceBookingAgenda, Post, User, UserBlock, Message, Conversation, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp,
+  openConversation: openOrCreateConversationBetween, emitMessage: emitMessageToUser, officialStatus: getOfficialVerificationStatus, config, now: options.serviceBookingNow,
+  testSms: isTest ? options.serviceBookingSms : undefined,
+  sendSms: !isTest && twilioClient && config.TWILIO_MESSAGING_SERVICE_SID
+    ? ({ to, body }) => twilioClient.messages.create({ to, body, messagingServiceSid: config.TWILIO_MESSAGING_SERVICE_SID }) : undefined,
+});
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
@@ -4484,7 +4492,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4497,6 +4505,7 @@ async function startProduction(config = process.env) {
   await application.models.RevokedSession.init();
   await application.models.EventInterest.init();
   await application.models.PlannerAccount.init();
+  await application.models.ServiceBookingAgenda.init();
   await application.models.ProductMetric.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
