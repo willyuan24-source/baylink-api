@@ -72,6 +72,81 @@ test('personalization is bounded, defaults old accounts, and exposes only public
   assert.equal(models.User.rows[0].statusText, '周末想去海边散步 🌊');
 });
 
+test('social intents are optional, public and bounded; invalid settings never partially save other fields', async t => {
+  const { request, models } = await fixture(t);
+  const legacy = await request('/users/me', { method: 'PATCH', body: {} });
+  assert.deepEqual(legacy.data.socialIntents, []);
+  assert.deepEqual(legacy.data.profileVisibility, { location: true, interests: true, socialLinks: true });
+  assert.deepEqual((await request('/users/owner/public', { as: null })).data.socialIntents, []);
+  const saved = await request('/users/me', { method: 'PATCH', body: { socialIntents: ['coffee', 'culture', 'learn'] } });
+  assert.equal(saved.status, 200);
+  assert.deepEqual(saved.data.socialIntents, ['coffee', 'culture', 'learn']);
+  for (const path of ['/users/owner', '/users/owner/public']) assert.deepEqual((await request(path, { as: null })).data.socialIntents, saved.data.socialIntents);
+  const invalid = [
+    { socialIntents: null }, { socialIntents: 'coffee' }, { socialIntents: {} }, { socialIntents: ['coffee', 'coffee'] },
+    { socialIntents: ['coffee', 'food', 'family', 'learn'] }, { socialIntents: ['unknown'] }, { socialIntents: [{}] }, { socialIntents: [' coffee'] },
+    { profileVisibility: null }, { profileVisibility: [] }, { profileVisibility: 'private' }, { profileVisibility: { city: false } },
+    { profileVisibility: { location: 'false' } }, { profileVisibility: { interests: 0 } }, { profileVisibility: { socialLinks: null } },
+    { profileVisibility: JSON.parse('{"__proto__":{"location":false}}') },
+  ];
+  for (const body of invalid) {
+    const result = await request('/users/me', { method: 'PATCH', body: { nickname: 'Must not save', ...body } });
+    assert.equal(result.status, 400, JSON.stringify(body));
+    assert.equal(models.User.rows[0].nickname, 'Neighbor owner');
+    assert.deepEqual(models.User.rows[0].socialIntents, saved.data.socialIntents);
+  }
+  assert.equal((await request('/users/me', { as: null, method: 'PATCH', body: { profileVisibility: { location: false } } })).status, 401);
+  assert.deepEqual((await request('/users/me', { method: 'PATCH', body: { socialIntents: [] } })).data.socialIntents, []);
+});
+
+test('visibility hides public identity and compact chat cards while retaining owner data and published post locations', async t => {
+  const { request, models } = await fixture(t);
+  const original = { area: 'East Bay', city: 'Oakland', interests: ['coffee', 'hiking'], website: 'https://personal.example.test', xiaohongshu: 'private-handle', socialLinks: { instagram: 'private-instagram', linkedin: 'https://linkedin.com/in/private' } };
+  const saved = await request('/users/me', { method: 'PATCH', body: { ...original, socialIntents: ['coffee', 'family'], profileVisibility: { location: false, interests: false, socialLinks: false } } });
+  assert.equal(saved.status, 200);
+  for (const [field, value] of Object.entries(original)) assert.deepEqual(saved.data[field], value);
+  assert.deepEqual(saved.data.profileVisibility, { location: false, interests: false, socialLinks: false });
+  await models.Post.create({ id: 'public-post', authorId: 'owner', title: 'Public local listing', city: 'Oakland', isDeleted: false });
+  for (const path of ['/users/owner', '/users/owner/public']) {
+    const publicProfile = (await request(path, { as: null })).data;
+    assert.equal(publicProfile.area, ''); assert.equal(publicProfile.city, '');
+    assert.deepEqual(publicProfile.interests, []);
+    assert.equal(publicProfile.website, ''); assert.equal(publicProfile.xiaohongshu, '');
+    assert.deepEqual(publicProfile.socialLinks, { linkedin: '', instagram: '' });
+    assert.deepEqual(publicProfile.socialIntents, ['coffee', 'family']);
+    assert.equal(publicProfile.profileVisibility, undefined, 'private control flags do not need to be published');
+    if (publicProfile.recentPosts) assert.equal(publicProfile.recentPosts[0].city, 'Oakland');
+    for (const secret of ['private-instagram', 'private-handle', 'personal.example.test', 'linkedin.com/in/private', 'hiking', 'East Bay']) assert.equal(JSON.stringify(publicProfile).includes(secret), false, secret);
+  }
+  const conversations = (await request('/conversations', { as: 'other' })).data;
+  assert.equal(conversations.find(row => row.id === 'thread').otherUser.city, '');
+  const opened = await request('/conversations/open-or-create', { as: 'other', method: 'POST', body: { targetUserId: 'owner' } });
+  assert.equal(opened.data.otherUser.city, '');
+  assert.equal(opened.data.otherUser.profileVisibility, undefined);
+  const partial = await request('/users/me', { method: 'PATCH', body: { profileVisibility: { location: true }, statusText: 'New status' } });
+  assert.deepEqual(partial.data.profileVisibility, { location: true, interests: false, socialLinks: false });
+  const publicAfter = (await request('/users/owner/public', { as: null })).data;
+  assert.equal(publicAfter.city, 'Oakland'); assert.equal(publicAfter.area, 'East Bay'); assert.deepEqual(publicAfter.interests, []); assert.equal(publicAfter.website, '');
+  const restored = await request('/users/me', { method: 'PATCH', body: { profileVisibility: { interests: true, socialLinks: true } } });
+  assert.deepEqual(restored.data.profileVisibility, { location: true, interests: true, socialLinks: true });
+  const publicRestored = (await request('/users/owner/public', { as: null })).data;
+  for (const [field, value] of Object.entries(original)) assert.deepEqual(publicRestored[field], value);
+  assert.equal(models.User.rows.find(row => row.id === 'other').profileVisibility, undefined);
+});
+
+test('Mongoose validates intent enums, uniqueness and length and defaults public display for old accounts', async t => {
+  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET } });
+  t.after(() => new Promise(resolve => application.io.close(resolve)));
+  const base = { id: 'profile-model', email: 'model@example.test', password: '$2-fake', nickname: 'Model' };
+  const legacy = new application.models.User(base);
+  assert.deepEqual(legacy.toObject().socialIntents, []);
+  assert.deepEqual(legacy.toObject().profileVisibility, { location: true, interests: true, socialLinks: true });
+  for (const socialIntents of [['unknown'], ['coffee', 'coffee'], ['coffee', 'food', 'family', 'learn']]) assert.ok(new application.models.User({ ...base, socialIntents }).validateSync());
+  const valid = new application.models.User({ ...base, socialIntents: ['outdoors', 'family'], profileVisibility: { location: false } });
+  assert.equal(valid.validateSync(), undefined);
+  assert.deepEqual(valid.toObject().profileVisibility, { location: false, interests: true, socialLinks: true });
+});
+
 test('avatar and cover use validated bounded raster uploads, explicit failure, and removal', async t => {
   const uploads = [];
   const { request, models } = await fixture(t, { upload: async data => { uploads.push(data); return `https://res.cloudinary.com/example/upload-${uploads.length}.png`; } });

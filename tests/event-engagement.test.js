@@ -151,6 +151,22 @@ test('buddy pagination is bounded, stable, and filters blocks before choosing a 
   for (const suffix of ['limit=21', 'limit=0', 'limit=-1', 'limit=1.5', 'limit[$gt]=1', 'cursor=***', 'cursor=%00', 'cursor=AA', 'cursor[x]=abc']) assert.equal((await request(`/events/future-festival/buddies?${suffix}`)).status, 400, suffix);
 });
 
+test('buddy city respects profile visibility without changing opt-in membership or legacy defaults', async t => {
+  const { request, models } = await fixture(t, {
+    users: [user('owner'), user('hidden-city', { profileVisibility: { location: false } }), user('legacy-city')],
+    interests: ['hidden-city', 'legacy-city'].map(id => interest(id, { lookingForBuddy: true })),
+  });
+  for (const as of [undefined, 'owner']) {
+    const response = await request('/events/future-festival/buddies', as ? { as } : {});
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.data.buddies.map(({ id, city }) => ({ id, city })), [{ id: 'hidden-city', city: '' }, { id: 'legacy-city', city: 'Oakland' }]);
+    for (const row of response.data.buddies) assert.equal(row.profileVisibility, undefined);
+  }
+  assert.equal(models.User.rows.find(row => row.id === 'hidden-city').city, 'Oakland');
+  const count = (await request('/events/engagement?ids=future-festival')).data.events[0];
+  assert.equal(count.buddyCount, 2);
+});
+
 test('restricted accounts cannot opt in, limited members can withdraw, and reads/writes honor rate limits', async t => {
   const { request, put, models } = await fixture(t, { users: [user('owner', { accountStatus: 'limited' }), user('other'), user('third', { accountStatus: 'suspended' })], interests: [interest('owner', { lookingForBuddy: true })] });
   assert.equal((await put({ interested: true, lookingForBuddy: true })).status, 403);

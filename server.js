@@ -17,7 +17,8 @@ const { fetchAiJson } = require('./lib/aiRequest');
 const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest, isSchoolRequest } = require('./lib/guideConversation');
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
-const { PROFILE_THEMES, MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
+const { PROFILE_THEMES, SOCIAL_INTENTS, validSocialIntents, normalizeSocialIntents, validProfileVisibilityPatch, normalizeProfileVisibility, publicProfileCity,
+  MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 const { registerEventEngagement } = require('./lib/eventEngagement');
 const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
 const { registerPlannerWebSearch } = require('./lib/plannerWebSearch');
@@ -208,6 +209,12 @@ const UserSchema = new mongoose.Schema({
   city: String,
   profileTags: [String],
   interests: [String],
+  socialIntents: { type: [{ type: String, enum: [...SOCIAL_INTENTS] }], default: [], validate: validSocialIntents },
+  profileVisibility: {
+    location: { type: Boolean, default: true },
+    interests: { type: Boolean, default: true },
+    socialLinks: { type: Boolean, default: true },
+  },
   website: String,
   xiaohongshu: String,
   socialLinks: { linkedin: String, instagram: String },
@@ -1180,19 +1187,23 @@ const sanitizeProfileStringArray = (value, { maxItems = 12, maxLen = 20 } = {}) 
   return out;
 };
 
-const formatPublicProfileFields = (user) => ({
-  profileTheme: PROFILE_THEMES.has(user.profileTheme) ? user.profileTheme : 'bay',
-  statusText: user.statusText || '',
-  coverImage: user.coverImage || '',
-  area: user.area || '',
-  city: user.city || '',
-  profileTags: user.profileTags || [],
-  interests: user.interests || [],
-  website: user.website || '',
-  xiaohongshu: user.xiaohongshu || '',
-  socialLinks: user.socialLinks || { linkedin: '', instagram: '' },
-});
-const PUBLIC_USER_FIELDS = 'id nickname role avatar bio profileTheme statusText coverImage area city profileTags interests website xiaohongshu socialLinks isPhoneVerified isOfficialVerified createdAt officialVerification';
+const formatPublicProfileFields = (user) => {
+  const visible = normalizeProfileVisibility(user.profileVisibility);
+  return {
+    profileTheme: PROFILE_THEMES.has(user.profileTheme) ? user.profileTheme : 'bay',
+    statusText: user.statusText || '',
+    coverImage: user.coverImage || '',
+    area: visible.location ? user.area || '' : '',
+    city: publicProfileCity(user),
+    profileTags: user.profileTags || [],
+    interests: visible.interests ? user.interests || [] : [],
+    socialIntents: normalizeSocialIntents(user.socialIntents),
+    website: visible.socialLinks ? user.website || '' : '',
+    xiaohongshu: visible.socialLinks ? user.xiaohongshu || '' : '',
+    socialLinks: visible.socialLinks ? user.socialLinks || { linkedin: '', instagram: '' } : { linkedin: '', instagram: '' },
+  };
+};
+const PUBLIC_USER_FIELDS = 'id nickname role avatar bio profileTheme statusText coverImage area city profileTags interests socialIntents profileVisibility website xiaohongshu socialLinks isPhoneVerified isOfficialVerified createdAt officialVerification';
 
 const OFFICIAL_VERIFICATION_TYPES = new Set([
   'realtor', 'service_provider', 'business', 'official_account', 'community_org', 'other',
@@ -1358,6 +1369,8 @@ const sanitizeUserForClient = (user) => {
   obj.profileTheme = PROFILE_THEMES.has(obj.profileTheme) ? obj.profileTheme : 'bay';
   obj.statusText = obj.statusText || '';
   obj.coverImage = obj.coverImage || '';
+  obj.socialIntents = normalizeSocialIntents(obj.socialIntents);
+  obj.profileVisibility = normalizeProfileVisibility(obj.profileVisibility);
   return obj;
 };
 
@@ -1938,11 +1951,13 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     const {
       nickname, bio, avatar, socialLinks, isOfficialVerified,
       area, city, profileTags, interests, website, xiaohongshu,
-      contactType, contactValue, profileTheme, statusText, coverImage,
+      contactType, contactValue, profileTheme, statusText, coverImage, socialIntents, profileVisibility,
     } = req.body;
     const user = req.user;
     if (profileTheme !== undefined && !PROFILE_THEMES.has(profileTheme)) return res.status(400).json({ error: '个人主页主题无效。' });
     if (statusText !== undefined && (typeof statusText !== 'string' || statusText.trim().length > 60)) return res.status(400).json({ error: '状态签名最多 60 个字符。' });
+    if (socialIntents !== undefined && !validSocialIntents(socialIntents)) return res.status(400).json({ error: '请选择最多 3 个不同的认识同好选项。' });
+    if (profileVisibility !== undefined && !validProfileVisibilityPatch(profileVisibility)) return res.status(400).json({ error: '公开资料显示设置无效。' });
     const avatarCheck = validateProfileImage(avatar, user.avatar);
     const coverCheck = validateProfileImage(coverImage, user.coverImage);
     if (!avatarCheck.ok || !coverCheck.ok) return res.status(400).json({ error: avatarCheck.error || coverCheck.error });
@@ -1968,6 +1983,8 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     if (xiaohongshu !== undefined) user.xiaohongshu = trimProfileString(xiaohongshu, 120);
     if (profileTags !== undefined) user.profileTags = sanitizeProfileStringArray(profileTags);
     if (interests !== undefined) user.interests = sanitizeProfileStringArray(interests);
+    if (socialIntents !== undefined) user.socialIntents = [...socialIntents];
+    if (profileVisibility !== undefined) user.profileVisibility = { ...normalizeProfileVisibility(user.profileVisibility), ...profileVisibility };
     if (socialLinks) {
       const merged = { ...(user.socialLinks || {}) };
       if (socialLinks.linkedin !== undefined) merged.linkedin = trimProfileString(socialLinks.linkedin, 120);
@@ -2898,7 +2915,7 @@ app.get('/api/conversations', authenticateToken, async (req, res) => {
   const convs = await Conversation.find({ userIds: req.user.id });
   const result = await Promise.all(convs.map(async (c) => {
     const otherId = c.userIds.find((uid) => uid !== req.user.id);
-    const otherUser = await User.findOne({ id: otherId }).select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city').lean();
+    const otherUser = await User.findOne({ id: otherId }).select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city profileVisibility').lean();
     return {
       id: c.id,
       updatedAt: c.updatedAt,
@@ -2913,7 +2930,7 @@ app.get('/api/conversations', authenticateToken, async (req, res) => {
         isAdmin: otherUser?.role === 'admin',
         profileTheme: PROFILE_THEMES.has(otherUser?.profileTheme) ? otherUser.profileTheme : 'bay',
         statusText: otherUser?.statusText || '',
-        city: otherUser?.city || '',
+        city: publicProfileCity(otherUser),
       },
     };
   }));
@@ -2931,7 +2948,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
       return res.status(400).json({ error: '无法与自己创建会话。' });
     }
     const targetUser = await User.findOne({ id: targetUserId })
-      .select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city')
+      .select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city profileVisibility')
       .lean();
     if (!targetUser) {
       return res.status(404).json({ error: '用户不存在' });
@@ -2961,7 +2978,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
         isAdmin: targetUser.role === 'admin',
         profileTheme: PROFILE_THEMES.has(targetUser.profileTheme) ? targetUser.profileTheme : 'bay',
         statusText: targetUser.statusText || '',
-        city: targetUser.city || '',
+        city: publicProfileCity(targetUser),
       },
     });
   } catch (e) {
