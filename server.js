@@ -4419,7 +4419,15 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     return res.status(429).json(errorResponse('提问过于频繁，请 60 秒后再试'));
   }
   const message = normalized.message;
-  const outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now() });
+  let outingReply;
+  try { outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now(), secret: config.JWT_SECRET, continuationToken: req.body?.outingSearchToken }); }
+  catch (error) {
+    if (error.code !== 'INVALID_OUTING_SEARCH_TOKEN') throw error;
+    res.set('Cache-Control', 'no-store');
+    return res.status(400).json({ ok: false, code: error.code, error: locale === 'en'
+      ? 'The outing search context is invalid or expired. Start a new conversation and confirm your city and date again.'
+      : locale === 'zh-Hant' ? '小隊搜索上下文已失效或過期。請開啟新對話，重新確認城市和日期。' : '小队搜索上下文已失效或过期。请开启新对话，重新确认城市和日期。' });
+  }
   if (outingReply) { res.set('Cache-Control', 'no-store'); return res.json(outingReply); }
   // Only deterministic intent/retrieval sees aliases. Preserve the original message and history for the model.
   const analysisMessage = normalizeGuideQuery(message);
