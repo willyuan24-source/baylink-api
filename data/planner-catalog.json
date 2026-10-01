@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-09-29",
+  "checkedAt": "2026-09-30",
   "events": [
     {
       "id": "r2-santarosa-ross-street-sundays-2026",
@@ -1592,6 +1592,54 @@
       }
     },
     {
+      "id": "palo-alto-art-center-reception-oct2-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-02",
+      "occurrenceDates": [
+        "2026-10-02"
+      ],
+      "dateLabel": "10 月 2 日 · 18:00–20:00",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "sourceLabel": "Palo Alto Art Center Foundation",
+      "imageKey": "culture-visit",
+      "title": "Palo Alto Art Center：Live the moment light 公众开幕夜",
+      "venue": "Palo Alto Art Center · 1313 Newell Road",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费向公众开放 · 餐食与酒水另付",
+      "officialUrl": "https://paacf.org/event/friday-night-at-the-art-center-live-the-moment-light-opening-reception/",
+      "summary": "在艺术中心参观 Live the moment light 开幕展，参加艺术创作活动。公众开幕夜免费开放，适合给周五晚安排一段艺术时间。",
+      "plan": [
+        "10/2 公众开幕夜为 18:00–20:00，不包含此前的会员预览；地点为 1313 Newell Road。",
+        "基金会明确免费并向所有人开放，有免费艺术创作；餐食售卖和现金酒吧另付，报名入口见官方页面。"
+      ],
+      "audience": [
+        "艺术爱好者"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://paacf.org/event/friday-night-at-the-art-center-live-the-moment-light-opening-reception/",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-02",
+          "validThrough": "2026-10-02",
+          "dates": {
+            "2026-10-02": [
+              {
+                "open": "18:00",
+                "close": "20:00"
+              }
+            ]
+          },
+          "note": "10/2 公众开幕夜为 18:00–20:00，不包含此前的会员预览；地点为 1313 Newell Road。"
+        }
+      }
+    },
+    {
       "id": "pleasanton-pumpkins-after-dark-2026",
       "title": "Pleasanton Pumpkins After Dark 南瓜灯夜游",
       "startDate": "2026-10-02",
@@ -3110,6 +3158,44 @@
       }
     },
     {
+      "id": "oakland-drunken-film-fest-free-shorts-2026",
+      "title": "Oakland Drunken Film Fest：免费短片周",
+      "startDate": "2026-10-04",
+      "endDate": "2026-10-09",
+      "occurrenceDates": [
+        "2026-10-04",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09"
+      ],
+      "dateLabel": "10/4–9 · 每晚不同场地；开映时间待确认",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Oakland 多个场地，按日期查节目单",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "10/4–9短片放映免费；10/3开幕长片另售票，餐饮另付",
+      "summary": "在不同社区场地看独立短片，先挑一天和一组片单，再约同好见面。",
+      "plan": [
+        "10/4 Double Standard；10/5 Stay Gold；10/6 Beeryland；10/7 Temescal Brewing；10/8 Eli’s；10/9 Prescott Market。",
+        "核对当晚开映、RSVP和场地年龄限制；不能把免费短片政策套用到10/3开幕场。"
+      ],
+      "audience": [
+        "电影爱好者"
+      ],
+      "officialUrl": "https://www.drunkenfilmfest.com/2026-program",
+      "sourceLabel": "Drunken Film Fest Oakland",
+      "imageKey": "culture-visit",
+      "verifiedAt": "2026-09-30",
+      "planning": {
+        "admissionUsd": 0,
+        "programTimeUnconfirmed": true,
+        "reservation": "unknown"
+      }
+    },
+    {
       "id": "r2-marin-family-keepsake-20261004",
       "title": "San Rafael 家庭纪念物保存日",
       "startDate": "2026-10-04",
@@ -3637,6 +3723,94 @@
       }
     },
     {
+      "id": "concord-sidegate-trivia-october-2026",
+      "title": "Concord Side Gate：周三知识问答夜",
+      "kind": "meetup",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-28",
+      "occurrenceDates": [
+        "2026-10-07",
+        "2026-10-14",
+        "2026-10-21",
+        "2026-10-28"
+      ],
+      "dateLabel": "10/7、14、21、28 · 18:30签到，19:00开始",
+      "region": "east-bay",
+      "city": "Concord",
+      "venue": "Side Gate Brewery & Beer Garden · 1822 Grant St, Concord",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "来源未明确参加费用；餐饮、年龄及入场条件请向场地方确认",
+      "summary": "Geeks Who Drink 的周三问答活动，适合和朋友组成小队、试试平日晚间社交。",
+      "plan": [
+        "官方旅游日历列18:30–20:30，19:00开始答题；仅列出的四个周三有活动。",
+        "先问场地方是否需预约、是否限龄及如何组队，不默认酒吧活动适合儿童。"
+      ],
+      "audience": [
+        "知识问答爱好者",
+        "朋友同行"
+      ],
+      "officialUrl": "https://www.visitconcordca.com/events/sidegate-trivia-night-with-geeks-who-drink/",
+      "sourceLabel": "Visit Concord · Side Gate",
+      "imageKey": "autumn-neighbors",
+      "verifiedAt": "2026-09-30",
+      "planning": {
+        "admissionUsd": null,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.visitconcordca.com/events/sidegate-trivia-night-with-geeks-who-drink/",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-07",
+          "validThrough": "2026-10-28",
+          "dates": {
+            "2026-10-07": [
+              {
+                "open": "18:30",
+                "close": "20:30"
+              }
+            ],
+            "2026-10-14": [
+              {
+                "open": "18:30",
+                "close": "20:30"
+              }
+            ],
+            "2026-10-21": [
+              {
+                "open": "18:30",
+                "close": "20:30"
+              }
+            ],
+            "2026-10-28": [
+              {
+                "open": "18:30",
+                "close": "20:30"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-07",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-10-14",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-10-21",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-10-28",
+              "start": "19:00"
+            }
+          ],
+          "note": "官方旅游日历列18:30–20:30，19:00开始答题；仅列出的四个周三有活动。"
+        }
+      }
+    },
+    {
       "id": "napa-water-wise-workshops-oct2026",
       "title": "Napa 节水花园讲座：先养土，再选耐旱植物",
       "startDate": "2026-10-07",
@@ -3812,6 +3986,57 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "sfpl-richmond-lego-oct7-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-07",
+      "occurrenceDates": [
+        "2026-10-07"
+      ],
+      "dateLabel": "10 月 7 日 · 16:00–17:30",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "Richmond：LEGO 自由搭建",
+      "venue": "Richmond/Senator Milton Marks Library · Richmond Meeting Room",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页未明确入场费 · 出发前向分馆确认",
+      "officialUrl": "https://sfpl.org/events/2026/10/07/activity-lego-free-play",
+      "summary": "用 LEGO 搭建高楼、堡垒或想象中的建筑。官方面向 5 岁及以上儿童，这场在 Richmond 分馆，不要与其他分馆的同名活动混淆。",
+      "plan": [
+        "10/7 16:00–17:30，官方日历确认；地点为 Richmond Meeting Room，面向 5 岁及以上儿童。",
+        "本场活动页未单列入场费用；Free Play 不是费用证据。未另说明时无需报名，最新安排向 Richmond 分馆确认。"
+      ],
+      "audience": [
+        "5 岁以上亲子",
+        "积木与动手"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "minAge": 5,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/07/activity-lego-free-play",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-07",
+          "validThrough": "2026-10-07",
+          "dates": {
+            "2026-10-07": [
+              {
+                "open": "16:00",
+                "close": "17:30"
+              }
+            ]
+          },
+          "note": "10/7 16:00–17:30，官方日历确认；地点为 Richmond Meeting Room，面向 5 岁及以上儿童。"
+        }
       }
     },
     {
@@ -4081,6 +4306,155 @@
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor"
+      }
+    },
+    {
+      "id": "sfpl-career-coaching-oct8-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "occurrenceDates": [
+        "2026-10-08"
+      ],
+      "dateLabel": "10 月 8 日 · 11:00–13:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "SFPL：免费一对一职业咨询",
+      "venue": "Main Library · Sycip Family Conference Room, 4th Floor",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费 · 每人每次 30 分钟，须预约",
+      "officialUrl": "https://sfpl.org/events/2026/10/08/workshop-career-coaching",
+      "summary": "与职业顾问一对一讨论求职和职业发展。免费咨询为现场预约服务，适合带着具体问题参加。",
+      "plan": [
+        "10/8 服务窗口为 11:00–13:00；实际每次咨询 30 分钟，须以预约确认中的时间安排，不能把两小时窗口当作已订时段。",
+        "官方明确免费，须通过活动页的预约入口预约，最多提前 15 天；每人限 2 次预约，仅现场咨询。"
+      ],
+      "audience": [
+        "求职与职业发展"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "required",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/08/workshop-career-coaching",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "note": "10/8 服务窗口为 11:00–13:00；实际每次咨询 30 分钟，须以预约确认中的时间安排，不能把两小时窗口当作已订时段。"
+        }
+      }
+    },
+    {
+      "id": "sfpl-ocean-view-stem-oct8-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "occurrenceDates": [
+        "2026-10-08"
+      ],
+      "dateLabel": "10 月 8 日 · 15:30–16:30",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "Ocean View：STEM 自由探索游戏",
+      "venue": "Ocean View Library · Ocean View Meeting Room",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页未明确入场费 · 出发前向分馆确认",
+      "officialUrl": "https://sfpl.org/events/2026/10/08/activity-stem-free-play",
+      "summary": "孩子可自由尝试水画、Octoplay 与 Little Builders。官方面向 3 岁及以上儿童及其照护者，适合放学后安排一小时探索。",
+      "plan": [
+        "10/8 15:30–16:30，以官方日历时间为准；Ocean View Meeting Room，3 岁及以上儿童须有照护者陪同。",
+        "标题中的 Free Play 指自由游戏，活动页没有明确入场费；不把它自动记作免费门票。未另说明时可直接到场，容量和临时调整向分馆确认。"
+      ],
+      "audience": [
+        "3 岁以上亲子",
+        "STEM 探索"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "minAge": 3,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/08/activity-stem-free-play",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "dates": {
+            "2026-10-08": [
+              {
+                "open": "15:30",
+                "close": "16:30"
+              }
+            ]
+          },
+          "note": "10/8 15:30–16:30，以官方日历时间为准；Ocean View Meeting Room，3 岁及以上儿童须有照护者陪同。"
+        }
+      }
+    },
+    {
+      "id": "sfpl-writing-gravity-oct8-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "occurrenceDates": [
+        "2026-10-08"
+      ],
+      "dateLabel": "10 月 8 日 · 18:00–19:15",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "SFPL：Writing Hard Enough to Shift Gravity 写作工坊",
+      "venue": "Main Library · Latino/Hispanic Community Room",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费写作工坊",
+      "officialUrl": "https://sfpl.org/events/2026/10/08/workshop-writing-hard-enough-shift-gravity",
+      "summary": "参与诗歌写作练习，把观察和想法转为文字。官方说明这是一场免费的写作密集练习。",
+      "plan": [
+        "官方日历列 10/8 18:00–19:15；正文称写作练习约一小时，计划保留完整 75 分钟活动窗口。",
+        "地点为 Main Library 的 Latino/Hispanic Community Room。官方明确免费；未另说明时无需报名，临时安排以图书馆公告为准。"
+      ],
+      "audience": [
+        "诗歌与写作"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/08/workshop-writing-hard-enough-shift-gravity",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-08",
+          "validThrough": "2026-10-08",
+          "dates": {
+            "2026-10-08": [
+              {
+                "open": "18:00",
+                "close": "19:15"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-08",
+              "start": "18:00",
+              "end": "19:15"
+            }
+          ],
+          "note": "官方日历列 10/8 18:00–19:15；正文称写作练习约一小时，计划保留完整 75 分钟活动窗口。"
+        }
       }
     },
     {
@@ -5227,6 +5601,62 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "sfpl-garden-green-bin-oct10-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "occurrenceDates": [
+        "2026-10-10"
+      ],
+      "dateLabel": "10 月 10 日 · 11:00–12:30",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "从花园到绿桶：在家实践气候行动",
+      "venue": "Main Library · Steve Silver Music Center, 4th Floor",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "活动页未明确入场费 · 出发前向分馆确认",
+      "officialUrl": "https://sfpl.org/events/2026/10/10/workshop-garden-green-bin-climate-action-home",
+      "summary": "学习花园、堆肥与家庭气候行动之间的联系。这场讲座在市中心 Main Library，适合对日常环保实践感兴趣的人。",
+      "plan": [
+        "10/10 11:00–12:30，Main Library 四楼 Steve Silver Music Center；时间来自官方日历。",
+        "活动页提到旧金山居民可获得免费堆肥，但没有明确本场入场费用；不把堆肥福利视为免费门票或现场一定可领取。"
+      ],
+      "audience": [
+        "园艺与环保"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/10/workshop-garden-green-bin-climate-action-home",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-10",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "11:00",
+                "close": "12:30"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-10",
+              "start": "11:00",
+              "end": "12:30"
+            }
+          ],
+          "note": "10/10 11:00–12:30，Main Library 四楼 Steve Silver Music Center；时间来自官方日历。"
+        }
       }
     },
     {
@@ -6968,6 +7398,63 @@
       }
     },
     {
+      "id": "palo-alto-pet-palooza-oct17-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10 月 17 日 · 10:00–12:00",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "sourceLabel": "City of Palo Alto",
+      "imageKey": "autumn-neighbors",
+      "title": "Palo Alto Pet Palooza：宠物游行与装扮赛",
+      "venue": "Cal Ave · 457–433 California Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费参加 · 须预先报名",
+      "officialUrl": "https://www.paloalto.gov/Events-Directory/Community-Services/Pet-Parade",
+      "summary": "Palo Alto 第二届宠物游行与装扮赛，欢迎行为良好的宠物与毛绒玩具参加。可以为宠物装扮，参加服饰、可爱或才艺类别比赛。",
+      "plan": [
+        "市府 2026 活动页确认 10/17 10:00–12:00，地点为 California Avenue 的 457–433 号路段。",
+        "市府明确参加免费，须预先报名；通过官方页面的 Register Here 入口完成报名，再确认宠物管理与比赛细则。"
+      ],
+      "audience": [
+        "宠物家庭",
+        "社区居民"
+      ],
+      "location": {
+        "lat": 37.4291646,
+        "lng": -122.1419126,
+        "label": "Cal Ave · 457–433 California Avenue",
+        "precision": "area",
+        "sourceUrl": "https://www.paloalto.gov/Events-Directory/Community-Services/Pet-Parade"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.paloalto.gov/Events-Directory/Community-Services/Pet-Parade",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "10:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "note": "市府 2026 活动页确认 10/17 10:00–12:00，地点为 California Avenue 的 457–433 号路段。"
+        }
+      }
+    },
+    {
       "id": "point-reyes-halloween-clothing-swap-2026",
       "kind": "event",
       "startDate": "2026-10-17",
@@ -7560,6 +8047,62 @@
       "imageKey": "autumn-neighbors",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sfpl-omi-history-day-oct17-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10 月 17 日 · 15:00–17:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "culture-visit",
+      "title": "OMI History Day：认识旧金山三个社区的历史",
+      "venue": "Ingleside Library · Ingleside Meeting Room",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费参加 · 无需历史背景",
+      "officialUrl": "https://sfpl.org/events/2026/10/17/presentation-ocean-view-merced-heights-and-ingleside-history-day",
+      "summary": "了解 Ocean View、Merced Heights 与 Ingleside 的社区历史。无需历史或文物保护知识，也可以参加。",
+      "plan": [
+        "10/17 15:00–17:00，Ingleside Meeting Room；官方日历明确起止时间。",
+        "官方明确活动免费，并说明无需历史或保护知识；未另说明时可直接到场。"
+      ],
+      "audience": [
+        "社区历史"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/presentation-ocean-view-merced-heights-and-ingleside-history-day",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "15:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "15:00",
+              "end": "17:00"
+            }
+          ],
+          "note": "10/17 15:00–17:00，Ingleside Meeting Room；官方日历明确起止时间。"
+        }
       }
     },
     {
@@ -9091,6 +9634,50 @@
       }
     },
     {
+      "id": "napa-tulocay-heritage-halloween-tour-2026",
+      "title": "Napa Tulocay：万圣节历史步行导览",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10/24 周六 · 16:00–17:30",
+      "region": "north-bay",
+      "city": "Napa",
+      "venue": "Tulocay Cemetery · 411 Coombsville Rd, Napa",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "非会员$45；NCHS会员$30；最终附加费与余票以售票页为准",
+      "summary": "由 Napa County Historical Society 组织的90分钟历史导览，了解当地人物与城市记忆。",
+      "plan": [
+        "从原入口内的 Juarez Building 集合，建议提前买票；不保证现场有余票。",
+        "路线有铺装路面但包含陡坡；穿适合步行的鞋，行动辅助设备需适合坡地。"
+      ],
+      "audience": [
+        "历史爱好者"
+      ],
+      "officialUrl": "https://donapa.com/event/heritage-halloween-tulocay-cemetery-tour/",
+      "sourceLabel": "Downtown Napa · Napa County Historical Society",
+      "imageKey": "culture-visit",
+      "verifiedAt": "2026-09-30",
+      "planning": {
+        "admissionUsd": 45,
+        "setting": "outdoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://donapa.com/event/heritage-halloween-tulocay-cemetery-tour/",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "16:00",
+              "end": "17:30"
+            }
+          ],
+          "note": "非会员$45；NCHS会员$30；最终附加费与余票以售票页为准"
+        }
+      }
+    },
+    {
       "id": "petaluma-coco-matinee-2026",
       "title": "Petaluma 5 美元亲子电影：《寻梦环游记》",
       "startDate": "2026-10-24",
@@ -9591,6 +10178,55 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sfpl-western-addition-open-house-oct24-2026",
+      "kind": "event",
+      "verifiedAt": "2026-09-30",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "occurrenceDates": [
+        "2026-10-24"
+      ],
+      "dateLabel": "10 月 24 日 · 12:00–16:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "sourceLabel": "San Francisco Public Library",
+      "imageKey": "autumn-neighbors",
+      "title": "Western Addition 图书馆社区开放日",
+      "venue": "Western Addition Library · Back Courtyard and branch activity spaces",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费娱乐与点心",
+      "officialUrl": "https://sfpl.org/events/2026/10/24/celebration-western-addition-open-house",
+      "summary": "到 Western Addition 分馆参加社区开放日，和家人一起体验图书馆活动。官方列明免费娱乐、点心和适合全家的节目。",
+      "plan": [
+        "10/24 12:00–16:00，官方日历确认；活动涉及分馆后院及馆内活动空间。",
+        "官方列明免费娱乐与点心；具体节目和食物供应以现场为准，交通和个人消费不包括在内。"
+      ],
+      "audience": [
+        "社区家庭"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/24/celebration-western-addition-open-house",
+          "verifiedAt": "2026-09-30",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-10-24",
+          "dates": {
+            "2026-10-24": [
+              {
+                "open": "12:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "10/24 12:00–16:00，官方日历确认；活动涉及分馆后院及馆内活动空间。"
+        }
       }
     },
     {
@@ -10710,6 +11346,41 @@
       }
     },
     {
+      "id": "san-jose-365-night-market-october-2026",
+      "title": "San Jose 365 Night Market：十月底夜市",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-31",
+      "occurrenceDates": [
+        "2026-10-30",
+        "2026-10-31"
+      ],
+      "dateLabel": "10/30–31 · 每日具体开放时段待确认",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "Grand Century Mall · 1111 Story Rd, San Jose",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "入场免费；食品、饮料和购物另付",
+      "summary": "两天的餐饮、购物与音乐夜市，适合把月底晚餐换成一次逛摊。",
+      "plan": [
+        "官网合并显示10/30 16:00至10/31 22:00，未分列两天时段；不代表通宵开放。",
+        "先在主办方页面核对当晚开放时间、RSVP和摊位安排，再安排交通。"
+      ],
+      "audience": [
+        "美食爱好者",
+        "朋友同行"
+      ],
+      "officialUrl": "https://www.365nightmarket.com/event-details/365-night-market-at-grand-century-mall-san-jose-2026-10-30-16-00",
+      "sourceLabel": "365 Night Market",
+      "imageKey": "autumn-neighbors",
+      "verifiedAt": "2026-09-30",
+      "planning": {
+        "admissionUsd": 0,
+        "programTimeUnconfirmed": true,
+        "reservation": "unknown"
+      }
+    },
+    {
       "id": "san-leandro-senior-halloween-bingo-2026",
       "title": "San Leandro 长者中心万圣节宾果下午",
       "startDate": "2026-10-30",
@@ -10854,6 +11525,44 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "palo-alto-cal-ave-halloween-live-2026",
+      "title": "Palo Alto Cal Ave：万圣节街区音乐日",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "dateLabel": "10/31 周六 · 暂定10:00–13:00，临行复核",
+      "region": "peninsula",
+      "city": "Palo Alto",
+      "venue": "California Avenue · El Camino Real–Birch Street, Palo Alto",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "活动免费；餐饮与购物另付，赠品数量以现场为准",
+      "summary": "在步行街听现场音乐、参加节日活动，把万圣节上午留给轻松的街区散步。",
+      "plan": [
+        "系列名虽为 Thursday Live，此特别场在10/31周六，按活动日期安排。",
+        "官方日期栏列10:00–13:00，正文仍称10:00暂定；时段与各项表演以市府后续确认为准。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "朋友同行"
+      ],
+      "officialUrl": "https://www.paloalto.gov/Events-Directory/City-Manager/Thursday-Live-on-Cal-Ave.-October-31",
+      "sourceLabel": "City of Palo Alto",
+      "imageKey": "autumn-neighbors",
+      "verifiedAt": "2026-09-30",
+      "location": {
+        "lat": 37.4262659,
+        "lng": -122.1417963,
+        "label": "California Avenue · El Camino Real–Birch Street",
+        "precision": "area",
+        "sourceUrl": "https://www.paloalto.gov/Events-Directory/City-Manager/Thursday-Live-on-Cal-Ave.-October-31"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "programTimeUnconfirmed": true
       }
     },
     {
@@ -11766,6 +12475,44 @@
         "admissionUsd": null,
         "setting": "outdoor"
       }
+    },
+    {
+      "id": "opening-dead-letter-sonoma-new-restaurant-2026",
+      "title": "Dead Letter",
+      "region": "north-bay",
+      "city": "Sonoma",
+      "summary": "the girl & the fig 团队在 Sonoma Plaza 的历史邮局建筑开设新餐厅，以时令食材、炭火烹调和分享菜为主，也有数字艺术展陈。官网当前提供菜单、营业时间与订位入口。",
+      "guideSlug": "",
+      "path": "/openings/dead-letter-sonoma-new-restaurant-2026",
+      "officialUrl": "https://www.deadlettersonoma.com/location/dead-letter/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "101 E Napa Street, Sonoma, CA 95476",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-sucre-damour-fremont-celebration-2026",
+      "title": "Sucré d’Amour Café & Sushi",
+      "region": "east-bay",
+      "city": "Fremont",
+      "summary": "Mission Boulevard 的新店把手作饮品、甜品、下午茶与寿司放在同一菜单。品牌官网已列常规营业时间与点单入口；Fremont 市府九月通讯另预告十月开业庆典。",
+      "guideSlug": "",
+      "path": "/openings/sucre-damour-fremont-celebration-2026",
+      "officialUrl": "https://www.sucredamourca.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "43571 Mission Blvd, Fremont, CA 94539",
+      "imageKey": "neighborhood-table",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
     },
     {
       "id": "opening-walnut-creek-vici-new-store-2026",

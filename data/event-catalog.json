@@ -336,6 +336,15 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "palo-alto-art-center-reception-oct2-2026",
+    "title": "Palo Alto Art Center：Live the moment light 公众开幕夜",
+    "startDate": "2026-10-02",
+    "endDate": "2026-10-02",
+    "occurrenceDates": [
+      "2026-10-02"
+    ]
+  },
+  {
     "id": "pleasanton-pumpkins-after-dark-2026",
     "title": "Pleasanton Pumpkins After Dark 南瓜灯夜游",
     "startDate": "2026-10-02",
@@ -668,6 +677,20 @@
     ]
   },
   {
+    "id": "oakland-drunken-film-fest-free-shorts-2026",
+    "title": "Oakland Drunken Film Fest：免费短片周",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-09",
+    "occurrenceDates": [
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09"
+    ]
+  },
+  {
     "id": "r2-marin-family-keepsake-20261004",
     "title": "San Rafael 家庭纪念物保存日",
     "startDate": "2026-10-04",
@@ -780,6 +803,18 @@
     "endDate": "2026-10-06"
   },
   {
+    "id": "concord-sidegate-trivia-october-2026",
+    "title": "Concord Side Gate：周三知识问答夜",
+    "startDate": "2026-10-07",
+    "endDate": "2026-10-28",
+    "occurrenceDates": [
+      "2026-10-07",
+      "2026-10-14",
+      "2026-10-21",
+      "2026-10-28"
+    ]
+  },
+  {
     "id": "napa-water-wise-workshops-oct2026",
     "title": "Napa 节水花园讲座：先养土，再选耐旱植物",
     "startDate": "2026-10-07",
@@ -815,6 +850,15 @@
     "title": "Rod Wave 旧金山演唱会",
     "startDate": "2026-10-07",
     "endDate": "2026-10-07"
+  },
+  {
+    "id": "sfpl-richmond-lego-oct7-2026",
+    "title": "Richmond：LEGO 自由搭建",
+    "startDate": "2026-10-07",
+    "endDate": "2026-10-07",
+    "occurrenceDates": [
+      "2026-10-07"
+    ]
   },
   {
     "id": "sj-sombr-2026",
@@ -860,6 +904,33 @@
     "title": "Quinteto Latino：午休听一小时木管五重奏",
     "startDate": "2026-10-08",
     "endDate": "2026-10-08"
+  },
+  {
+    "id": "sfpl-career-coaching-oct8-2026",
+    "title": "SFPL：免费一对一职业咨询",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08",
+    "occurrenceDates": [
+      "2026-10-08"
+    ]
+  },
+  {
+    "id": "sfpl-ocean-view-stem-oct8-2026",
+    "title": "Ocean View：STEM 自由探索游戏",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08",
+    "occurrenceDates": [
+      "2026-10-08"
+    ]
+  },
+  {
+    "id": "sfpl-writing-gravity-oct8-2026",
+    "title": "SFPL：Writing Hard Enough to Shift Gravity 写作工坊",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08",
+    "occurrenceDates": [
+      "2026-10-08"
+    ]
   },
   {
     "id": "silicon-valley-african-film-festival-2026",
@@ -1098,6 +1169,15 @@
     "title": "勇士对国王：NBA 季前赛",
     "startDate": "2026-10-10",
     "endDate": "2026-10-10"
+  },
+  {
+    "id": "sfpl-garden-green-bin-oct10-2026",
+    "title": "从花园到绿桶：在家实践气候行动",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10",
+    "occurrenceDates": [
+      "2026-10-10"
+    ]
   },
   {
     "id": "sj-sharks-oilers-2026",
@@ -1460,6 +1540,15 @@
     ]
   },
   {
+    "id": "palo-alto-pet-palooza-oct17-2026",
+    "title": "Palo Alto Pet Palooza：宠物游行与装扮赛",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
     "id": "point-reyes-halloween-clothing-swap-2026",
     "title": "Point Reyes 免费万圣节服装交换：成人、儿童与宠物",
     "startDate": "2026-10-17",
@@ -1575,6 +1664,15 @@
     "title": "Sunnydale 免费南瓜节：The Hub 两周年社区聚会",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "sfpl-omi-history-day-oct17-2026",
+    "title": "OMI History Day：认识旧金山三个社区的历史",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
   },
   {
     "id": "sonoma-dia-movie-night-2026",
@@ -1902,6 +2000,12 @@
     ]
   },
   {
+    "id": "napa-tulocay-heritage-halloween-tour-2026",
+    "title": "Napa Tulocay：万圣节历史步行导览",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "petaluma-coco-matinee-2026",
     "title": "Petaluma 5 美元亲子电影：《寻梦环游记》",
     "startDate": "2026-10-24",
@@ -1994,6 +2098,15 @@
     "title": "Thrive City 免费万圣节亲子庆典",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "sfpl-western-addition-open-house-oct24-2026",
+    "title": "Western Addition 图书馆社区开放日",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24",
+    "occurrenceDates": [
+      "2026-10-24"
+    ]
   },
   {
     "id": "sj-symphonic-spooktacular-2026",
@@ -2222,6 +2335,16 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "san-jose-365-night-market-october-2026",
+    "title": "San Jose 365 Night Market：十月底夜市",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-30",
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "san-leandro-senior-halloween-bingo-2026",
     "title": "San Leandro 长者中心万圣节宾果下午",
     "startDate": "2026-10-30",
@@ -2248,6 +2371,12 @@
   {
     "id": "mcm-halloween-spectacular-20261031",
     "title": "Marin Country Mart 万圣节装扮与讨糖",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "palo-alto-cal-ave-halloween-live-2026",
+    "title": "Palo Alto Cal Ave：万圣节街区音乐日",
     "startDate": "2026-10-31",
     "endDate": "2026-10-31"
   },
