@@ -40,6 +40,22 @@ test('multiple date alternatives and ranges require a choice, while a selected d
   assert.equal(inferFilters('10月3日和12岁的孩子一起出行', TODAY).date, '2026-10-03');
 });
 
+test('an adjacent weekday labels the explicit calendar date without becoming another date', async () => {
+  for (const message of ['10月17日周六，半岛两个人，不开车，想找免费活动', '10月17日（星期六）', 'Saturday, October 17', 'Oct 17, Saturday', '2026-10-17 Saturday']) {
+    assert.equal(inferFilters(message, '2026-09-30').date, '2026-10-17', message);
+  }
+  assert.equal(inferFilters('2027年1月3日周日', '2026-09-30').date, '2027-01-03');
+  assert.equal(inferFilters('January 3, 2027 Sunday', '2026-09-30').date, '2027-01-03');
+  for (const message of ['10月17日或周六', '10月17日，另一个周六', '10月17日周六或10月18日周日']) {
+    assert.throws(() => inferFilters(message, '2026-09-30'), /多个日期/, message);
+  }
+  assert.throws(() => inferFilters('10月17日周日', '2026-09-30'), /日期与星期不一致/);
+  assert.throws(() => inferFilters('October 17 Sunday', '2026-09-30', { en: true }), /date and weekday do not match/);
+  const result = await run([event('saturday', { region: 'peninsula', city: 'Palo Alto', cost: 'free', startDate: '2026-10-17', endDate: '2026-10-17', planning: { admissionUsd: 0 } })], { message: '10月17日周六，半岛两个人，不开车，想找免费活动' });
+  assert.equal(result.filters.date, '2026-10-17');
+  assert.equal(result.suggestions[0].eventId, 'saturday');
+});
+
 test('negated settings and transport are not reversed by rules or AI', async () => {
   assert.equal(inferFilters('不要室内活动', TODAY).setting, 'outdoor');
   assert.equal(inferFilters('avoid outdoor events', TODAY).setting, 'indoor');

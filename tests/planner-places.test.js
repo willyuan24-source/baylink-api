@@ -64,6 +64,41 @@ test('known opening dates and current closed-day evidence exclude places; stale 
   assert.deepEqual(result.placeSuggestions.map(row => row.placeId).sort(), ['stale', 'unknown']);
   assert.ok(result.placeSuggestions.every(row => row.unknowns.some(note => /时段未核实/.test(note))));
 });
+
+test('optional nearby stops respect the event day, closures and opening dates before entering a plan', async () => {
+  const location = { lat: 37.78, lng: -122.42, precision: 'venue' };
+  const main = { ...event, location };
+  for (const patch of [
+    { planning: { admissionUsd: 0, schedule: { ...hours, dates: { [date]: [] } } } },
+    { openingStatus: 'announced' },
+    { openedOn: '2026-10-04' },
+  ]) {
+    const candidate = place('nearby', { location, ...patch });
+    // No selected date: the anchor's next occurrence, not today's date, is authoritative.
+    const result = await recommend({ body: {}, catalog: { ...catalog([candidate]), events: [main] }, now });
+    assert.equal(result.suggestions[0].date, date);
+    assert.deepEqual(result.suggestions[0].placeIds, []);
+  }
+  const unknown = place('unknown', { location, planning: { admissionUsd: 0 } });
+  const result = await recommend({ body: {}, catalog: { ...catalog([unknown]), events: [main] }, now });
+  assert.deepEqual(result.suggestions[0].placeIds, ['unknown'], 'unknown hours remain explicitly unverified options');
+  assert.match(result.suggestions[0].unknowns.join(' '), /开放日.*另查/);
+});
+
+test('optional nearby stops never reintroduce replaced IDs or explicitly excluded places and categories', async () => {
+  const location = { lat: 37.78, lng: -122.42, precision: 'venue' };
+  const main = { ...event, location };
+  const candidate = place('nearby', { title: 'Crescent Museum', location });
+  for (const body of [
+    { excludePlaceIds: ['nearby'] },
+    { message: '音乐活动，不去 Crescent' },
+    { message: '音乐活动，不要博物馆' },
+  ]) {
+    const result = await recommend({ body, catalog: { ...catalog([candidate]), events: [main] }, now });
+    assert.equal(result.suggestions.length, 1);
+    assert.deepEqual(result.suggestions[0].placeIds, [], JSON.stringify(body));
+  }
+});
 test('region, setting, all child ages, group admission caps and free-only remain hard constraints', async () => {
   const places = [place('valid', { planning: { setting: 'indoor', admissionUsd: 10 } }), place('wrong-city', { city: 'Oakland' }), place('age', { planning: { setting: 'indoor', admissionUsd: 0, maxAge: 10 } }), place('over', { planning: { setting: 'indoor', admissionUsd: 30 } }), place('adult', { planning: { setting: 'indoor', minAge: 18 } })];
   const filters = { date, city: 'San Francisco', setting: 'indoor', childAges: [5, 12], partySize: 4, budgetScope: 'total', budget: 80 };
