@@ -419,6 +419,15 @@ test('q is a bounded literal across title, description and locations, never exec
   assert.equal((await f.request('?q[$regex]=.*')).status, 400);
 });
 
+test('whole known activity themes expand across languages without turning arbitrary searches into regex', async t => {
+  const f = await fixture(t);
+  await discoverySeed(f, [{ title: 'Museum afternoon' }, { title: '一起看展' }, { title: '周日展覽' }, { title: 'Morning walking' }, { title: '海边漫步' }, { title: 'Coffee friends' }, { title: '咖啡聊天' }, { title: 'Hiking together' }, { title: '徒步见面' }, { title: 'Unrelated' }].map(row => ({ ...row, description: '一起认识邻居' })));
+  for (const [q, count] of [['看展', 3], ['museum', 3], ['散步', 2], ['walking', 2], ['coffee', 2], ['hike', 2], ['Coffee friends', 1], ['.*', 0]]) {
+    const result = await f.request(`?q=${encodeURIComponent(q)}`);
+    assert.equal(result.status, 200, q); assert.equal(result.data.outings.length, count, q);
+  }
+});
+
 test('inclusive date ranges and language filters combine without changing the old exact date semantics', async t => {
   const f = await fixture(t);
   await discoverySeed(f, [{ date: '2026-10-03', language: 'zh' }, { date: '2026-10-04', language: 'en' }, { date: '2026-10-05', language: 'any' }, { date: '2026-10-06', language: 'zh' }]);

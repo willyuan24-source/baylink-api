@@ -28,6 +28,7 @@ const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
 const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
+const { outingChatIntent } = require('./lib/outingChatIntent');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -4418,6 +4419,8 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     return res.status(429).json(errorResponse('提问过于频繁，请 60 秒后再试'));
   }
   const message = normalized.message;
+  const outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now() });
+  if (outingReply) { res.set('Cache-Control', 'no-store'); return res.json(outingReply); }
   // Only deterministic intent/retrieval sees aliases. Preserve the original message and history for the model.
   const analysisMessage = normalizeGuideQuery(message);
   const analysisHistory = history.map(item => item.role === 'user' ? { ...item, content: normalizeGuideQuery(item.content) } : item);
