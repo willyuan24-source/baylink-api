@@ -133,9 +133,9 @@ test('provider request bounds Responses web_search to two calls, medium context 
   assert.equal(request.body.max_output_tokens, 2400);
   assert.equal(result.responseMode, 'web');
 });
-test('dated searches always append an application reminder in the requested language even if the model omits it', async () => {
+test('dated event discovery retains the useful cited answer and an application reminder in every locale', async () => {
   const response = raw(); const part = response.output[1].content[0];
-  part.text = '因此 2026-10-03 营业 10:00–22:00。[source]';
+  part.text = '海湾秋季艺术节，安排与参与条件请查看主办方。[source]';
   part.annotations[0].start_index = part.text.indexOf('[source]');
   part.annotations[0].end_index = part.text.length;
   const options = { ai: async () => response, lookup, now: () => NOW };
@@ -146,10 +146,10 @@ test('dated searches always append an application reminder in the requested lang
     en: "BAYLINK verification reminder: Confirm actual opening hours, ticket availability and temporary changes for your selected date 2026-10-03 with the sources; regular weekly hours do not guarantee opening that day. The times above are web-search results, not BAYLINK's confirmation for that day.",
   };
   for (const [locale, reminder] of Object.entries(reminders)) {
-    const result = await requestSearch({ query: 'Gott’s hours', date: '2026-10-03', locale }, options);
+    const result = await requestSearch({ query: '湾区秋季艺术活动', date: '2026-10-03', locale }, options);
     assert.deepEqual(result, { ...extracted, candidateStatus: 'unavailable', answer: `${extracted.answer}\n\n${reminder}` });
   }
-  assert.deepEqual(await requestSearch({ query: 'Gott’s hours', locale: 'en' }, options), { ...extracted, candidateStatus: 'unavailable' });
+  assert.deepEqual(await requestSearch({ query: '湾区秋季艺术活动', locale: 'en' }, options), { ...extracted, candidateStatus: 'unavailable' });
 });
 test('same query cache preserves original checkedAt and same in-flight query spends only one call', async t => {
   let calls = 0; let time = NOW;

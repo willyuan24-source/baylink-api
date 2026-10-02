@@ -1615,7 +1615,7 @@ const authenticateToken = async (req, res, next) => {
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
 registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
 registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
-const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup });
+const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
