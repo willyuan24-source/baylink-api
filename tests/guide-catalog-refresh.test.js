@@ -32,7 +32,7 @@ test('all nine September refresh benefits are reachable by brand with their cond
     ['Nothing Bundt Cakes 生日', '18+ 会员凭生日券，到店领个人 Bundtlet', '18 岁及以上', 'https://www.nothingbundtcakes.com/faqs/'],
     ['Jamba 新会员', '新会员冰沙半价，第二次指定食物半价', '各用一次', 'https://www.jamba.com/about/faq'],
     ['Caltrain 青少年票', '5–18 岁乘 Caltrain，全线单程 $1、日票 $2', '普通银行卡不会自动识别青少年资格', 'https://www.caltrain.com/fares'],
-    ['SFMTA 免费长者 Muni', '合资格 SF 65+ 居民可申请免费 Muni，含缆车', '不是所有长者自动免费', 'https://www.sfmta.com/vi/node/12193'],
+    ['SFMTA 免费长者 Muni', '合资格 SF 65+ 居民可申请免费 Muni，含缆车', '不是所有长者自动免费', 'https://www.sfmta.com/fares/free-muni-seniors-ages-65'],
     ['Chase Center Muni', 'Chase Center 活动票，包含当天 Muni 乘车', '不含 cable cars、BART 或 Caltrain', 'https://www.sfmta.com/fares/your-chase-center-event-ticket-your-muni-fare'],
     ['South Novato The Shop', 'South Novato 免费手作空间，缝纫修车自己动手', '未满 18 岁由监护人签署', 'https://marinlibrary.org/the-shop/'],
     ['Marin City The Lab', 'Marin City 免费创作空间，学习 3D 打印与播客', '8 岁以下须监护人陪同', 'https://marinlibrary.org/the-lab/'],

@@ -547,6 +547,23 @@
     ]
   },
   {
+    "id": "sausalito-goblin-jamboree-2026",
+    "title": "Sausalito Goblin Jamboree：儿童博物馆的万圣节探索",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-24",
+      "2026-10-25",
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "sf-african-arts-festival-2026",
     "title": "非洲艺术节：草坪上的鼓乐、舞蹈与市集",
     "startDate": "2026-10-03",
@@ -621,6 +638,12 @@
     "occurrenceDates": [
       "2026-10-04"
     ]
+  },
+  {
+    "id": "alameda-point-antiques-october-2026",
+    "title": "Alameda Point 古董市集：为新家找一件旧物",
+    "startDate": "2026-10-04",
+    "endDate": "2026-10-04"
   },
   {
     "id": "berkeley-cal-sailing-open-house-oct4-2026",
@@ -797,6 +820,12 @@
     ]
   },
   {
+    "id": "sf-mandarin-conversation-oct6-2026",
+    "title": "旧金山总图书馆中文对话：下班后认识新朋友",
+    "startDate": "2026-10-06",
+    "endDate": "2026-10-06"
+  },
+  {
     "id": "sf-warriors-lakers-preseason-2026",
     "title": "勇士对湖人：NBA 季前赛",
     "startDate": "2026-10-06",
@@ -892,6 +921,12 @@
     "occurrenceDates": [
       "2026-10-08"
     ]
+  },
+  {
+    "id": "sf-chinatown-calligraphy-oct8-2026",
+    "title": "唐人街中文书法临帖：先打电话预约的小课堂",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08"
   },
   {
     "id": "sf-exploratorium-after-dark-08-oct2026",
@@ -1420,6 +1455,12 @@
     ]
   },
   {
+    "id": "sf-sundown-beetlejuice-2026",
+    "title": "Sundown Cinema 季末场：Crane Cove 免费电影夜",
+    "startDate": "2026-10-16",
+    "endDate": "2026-10-16"
+  },
+  {
     "id": "sf-warriors-blazers-preseason-2026",
     "title": "勇士对开拓者：NBA 季前赛",
     "startDate": "2026-10-16",
@@ -1736,7 +1777,7 @@
   },
   {
     "id": "sf-sunday-streets-excelsior-oct18-2026",
-    "title": "Sunday Streets Excelsior：免费街区运动日",
+    "title": "Sunday Streets Excelsior：把一段 Mission Street 交给行人",
     "startDate": "2026-10-18",
     "endDate": "2026-10-18",
     "occurrenceDates": [
@@ -2094,6 +2135,12 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "sf-presidio-artspan-oct24-2026",
+    "title": "Presidio 免费艺术开放日：在 Sports Basement 遇见创作者",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "sf-thrive-thrill-o-ween-2026",
     "title": "Thrive City 免费万圣节亲子庆典",
     "startDate": "2026-10-24",
@@ -2352,6 +2399,12 @@
     "occurrenceDates": [
       "2026-10-30"
     ]
+  },
+  {
+    "id": "sf-scaregrove-2026",
+    "title": "Scaregrove：Stern Grove 免费万圣节嘉年华",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-30"
   },
   {
     "id": "stanford-halloween-concert-2026",
