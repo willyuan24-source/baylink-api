@@ -8055,7 +8055,22 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
       "planning": {
-        "admissionUsd": 0
+        "admissionUsd": 0,
+        "schedule": {
+          "sourceUrl": "https://thehubinsf.org/event/sunnydale-pumpkin-fest-2/",
+          "verifiedAt": "2026-10-02",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "12:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "note": "南瓜节整体活动窗口；具体节目与临时变动请以主办方当天公告为准。"
+        }
       }
     },
     {
