@@ -52,6 +52,18 @@ async function fixture(t, options = {}) {
 }
 const plan = { title: 'Saturday together', date: '2026-09-26', stops: [{ kind: 'event', id: 'known' }, { kind: 'place', id: 'nearby' }] };
 
+test('private planning memory validates budget and setting, is account scoped and can be cleared', async t => {
+  const { request } = await fixture(t);
+  const patch = value => request('/preferences', { as: 'owner', method: 'PATCH', body: value });
+  assert.equal((await patch({ admissionBudgetUsd: 35.5, setting: 'indoor' })).status, 200);
+  const mine = await request('/me', { as: 'owner' }), other = await request('/me', { as: 'other' });
+  assert.equal(mine.data.preferences.admissionBudgetUsd, 35.5); assert.equal(mine.data.preferences.setting, 'indoor');
+  assert.equal(other.data.preferences.admissionBudgetUsd, undefined);
+  for (const value of [{ admissionBudgetUsd: -1 }, { admissionBudgetUsd: '10' }, { admissionBudgetUsd: 10001 }, { setting: 'private-house' }]) assert.equal((await patch(value)).status, 400);
+  assert.equal((await patch({ admissionBudgetUsd: null, setting: 'any' })).status, 200);
+  assert.equal((await request('/me', { as: 'owner' })).data.preferences.admissionBudgetUsd, null);
+});
+
 test('Chinese and mixed language filters resolve Pacific dates, region, budget, age and setting', () => {
   assert.deepEqual(inferFilters('这周六 Fremont 出发，5岁孩子，预算40，室内公共交通', '2026-09-23'), { date: '2026-09-26', region: 'east-bay', budget: 40, childAge: 5, setting: 'indoor', travelMode: 'transit' });
   assert.equal(inferFilters('10/03 San Francisco under $30', '2026-09-23').date, '2026-10-03');

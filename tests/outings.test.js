@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { createMemoryModels } = require('./support/memory-models');
-const { createOutingModel, loadOutingCatalog, validateOutingInput } = require('../lib/outings');
+const { createOutingModel, loadOutingCatalog, validateOutingInput, validateOutingCover } = require('../lib/outings');
 const { outingSearch, cityRegex } = require('../lib/outingSearch');
 
 const SECRET = 'outing-isolated-test-secret', START = Date.parse('2026-09-30T16:00:00Z');
@@ -40,6 +40,105 @@ async function fixture(t, extra = {}) {
   const message = async (id, as, value = '你好，周日见！', fields = {}) => request(`/${id}/messages`, { as, method: 'POST', body: { text: value, revision: (await get(id, as)).data.outing.revision, idempotencyKey: key(), ...fields } });
   return { models, request, key, create, get, act, join, accept, message, setNow: value => { current = value; } };
 }
+
+const pollOptions = () => [{ date: '2026-10-04', startTime: '10:00', endTime: '12:00' }, { date: '2026-10-11', startTime: '14:00', endTime: '16:00' }];
+async function pollAction(f, id, action, fields = {}, as = 'host') {
+  const current = f.models.Outing.rows.find(row => row.id === id);
+  return f.request(`/${id}/time-poll`, { as, method: 'POST', body: { action, revision: current.revision, idempotencyKey: f.key(), ...fields } });
+}
+
+test('time poll keeps existing arrangement, exposes only private aggregate availability and explicitly adopts with reconfirmation', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice'); await f.join(id, 'bob');
+  const original = (await f.get(id)).data.outing;
+  const opened = await pollAction(f, id, 'create', { options: pollOptions() });
+  assert.equal(opened.status, 200, JSON.stringify(opened.data));
+  const pollId = opened.data.outing.timePoll.id;
+  assert.equal(opened.data.outing.planVersion, original.planVersion); assert.equal(opened.data.outing.date, original.date);
+  assert.equal(opened.data.outing.timePoll.eligibleCount, 2); assert.equal(opened.data.outing.timePoll.repliedCount, 0);
+  for (const who of [undefined, 'outsider', 'bob']) assert.equal((await f.request(`/${id}`, { as: who })).data.outing.timePoll, undefined);
+  assert.equal((await f.request('', { as: 'host' })).data.outings[0].timePoll, undefined);
+  const vote = await pollAction(f, id, 'vote', { pollId, answers: { 'option-1': 'maybe', 'option-2': 'yes' } }, 'alice');
+  assert.equal(vote.status, 200); assert.equal(vote.data.outing.timePoll.repliedCount, 1);
+  assert.deepEqual(vote.data.outing.timePoll.myAnswers, { 'option-1': 'maybe', 'option-2': 'yes' });
+  const hostPoll = (await f.get(id)).data.outing.timePoll;
+  assert.equal(hostPoll.myAnswers, null); assert.deepEqual(hostPoll.options[1].counts, { yes: 1, maybe: 0, no: 0 });
+  assert.doesNotMatch(JSON.stringify(hostPoll), /alice|votes|userId/);
+  const adopted = await pollAction(f, id, 'adopt', { pollId, optionId: 'option-2' });
+  assert.equal(adopted.status, 200); assert.equal(adopted.data.outing.date, '2026-10-11'); assert.equal(adopted.data.outing.startTime, '14:00');
+  assert.equal(adopted.data.outing.planVersion, original.planVersion + 1); assert.equal(adopted.data.outing.timePoll.status, 'adopted');
+  assert.equal(adopted.data.outing.members.find(row => row.userId === 'alice').confirmedVersion, original.planVersion, 'yes vote never becomes consent to the new arrangement');
+  assert.equal((await f.message(id, 'alice')).status, 409);
+  assert.equal((await f.act(id, 'reconfirm', 'alice')).status, 200);
+  assert.equal((await pollAction(f, id, 'vote', { pollId, answers: { 'option-1': 'no', 'option-2': 'yes' } }, 'alice')).status, 409);
+});
+
+test('time poll checks every candidate against actual event dates and rejects injected or incomplete input', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  const invalid = [[], [pollOptions()[0]], [...pollOptions(), ...pollOptions()], [pollOptions()[0], pollOptions()[0]],
+    [pollOptions()[0], { ...pollOptions()[1], date: '2026-10-05' }], [pollOptions()[0], { ...pollOptions()[1], endTime: '13:00' }],
+    [pollOptions()[0], { ...pollOptions()[1], hostId: 'outsider' }], [pollOptions()[0], { date: '2026-10-11' }]];
+  for (const options of invalid) assert.equal((await pollAction(f, id, 'create', { options })).status, 400, JSON.stringify(options));
+  assert.equal(f.models.Outing.rows[0].timePoll, undefined);
+  const created = await pollAction(f, id, 'create', { options: pollOptions() }), pollId = created.data.outing.timePoll.id;
+  for (const answers of [{}, { 'option-1': 'yes' }, { 'option-1': 'yes', 'option-2': 'unknown' }, { 'option-1': 'yes', 'option-2': 'no', other: 'yes' }]) {
+    assert.equal((await pollAction(f, id, 'vote', { pollId, answers })).status, 400);
+  }
+  assert.equal((await pollAction(f, id, 'create', { options: pollOptions() })).status, 409);
+});
+
+test('time poll denies applicants, non-host adoption, blocked accounts and retries after membership removal', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice'); await f.join(id, 'bob');
+  const opened = await pollAction(f, id, 'create', { options: pollOptions() }), pollId = opened.data.outing.timePoll.id;
+  for (const who of ['bob', 'outsider']) assert.equal((await pollAction(f, id, 'vote', { pollId, answers: { 'option-1': 'yes', 'option-2': 'yes' } }, who)).status, 403);
+  assert.equal((await pollAction(f, id, 'adopt', { pollId, optionId: 'option-2' }, 'alice')).status, 403);
+  const body = { action: 'vote', pollId, answers: { 'option-1': 'no', 'option-2': 'yes' }, revision: f.models.Outing.rows[0].revision, idempotencyKey: f.key() };
+  assert.equal((await f.request(`/${id}/time-poll`, { as: 'alice', method: 'POST', body })).status, 200);
+  f.models.UserBlock.rows.push({ blockerId: 'alice', blockedUserId: 'host' });
+  assert.equal((await f.get(id, 'alice')).data.outing.timePoll, undefined);
+  assert.equal((await f.request(`/${id}/time-poll`, { as: 'alice', method: 'POST', body })).status, 403, 'replay still checks blocking');
+  f.models.UserBlock.rows.length = 0;
+  assert.equal((await f.act(id, 'remove', 'host', { userId: 'alice' })).status, 200);
+  assert.equal((await f.request(`/${id}/time-poll`, { as: 'alice', method: 'POST', body })).status, 403);
+  assert.equal((await f.get(id)).data.outing.timePoll.repliedCount, 0, 'removed availability does not remain in totals');
+});
+
+test('time poll votes are idempotent and concurrent operations never silently overwrite a response', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice');
+  const opened = await pollAction(f, id, 'create', { options: pollOptions() }), pollId = opened.data.outing.timePoll.id, revision = opened.data.outing.revision;
+  const bodies = ['host', 'alice'].map(() => ({ action: 'vote', pollId, revision, idempotencyKey: f.key(), answers: { 'option-1': 'yes', 'option-2': 'maybe' } }));
+  const votes = await Promise.all(['host', 'alice'].map((as, index) => f.request(`/${id}/time-poll`, { as, method: 'POST', body: bodies[index] })));
+  assert.deepEqual(votes.map(result => result.status).sort(), [200, 409]);
+  const winner = votes.findIndex(result => result.status === 200), as = ['host', 'alice'][winner], body = bodies[winner];
+  assert.equal((await f.request(`/${id}/time-poll`, { as, method: 'POST', body })).status, 200);
+  assert.equal((await f.get(id)).data.outing.timePoll.repliedCount, 1);
+  assert.equal((await f.request(`/${id}/time-poll`, { as, method: 'POST', body: { ...body, answers: { 'option-1': 'no', 'option-2': 'no' } } })).status, 409);
+  const current = f.models.Outing.rows[0].revision;
+  const closeOrAdopt = await Promise.all([{ action: 'close' }, { action: 'adopt', optionId: 'option-2' }].map(action => f.request(`/${id}/time-poll`, { as: 'host', method: 'POST', body: { ...action, pollId, revision: current, idempotencyKey: f.key() } })));
+  assert.deepEqual(closeOrAdopt.map(result => result.status).sort(), [200, 409]);
+});
+
+test('ending polls preserves times; editing arrangements invalidates old polls; cancelled and past outings cannot coordinate', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  const opened = await pollAction(f, id, 'create', { options: pollOptions() }), pollId = opened.data.outing.timePoll.id;
+  const closed = await pollAction(f, id, 'close', { pollId });
+  assert.equal(closed.data.outing.timePoll.status, 'closed'); assert.equal(closed.data.outing.planVersion, 1); assert.equal(closed.data.outing.date, '2026-10-04');
+  await pollAction(f, id, 'create', { options: pollOptions() });
+  const revision = f.models.Outing.rows[0].revision;
+  const edited = await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { city: 'Oakland', revision, idempotencyKey: f.key() } });
+  assert.equal(edited.data.outing.timePoll.closeReason, 'arrangement-changed');
+  const next = await pollAction(f, id, 'create', { options: pollOptions() });
+  await f.act(id, 'cancel');
+  assert.equal((await pollAction(f, id, 'adopt', { pollId: next.data.outing.timePoll.id, optionId: 'option-2' })).status, 409);
+  const secondId = (await f.create({ eventId: null, date: '2026-10-17' })).data.outing.id;
+  const second = await pollAction(f, secondId, 'create', { options: [{ date: '2026-10-16', startTime: '10:00', endTime: '12:00' }, { date: '2026-10-18', startTime: '10:00', endTime: '12:00' }] });
+  f.setNow(Date.parse('2026-10-16T18:00:00Z'));
+  assert.equal((await pollAction(f, secondId, 'adopt', { pollId: second.data.outing.timePoll.id, optionId: 'option-1' })).status, 409);
+  f.setNow(Date.parse('2026-10-17T18:00:00Z'));
+  assert.equal((await pollAction(f, secondId, 'adopt', { pollId: second.data.outing.timePoll.id, optionId: 'option-2' })).status, 409, 'cannot revive an already started outing');
+});
 
 test('outing validation enforces exact catalog occurrences, continuous ranges, DST and canonical URLs', () => {
   const rows = loadOutingCatalog(catalog);
@@ -150,6 +249,75 @@ test('noncritical descriptions do not revoke confirmations and stale edits fail'
   assert.equal(edit.status, 200); assert.equal(edit.data.outing.planVersion, 1);
   assert.equal((await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { title: '旧修改', revision: 1, idempotencyKey: f.key() } })).status, 409);
   assert.equal((await f.request(`/${id}`, { as: 'alice', method: 'PATCH', body: { title: '越权修改', revision: 2, idempotencyKey: f.key() } })).status, 403);
+});
+
+test('outing covers accept bounded editorial references and reject URL or metadata injection', () => {
+  assert.equal(validateOutingCover(undefined), undefined);
+  for (const cover of [{ kind: 'auto' }, { kind: 'card' }, ...['guide', 'event', 'offer', 'opening'].map(kind => ({ kind, id: 'Bay-area_2026' }))]) {
+    assert.deepEqual(validateOutingCover(cover), cover);
+    assert.notEqual(validateOutingCover(cover), cover, 'validated references are copied');
+  }
+  assert.doesNotThrow(() => validateOutingCover({ kind: 'guide', id: 'a'.repeat(140) }));
+  for (const cover of [null, [], 'auto', {}, { kind: 'photo', id: 'image' }, { kind: 'card', id: 'image' }, { kind: 'auto', url: 'https://example.test/image' },
+    { kind: 'guide' }, { kind: 'guide', id: '' }, { kind: 'guide', id: '_guide' }, { kind: 'event', id: 1 }, { kind: 'event', id: '../other' },
+    { kind: 'offer', id: 'https://example.test/image' }, { kind: 'opening', id: 'javascript:alert(1)' }, { kind: 'guide', id: 'a'.repeat(141) },
+    { kind: 'guide', id: 'a', credit: 'fake credit' }, { kind: 'guide', id: 'a\n' }, JSON.parse('{"kind":"guide","id":"a","__proto__":{}}')]) {
+    assert.throws(() => validateOutingCover(cover), undefined, JSON.stringify(cover));
+  }
+});
+
+test('cover choices persist across public lists and details without changing event linkage or legacy rows', async t => {
+  const f = await fixture(t);
+  const legacy = await f.create();
+  assert.equal(Object.hasOwn(legacy.data.outing, 'cover'), false);
+  for (const cover of [{ kind: 'auto' }, { kind: 'card' }, ...['guide', 'event', 'offer', 'opening'].map(kind => ({ kind, id: `${kind}-reference` }))]) {
+    const created = await f.create({ cover });
+    assert.equal(created.status, 200, JSON.stringify(created.data));
+    assert.deepEqual(f.models.Outing.rows.find(row => row.id === created.data.outing.id).cover, cover);
+    const detail = (await f.request(`/${created.data.outing.id}`)).data.outing;
+    assert.deepEqual(detail.cover, cover); assert.equal(detail.eventId, 'weekly');
+    assert.equal(detail.date, '2026-10-04'); assert.equal(detail.venue, 'Central Park 入口');
+    assert.deepEqual((await f.request('')).data.outings.find(row => row.id === detail.id).cover, cover);
+  }
+  for (const cover of [null, { kind: 'image', id: 'a' }, { kind: 'card', id: 'a' }, { kind: 'guide', id: 'a', src: '/guides/photo.webp' }]) {
+    assert.equal((await f.create({ cover })).status, 400);
+  }
+  assert.equal(f.models.Outing.rows.length, 7, 'invalid cover requests do not allocate outings');
+});
+
+test('cover edits keep confirmations and notices unchanged while enforcing revisions, ownership and retries', async t => {
+  const f = await fixture(t), id = (await f.create()).data.outing.id;
+  await f.join(id, 'alice'); await f.accept(id, 'alice');
+  const before = (await f.get(id)).data.outing, messageCount = f.models.Message.rows.length;
+  const body = { cover: { kind: 'guide', id: 'coastal-day-guide' }, revision: before.revision, idempotencyKey: f.key() };
+  const edited = await f.request(`/${id}`, { as: 'host', method: 'PATCH', body });
+  assert.equal(edited.status, 200, JSON.stringify(edited.data));
+  assert.deepEqual(edited.data.outing.cover, body.cover);
+  assert.equal(edited.data.outing.revision, before.revision + 1);
+  assert.equal(edited.data.outing.planVersion, before.planVersion);
+  assert.deepEqual(edited.data.outing.members, before.members);
+  assert.equal(f.models.Message.rows.length, messageCount);
+  assert.equal((await f.request(`/${id}`, { as: 'host', method: 'PATCH', body })).status, 200, 'identical retry is idempotent');
+  assert.equal((await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { ...body, cover: { kind: 'card' } } })).status, 409);
+  assert.equal((await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { ...body, idempotencyKey: f.key() } })).status, 409, 'stale edits fail');
+  assert.equal((await f.request(`/${id}`, { as: 'alice', method: 'PATCH', body: { ...body, revision: edited.data.outing.revision, idempotencyKey: f.key() } })).status, 403);
+  const reset = await f.request(`/${id}`, { as: 'host', method: 'PATCH', body: { cover: { kind: 'auto' }, revision: edited.data.outing.revision, idempotencyKey: f.key() } });
+  assert.equal(reset.status, 200); assert.deepEqual(reset.data.outing.cover, { kind: 'auto' });
+  assert.equal(reset.data.outing.planVersion, before.planVersion);
+  assert.equal((await f.message(id, 'alice')).status, 200, 'members can still discuss without reconfirming');
+});
+
+test('production outing schema preserves covers, accepts legacy records and rejects malformed persisted values', () => {
+  const Outing = createOutingModel(require('mongoose'));
+  const base = { id: 'cover-model', hostId: 'host' };
+  for (const cover of [undefined, { kind: 'card' }, { kind: 'guide', id: 'guide-reference' }]) {
+    const document = new Outing({ ...base, ...(cover ? { cover } : {}) });
+    assert.equal(document.validateSync(), undefined);
+    assert.deepEqual(document.toObject().cover, cover);
+  }
+  for (const cover of [null, { kind: 'photo', id: 'a' }, { kind: 'auto', id: 'a' }, { kind: 'guide', id: 'https://example.test/image' }]) {
+    assert.ok(new Outing({ ...base, cover }).validateSync()?.errors.cover, JSON.stringify(cover));
+  }
 });
 
 test('withdrawal and removal atomically revoke private discussion and release seats', async t => {

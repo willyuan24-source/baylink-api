@@ -24,7 +24,7 @@ function structured(rows, citations = {}, answer = '已找到有来源的地点�
 async function fixture(t, options = {}) {
   const models = options.models || createMemoryModels();
   const app = express(); app.use(express.json());
-  registerPlannerWebSearch(app, { Quota: models.PostTranslationQuota, checkRateLimit: () => true, ai: async () => raw(), isTest: true, now: () => NOW, lookup, ...options });
+  registerPlannerWebSearch(app, { Quota: models.PostTranslationQuota, checkRateLimit: () => true, ai: async () => raw(), isTest: true, now: () => NOW, lookup, ...options, config: { OPENAI_WEB_SEARCH_MAX_TOOL_CALLS: '1', ...options.config } });
   const server = await new Promise(resolve => { const server = app.listen(0, '127.0.0.1', () => resolve(server)); });
   t.after(() => new Promise(resolve => server.close(resolve)));
   const request = async body => {
@@ -104,7 +104,7 @@ test('unsafe, forged, oversized or unexpected candidate details cannot be promot
 test('candidate protocol is bounded and malformed blocks preserve the cited answer without guessed cards', async () => {
   const rows = Array.from({ length: 7 }, (_, i) => ({ name: `Venue ${i} [venue]`, city: null, summary: null, timeSummary: null, priceSummary: null }));
   const result = await extractSearchResult(structured([rows[0], ...rows], { '[venue]': 'https://venue.org/' }), { lookup, now: () => NOW });
-  assert.equal(result.candidates.length, 3); assert.equal(new Set(result.candidates.map(row => row.id)).size, 3);
+  assert.equal(result.candidates.length, 5); assert.equal(new Set(result.candidates.map(row => row.id)).size, 5);
   for (const broken of ['[broken JSON]', '[{"name":"Unfinished']) {
     const response = raw(); response.output[1].content[0].text += `\nBAYLINK_CANDIDATES_V1\n${broken}${broken.endsWith(']') ? '\nEND_BAYLINK_CANDIDATES_V1' : ''}`;
     const fallback = await extractSearchResult(response, { lookup, now: () => NOW });
@@ -113,7 +113,7 @@ test('candidate protocol is bounded and malformed blocks preserve the cited answ
   }
   assert.equal('candidates' in await extractSearchResult(raw(), { lookup, now: () => NOW }), false, 'legacy prose is never parsed into cards');
 });
-test('provider request uses Responses web_search once, low context and no persisted conversation', async () => {
+test('provider request bounds Responses web_search to two calls, medium context and no persisted conversation', async () => {
   let request;
   const input = validateSearchInput({ query: 'SF museums', locale: 'en' });
   const result = await requestSearch(input, { config: { OPENAI_API_KEY: 'isolated-test-placeholder' }, lookup, now: () => NOW,
@@ -122,15 +122,15 @@ test('provider request uses Responses web_search once, low context and no persis
   });
   assert.equal(request.url, 'https://api.openai.com/v1/responses');
   assert.equal(request.body.model, 'gpt-4.1-mini');
-  assert.equal(request.body.store, false); assert.equal(request.body.tool_choice, 'required'); assert.equal(request.body.max_tool_calls, 1);
-  assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'low', external_web_access: true }]);
+  assert.equal(request.body.store, false); assert.equal(request.body.tool_choice, 'required'); assert.equal(request.body.max_tool_calls, 2);
+  assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'medium', external_web_access: true }]);
   assert.equal(request.body.input, JSON.stringify(input)); assert.ok(request.signal instanceof AbortSignal);
   assert.match(request.body.instructions, /plain text: no Markdown headings/);
   assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
   assert.match(request.body.instructions, /temporary changes.*official site/);
   assert.match(request.body.instructions, /retrieval time is not the source publication, update or confirmation date/);
   assert.equal(request.body.text, undefined, 'the reliable search call must not require unsupported structured output');
-  assert.equal(request.body.max_output_tokens, 1800);
+  assert.equal(request.body.max_output_tokens, 2400);
   assert.equal(result.responseMode, 'web');
 });
 test('dated searches always append an application reminder in the requested language even if the model omits it', async () => {

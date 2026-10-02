@@ -40,7 +40,8 @@ async function fixture(t, options = {}) {
   const add = (postId = 'cleaning', slots = [slot()], as = 'provider') => request(`/posts/${postId}/slots`, { as, method: 'POST', body: { slots, idempotencyKey: key() } });
   const book = (slotId, as = 'customer', postId = 'cleaning', idempotencyKey = key()) => request(`/posts/${postId}/book`, { as, method: 'POST', body: { slotId, idempotencyKey } });
   const action = (booking, action, as = 'provider', idempotencyKey = key()) => request(`/${booking.providerId}/${booking.id}/actions`, { as, method: 'POST', body: { action, idempotencyKey } });
-  return { models, request, configure, add, book, action, setNow: value => { current = value; }, key };
+  const reschedule = (booking, body, as = 'customer', idempotencyKey = key()) => request(`/${booking.providerId}/${booking.id}/reschedule`, { as, method: 'POST', body: { ...body, idempotencyKey } });
+  return { models, request, configure, add, book, action, reschedule, setNow: value => { current = value; }, key };
 }
 
 test('LA wall-clock dates handle seasonal offsets and reject invalid, ambiguous, past and cross-day slots', () => {
@@ -52,6 +53,122 @@ test('LA wall-clock dates handle seasonal offsets and reject invalid, ambiguous,
   assert.throws(() => parseSlot(slot('2026-09-29'), START), /未来/);
   assert.throws(() => parseSlot(slot('2026-10-02', '23:00', '01:00'), START), /同一天/);
   assert.throws(() => parseSlot(slot('2026-10-02', '09:00', '09:10'), START), /15分钟/);
+});
+
+test('rescheduling keeps the original time until the counterparty accepts, then moves atomically and retries once', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant' });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [oldSlot, newSlot] = added.data.slots;
+  const booking = (await f.book(oldSlot.id)).data.booking;
+  const proposed = await f.reschedule(booking, { action: 'propose', slotId: newSlot.id }, 'customer', 'propose-once');
+  assert.equal(proposed.status, 200); assert.equal(proposed.data.booking.startAt, oldSlot.startAt);
+  const proposal = proposed.data.booking.reschedule;
+  assert.equal(proposal.status, 'pending'); assert.equal(proposal.proposedBy, 'customer');
+  assert.equal((await f.reschedule(booking, { action: 'propose', slotId: newSlot.id }, 'customer', 'propose-once')).data.booking.reschedule.id, proposal.id);
+  assert.deepEqual((await f.request('/posts/cleaning')).data.slots.map(row => row.available), [false, true]);
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'customer')).status, 403);
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'third')).status, 404);
+  const accepted = await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider', 'accept-once');
+  assert.equal(accepted.status, 200); assert.equal(accepted.data.booking.startAt, newSlot.startAt); assert.equal(accepted.data.booking.status, 'confirmed');
+  assert.equal(accepted.data.booking.reschedule.status, 'accepted');
+  assert.deepEqual((await f.request('/posts/cleaning')).data.slots.map(row => row.available), [true, false]);
+  await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider', 'accept-once');
+  assert.equal(f.models.ServiceBookingAgenda.rows[0].bookings.length, 1);
+  assert.equal(f.models.Message.rows.length, 3, 'one booking, proposal and acceptance notice');
+  assert.match(f.models.Message.rows[1].content, /提议时间：2026-10-03/);
+  assert.match(f.models.Message.rows[2].content, /双方已同意改期/);
+  assert.ok(!JSON.stringify(accepted.data.booking).includes('Operations'));
+});
+
+test('provider proposals require customer consent and rejection or withdrawal preserves the original arrangement', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant' });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [a, b] = added.data.slots;
+  const booking = (await f.book(a.id)).data.booking;
+  let proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id }, 'provider')).data.booking.reschedule;
+  assert.equal((await f.reschedule(booking, { action: 'withdraw', proposalId: proposal.id }, 'customer')).status, 403);
+  assert.equal((await f.reschedule(booking, { action: 'decline', proposalId: proposal.id }, 'customer')).data.booking.reschedule.status, 'declined');
+  proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id }, 'customer')).data.booking.reschedule;
+  assert.equal((await f.reschedule(booking, { action: 'withdraw', proposalId: proposal.id }, 'customer')).data.booking.reschedule.status, 'withdrawn');
+  const current = (await f.request('/me', { as: 'customer' })).data.asCustomer[0];
+  assert.equal(current.startAt, a.startAt); assert.equal(current.status, 'confirmed');
+  assert.deepEqual((await f.request('/posts/cleaning')).data.slots.map(row => row.available), [false, true]);
+  assert.equal((await f.action(booking, 'cancel', 'customer')).status, 200, 'rescheduling receipts do not consume cancellation capacity');
+});
+
+test('a concurrent new booking cannot steal the old reservation during reschedule acceptance', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant' });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [a, b] = added.data.slots;
+  const booking = (await f.book(a.id)).data.booking;
+  const proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  const responses = await Promise.all([f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider'), f.book(b.id, 'other')]);
+  assert.deepEqual(responses.map(row => row.status).sort(), [200, 409]);
+  const current = (await f.request('/me', { as: 'customer' })).data.asCustomer[0];
+  assert.equal(current.startAt, responses[0].status === 200 ? b.startAt : a.startAt);
+  if (responses[0].status === 409) assert.equal(current.reschedule.status, 'pending');
+  const active = f.models.ServiceBookingAgenda.rows[0].bookings.filter(row => row.status === 'confirmed');
+  assert.equal(active.filter(row => row.startAt === b.startAt).length, 1);
+});
+
+test('a removed proposed slot or disabled listing leaves the original booking intact and permits withdrawal', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant' });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [a, b] = added.data.slots;
+  const booking = (await f.book(a.id)).data.booking;
+  const proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  assert.equal((await f.request(`/posts/cleaning/slots/${b.id}`, { as: 'provider', method: 'DELETE' })).status, 200);
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider')).status, 409);
+  await f.configure('cleaning', { enabled: false });
+  assert.equal((await f.reschedule(booking, { action: 'withdraw', proposalId: proposal.id }, 'customer')).status, 200);
+  assert.equal((await f.request('/me', { as: 'customer' })).data.asCustomer[0].startAt, a.startAt);
+});
+
+test('rescheduling rechecks the old start time after asynchronous account checks', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant', minNoticeMinutes: 0 });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [a, b] = added.data.slots;
+  const booking = (await f.book(a.id)).data.booking;
+  const original = f.models.Post.findOne;
+  f.models.Post.findOne = (...args) => { f.setNow(a.startAt); return original(...args); };
+  assert.equal((await f.reschedule(booking, { action: 'propose', slotId: b.id })).status, 409);
+  const current = f.models.ServiceBookingAgenda.rows[0].bookings[0]; assert.equal(current.reschedule, undefined); assert.equal(current.startAt, a.startAt);
+});
+
+test('reschedule checks current eligibility, buffer, stale proposal IDs, expiration and booking cancellation', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant', bufferMinutes: 30 });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-02', '10:15', '11:15'), slot('2026-10-03')]), [a, adjacent, b] = added.data.slots;
+  const booking = (await f.book(a.id)).data.booking;
+  const options = await f.request(`/provider/${booking.id}/reschedule-options`, { as: 'customer' });
+  assert.equal(options.data.slots.find(row => row.id === adjacent.id).available, true, 'the original booking will be moved, so its own buffer does not block the replacement');
+  assert.equal((await f.request(`/provider/${booking.id}/reschedule-options`, { as: 'third' })).status, 404);
+  assert.equal((await f.reschedule(booking, { action: 'propose', slotId: a.id })).status, 409);
+  let proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: 'stale-id' }, 'provider')).status, 409);
+  await f.models.UserBlock.create({ blockerId: 'provider', blockedUserId: 'customer' });
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider')).status, 403);
+  assert.equal((await f.reschedule(booking, { action: 'decline', proposalId: proposal.id }, 'provider')).status, 200);
+  f.models.UserBlock.rows.length = 0;
+  proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  f.setNow(proposal.expiresAt + 1);
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider')).status, 409);
+  let current = (await f.request('/me', { as: 'customer' })).data.asCustomer[0];
+  assert.equal(current.reschedule.status, 'expired'); assert.equal(current.startAt, a.startAt);
+  proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  await f.action(booking, 'cancel', 'customer');
+  assert.equal((await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider')).status, 409);
+  current = (await f.request('/me', { as: 'customer' })).data.asCustomer[0];
+  assert.equal(current.reschedule.status, 'cancelled'); assert.equal(current.status, 'cancelled');
+});
+
+test('recovered notices retain the old time snapshot after a later successful reschedule', async t => {
+  const f = await fixture(t); await f.configure('cleaning', { mode: 'instant' });
+  const added = await f.add('cleaning', [slot(), slot('2026-10-03')]), [a, b] = added.data.slots;
+  const original = f.models.Message.findOneAndUpdate;
+  f.models.Message.findOneAndUpdate = () => { throw new Error('isolated notice outage'); };
+  const booking = (await f.book(a.id)).data.booking;
+  const proposal = (await f.reschedule(booking, { action: 'propose', slotId: b.id })).data.booking.reschedule;
+  await f.reschedule(booking, { action: 'accept', proposalId: proposal.id }, 'provider');
+  f.models.Message.findOneAndUpdate = original;
+  await f.request('/me', { as: 'customer' });
+  const initial = f.models.Message.rows.find(row => !/改期/.test(row.content));
+  assert.match(initial.content, /2026-10-02 09:00/);
+  assert.equal(f.models.Message.rows.length, 3);
 });
 
 test('only current service authors with verified phone or approved official review can enable booking', async t => {

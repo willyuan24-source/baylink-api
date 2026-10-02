@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const { createMemoryModels } = require('./support/memory-models');
 const { selectConversationGuides, resolveConversationRequest, groundedGuideFallback, isSchoolRequest } = require('../lib/guideConversation');
+const { normalizeGuideQuery } = require('../lib/guideLocale');
 
 dotenv.config = () => { throw new Error('School tests must not load .env'); };
 mongoose.connect = async () => { throw new Error('School tests must not connect to Mongo'); };
@@ -32,6 +33,16 @@ const family = {
 const rent = { slug: 'rent', url: '/guides/rent', title: '租房押金与租约', summary: '租房前核对合同。', keywords: ['租房'], content: '租房预算与押金', categories: ['rent'] };
 const catalog = [family, rent, sf, east];
 const history = question => [{ role: 'user', content: question }, { role: 'assistant', content: '请核对官方入口。' }];
+
+test('visitor-venue admission is not school enrollment, while explicit educational admission remains educational', () => {
+  for (const message of ['Oakland museum admission prices', 'Zoo admission fees for a school group', 'Aquarium admission for children', 'Theme park admission tickets', 'What is admission to the university museum?', 'Admission prices at the concert venue', 'Gallery entry tickets']) {
+    assert.equal(isSchoolRequest(message), false, message);
+    assert.equal(isSchoolRequest(normalizeGuideQuery(message)), false, `normalized: ${message}`);
+  }
+  for (const message of ['School admission requirements', 'University admissions deadlines', 'College applications and enrollment', 'Admissions to a university', 'How do I enroll my child in school?', '学校入学要准备什么', 'Compare university admissions and museum admission prices']) {
+    assert.equal(isSchoolRequest(message), true, message);
+  }
+});
 
 test('school enrollment excludes family freebies even when the request includes children and free education', () => {
   for (const message of ['孩子免费公立学校怎么入学', '刚搬到 Fremont，孩子上学怎么办', '東灣孩子入學要哪些材料', 'How do I enroll my child in a public school?']) {
