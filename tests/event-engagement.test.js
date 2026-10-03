@@ -297,3 +297,115 @@ test('the complete exported catalog is returned through bounded frontend engagem
   assert.deepEqual(returned, catalog.map(row => row.id), 'every published event is returned once without truncation');
   t.diagnostic(`${catalog.length} published events returned in ${Math.ceil(catalog.length / batchSize)} bounded batches`);
 });
+
+const MERGED_ID = 'alameda-point-antiques-oct-2026';
+const LEGACY_ID = 'alameda-point-antiques-october-2026';
+const MERGED_CATALOG = [{ ...CATALOG[0], id: MERGED_ID }];
+const mergedInterest = (userId, eventId, fields = {}) => interest(userId, { eventId, ...fields });
+
+test('merged event IDs preserve historical interest, deduplicate counts and buddy pages, and echo each requested ID without mutating reads', async t => {
+  assert.equal(require('../data/event-id-aliases.json')[LEGACY_ID], MERGED_ID);
+  const { request, models } = await fixture(t, {
+    catalog: MERGED_CATALOG,
+    interests: [
+      mergedInterest('owner', MERGED_ID), mergedInterest('owner', LEGACY_ID, { lookingForBuddy: true }),
+      mergedInterest('other', LEGACY_ID, { lookingForBuddy: true }), mergedInterest('other', MERGED_ID, { lookingForBuddy: true }),
+      mergedInterest('third', LEGACY_ID),
+    ],
+    blocks: [{ blockerId: 'owner', blockedUserId: 'other' }],
+  });
+  const original = JSON.stringify(models.EventInterest.rows);
+  const response = await request(`/events/engagement?ids=${LEGACY_ID},${MERGED_ID},${LEGACY_ID}`, { as: 'owner' });
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.data.events, [LEGACY_ID, MERGED_ID].map(eventId => ({ eventId, interestedCount: 3, buddyCount: 2, me: { interested: true, lookingForBuddy: true } })));
+  for (const eventId of [LEGACY_ID, MERGED_ID]) {
+    const first = await request(`/events/${eventId}/buddies?limit=1`);
+    assert.equal(first.status, 200);
+    assert.equal(first.data.eventId, eventId);
+    assert.deepEqual(first.data.buddies.map(row => row.id), ['other']);
+    const next = await request(`/events/${eventId}/buddies?limit=1&cursor=${first.data.nextCursor}`);
+    assert.deepEqual(next.data.buddies.map(row => row.id), ['owner']);
+    assert.equal(next.data.nextCursor, null, 'the same user on both IDs appears only once across pages');
+    assert.deepEqual((await request(`/events/${eventId}/buddies`, { as: 'owner' })).data.buddies.map(row => row.id), ['owner']);
+  }
+  assert.equal(JSON.stringify(models.EventInterest.rows), original, 'compatibility reads never migrate historical rows');
+});
+
+test('joining via either merged URL writes one canonical row; explicit private interest clears legacy public opt-in', async t => {
+  const { request, put, models } = await fixture(t, { catalog: MERGED_CATALOG, interests: [mergedInterest('other', LEGACY_ID, { lookingForBuddy: true })] });
+  const writes = await Promise.all([LEGACY_ID, MERGED_ID, LEGACY_ID].map(id => put({ interested: true, lookingForBuddy: true }, 'owner', id)));
+  assert.ok(writes.every(row => row.status === 200));
+  assert.deepEqual(writes.map(row => row.data.eventId), [LEGACY_ID, MERGED_ID, LEGACY_ID]);
+  assert.deepEqual(models.EventInterest.rows.filter(row => row.userId === 'owner').map(row => row.eventId), [MERGED_ID]);
+  const privateOnly = await put({ interested: true, lookingForBuddy: false }, 'other', LEGACY_ID);
+  assert.equal(privateOnly.status, 200);
+  assert.equal(privateOnly.data.eventId, LEGACY_ID);
+  assert.deepEqual(privateOnly.data.me, { interested: true, lookingForBuddy: false });
+  assert.equal(privateOnly.data.interestedCount, 2);
+  assert.equal(privateOnly.data.buddyCount, 1);
+  assert.deepEqual((await request(`/events/${MERGED_ID}/buddies`)).data.buddies.map(row => row.id), ['owner']);
+  assert.ok(models.EventInterest.rows.filter(row => row.eventId === LEGACY_ID).every(row => !row.interested && !row.lookingForBuddy));
+});
+
+test('cancelling through either merged URL clears both records and never creates absent membership', async t => {
+  for (const requested of [LEGACY_ID, MERGED_ID]) {
+    const { request, put, models } = await fixture(t, {
+      catalog: MERGED_CATALOG,
+      interests: [mergedInterest('owner', LEGACY_ID, { lookingForBuddy: true }), mergedInterest('owner', MERGED_ID, { lookingForBuddy: true }), mergedInterest('other', LEGACY_ID, { lookingForBuddy: true })],
+    });
+    const cancelled = await put({ interested: false, lookingForBuddy: false }, 'owner', requested);
+    assert.equal(cancelled.status, 200);
+    assert.deepEqual(cancelled.data, { eventId: requested, interestedCount: 1, buddyCount: 1, me: { interested: false, lookingForBuddy: false } });
+    assert.ok(models.EventInterest.rows.filter(row => row.userId === 'owner').every(row => !row.interested && !row.lookingForBuddy));
+    for (const id of [LEGACY_ID, MERGED_ID]) assert.deepEqual((await request(`/events/${id}/buddies`)).data.buddies.map(row => row.id), ['other']);
+    assert.equal((await put({ interested: false, lookingForBuddy: false }, 'third', requested)).status, 200);
+    assert.equal(models.EventInterest.rows.length, 3);
+  }
+});
+
+test('merged-event public withdrawal clears all aliases for expired or limited members without restoring cancelled interest', async t => {
+  for (const expired of [false, true]) {
+    const catalog = expired ? [{ ...CATALOG[2], id: MERGED_ID }] : MERGED_CATALOG;
+    const denied = expired ? 410 : 403;
+    const { put, models } = await fixture(t, {
+      catalog, users: [user('owner', { accountStatus: expired ? 'active' : 'limited' })],
+      interests: [mergedInterest('owner', LEGACY_ID, { lookingForBuddy: true }), mergedInterest('owner', MERGED_ID, { lookingForBuddy: true })],
+    });
+    const withdrawn = await put({ interested: true, lookingForBuddy: false }, 'owner', LEGACY_ID);
+    assert.equal(withdrawn.status, 200);
+    assert.equal(withdrawn.data.eventId, LEGACY_ID);
+    assert.deepEqual(withdrawn.data.me, { interested: true, lookingForBuddy: false });
+    assert.ok(models.EventInterest.rows.every(row => row.interested && !row.lookingForBuddy));
+    await put({ interested: false, lookingForBuddy: false }, 'owner', MERGED_ID);
+    assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', LEGACY_ID)).status, denied);
+    assert.equal(models.EventInterest.rows.length, 2);
+    assert.ok(models.EventInterest.rows.every(row => !row.interested && !row.lookingForBuddy));
+
+    models.EventInterest.rows.forEach(row => { row.interested = true; row.lookingForBuddy = true; });
+    const originalUpdate = models.EventInterest.findOneAndUpdate;
+    models.EventInterest.findOneAndUpdate = async (query, update, options) => {
+      assert.equal(Object.hasOwn(update.$set, 'interested'), false);
+      assert.equal(options.upsert, false);
+      models.EventInterest.rows.forEach(row => { row.interested = false; row.lookingForBuddy = false; });
+      return originalUpdate(query, update, options);
+    };
+    assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', LEGACY_ID)).status, denied);
+    assert.ok(models.EventInterest.rows.every(row => !row.interested && !row.lookingForBuddy), 'a concurrent full cancellation wins over a restricted public withdrawal');
+  }
+});
+
+test('merged-event cleanup failures are explicit, and an alias cannot resurrect an event missing from the catalog', async t => {
+  const { request, put, models } = await fixture(t, { catalog: MERGED_CATALOG, interests: [mergedInterest('owner', LEGACY_ID, { lookingForBuddy: true })] });
+  const updateMany = models.EventInterest.updateMany;
+  models.EventInterest.updateMany = async () => { throw new Error('cleanup failed'); };
+  assert.equal((await put({ interested: false, lookingForBuddy: false }, 'owner', LEGACY_ID)).status, 503);
+  assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', MERGED_ID)).status, 503, 'an incomplete privacy withdrawal must not report success');
+  models.EventInterest.updateMany = updateMany;
+  assert.equal((await put({ interested: false, lookingForBuddy: false }, 'owner', LEGACY_ID)).status, 200);
+  assert.deepEqual((await request(`/events/${LEGACY_ID}/buddies`)).data.buddies, []);
+  const missing = await fixture(t);
+  assert.equal((await missing.request(`/events/engagement?ids=${LEGACY_ID}`)).status, 404);
+  assert.equal((await missing.request(`/events/${LEGACY_ID}/buddies`)).status, 404);
+  assert.equal((await missing.put({ interested: true, lookingForBuddy: true }, 'owner', LEGACY_ID)).status, 404);
+  assert.equal(missing.models.EventInterest.rows.length, 0);
+});

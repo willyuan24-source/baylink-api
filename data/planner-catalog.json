@@ -2319,6 +2319,37 @@
       }
     },
     {
+      "id": "newark-resident-shredding-october-2026",
+      "title": "居民免费碎纸：带证件和地址证明",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-03",
+      "dateLabel": "10月3日 9:00–12:00",
+      "region": "east-bay",
+      "city": "Newark",
+      "venue": "Newark Service Center, 37440 Filbert Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "符合资格的 Newark 居民免费；每户最多两箱",
+      "summary": "10月3日9:00–12:00，Newark Service Center 接收居民文件碎纸，每户限两箱 banker-sized boxes。无需预约、先到先服务；带身份证件和公用事业账单，企业另需有效 Newark 营业执照。",
+      "plan": [
+        "先整理为最多两箱 banker-sized boxes，带身份证件和公用事业账单；企业带有效 Newark 营业执照。",
+        "9:00–12:00无需预约，先到先服务；预计可能排队，不把截止时间当作保证接收承诺。",
+        "编辑建议出发前查看警方活动页的材料限制，不混装未经确认可处理的物品。"
+      ],
+      "audience": [
+        "本地居民",
+        "新居民"
+      ],
+      "officialUrl": "https://www.newarkca.gov/departments/police/document-shredding-event",
+      "sourceLabel": "City of Newark",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
       "id": "oakland-oaktoberfest-2026",
       "title": "Oakland Oaktoberfest：Dimond 街区啤酒节",
       "startDate": "2026-10-03",
@@ -2464,6 +2495,37 @@
       "imageKey": "coverage-redwood-port",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "roundup-dixon-lambtown-2026",
+      "title": "Dixon Lambtown 羊毛与牧羊文化节",
+      "kind": "event",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "dateLabel": "10/3 9:00–17:30；10/4 9:00–16:00",
+      "region": "north-bay",
+      "city": "Dixon",
+      "venue": "Dixon May Fairgrounds, 655 S First Street",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "节庆需购票；工作坊另查报名与费用",
+      "summary": "围绕羊毛、纤维工艺与牧羊文化的周末活动，可看示范、逛材料摊位。",
+      "plan": [
+        "先在官网选择节庆票；工作坊另行查看名额，不把入场票当课程票。",
+        "周日比周六早结束；主办方说明雨天照常，按天气准备。",
+        "工作坊和示范的时间可能重叠，先选最想看的项目再逛摊位。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "手作爱好者"
+      ],
+      "officialUrl": "https://www.lambtown.org/",
+      "sourceLabel": "Lambtown Festival 主办方",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null
       }
     },
     {
@@ -2903,48 +2965,18 @@
     },
     {
       "id": "alameda-point-antiques-oct-2026",
-      "title": "Alameda Point 十月古董市集",
+      "title": "Alameda Point 古董市集：为新家找一件旧物",
       "startDate": "2026-10-04",
       "endDate": "2026-10-04",
       "occurrenceDates": [
         "2026-10-04"
       ],
-      "dateLabel": "10/4 · 06:00–15:00；分入场时间定价",
-      "region": "east-bay",
-      "city": "Alameda",
-      "venue": "Alameda Point Antiques Faire · 3900 Main Street, Alameda, CA 94501",
-      "category": "food",
-      "kind": "event",
-      "cost": "paid",
-      "costLabel": "6–7:30 $20；7:30–9 $15；9–13 $10；13–15 $5；成人陪同的 12 岁以下儿童免费，停车免费。",
-      "summary": "在旧物摊位寻找复古家居、服饰和收藏品。",
-      "plan": [
-        "时间安排：06:00–15:00；分入场时间定价。",
-        "费用与参加条件：6–7:30 $20；7:30–9 $15；9–13 $10；13–15 $5；成人陪同的 12 岁以下儿童免费，停车免费。 仅两档早场提供在线票；现场售票现金付款。恶劣天气可能顺延；服务犬以外不允许宠物。",
-        "出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
-      ],
-      "audience": [
-        "社区居民",
-        "朋友结伴"
-      ],
-      "officialUrl": "https://alamedapointantiquesfaire.com/",
-      "sourceLabel": "alamedapointantiquesfaire.com",
-      "verifiedAt": "2026-09-28",
-      "imageKey": "weekend",
-      "planning": {
-        "admissionUsd": null
-      }
-    },
-    {
-      "id": "alameda-point-antiques-october-2026",
-      "title": "Alameda Point 古董市集：为新家找一件旧物",
-      "startDate": "2026-10-04",
-      "endDate": "2026-10-04",
       "dateLabel": "10 月 4 日 · 06:00–15:00，分时段票价",
       "region": "east-bay",
       "city": "Alameda",
       "venue": "Alameda Point Antiques Faire · 3900 Main Street",
       "category": "culture",
+      "kind": "event",
       "cost": "paid",
       "costLabel": "入场 $5–20 · 未满 12 岁随成人免费，购物另付",
       "summary": "逛二十年以上的复古家具、衣物、书籍与家饰，适合刚搬来湾区想慢慢布置家的人。入场越晚越便宜，找特定物件与随意逛街可以选不同预算。",
@@ -4041,7 +4073,7 @@
       "title": "AI 基础设施扩展问题交流晚餐",
       "startDate": "2026-10-07",
       "endDate": "2026-10-07",
-      "dateLabel": "10/7 · 18:00–21:00",
+      "dateLabel": "原列 10/7；报名页已下线，当前场次待确认",
       "region": "sf",
       "city": "San Francisco",
       "venue": "具体场所尚未公开",
@@ -4049,21 +4081,22 @@
       "kind": "meetup",
       "cost": "unknown",
       "costLabel": "票价未可靠显示，不能据报名页的数量选择器 0 判定免费",
-      "summary": "围绕 AI 系统扩大规模后的架构、成本和稳定性问题，进行问答及晚餐交流。",
+      "summary": "原活动介绍为 AI 基础设施交流晚餐。10/2 复核时原报名页返回 404，主办方当前日历未再列出这一场，暂不作为可参加的活动推荐；尚不能据此断定取消。",
       "plan": [
-        "时间安排：18:00–21:00。",
-        "费用与参加条件：票价未可靠显示，不能据报名页的数量选择器 0 判定免费 席位有限，需主办方审核；场所尚未公开。",
-        "出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
+        "先向主办方确认这场活动是否仍举行、日期地点与报名方式。",
+        "原链接已不可访问；当前官方日历仅作联系和重新查找入口，不代表原场次恢复。",
+        "在获得新公告或确认之前，不按旧时间安排出行或付款。"
       ],
       "audience": [
         "AI 开发者",
         "创业者",
         "研究者"
       ],
-      "officialUrl": "https://luma.com/leverage-ph18",
-      "sourceLabel": "luma.com",
-      "verifiedAt": "2026-09-28",
+      "officialUrl": "https://luma.com/LeverageSF?k=c",
+      "sourceLabel": "Leverage SF 官方日历 · 原场次待确认",
+      "verifiedAt": "2026-10-02",
       "imageKey": "weekend",
+      "occurrenceDates": [],
       "planning": {
         "admissionUsd": null
       }
@@ -4281,6 +4314,68 @@
           ],
           "note": "15:30–16:30 固定手作场，仅面向 5–14 岁；无需报名，材料提供。项目为木制造型彩绘，不是食物领取。"
         }
+      }
+    },
+    {
+      "id": "roundup-tiburon-asian-greens-2026",
+      "title": "Tiburon Master Gardeners 亚洲叶菜种植课",
+      "kind": "event",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "dateLabel": "10/8 · 14:30–16:00",
+      "region": "north-bay",
+      "city": "Tiburon",
+      "venue": "Belvedere Tiburon Library, Founders Room, 1501 Tiburon Boulevard",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "需登记；当前活动页未单列收费",
+      "summary": "向 Master Gardeners 了解亚洲叶菜与家庭种植的实用做法。",
+      "plan": [
+        "先查看报名是否仍有名额，再安排到 Founders Room。",
+        "可先整理阳光、容器和种植问题，方便现场提问。",
+        "本场是14:30的园艺课；同日傍晚另有维修咨询，报名不要选错。"
+      ],
+      "audience": [
+        "本地居民",
+        "家庭园艺爱好者"
+      ],
+      "officialUrl": "https://www.beltiblibrary.org/event?id=17243593",
+      "sourceLabel": "Belvedere Tiburon Library 官方园艺活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "roundup-tiburon-repair-advice-2026",
+      "title": "Tiburon Makerspace 维修咨询晚间场",
+      "kind": "event",
+      "startDate": "2026-10-08",
+      "endDate": "2026-10-08",
+      "dateLabel": "10/8 · 17:30–19:00",
+      "region": "north-bay",
+      "city": "Tiburon",
+      "venue": "Belvedere Tiburon Library, Makerspace, 1501 Tiburon Boulevard",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "先登记待修物件；当前页未单列收费",
+      "summary": "带小电器、玩具、织物或自行车问题来咨询维修思路。",
+      "plan": [
+        "通过活动页链接登记物件，并描述故障，先确认受理范围。",
+        "这是咨询协助，不保证当晚修好，也不承诺备件供应。",
+        "记录型号与故障现象再出门，个人资料与贵重配件先自行妥善保管。"
+      ],
+      "audience": [
+        "本地居民",
+        "旧物修理爱好者"
+      ],
+      "officialUrl": "https://www.beltiblibrary.org/event?id=15458206",
+      "sourceLabel": "Belvedere Tiburon Library 官方活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "refresh-makers",
+      "planning": {
+        "admissionUsd": null
       }
     },
     {
@@ -4862,6 +4957,67 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "albany-fire-pancake-breakfast-2026",
+      "title": "消防站煎饼早餐回归",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10月10日 8:00–12:00",
+      "region": "east-bay",
+      "city": "Albany",
+      "venue": "Albany Fire Station, 1000 San Pablo Avenue",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "成人8美元；12岁及以下5美元，现场买票",
+      "summary": "10月10日8:00–12:00到1000 San Pablo Avenue 认识消防员、看消防车与安全示范。成人8美元，12岁及以下5美元，现场购票；收入支持烧伤关怀基金会。",
+      "plan": [
+        "早餐时段8:00–12:00；直接到消防站现场买票，不把捐款入口当成活动门票。",
+        "可看消防车与消防、天然气安全示范；抽奖另按现场规则，不保证奖品。",
+        "编辑建议步行或按周边标志停车，避免占用消防车辆出入口。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.albanyca.gov/City-Calendar/2026/Albany-Fire-Department-Pancake-Breakfast-2026",
+      "sourceLabel": "City of Albany",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "antioch-kids-fishing-derby-2026",
+      "title": "15岁及以下免费钓鱼比赛",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10月10日 9:00–13:00",
+      "region": "east-bay",
+      "city": "Antioch",
+      "venue": "Waldie Plaza / Antioch Public Fishing Pier",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "15岁及以下儿童免费；当天登记",
+      "summary": "10月10日9:00–13:00，儿童钓鱼比赛在 Waldie Plaza 与公共钓鱼码头一带举行，活动当天报名。自带鱼竿最稳妥，主办方也提供借用鱼竿；未确认数量，不能保证人人借到。",
+      "plan": [
+        "9:00–13:00举办，带孩子在活动当天登记；参与年龄为15岁及以下。",
+        "尽量自带鱼竿；主办方提供借用鱼竿，但没有确认可借数量。",
+        "编辑建议带饮水、防晒及防滑鞋，照看临水活动并遵循工作人员指引。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.antiochca.gov/216/Kids-Fishing-Derby",
+      "sourceLabel": "City of Antioch",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "weekend",
+      "planning": {
+        "admissionUsd": 0
       }
     },
     {
@@ -5575,19 +5731,19 @@
       "occurrenceDates": [
         "2026-10-10"
       ],
-      "dateLabel": "10/10 · 两场：11:00–12:00、12:00–13:00。",
+      "dateLabel": "10/10 · 11:00 上午场已满；另有 12:00 场次入口",
       "region": "east-bay",
       "city": "Richmond",
       "venue": "Richmond Art Center · 2540 Barrett Avenue, Richmond, CA 94804",
       "category": "family",
       "kind": "event",
       "cost": "free",
-      "costLabel": "免费；建议预先登记。",
+      "costLabel": "免费；11:00 场已满、可候补，12:00 场余位以报名系统为准。",
       "summary": "在90周年展览中体验木刻版画，用馆内作品获得创作灵感。",
       "plan": [
-        "时间安排：两场：11:00–12:00、12:00–13:00。",
-        "费用与参加条件：免费；建议预先登记。 通过官网分别选择场次；10岁以下儿童必须成人陪同。",
-        "出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
+        "11:00–12:00 场官方已标满员并提供候补；不要直接按有位安排出行。",
+        "12:00–13:00 场有独立报名入口；需打开报名页确认即时余位。10 岁以下儿童必须成人陪同。",
+        "编辑建议：先确定场次与候补状态，再安排交通；候补并不代表已获席位。"
       ],
       "audience": [
         "艺术爱好者",
@@ -5595,7 +5751,7 @@
       ],
       "officialUrl": "https://richmondartcenter.org/events/making-history-block-printing-in-the-galleries-10-10-26-2/",
       "sourceLabel": "richmondartcenter.org",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-02",
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": 0
@@ -5682,6 +5838,72 @@
           ],
           "note": "15:00–16:00 固定手作场，面向 8 岁以上儿童及家人；14:30 开始现场发票，材料与名额有限。不是提前网上购票，官方未列明活动费用。"
         }
+      }
+    },
+    {
+      "id": "san-mateo-shred-ewaste-october-2026",
+      "title": "居民免费碎纸与电子垃圾回收日",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "dateLabel": "10/10 · 9:00–12:00，可能提前满额",
+      "region": "peninsula",
+      "city": "San Mateo",
+      "venue": "Beresford Park · 2720 Alameda de las Pulgas",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "San Mateo 居民免费；需住址证明",
+      "summary": "10 月 10 日 9:00–12:00 在 Beresford Park 举办，但卡车满载可能提前结束。带住址证明；碎纸限三箱标准 banker boxes，电子垃圾须按接受清单分类，大型家电和家庭危险废物不能混投。",
+      "plan": [
+        "出门前分好纸张和电子垃圾，并核对不收物品。",
+        "碎纸最多三箱标准 banker boxes；带住址证明。",
+        "卡车可能提前满载，别按中午最后一分钟到达。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.cityofsanmateo.org/2617/Free-Recycling-Events",
+      "sourceLabel": "City of San Mateo",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "sanmateo",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "santa-clara-bruno-mars-oct-2026",
+      "title": "Bruno Mars：The Romantic Tour 两场",
+      "kind": "performance",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-11",
+      "dateLabel": "10/10、10/11 · 时间查所选场次",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "venue": "Levi's Stadium",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "Levi's Stadium 分别公布 10 月 10 日和 11 日的 Bruno Mars 巡演场次。两天是分开售票的演出，选票时核对日期；目前读取的场馆正文未明确开场时间，不沿用其他巡演城市或旧海报的时刻。",
+      "plan": [
+        "先选座位并看结算总价，再确认停车或公共交通。",
+        "核对移动票、包袋规定及最新开场时间。",
+        "散场交通另留缓冲，别紧接不可更改的下一段行程。"
+      ],
+      "audience": [
+        "现场音乐爱好者",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://levisstadium.com/event/bruno-mars-the-romantic-tour/",
+      "sourceLabel": "Levi's Stadium",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-levis-stadium",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-11"
+      ],
+      "planning": {
+        "admissionUsd": null
       }
     },
     {
@@ -5997,6 +6219,36 @@
       }
     },
     {
+      "id": "roundup-healdsburg-crush-2026",
+      "title": "Healdsburg Crush 葡萄酒公益活动",
+      "kind": "event",
+      "startDate": "2026-10-11",
+      "endDate": "2026-10-11",
+      "dateLabel": "10/11 · 普通入场13:00–16:00；VIP提前1小时",
+      "region": "north-bay",
+      "city": "Healdsburg",
+      "venue": "Bacchus Landing",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "官方FAQ：普通票$150、VIP $200；21岁以上",
+      "summary": "支持 Boys & Girls Clubs of Sonoma-Marin 的葡萄酒公益活动，今年地点为 Bacchus Landing。",
+      "plan": [
+        "先核对余票和年龄要求；活动不允许宠物，勿沿用旧广场地址。",
+        "现场停车有限，官方FAQ列 City Hall 停车场接驳；查看当天上车点并安排不酒驾的返程。",
+        "需要无障碍安排或特别协助，可先通过主办方联系入口咨询。"
+      ],
+      "audience": [
+        "21岁以上葡萄酒爱好者"
+      ],
+      "officialUrl": "https://www.bgcsonoma-marin.org/healdsburgcrush",
+      "sourceLabel": "Boys & Girls Clubs of Sonoma-Marin 主办方",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "sf-chayanne-2026",
       "title": "Chayanne 拉丁流行演唱会",
       "startDate": "2026-10-11",
@@ -6228,6 +6480,37 @@
       }
     },
     {
+      "id": "hercules-ohana-day-2026",
+      "title": "Ohana Day 长者午间聚会需报名",
+      "kind": "event",
+      "startDate": "2026-10-12",
+      "endDate": "2026-10-12",
+      "dateLabel": "10月12日 12:30–14:30",
+      "region": "east-bay",
+      "city": "Hercules",
+      "venue": "Senior Center Event Hall, 111 Civic Drive",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "会员7美元；非会员10美元；须报名",
+      "summary": "10月12日12:30–14:30，Senior Center Event Hall 举办夏威夷主题披萨聚会和长者课程演出。会员7美元、非会员10美元，名额有限且需登记；先确认座位，再安排前往111 Civic Drive。",
+      "plan": [
+        "12:30–14:30在 Senior Center Event Hall；先确认自己适用会员还是非会员价格。",
+        "席位有限且需预先登记；确认录取后再安排交通，不假定现场必有余位。",
+        "编辑建议有饮食限制时先向中心询问披萨配料与替代选择。"
+      ],
+      "audience": [
+        "长者",
+        "想认识邻里的居民"
+      ],
+      "officialUrl": "https://www.herculesca.gov/Home/Components/Calendar/Event/9876/18?backlist=%2Fgovernment%2Fparks-recreation",
+      "sourceLabel": "City of Hercules",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "hmb-pumpkin-weighoff-2026",
       "title": "Half Moon Bay 世界南瓜称重赛",
       "startDate": "2026-10-12",
@@ -6321,6 +6604,37 @@
       }
     },
     {
+      "id": "danville-volunteer-fair-october-2026",
+      "title": "12岁起可了解本地志愿服务机会",
+      "kind": "event",
+      "startDate": "2026-10-14",
+      "endDate": "2026-10-14",
+      "dateLabel": "10月14日 18:30–20:00",
+      "region": "east-bay",
+      "city": "Danville",
+      "venue": "Veterans Memorial Building, 400 Hartz Avenue",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "无需报名；活动页未单列收费说明",
+      "summary": "10月14日18:30–20:00，Veterans Memorial Building 举办志愿服务展，市府和本地组织现场介绍岗位。活动无需报名；编辑建议带上每周可投入时段，分别询问年龄、培训及长期服务要求。",
+      "plan": [
+        "18:30–20:00到400 Hartz Avenue；官网明确无需登记，欢迎到场了解。",
+        "介绍适合12岁及以上的志愿机会；具体岗位仍须分别核对年龄、培训和时间承诺。",
+        "编辑建议带可服务时段与兴趣清单，现场收集机构联系方式后再决定申请。"
+      ],
+      "audience": [
+        "新居民",
+        "12岁及以上青少年与成人"
+      ],
+      "officialUrl": "https://www.danville.ca.gov/Calendar.aspx?EID=4147&calType=0&day=2&month=10&year=2026",
+      "sourceLabel": "Town of Danville",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "san-rafael-norcal-bats-library-2026",
       "kind": "event",
       "startDate": "2026-10-14",
@@ -6368,6 +6682,37 @@
           ],
           "note": "14:30–15:30 固定科普场，适合家庭、学龄前及儿童，无需报名。动物观察与互动按讲师指引，不包含自行触摸或喂食。"
         }
+      }
+    },
+    {
+      "id": "union-city-cert-shakealert-october-2026",
+      "title": "免费了解 ShakeAlert 地震预警",
+      "kind": "event",
+      "startDate": "2026-10-14",
+      "endDate": "2026-10-14",
+      "dateLabel": "10月14日 19:30–21:00",
+      "region": "east-bay",
+      "city": "Union City",
+      "venue": "Union City CERT Building, 33555 Central Avenue",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；官方活动页提供报名链接",
+      "summary": "10月14日19:30–21:00，Union City CERT 在33555 Central Avenue 举办免费 ShakeAlert 讲座。先用官方活动页的报名入口登记，再核对讲座场地；适合刚搬来、想了解本地防灾工具的居民。",
+      "plan": [
+        "使用活动页的登记链接报名，确认10月14日19:30–21:00这一场。",
+        "导航到 CERT Building；官方标示场所可无障碍使用，具体协助需求可提前联系主办方。",
+        "编辑建议带手机及想问的预警设置问题；这是教育讲座，不是个别住家的工程安全评估。"
+      ],
+      "audience": [
+        "新居民",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.unioncityca.gov/Calendar.aspx?EID=2466",
+      "sourceLabel": "City of Union City",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": 0
       }
     },
     {
@@ -6862,6 +7207,37 @@
       "sourceLabel": "piedmont.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "outdoor-cinema",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "roundup-windsor-green-halloween-2026",
+      "title": "Windsor Green Halloween Party & Swap",
+      "kind": "event",
+      "startDate": "2026-10-16",
+      "endDate": "2026-10-16",
+      "dateLabel": "10/16 · 15:00–17:00",
+      "region": "north-bay",
+      "city": "Windsor",
+      "venue": "Huerta Gym",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "镇官网列免费登记入口",
+      "summary": "交换节日服装和装饰，参加旧物再利用手作。",
+      "plan": [
+        "先按官网入口登记；可带自备T恤参加印制活动，并自备水杯。",
+        "带去交换的物件先检查状态，现场收取范围以主办方说明为准。",
+        "想做手作可先参与再逛交换区；交换物品数量与款式取决于现场。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.townofwindsor.ca.gov/1577/Sustainability-Events",
+      "sourceLabel": "Windsor 镇可持续生活活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "refresh-makers",
       "planning": {
         "admissionUsd": 0
       }
@@ -7838,6 +8214,98 @@
       }
     },
     {
+      "id": "roundup-novato-halloween-magic-2026",
+      "title": "Novato 不太吓人的万圣节魔术",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "10/17 · 10:00、11:30 两场",
+      "region": "north-bay",
+      "city": "Novato",
+      "venue": "Novato City Hall, 901 Sherman Avenue",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费，无需预约；座位以现场为准",
+      "summary": "市政府公布两场儿童友好的节日魔术，方便带孩子选择上午场次。",
+      "plan": [
+        "选择其中一场，提前到达 City Hall；两场不代表同一张座位保证。",
+        "活动在 City Hall，导航到 901 Sherman Avenue。",
+        "带幼儿可优先选与午睡时间不冲突的一场，现场按工作人员指引入座。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.novato.gov/Home/Components/Calendar/Event/24487/",
+      "sourceLabel": "Novato 市官方魔术活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "roundup-schulz-great-pumpkin-60-2026",
+      "title": "Schulz Museum《大南瓜》60周年活动",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "10/17 · 13:00–17:00",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Charles M. Schulz Museum, 2301 Hardies Lane",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "包含在博物馆门票内；会员免费",
+      "summary": "围绕《It's the Great Pumpkin, Charlie Brown》的幕后故事、手作与音乐节目。",
+      "plan": [
+        "14:00安排幕后分享，音乐节目另有时段，先按官网节目表选重点。",
+        "会员带好资格凭证；其他观众先核对门票与当天开放情况。",
+        "这是馆内周年节目，未购买门票不要把活动时段当免费开放日。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "Peanuts 爱好者"
+      ],
+      "officialUrl": "https://schulzmuseum.org/its-the-great-pumpkin-60th-anniversary-event/",
+      "sourceLabel": "Charles M. Schulz Museum 官方活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-bruno-dia-de-los-muertos-2026",
+      "title": "免费 Día de los Muertos 家庭庆典",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "10/17 · 11:00–14:00",
+      "region": "peninsula",
+      "city": "San Bruno",
+      "venue": "Centennial Plaza · 470 San Mateo Avenue",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费家庭活动",
+      "summary": "10 月 17 日 11:00–14:00 在 Centennial Plaza 举行免费家庭活动，有 mariachi、民俗舞蹈、糖骷髅手作与双语故事。下雨时移至 San Bruno Senior Center，出发前复核当日场地，别与月底 Halloween 混为同一活动。",
+      "plan": [
+        "先看天气及官网场地更新。",
+        "选择音乐、双语故事或手作项目安排停留。",
+        "遇雨转至 Senior Center，别仍导航到户外广场。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sanbruno.ca.gov/Calendar.aspx?EID=5584&calType=0&day=17&month=10&year=2026",
+      "sourceLabel": "City of San Bruno",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
       "id": "san-leandro-family-not-spooky-2026",
       "title": "San Leandro 不吓人的亲子游戏日",
       "startDate": "2026-10-17",
@@ -7920,7 +8388,7 @@
       "category": "culture",
       "cost": "mixed",
       "imageKey": "autumn-neighbors",
-      "officialUrl": "https://www.sausalito.gov/departments/parks-and-recreation/events/a-toast-to-sausalito-beer-wine-spirits-festival",
+      "officialUrl": "https://www.sausalito.gov/departments/parks_and_recreation/city_special_events/a_toast_to_sausalito_beer_wine_spirits_festival_october_17_2026.php",
       "sourceLabel": "City of Sausalito Parks & Recreation",
       "title": "A Toast to Sausalito：艺术街区节与品饮",
       "dateLabel": "10 月 17 日 · 13:00–17:00",
@@ -7940,7 +8408,7 @@
         "setting": "outdoor",
         "reservation": "unknown",
         "schedule": {
-          "sourceUrl": "https://www.sausalito.gov/departments/parks-and-recreation/events/a-toast-to-sausalito-beer-wine-spirits-festival",
+          "sourceUrl": "https://www.sausalito.gov/departments/parks_and_recreation/city_special_events/a_toast_to_sausalito_beer_wine_spirits_festival_october_17_2026.php",
           "verifiedAt": "2026-09-29",
           "validFrom": "2026-10-17",
           "validThrough": "2026-10-17",
@@ -8394,6 +8862,37 @@
       }
     },
     {
+      "id": "atherton-train-station-museum-opening-2026",
+      "title": "旧火车站博物馆 10 月 18 日揭幕",
+      "kind": "event",
+      "startDate": "2026-10-18",
+      "endDate": "2026-10-18",
+      "dateLabel": "10/18 · 14:00–16:00",
+      "region": "peninsula",
+      "city": "Atherton",
+      "venue": "Atherton Train Station Museum",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "费用未明确；先看官方报名",
+      "summary": "镇日历公布 14:00–16:00 举行博物馆开幕剪彩，地点为 Atherton Train Station Museum。先从活动页查看报名；博物馆启用不代表 Atherton 恢复 Caltrain 停站，日常参观时段还需另查。",
+      "plan": [
+        "从镇日历打开报名链接，确认是否仍可参加。",
+        "以火车站博物馆为目的地，另查最后一段交通。",
+        "剪彩日期不代表以后每日开放；普通参观另问馆方。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.athertonca.gov/Calendar.aspx?EID=4034&calType=0&day=30&month=9&year=2026",
+      "sourceLabel": "Town of Atherton",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "berkeley-bird-festival-2026",
       "title": "Berkeley Bird Festival：鸟类与自然社区日",
       "startDate": "2026-10-18",
@@ -8772,6 +9271,41 @@
       }
     },
     {
+      "id": "milpitas-map-workshops-fall-2026",
+      "title": "MAP 免费说明会：了解申请材料与市政折扣",
+      "kind": "event",
+      "startDate": "2026-10-20",
+      "endDate": "2026-11-07",
+      "dateLabel": "10/20、11/7 · 需选场报名",
+      "region": "south-bay",
+      "city": "Milpitas",
+      "venue": "Barbara Lee Senior Center · 40 N Milpitas Boulevard",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费说明会；需选场报名",
+      "summary": "市府公布 10 月 20 日 16:00–17:00、11 月 7 日 11:00–12:00 的免费 MAP 说明会，地点为 Barbara Lee Senior Center。通过官方页报名并了解收入、住址证明要求；参加说明会不等于自动获批，旧 ARPA 托育补贴已停止。",
+      "plan": [
+        "10/20 为 16:00–17:00，11/7 为 11:00–12:00，分别选场。",
+        "从 MAP 官方页进入报名，提前整理自己的材料问题。",
+        "资格与减免由市府审核，不凭参加说明会推断一定获批。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://milpitas.gov/MAP",
+      "sourceLabel": "City of Milpitas",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "occurrenceDates": [
+        "2026-10-20",
+        "2026-11-07"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
       "id": "sf-openclaw-friends-2026",
       "title": "OpenClaw 与朋友们开发者聚会",
       "startDate": "2026-10-20",
@@ -8925,6 +9459,67 @@
       "imageKey": "secondhand-check",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "monte-sereno-cpr-aed-october-2026",
+      "title": "10 月 22 日 CPR 与 AED 基础体验课",
+      "kind": "event",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-22",
+      "dateLabel": "10/22 · 10:00–11:30",
+      "region": "south-bay",
+      "city": "Monte Sereno",
+      "venue": "Monte Sereno City Hall",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "官方列 15 美元；13 岁以上",
+      "summary": "市府公告列出 10:00–11:30 在 City Hall 举行的课程，费用 15 美元，年龄 13 岁以上，未成年人须监护人签署文件。这是基础体验课，不提供 CPR 认证；需要工作或学校认可证书的人，应另向机构确认课程类型。",
+      "plan": [
+        "通过公告报名并确认名额。",
+        "未满 18 岁者按要求准备监护人签署文件。",
+        "需要正式 CPR 认证时，另找符合要求的认证课程。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.montesereno.org/m/newsflash/home/detail/703",
+      "sourceLabel": "City of Monte Sereno",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "orinda-trunk-and-treat-october-2026",
+      "title": "Trunk & Treat 分三场，只给儿童登记",
+      "kind": "event",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-22",
+      "dateLabel": "10月22日，分三场",
+      "region": "east-bay",
+      "city": "Orinda",
+      "venue": "Orinda Library Parking Garage and Plaza",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "报名页核对费用；官方提示登记不可退款",
+      "summary": "10月22日活动面向1–11岁儿童，在 Library Parking Garage and Plaza 分为16:30、17:15、18:00三场，每场45分钟。只需登记参加的儿童；付款前确认页面实际显示的场次，家长不另报名。",
+      "plan": [
+        "三场分别为16:30–17:15、17:15–18:00、18:00–18:45，只选一个适合家庭的时段。",
+        "对象为1–11岁儿童；只给参加的儿童登记，家长无需另报，付款前核对实际显示时段。",
+        "活动使用图书馆停车库与广场，编辑建议另查停车位置；后续餐车消费另计。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.cityoforinda.gov/m/newsflash/home/detail/310",
+      "sourceLabel": "City of Orinda",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "autumn-neighbors",
+      "planning": {
+        "admissionUsd": null
       }
     },
     {
@@ -9497,6 +10092,37 @@
       }
     },
     {
+      "id": "belmont-centennial-fest-2026",
+      "title": "百年庆典：游行、时光胶囊与无人机表演",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10/24 · 13:30 起",
+      "region": "peninsula",
+      "city": "Belmont",
+      "venue": "Twin Pines Park / Belmont City Hall",
+      "category": "family",
+      "cost": "mixed",
+      "costLabel": "庆典入场免费；餐饮商品另购",
+      "summary": "10 月 24 日 13:30 从车辆游行开始，15:30 在 Twin Pines Senior Center 前举行时光胶囊仪式，随后公园庆典，19:30 无人机表演。入场免费，餐饮另购；游行车辆仅限受邀参加，周边停车与通行会受影响。",
+      "plan": [
+        "按想看的游行、时光胶囊或晚间表演选择到达时间。",
+        "Twin Pines Park 和 Sixth Avenue 有车辆限制，先查停车方案。",
+        "自带折椅或毯子；车辆游行只接受受邀车辆。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.belmont.gov/departments/administrative-services/centennial-2026",
+      "sourceLabel": "City of Belmont",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-south-existing-belmont",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "berkeley-college-information-day-2026",
       "title": "UC Berkeley 大学信息日与校园交流",
       "startDate": "2026-10-24",
@@ -10025,6 +10651,37 @@
       "sourceLabel": "lumafest.santarosa.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "roundup-novato-dia-muertos-2026",
+      "title": "Novato Día de los Muertos 社区庆典",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-24",
+      "dateLabel": "10/24 · 15:00–18:00",
+      "region": "north-bay",
+      "city": "Novato",
+      "venue": "Novato Civic Green, 901 Sherman Avenue",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "官方当前介绍未明确一般入场收费；餐饮另查",
+      "summary": "社区祭坛、游行、手作和音乐组成适合全龄参与的纪念活动。",
+      "plan": [
+        "到 Civic Green 参加公众活动；不要将汽车祭坛展示的免费申请条件当作全部费用说明。",
+        "汽车祭坛展示申请已于9/25截止，不再当作可报名项目推荐。",
+        "观看祭坛时尊重纪念物；如需餐饮，单独留出预算。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.novato.gov/Home/Components/Calendar/Event/24495/2527?selectview=1&toggle=all",
+      "sourceLabel": "Novato 市官方亡灵节活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
       "planning": {
         "admissionUsd": null
       }
@@ -11240,6 +11897,37 @@
       }
     },
     {
+      "id": "brisbane-dog-pawty-2026",
+      "title": "Dog Pawty 狗狗装扮聚会",
+      "kind": "event",
+      "startDate": "2026-10-29",
+      "endDate": "2026-10-29",
+      "dateLabel": "10/29 · 17:30–18:00",
+      "region": "peninsula",
+      "city": "Brisbane",
+      "venue": "Community Park Gazebo · 11 Old County Road",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "官方未列费用",
+      "summary": "Youth Advisory Committee 将于 10 月 29 日 17:30–18:00 在 Community Park Gazebo 举行狗狗装扮聚会，地址为 11 Old County Road。适合下班后短暂停留；带宠物前先读主办方参加说明，费用未在日历正文明确列出。",
+      "plan": [
+        "先阅读宠物参加与装扮说明。",
+        "17:30 前到 Community Park Gazebo，活动仅半小时。",
+        "宠物是否适合短时人群环境，由主人自行评估。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.brisbaneca.gov/Calendar.aspx?EID=1241&calType=0&day=2&month=10&year=2026",
+      "sourceLabel": "City of Brisbane",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "r2-yountville-haunts-2026",
       "title": "Yountville 第三届 Napa Valley Haunts",
       "startDate": "2026-10-29",
@@ -11266,6 +11954,37 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-pablo-city-hall-o-ween-2026",
+      "title": "City Hall-o-Ween 已公布日期",
+      "kind": "event",
+      "startDate": "2026-10-29",
+      "endDate": "2026-10-29",
+      "dateLabel": "10月29日 16:00–19:00",
+      "region": "east-bay",
+      "city": "San Pablo",
+      "venue": "San Pablo City Hall, 1000 Gateway Avenue",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "官方页面未明确入场收费及预约要求",
+      "summary": "10月29日16:00–19:00到1000 Gateway Avenue 参加市政厅万圣节庆祝，节目包括车尾箱讨糖、舞会、南瓜活动和脸部彩绘。官网未明确入场费用或预约要求，出发前向 Community Services 确认。",
+      "plan": [
+        "活动16:00–19:00，按1000 Gateway Avenue 导航到市政厅。",
+        "可穿服装参加车尾箱讨糖、舞会和游戏；糖果及各项目的现场安排以主办方为准。",
+        "编辑建议先向 Community Services 核对入场与停车，不把赞助页面当报名链接。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://sanpabloca.gov/1457/City-Hall-o-ween",
+      "sourceLabel": "City of San Pablo",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "autumn-neighbors",
       "planning": {
         "admissionUsd": null
       }
@@ -11421,6 +12140,36 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "moraga-not-so-haunted-hacienda-2026",
+      "title": "Hacienda 傍晚万圣节与草地电影",
+      "kind": "event",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-30",
+      "dateLabel": "10月30日 17:00–20:30",
+      "region": "east-bay",
+      "city": "Moraga",
+      "venue": "Hacienda de las Flores, 2100 Donald Drive",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "观众入场费用未明确；餐车另付",
+      "summary": "10月30日17:00–20:30，Hacienda de las Flores 举办轻惊吓主题活动，18:30放映 Freaky Friday。南瓜装饰和小礼物限前100名未满11岁儿童；带毯子，餐车消费与入场收费情况分别向主办方核对。",
+      "plan": [
+        "活动17:00开始，18:30放映 Freaky Friday；带毯子或草地椅。",
+        "南瓜装饰与小礼物限前100名未满11岁儿童，不能保证晚到仍有材料。",
+        "页面的免费参与说明针对摊商；观众费用、交通和天气调整须另向市府确认。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://moraga.ca.us/605/not-so-Haunted-Hacienda",
+      "sourceLabel": "Town of Moraga",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "outdoor-cinema",
+      "planning": {
+        "admissionUsd": null
       }
     },
     {
@@ -11644,6 +12393,36 @@
       }
     },
     {
+      "id": "san-ramon-nature-halloween-storytime-2026",
+      "title": "自然故事时间有万圣节专场",
+      "kind": "event",
+      "startDate": "2026-10-30",
+      "endDate": "2026-10-30",
+      "dateLabel": "10月30日 10:15–11:00",
+      "region": "east-bay",
+      "city": "San Ramon",
+      "venue": "Crow Canyon Gardens",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "费用与余位须在市府报名系统核对",
+      "summary": "10月30日10:15–11:00在 Crow Canyon Gardens 的 Nature Storytime 以故事、手作及感官活动展开。主要为2–5岁设计，但欢迎各年龄；可只报单场，登记时核对活动编号37098及费用。",
+      "plan": [
+        "报名时找活动编号37098；可只报万圣节单场，不必购买整个秋季组合。",
+        "10:15–11:00，以2–5岁为主要设计年龄；其他年龄也欢迎，但应自行判断内容是否合适。",
+        "编辑建议按当天花园天气准备外套，登记后确认集合位置与成人陪同安排。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.sanramon.ca.gov/our_city/departments_and_divisions/parks_community_services/nature_programs/upcoming_nature_events",
+      "sourceLabel": "City of San Ramon",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "garden-walk",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "sf-scaregrove-2026",
       "title": "Scaregrove：Stern Grove 免费万圣节嘉年华",
       "startDate": "2026-10-30",
@@ -11757,6 +12536,41 @@
       }
     },
     {
+      "id": "cupertino-baer-blacksmith-fall-2026",
+      "title": "免费观察 Baer Blacksmith Shop 锻造示范",
+      "kind": "event",
+      "startDate": "2026-10-31",
+      "endDate": "2026-11-28",
+      "dateLabel": "10/31、11/28 · 11:00–15:00",
+      "region": "south-bay",
+      "city": "Cupertino",
+      "venue": "Baer Blacksmith Shop · McClellan Ranch Preserve",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费示范",
+      "summary": "McClellan Ranch Preserve 的历史铁匠铺公布 10 月 31 日及 11 月 28 日 11:00–15:00 免费示范。可把看锻造与短程公园散步放在同一半日；这是特定日期的演示，不能假设铁匠铺每天开放或可自行操作工具。",
+      "plan": [
+        "仅选择 10/31 或 11/28 的已确认示范日。",
+        "导航至 22221 McClellan Road，结合短途公园散步。",
+        "围观时听从现场安排，不把示范当作个人操作课程。"
+      ],
+      "audience": [
+        "本地居民",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/McClellan-Events/Baer-Blacksmith-Shop-Demonstrations",
+      "sourceLabel": "City of Cupertino",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "everyday",
+      "occurrenceDates": [
+        "2026-10-31",
+        "2026-11-28"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
       "id": "mcm-halloween-spectacular-20261031",
       "title": "Marin Country Mart 万圣节装扮与讨糖",
       "startDate": "2026-10-31",
@@ -11824,6 +12638,37 @@
         "admissionUsd": 0,
         "setting": "outdoor",
         "programTimeUnconfirmed": true
+      }
+    },
+    {
+      "id": "roundup-sausalito-halloween-2026",
+      "title": "Sausalito 万圣节游行与狗狗装扮赛",
+      "kind": "event",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "dateLabel": "10/31 · 17:45集合，18:00游行，18:30狗狗赛",
+      "region": "north-bay",
+      "city": "Sausalito",
+      "venue": "Station 1 Firehouse → Robin Sweeny Park",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "狗狗装扮赛免费，无需预登记；查看市府完整活动安排",
+      "summary": "Caledonia Street 游行接到公园讨糖区，是可步行串联的社区节日安排。",
+      "plan": [
+        "从 Johnson 与 Caledonia 街角消防站集合，勿直接到公园等待游行起点。",
+        "Caledonia 部分路段16:30起封闭至21:00，驾车先看市府封路范围。",
+        "参加狗狗装扮赛只选一个组别，按现场分类牌排队。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "携犬居民"
+      ],
+      "officialUrl": "https://www.sausalito.gov/departments/parks_and_recreation/city_special_events/halloween_sausalito_october_31_2026.php",
+      "sourceLabel": "Sausalito 市 2026 Halloween 官方页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "region-sausalito",
+      "planning": {
+        "admissionUsd": 0
       }
     },
     {
@@ -11979,6 +12824,500 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "roundup-suisun-dia-muertos-2026",
+      "title": "Suisun City 亡灵节文化晚会",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "dateLabel": "11/1 · 18:00–22:00",
+      "region": "north-bay",
+      "city": "Suisun City",
+      "venue": "Joseph Nelson Community Center, 611 Village Drive",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "入场免费；食物和饮品另付",
+      "summary": "社区祭坛、Ballet Folklórico、音乐与本地摊位组成的纪念晚会。",
+      "plan": [
+        "尊重祭坛与纪念物；活动场地不允许宠物或自带酒精饮料。",
+        "啤酒仅供21岁以上且持有效照片证件的宾客；带孩子可先看舞蹈与音乐。",
+        "导航到611 Village Drive的社区中心，别把水岸Harbor Plaza当作本场地址。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.suisun.com/Events-directory/D%C3%ADa-de-los-Muertos-Celebration",
+      "sourceLabel": "Suisun City 市官方活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sj-sharks-flames-nov2-2026",
+      "title": "Sharks 主场迎战 Flames",
+      "kind": "sports",
+      "startDate": "2026-11-02",
+      "endDate": "2026-11-02",
+      "dateLabel": "11/2 · 18:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "SAP Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "SAP Center 确认 11 月 2 日 18:00 的 Sharks 对 Flames 比赛。适合想看冰球又希望较早开场的观众；官网链接路径虽然含 kings，当前页面标题、海报和日期对应 Flames，应以正文为准。",
+      "plan": [
+        "由 SAP Center 单场页进入官方售票。",
+        "核对包袋与移动票规则，并提前安排往返交通。",
+        "开场时间不等于开门时间，入场安排以场馆更新为准。"
+      ],
+      "audience": [
+        "体育观众",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://www.sapcenter.com/events/detail/sharks-vs-kings-18",
+      "sourceLabel": "SAP Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-sap-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "oakland-xg-the-core-november-2026",
+      "title": "XG WORLD TOUR: THE CORE Oakland 站",
+      "kind": "performance",
+      "startDate": "2026-11-03",
+      "endDate": "2026-11-03",
+      "dateLabel": "11月3日 19:00；17:30开门",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Oakland Arena, 7000 Coliseum Way",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "收费演出；通过场馆链接核对 AXS 总价",
+      "summary": "XG 将 THE CORE 世界巡演带到 Oakland Arena。场馆已公布日期、开门和开演时间并链接 AXS；选票时把普通入场与额外体验分开核对，不推定任何票都包含见面或提前入场。",
+      "plan": [
+        "确认11月3日 Oakland Arena 场次；17:30开门，19:00开演。",
+        "购票前查看电子票、年龄与包袋规则，座位及服务费按官方售票页结算显示。",
+        "编辑建议先比较公共交通与停车方案，并留好散场后的接送位置。"
+      ],
+      "audience": [
+        "XG 乐迷",
+        "大型演出观众"
+      ],
+      "officialUrl": "https://www.theoaklandarena.com/events/detail/xg-1",
+      "sourceLabel": "Oakland Arena",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-oakland-arena",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-warriors-heat-november-2026",
+      "title": "Warriors 主场对 Miami Heat",
+      "kind": "sports",
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-05",
+      "dateLabel": "11月5日 19:00；17:30开门",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Chase Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "按座位购票；以官方销售页含费用总价为准",
+      "summary": "11月篮球夜可从 Warriors 对 Heat 这一场开始安排。场馆公布开球及开门时间；先选座位与预算，再安排用餐和散场交通，避免只看转售平台的最低显示价。",
+      "plan": [
+        "从 Chase Center 活动页进入购票，确认11月5日及比赛对手，再检查电子票领取方式。",
+        "编辑建议在开门后预留安检时间；包袋尺寸、儿童票和禁止携带物品以场馆当场政策为准。",
+        "官方鼓励公共交通；出发和散场前分别查看线路服务，停车产品另行核价。"
+      ],
+      "audience": [
+        "篮球观众",
+        "第一次看 NBA 的游客"
+      ],
+      "officialUrl": "https://chasecenter.com/events/20261105-gsw-vs-mia/",
+      "sourceLabel": "Chase Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-chase-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sj-don-omar-nov-2026",
+      "title": "Don Omar：Back to Reggaeton",
+      "kind": "performance",
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-05",
+      "dateLabel": "11/5 · 20:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "SAP Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "SAP Center 官方列出 Don Omar 十一月圣荷西演出，开始时间为 20:00。想把晚餐和演唱会排在同一天，可先在车站或场馆附近用餐，再按自己票区安排入场；不要把巡演其他城市票页当成本场。",
+      "plan": [
+        "由 SAP Center 单场页进入官方售票。",
+        "核对包袋与移动票规则，并提前安排往返交通。",
+        "开场时间不等于开门时间，入场安排以场馆更新为准。"
+      ],
+      "audience": [
+        "现场音乐爱好者",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://www.sapcenter.com/events/detail/don-omar",
+      "sourceLabel": "SAP Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-sap-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sj-mon-laferte-nov-2026",
+      "title": "Mon Laferte 圣荷西演唱会",
+      "kind": "performance",
+      "startDate": "2026-11-06",
+      "endDate": "2026-11-06",
+      "dateLabel": "11/6 · 20:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "SAP Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "Mon Laferte 的 SAP Center 场次已列入官方十一月日程，20:00 开始。适合提前选座的拉丁音乐之夜；票面楼层、视线说明与结算费用要一起看，附近聚餐和散场回程另留时间。",
+      "plan": [
+        "由 SAP Center 单场页进入官方售票。",
+        "核对包袋与移动票规则，并提前安排往返交通。",
+        "开场时间不等于开门时间，入场安排以场馆更新为准。"
+      ],
+      "audience": [
+        "现场音乐爱好者",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://www.sapcenter.com/events/detail/mon-laferte",
+      "sourceLabel": "SAP Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-sap-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "roundup-windsor-fall-swap-2026",
+      "title": "Windsor 秋季装饰与衣物交换",
+      "kind": "event",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "dateLabel": "11/7 · 11:00–14:00",
+      "region": "north-bay",
+      "city": "Windsor",
+      "venue": "Huerta Gym",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "当前介绍未单列费用；查看该场详情",
+      "summary": "镇政府列出的秋季交换活动，可交换、捐出或领取季节装饰及衣物。",
+      "plan": [
+        "这是11/7独立场次，不要沿用10/16的时段或登记信息。",
+        "出发前确认物件要求与费用；不把其他月份的规则直接套用。",
+        "可按季节整理一小袋适用物件，避免携带大件后发现不在受理范围。"
+      ],
+      "audience": [
+        "本地居民"
+      ],
+      "officialUrl": "https://www.townofwindsor.ca.gov/1577/Sustainability-Events",
+      "sourceLabel": "Windsor 镇可持续生活活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "refresh-makers",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sjsu-northern-illinois-nov-2026",
+      "title": "SJSU 对 Northern Illinois：家庭周末主场",
+      "kind": "sports",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "dateLabel": "11/7 · 13:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "CEFCU Stadium",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "SJSU 官方赛程列出 11 月 7 日 13:00 对 Northern Illinois，主题为 Family Weekend 与 Military Appreciation。比赛在 CEFCU Stadium，不在市中心主校园；学生票、一般票和停车入口分别查看，不假设所有家庭成员免费。",
+      "plan": [
+        "先选座位并看结算总价，再确认停车或公共交通。",
+        "核对移动票、包袋规定及最新开场时间。",
+        "散场交通另留缓冲，别紧接不可更改的下一段行程。"
+      ],
+      "audience": [
+        "体育观众",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://sjsuspartans.com/sports/football/schedule?print=true",
+      "sourceLabel": "SJSU Athletics",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "sanjose-city",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "santa-clara-49ers-raiders-nov-2026",
+      "title": "49ers 主场迎战 Raiders",
+      "kind": "sports",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "dateLabel": "11/8 · 13:05",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "venue": "Levi's Stadium",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "球场官方公布十一月 Raiders 对 49ers 主场比赛，开球时间为当地 13:05。适合提前规划的一次 NFL 现场体验；赛票与停车是不同项目，最终开球与入场安排出发前再核对。",
+      "plan": [
+        "先选座位并看结算总价，再确认停车或公共交通。",
+        "核对移动票、包袋规定及最新开场时间。",
+        "散场交通另留缓冲，别紧接不可更改的下一段行程。"
+      ],
+      "audience": [
+        "体育观众",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://levisstadium.com/event/raiders-vs-49ers-week-9-2026/",
+      "sourceLabel": "Levi's Stadium",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-levis-stadium",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sj-smashing-pumpkins-nov-2026",
+      "title": "The Smashing Pumpkins：The Rats In a Cage Tour",
+      "kind": "performance",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "dateLabel": "11/8 · 20:00",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "SAP Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "SAP Center 确认 The Smashing Pumpkins 于 11 月 8 日 20:00 演出。同日 Santa Clara 也有 NFL 比赛，若想串联两场应分别核对交通和进场安排，不要把下午比赛的预计结束当作保证。",
+      "plan": [
+        "由 SAP Center 单场页进入官方售票。",
+        "核对包袋与移动票规则，并提前安排往返交通。",
+        "开场时间不等于开门时间，入场安排以场馆更新为准。"
+      ],
+      "audience": [
+        "现场音乐爱好者",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://www.sapcenter.com/events/detail/the-smashing-pumpkins",
+      "sourceLabel": "SAP Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-sap-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "roundup-schulz-pearls-jubilee-2026",
+      "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
+      "kind": "event",
+      "startDate": "2026-11-10",
+      "endDate": "2026-11-10",
+      "dateLabel": "11/10 · 18:30对谈；20:00签书",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "venue": "Charles M. Schulz Museum, 2301 Hardies Lane",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "对谈$20，会员享20%折扣；20:00签书入场免费，书另购",
+      "summary": "漫画家 Stephan Pastis 与 Chris Smith 对谈，晚间接续公开签书环节。",
+      "plan": [
+        "对谈需购票；不要把签书免费理解为整晚活动免票。",
+        "官方说明对谈票持有人可进入签书前100人的队列；到场仍按工作人员安排排队。",
+        "只参加20:00签书也可，但免费入场不包含书本，先确认现场购书规则。"
+      ],
+      "audience": [
+        "漫画与阅读爱好者"
+      ],
+      "officialUrl": "https://schulzmuseum.org/pearls-jubilee/",
+      "sourceLabel": "Charles M. Schulz Museum 官方签书活动页",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "oakland-jo-koy-november-2026",
+      "title": "Jo Koy: Koy Meets World 喜剧专场",
+      "kind": "performance",
+      "startDate": "2026-11-13",
+      "endDate": "2026-11-13",
+      "dateLabel": "11月13日 20:00；19:00开门",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Oakland Arena, 7000 Coliseum Way",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "收费专场；从场馆官网进入 Ticketmaster",
+      "summary": "Jo Koy 的 Koy Meets World 在 Oakland Arena 上演，适合想看大型英语单口喜剧的观众。活动介绍涉及家庭与文化经历，但不能据此当作儿童节目；带未成年人前另查年龄及内容提示。",
+      "plan": [
+        "19:00开门、20:00开始；选票时确认日期与 Oakland 场馆，避免混到其他巡演城市。",
+        "官方活动页链接 Ticketmaster；比较含费用票价，额外停车不视为包含在门票内。",
+        "编辑建议先安排散场返程；活动页没有保证结束时间，避免衔接最后一班交通的紧凑计划。"
+      ],
+      "audience": [
+        "英语喜剧观众",
+        "成人朋友聚会"
+      ],
+      "officialUrl": "https://www.theoaklandarena.com/events/detail/jo-koy-1",
+      "sourceLabel": "Oakland Arena",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-oakland-arena",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-ramon-lip-balm-workshop-november-2026",
+      "title": "San Ramon 冬季润唇膏手作课",
+      "kind": "event",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "dateLabel": "11月28日 10:00–12:00",
+      "region": "east-bay",
+      "city": "San Ramon",
+      "venue": "Alcosta Senior and Community Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "居民55美元；非居民63美元；额外材料包另付",
+      "summary": "市府自然项目安排冬季润唇膏手作课，学习制作节日小礼物。每人完成两支润唇膏并带走制作说明；材料补充包另收费，不把课程当作皮肤治疗或无过敏保证。",
+      "plan": [
+        "在市府页面选择活动编号37466，核对居民资格、报名人数和最终费用。",
+        "11月28日10:00–12:00到 Alcosta Senior and Community Center，集合房间以报名通知为准。",
+        "编辑建议有成分敏感或儿童参加需求时先问主办方，勿从自然材料推断人人适用。"
+      ],
+      "audience": [
+        "喜欢手作的居民",
+        "准备节日礼物的人"
+      ],
+      "officialUrl": "https://www.sanramon.ca.gov/our_city/departments_and_divisions/parks_community_services/nature_programs/upcoming_nature_events",
+      "sourceLabel": "City of San Ramon",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "refresh-makers",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "sf-journey-final-frontier-november-2026",
+      "title": "Journey Final Frontier Tour 旧金山站",
+      "kind": "performance",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "dateLabel": "11月28日 19:30；18:00开门",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Chase Center",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "按座位购票；余票和费用以官方链接为准",
+      "summary": "Journey 的 Final Frontier Tour 在 Chase Center 安排感恩节周末演出。适合围绕一场大型摇滚音乐会规划晚上行程；不把开门时间当作开演时间，也不承诺曲目或散场时刻。",
+      "plan": [
+        "官网公布18:00开门、19:30演出；预订晚餐时保留进场余量。",
+        "从场馆页面跳转售票，核对座位视线、总价以及退改条款。",
+        "编辑建议提前查感恩节周末公共交通，返程按实际演出结束时间再确认。"
+      ],
+      "audience": [
+        "摇滚乐迷",
+        "周末访客"
+      ],
+      "officialUrl": "https://www.chasecenter.com/events/journey-20261128/",
+      "sourceLabel": "Chase Center",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-chase-center",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "stanford-smu-football-nov-2026",
+      "title": "Stanford 主场迎战 SMU",
+      "kind": "sports",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "dateLabel": "11/28 · 开球时间待定",
+      "region": "south-bay",
+      "city": "Stanford",
+      "venue": "Stanford Stadium",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "官方赛程确认感恩节周末在 Stanford Stadium 对阵 SMU，但开球时间仍为 TBA。可先选这一天作为大学橄榄球计划，等公布时间再锁定餐厅与交通；11 月 21 日 Big Game 在 Berkeley，不能混成 Stanford 主场。",
+      "plan": [
+        "先选座位并看结算总价，再确认停车或公共交通。",
+        "核对移动票、包袋规定及最新开场时间。",
+        "散场交通另留缓冲，别紧接不可更改的下一段行程。"
+      ],
+      "audience": [
+        "体育观众",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://gostanford.com/sports/football/schedule?stream=top",
+      "sourceLabel": "Stanford Athletics",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "region-stanford-quad",
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "santa-clara-49ers-seahawks-nov-2026",
+      "title": "49ers 主场迎战 Seahawks",
+      "kind": "sports",
+      "startDate": "2026-11-29",
+      "endDate": "2026-11-29",
+      "dateLabel": "11/29 · 13:25",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "venue": "Levi's Stadium",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "付费；票价与费用以官方售票为准",
+      "summary": "感恩节周末的 49ers 主场赛事，官方当前列 13:25 开球。计划跨城来看球时，先确认座位与交通再订整天行程；节庆周末与赛事散场可能同时影响出行，不能套用普通周日的时间预算。",
+      "plan": [
+        "先选座位并看结算总价，再确认停车或公共交通。",
+        "核对移动票、包袋规定及最新开场时间。",
+        "散场交通另留缓冲，别紧接不可更改的下一段行程。"
+      ],
+      "audience": [
+        "体育观众",
+        "第一次来湾区"
+      ],
+      "officialUrl": "https://levisstadium.com/event/seahawks-vs-49ers-week-12-2026/",
+      "sourceLabel": "Levi's Stadium",
+      "verifiedAt": "2026-10-02",
+      "imageKey": "roundup-levis-stadium",
+      "planning": {
+        "admissionUsd": null
       }
     }
   ],
@@ -12736,6 +14075,177 @@
         "admissionUsd": null,
         "setting": "outdoor"
       }
+    },
+    {
+      "id": "opening-roundup-alesta-sebastopol-2026",
+      "title": "Alesta Modern Mediterranean",
+      "region": "north-bay",
+      "city": "Sebastopol",
+      "summary": "县旅游机构夏季新店文章记录其从餐车发展为固定餐厅，接手原 Piala 空间。菜式结合土耳其、希腊与巴尔干风味，是较早开业、此次补录的新选择。",
+      "guideSlug": "",
+      "path": "/openings/roundup-alesta-sebastopol-2026",
+      "officialUrl": "https://alestasoco.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "7233 Healdsburg Avenue, Sebastopol, CA 95472",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-roundup-bonnie-bagels-sebastopol-2026",
+      "title": "Bonnie Bagels & Co",
+      "region": "north-bay",
+      "city": "Sebastopol",
+      "summary": "Sonoma County Tourism 初秋新店文章确认开业，主打现场制作、水煮再烤的贝果、抹酱与早餐三明治。店家官网确认 S Main Street 店址及早间营业时段。",
+      "guideSlug": "",
+      "path": "/openings/roundup-bonnie-bagels-sebastopol-2026",
+      "officialUrl": "https://www.bonniebagels.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "280 S Main Street, Sebastopol, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-roundup-capriciano-santarosa-2026",
+      "title": "Capriciano Osteria",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "summary": "县旅游机构列为初秋新餐厅，主打手工意面、木烧披萨与海鲜，位于 Santa Rosa 市中心 Mendocino Avenue。店家官网提供晚餐与预订入口。",
+      "guideSlug": "",
+      "path": "/openings/roundup-capriciano-santarosa-2026",
+      "officialUrl": "https://capriciano.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "505 Mendocino Avenue, Santa Rosa, CA 95401",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-eriks-delicafe-san-ramon-relocation",
+      "title": "Erik’s DeliCafé — San Ramon",
+      "region": "east-bay",
+      "city": "San Ramon",
+      "summary": "Erik’s 官方门店页已邀请顾客到 The Marketplace Shopping Center 的 San Ramon 新家，并列出159 Market Place、营业时间及线上点餐。此项是搬迁后的营业更新，不把旧址历史或新闻发布日期写成新址开门日。",
+      "guideSlug": "",
+      "path": "/openings/eriks-delicafe-san-ramon-relocation",
+      "officialUrl": "https://www.eriksdelicafe.com/location/san-ramon-california-deli-cafe",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "159 Market Place, San Ramon, CA 94583",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-handroll-hawker",
+      "title": "Handroll Hawker",
+      "region": "sf",
+      "city": "San Francisco",
+      "summary": "2360 Polk Street 的便携寿司手卷店，官网已提供到店地址与每日 11:30–19:30 时间；适合先看菜单再安排外带午餐。",
+      "guideSlug": "",
+      "path": "/openings/handroll-hawker",
+      "officialUrl": "https://www.handrollhawker.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "2360 Polk Street, San Francisco, CA",
+      "imageKey": "sep26-open-handroll-hawker",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-jean-dousset-valley-fair",
+      "title": "Jean Dousset",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "Valley Fair 官网确认 Jean Dousset 已开业，新店介绍涵盖培育钻石订婚戒、婚戒与珠宝。适合有明确比较清单的人线下看款式与工艺；展示款、可购买库存和定制交付时间应分开询问。",
+      "guideSlug": "",
+      "path": "/openings/jean-dousset-valley-fair",
+      "officialUrl": "https://www.westfield.com/en/united-states/valleyfair/retailers/jean-dousset/85301",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-plur-cafe-san-mateo-library",
+      "title": "PLUR Café",
+      "region": "peninsula",
+      "city": "San Mateo",
+      "summary": "市图书馆九月公告确认 Main Library 三楼的 PLUR Café 已启用，并回顾 8 月 29 日开幕庆典。适合把借书、阅读与咖啡茶饮放在同一趟行程，咖啡店营业时段不等于整栋图书馆开放时段。",
+      "guideSlug": "",
+      "path": "/openings/plur-cafe-san-mateo-library",
+      "officialUrl": "https://www.cityofsanmateo.org/m/newsflash/Home/Detail/1923",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "55 W. Third Avenue, San Mateo, CA 94402 · Main Library, third floor",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-thirdlove-valley-fair",
+      "title": "ThirdLove",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "Valley Fair 官方首页已把 ThirdLove 放进 Now Open，门店页也标注 New。适合希望线下比较文胸、内衣与家居服的人，购买前可询问试穿与款式选择；不把品牌介绍当成个人合身保证。",
+      "guideSlug": "",
+      "path": "/openings/thirdlove-valley-fair",
+      "officialUrl": "https://www.westfield.com/en/united-states/valleyfair/retailers/thirdlove/85644",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "opening-vivaia-valley-fair",
+      "title": "VIVAIA",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "summary": "Valley Fair 官方首页列为 Now Open，新店目录与十月庆典页相互印证。适合现场试鞋、比较不同鞋型；10 月 9–10 日会员饮品活动与购物满额赠礼是不同条件，赠品数量有限。",
+      "guideSlug": "",
+      "path": "/openings/vivaia-valley-fair",
+      "officialUrl": "https://www.westfield.com/en/united-states/valleyfair/retailers/vivaia/85774",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
     },
     {
       "id": "opening-dead-letter-sonoma-new-restaurant-2026",

@@ -347,3 +347,19 @@ test('account plans reject gap dates and unconfirmed sessions on creation and up
   assert.equal(updated.data.plan.date, '2026-09-28');
   assert.equal(updated.data.plan.version, 2);
 });
+
+test('merged event IDs preserve saved plans without allowing duplicate alias stops', async t => {
+  const canonical = 'alameda-point-antiques-oct-2026', legacy = 'alameda-point-antiques-october-2026';
+  const { request } = await fixture(t, { catalog: { ...catalog, events: [event(canonical)] } });
+  const saved = await request('/plans', { as: 'owner', method: 'POST', body: { ...plan, stops: [{ kind: 'event', id: legacy }] } });
+  assert.equal(saved.status, 201);
+  const duplicate = await request('/plans', { as: 'owner', method: 'POST', body: { ...plan, stops: [{ kind: 'event', id: legacy }, { kind: 'event', id: canonical }] } });
+  assert.equal(duplicate.status, 400);
+  assert.match(duplicate.data.error, /重复/);
+  const favorite = await request('/favorites/event/' + legacy, { as: 'owner', method: 'PUT' });
+  assert.equal(favorite.status, 200);
+  const again = await request('/favorites/event/' + canonical, { as: 'owner', method: 'PUT' });
+  assert.equal(again.data.favorites.length, 1);
+  const removed = await request('/favorites/event/' + canonical, { as: 'owner', method: 'DELETE' });
+  assert.equal(removed.data.favorites.length, 0);
+});

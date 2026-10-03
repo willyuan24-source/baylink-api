@@ -507,6 +507,12 @@
     "endDate": "2026-10-03"
   },
   {
+    "id": "newark-resident-shredding-october-2026",
+    "title": "居民免费碎纸：带证件和地址证明",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-03"
+  },
+  {
     "id": "oakland-oaktoberfest-2026",
     "title": "Oakland Oaktoberfest：Dimond 街区啤酒节",
     "startDate": "2026-10-03",
@@ -536,6 +542,12 @@
     "title": "Redwood City PortFest：走进湾边工作港口",
     "startDate": "2026-10-03",
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "roundup-dixon-lambtown-2026",
+    "title": "Dixon Lambtown 羊毛与牧羊文化节",
+    "startDate": "2026-10-03",
+    "endDate": "2026-10-04"
   },
   {
     "id": "san-leandro-afro-peruvian-dance-2026",
@@ -632,18 +644,12 @@
   },
   {
     "id": "alameda-point-antiques-oct-2026",
-    "title": "Alameda Point 十月古董市集",
+    "title": "Alameda Point 古董市集：为新家找一件旧物",
     "startDate": "2026-10-04",
     "endDate": "2026-10-04",
     "occurrenceDates": [
       "2026-10-04"
     ]
-  },
-  {
-    "id": "alameda-point-antiques-october-2026",
-    "title": "Alameda Point 古董市集：为新家找一件旧物",
-    "startDate": "2026-10-04",
-    "endDate": "2026-10-04"
   },
   {
     "id": "berkeley-cal-sailing-open-house-oct4-2026",
@@ -872,7 +878,8 @@
     "id": "sf-ai-infra-scale-dinner-2026",
     "title": "AI 基础设施扩展问题交流晚餐",
     "startDate": "2026-10-07",
-    "endDate": "2026-10-07"
+    "endDate": "2026-10-07",
+    "occurrenceDates": []
   },
   {
     "id": "sf-rod-wave-2026",
@@ -912,6 +919,18 @@
     "occurrenceDates": [
       "2026-10-08"
     ]
+  },
+  {
+    "id": "roundup-tiburon-asian-greens-2026",
+    "title": "Tiburon Master Gardeners 亚洲叶菜种植课",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08"
+  },
+  {
+    "id": "roundup-tiburon-repair-advice-2026",
+    "title": "Tiburon Makerspace 维修咨询晚间场",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-08"
   },
   {
     "id": "san-rafael-civic-center-puzzle-swap-2026",
@@ -1018,6 +1037,18 @@
     "title": "Zepparella：Sweetwater 摇滚致敬夜",
     "startDate": "2026-10-09",
     "endDate": "2026-10-09"
+  },
+  {
+    "id": "albany-fire-pancake-breakfast-2026",
+    "title": "消防站煎饼早餐回归",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "antioch-kids-fishing-derby-2026",
+    "title": "15岁及以下免费钓鱼比赛",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
   },
   {
     "id": "berkeley-indigenous-peoples-powwow-2026",
@@ -1194,6 +1225,22 @@
     ]
   },
   {
+    "id": "san-mateo-shred-ewaste-october-2026",
+    "title": "居民免费碎纸与电子垃圾回收日",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10"
+  },
+  {
+    "id": "santa-clara-bruno-mars-oct-2026",
+    "title": "Bruno Mars：The Romantic Tour 两场",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-11",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-11"
+    ]
+  },
+  {
     "id": "santa-clara-library-comic-con-2026",
     "title": "Santa Clara 图书馆免费 Comic Con",
     "startDate": "2026-10-10",
@@ -1257,6 +1304,12 @@
     "endDate": "2026-10-11"
   },
   {
+    "id": "roundup-healdsburg-crush-2026",
+    "title": "Healdsburg Crush 葡萄酒公益活动",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-11"
+  },
+  {
     "id": "sf-chayanne-2026",
     "title": "Chayanne 拉丁流行演唱会",
     "startDate": "2026-10-11",
@@ -1299,6 +1352,12 @@
     "endDate": "2026-10-11"
   },
   {
+    "id": "hercules-ohana-day-2026",
+    "title": "Ohana Day 长者午间聚会需报名",
+    "startDate": "2026-10-12",
+    "endDate": "2026-10-12"
+  },
+  {
     "id": "hmb-pumpkin-weighoff-2026",
     "title": "Half Moon Bay 世界南瓜称重赛",
     "startDate": "2026-10-12",
@@ -1317,6 +1376,12 @@
     "endDate": "2026-10-13"
   },
   {
+    "id": "danville-volunteer-fair-october-2026",
+    "title": "12岁起可了解本地志愿服务机会",
+    "startDate": "2026-10-14",
+    "endDate": "2026-10-14"
+  },
+  {
     "id": "san-rafael-norcal-bats-library-2026",
     "title": "San Rafael 免费动物科普：认识本地蝙蝠",
     "startDate": "2026-10-14",
@@ -1324,6 +1389,12 @@
     "occurrenceDates": [
       "2026-10-14"
     ]
+  },
+  {
+    "id": "union-city-cert-shakealert-october-2026",
+    "title": "免费了解 ShakeAlert 地震预警",
+    "startDate": "2026-10-14",
+    "endDate": "2026-10-14"
   },
   {
     "id": "east-bay-disney-on-ice-presents-find-your-hero-2026",
@@ -1427,6 +1498,12 @@
   {
     "id": "piedmont-wonka-outdoor-movie-2026",
     "title": "Piedmont 草坪免费电影：《Wonka》",
+    "startDate": "2026-10-16",
+    "endDate": "2026-10-16"
+  },
+  {
+    "id": "roundup-windsor-green-halloween-2026",
+    "title": "Windsor Green Halloween Party & Swap",
     "startDate": "2026-10-16",
     "endDate": "2026-10-16"
   },
@@ -1629,6 +1706,24 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "roundup-novato-halloween-magic-2026",
+    "title": "Novato 不太吓人的万圣节魔术",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "roundup-schulz-great-pumpkin-60-2026",
+    "title": "Schulz Museum《大南瓜》60周年活动",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "san-bruno-dia-de-los-muertos-2026",
+    "title": "免费 Día de los Muertos 家庭庆典",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
     "id": "san-leandro-family-not-spooky-2026",
     "title": "San Leandro 不吓人的亲子游戏日",
     "startDate": "2026-10-17",
@@ -1734,6 +1829,12 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "atherton-train-station-museum-opening-2026",
+    "title": "旧火车站博物馆 10 月 18 日揭幕",
+    "startDate": "2026-10-18",
+    "endDate": "2026-10-18"
+  },
+  {
     "id": "berkeley-bird-festival-2026",
     "title": "Berkeley Bird Festival：鸟类与自然社区日",
     "startDate": "2026-10-18",
@@ -1815,6 +1916,16 @@
     "endDate": "2026-10-19"
   },
   {
+    "id": "milpitas-map-workshops-fall-2026",
+    "title": "MAP 免费说明会：了解申请材料与市政折扣",
+    "startDate": "2026-10-20",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-10-20",
+      "2026-11-07"
+    ]
+  },
+  {
     "id": "sf-openclaw-friends-2026",
     "title": "OpenClaw 与朋友们开发者聚会",
     "startDate": "2026-10-20",
@@ -1841,6 +1952,18 @@
   {
     "id": "cupertino-hidden-treasures-2026",
     "title": "Cupertino Hidden Treasures：社区旧物寻宝",
+    "startDate": "2026-10-22",
+    "endDate": "2026-10-22"
+  },
+  {
+    "id": "monte-sereno-cpr-aed-october-2026",
+    "title": "10 月 22 日 CPR 与 AED 基础体验课",
+    "startDate": "2026-10-22",
+    "endDate": "2026-10-22"
+  },
+  {
+    "id": "orinda-trunk-and-treat-october-2026",
+    "title": "Trunk & Treat 分三场，只给儿童登记",
     "startDate": "2026-10-22",
     "endDate": "2026-10-22"
   },
@@ -1969,6 +2092,12 @@
     "endDate": "2026-10-23"
   },
   {
+    "id": "belmont-centennial-fest-2026",
+    "title": "百年庆典：游行、时光胶囊与无人机表演",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "berkeley-college-information-day-2026",
     "title": "UC Berkeley 大学信息日与校园交流",
     "startDate": "2026-10-24",
@@ -2073,6 +2202,12 @@
   {
     "id": "r2-petaluma-lumafest-20261024",
     "title": "Petaluma LumaFest 校园开放与亡灵节庆典",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24"
+  },
+  {
+    "id": "roundup-novato-dia-muertos-2026",
+    "title": "Novato Día de los Muertos 社区庆典",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
   },
@@ -2322,8 +2457,20 @@
     "endDate": "2026-10-29"
   },
   {
+    "id": "brisbane-dog-pawty-2026",
+    "title": "Dog Pawty 狗狗装扮聚会",
+    "startDate": "2026-10-29",
+    "endDate": "2026-10-29"
+  },
+  {
     "id": "r2-yountville-haunts-2026",
     "title": "Yountville 第三届 Napa Valley Haunts",
+    "startDate": "2026-10-29",
+    "endDate": "2026-10-29"
+  },
+  {
+    "id": "san-pablo-city-hall-o-ween-2026",
+    "title": "City Hall-o-Ween 已公布日期",
     "startDate": "2026-10-29",
     "endDate": "2026-10-29"
   },
@@ -2356,6 +2503,12 @@
     "occurrenceDates": [
       "2026-10-30"
     ]
+  },
+  {
+    "id": "moraga-not-so-haunted-hacienda-2026",
+    "title": "Hacienda 傍晚万圣节与草地电影",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-30"
   },
   {
     "id": "napa-harvest-after-dark-2026",
@@ -2401,6 +2554,12 @@
     ]
   },
   {
+    "id": "san-ramon-nature-halloween-storytime-2026",
+    "title": "自然故事时间有万圣节专场",
+    "startDate": "2026-10-30",
+    "endDate": "2026-10-30"
+  },
+  {
     "id": "sf-scaregrove-2026",
     "title": "Scaregrove：Stern Grove 免费万圣节嘉年华",
     "startDate": "2026-10-30",
@@ -2422,6 +2581,16 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "cupertino-baer-blacksmith-fall-2026",
+    "title": "免费观察 Baer Blacksmith Shop 锻造示范",
+    "startDate": "2026-10-31",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-10-31",
+      "2026-11-28"
+    ]
+  },
+  {
     "id": "mcm-halloween-spectacular-20261031",
     "title": "Marin Country Mart 万圣节装扮与讨糖",
     "startDate": "2026-10-31",
@@ -2430,6 +2599,12 @@
   {
     "id": "palo-alto-cal-ave-halloween-live-2026",
     "title": "Palo Alto Cal Ave：万圣节街区音乐日",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31"
+  },
+  {
+    "id": "roundup-sausalito-halloween-2026",
+    "title": "Sausalito 万圣节游行与狗狗装扮赛",
     "startDate": "2026-10-31",
     "endDate": "2026-10-31"
   },
@@ -2462,5 +2637,101 @@
     "title": "Downtown Vacaville 免费万圣节讨糖",
     "startDate": "2026-10-31",
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "roundup-suisun-dia-muertos-2026",
+    "title": "Suisun City 亡灵节文化晚会",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01"
+  },
+  {
+    "id": "sj-sharks-flames-nov2-2026",
+    "title": "Sharks 主场迎战 Flames",
+    "startDate": "2026-11-02",
+    "endDate": "2026-11-02"
+  },
+  {
+    "id": "oakland-xg-the-core-november-2026",
+    "title": "XG WORLD TOUR: THE CORE Oakland 站",
+    "startDate": "2026-11-03",
+    "endDate": "2026-11-03"
+  },
+  {
+    "id": "sf-warriors-heat-november-2026",
+    "title": "Warriors 主场对 Miami Heat",
+    "startDate": "2026-11-05",
+    "endDate": "2026-11-05"
+  },
+  {
+    "id": "sj-don-omar-nov-2026",
+    "title": "Don Omar：Back to Reggaeton",
+    "startDate": "2026-11-05",
+    "endDate": "2026-11-05"
+  },
+  {
+    "id": "sj-mon-laferte-nov-2026",
+    "title": "Mon Laferte 圣荷西演唱会",
+    "startDate": "2026-11-06",
+    "endDate": "2026-11-06"
+  },
+  {
+    "id": "roundup-windsor-fall-swap-2026",
+    "title": "Windsor 秋季装饰与衣物交换",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07"
+  },
+  {
+    "id": "sjsu-northern-illinois-nov-2026",
+    "title": "SJSU 对 Northern Illinois：家庭周末主场",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07"
+  },
+  {
+    "id": "santa-clara-49ers-raiders-nov-2026",
+    "title": "49ers 主场迎战 Raiders",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "sj-smashing-pumpkins-nov-2026",
+    "title": "The Smashing Pumpkins：The Rats In a Cage Tour",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "roundup-schulz-pearls-jubilee-2026",
+    "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
+    "startDate": "2026-11-10",
+    "endDate": "2026-11-10"
+  },
+  {
+    "id": "oakland-jo-koy-november-2026",
+    "title": "Jo Koy: Koy Meets World 喜剧专场",
+    "startDate": "2026-11-13",
+    "endDate": "2026-11-13"
+  },
+  {
+    "id": "san-ramon-lip-balm-workshop-november-2026",
+    "title": "San Ramon 冬季润唇膏手作课",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28"
+  },
+  {
+    "id": "sf-journey-final-frontier-november-2026",
+    "title": "Journey Final Frontier Tour 旧金山站",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28"
+  },
+  {
+    "id": "stanford-smu-football-nov-2026",
+    "title": "Stanford 主场迎战 SMU",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28"
+  },
+  {
+    "id": "santa-clara-49ers-seahawks-nov-2026",
+    "title": "49ers 主场迎战 Seahawks",
+    "startDate": "2026-11-29",
+    "endDate": "2026-11-29"
   }
 ]
