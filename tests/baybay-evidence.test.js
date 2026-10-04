@@ -64,6 +64,22 @@ test('the real Tech origin remains available for routing without becoming a dupl
   assert.ok(result.candidates.every(row => row.id !== tech.id));
 });
 
+test('explicit named real destinations retain requested order ahead of other suggestions', () => {
+  const catalog = require('../data/planner-catalog.json');
+  const { resolveTaskState } = require('../lib/baybayState');
+  const query = '2026-10-10 从 The Tech Interactive 出发，早上9点开车，两位成人，想去 San Jose 的 King Library 和 San José Museum of Art，17点前回出发点，总预算100美元。请安排并核算车程。';
+  const { state } = resolveTaskState({ message: query, catalog, today: TODAY });
+  const result = search(query, { catalog, state });
+  assert.deepEqual(result.candidates.slice(0, 2).map(row => row.id), ['venue-sj-king-library', 'venue-sjma']);
+  assert.ok(result.candidates.every(row => row.id !== 'san-jose')); assert.equal(result.originCandidate.id, 'san-jose');
+});
+
+test('explicit selections bypass query shorthand only, retaining hard date and eligibility checks', () => {
+  const catalog = fixture([event('chosen'), event('future', { startDate: '2026-10-05', endDate: '2026-10-05' }), event('members', { costLabel: 'Free for members; non-members $25.' })]);
+  const result = search('SJMA', { catalog, state: { city: 'San Jose', date: TODAY, goal: 'day-plan', freeOnly: true, selectedCandidateIds: ['future', 'members', 'chosen'] } });
+  assert.deepEqual(result.candidates.map(row => row.id), ['chosen']);
+});
+
 test('explicit city filters never turn similarly named or neighboring cities into local matches', () => {
   const catalog = fixture([event('sj'), event('sf', { city: 'San Francisco', region: 'sf' }), event('ss', { city: 'South San Francisco', region: 'peninsula' }), event('alameda', { city: 'Alameda', region: 'east-bay' })]);
   const result = search('free events', { catalog });

@@ -21,6 +21,9 @@ their existing handlers. `BAYBAY_AGENT_ENABLED=false` restores the old handler.
   particular day's opening. Stops without known travel remain a proposed order.
 - Default plans stay within one city when cross-city travel has not been verified.
   Source-linked web leads require page verification before entering a day plan.
+- Explicitly named published stops become an ordered selection. The departure
+  venue stays separate; ambiguous names or alternatives need clarification.
+  The model cannot silently add another stop to an exact requested itinerary.
 - The source monitor's pending-review state is exposed to the research model.
   A fetched page is an observation, not automatic editorial approval.
 
@@ -37,10 +40,14 @@ When a preferred request times out and enough research time remains, the same
 turn tries the fallback and records that timeout; this does not imply the
 preferred model is unavailable on later turns.
 
-`BAYBAY_MAX_MODEL_ROUNDS` defaults to four (hard ceiling four), with at most eight
-function tool calls per run. Research rounds allow 2,400 output tokens; the final
-structured answer allows up to 4,000 so reasoning does not truncate its JSON.
-The run has a 75-second research deadline. `BAYBAY_DAILY_RUN_LIMIT` defaults to
+`BAYBAY_MAX_MODEL_ROUNDS` defaults to four research/answer rounds, with at most
+eight model-requested function calls per run. One additional call can recover
+an unusable final response; it cannot extend tool research. Research rounds
+allow 2,400 output tokens and the final preferred-model answer allows 4,000.
+A valid complete JSON object is accepted even when the provider reports a
+token-limit stop; truncated output is never repaired or shown as an answer.
+The run has a 75-second deadline with 16 seconds reserved for final synthesis.
+`BAYBAY_DAILY_RUN_LIMIT` defaults to
 200 shared model runs per UTC day. This is a run limit, not a currency cap;
 one run can include several model requests and separately metered web lookup.
 The existing web-search cache and shared
@@ -57,7 +64,12 @@ Routes require all of:
 The key should be restricted to Routes API. Both route endpoints must have
 verified venue coordinates. City-center coordinates are not precise start/end
 points. A missing route, unknown origin or missing return leg remains explicit
-in the plan. The NWS weather lookup uses verified place coordinates and needs no
+in the plan. Exact public-origin plans can request up to three sequential route
+legs, rebuilding the schedule after each result; onward times need a usable
+previous stop end time. Identical route requests within one answer share their
+result and charge. Invalid IDs, missing coordinates, quota exhaustion and a
+provider failure have distinct safe diagnostic codes, never raw provider output.
+The NWS weather lookup uses verified place coordinates and needs no
 API key; a requested date outside the returned forecast remains unknown.
 
 ## Client contract

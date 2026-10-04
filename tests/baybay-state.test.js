@@ -180,6 +180,58 @@ test('airport origin becomes precise only with an existing verified venue coordi
   assert.equal(resolve('从SFO出发，去Alameda安排一天', undefined, { catalog: originCatalog }).state.originCandidateId, null);
 });
 
+test('the live named two-stop prompt preserves King Library then SJMA and excludes its Tech origin', () => {
+  const actual = require('../data/planner-catalog.json');
+  const message = '2026-10-10 从 The Tech Interactive 出发，早上9点开车，两位成人，想去 San Jose 的 King Library 和 San José Museum of Art，17点前回出发点，总预算100美元。请安排并核算车程。';
+  const result = resolve(message, undefined, { catalog: actual });
+  assert.equal(result.clarification, undefined);
+  assert.equal(result.state.goal, 'day-plan'); assert.equal(result.state.originCandidateId, 'san-jose');
+  assert.deepEqual(result.explicitCandidateIds, ['venue-sj-king-library', 'venue-sjma']);
+  assert.deepEqual(result.state.selectedCandidateIds, result.explicitCandidateIds);
+  assert.equal(result.state.city, 'San Jose');
+});
+
+test('explicit visits use unique published names in mention order, including accent and descriptor variants', () => {
+  const actual = require('../data/planner-catalog.json');
+  for (const message of [
+    'Plan a day in San Jose, visit San Jose Museum of Art and King Library.',
+    '明天在San Jose安排一天，先去 San José Museum of Art，再去 Dr. Martin Luther King, Jr. Library。',
+  ]) {
+    const result = resolve(message, undefined, { catalog: actual });
+    assert.deepEqual(result.explicitCandidateIds, ['venue-sjma', 'venue-sj-king-library'], message);
+  }
+  const prior = resolve('明天安排一天，想去San Jose Museum of Art', undefined, { catalog: actual }).state;
+  const followup = resolve('核算一下预算', prior, { catalog: actual });
+  assert.deepEqual(followup.state.selectedCandidateIds, ['venue-sjma']); assert.equal(followup.explicitCandidateIds, undefined);
+});
+
+test('bare venue facts, negative visits, generic names and alternative choices do not become invented desired stops', () => {
+  const actual = require('../data/planner-catalog.json');
+  const prior = resolve('明天在San Jose安排一天', undefined, { catalog: actual }).state;
+  for (const message of ['King Library 和 San Jose Museum of Art 的票价是多少？', '不想去King Library', '不想去King Library和San Jose Museum of Art', 'Do not visit King Library and San Jose Museum of Art', '安排一天，想去博物馆和公园', 'Plan a day, visit a museum and library']) assert.equal(resolve(message, prior, { catalog: actual }).explicitCandidateIds, undefined, message);
+  const alternative = resolve('明天安排一天，想去King Library或者San Jose Museum of Art', prior, { catalog: actual });
+  assert.ok(alternative.clarification); assert.equal(alternative.explicitCandidateIds, undefined);
+  const negative = resolve('明天安排一天，不要去King Library，想去San Jose Museum of Art', prior, { catalog: actual });
+  assert.deepEqual(negative.explicitCandidateIds, ['venue-sjma']);
+});
+
+test('a shared published venue alias asks for clarification instead of choosing one record', () => {
+  const duplicate = { events: [], places: [
+    { id: 'one', title: 'Example Art Museum', city: 'San Jose' },
+    { id: 'two', title: 'Example Art Museum', city: 'Oakland' },
+  ] };
+  const result = resolve('Plan a day and visit Example Art Museum', undefined, { catalog: duplicate });
+  assert.ok(result.clarification); assert.equal(result.explicitCandidateIds, undefined); assert.deepEqual(result.state.selectedCandidateIds, []);
+});
+
+test('a place name in an event venue does not select the event as a desired visit', () => {
+  const venues = { places: [{ id: 'museum', title: 'Example Art Museum', city: 'San Jose' }], events: [
+    { id: 'museum-concert', title: 'Friday Jazz Night', venue: 'Example Art Museum', city: 'San Jose' },
+  ] };
+  assert.deepEqual(resolve('Plan a day and visit Example Art Museum', undefined, { catalog: venues }).explicitCandidateIds, ['museum']);
+  assert.deepEqual(resolve('Plan a day and visit Friday Jazz Night', undefined, { catalog: venues }).explicitCandidateIds, ['museum-concert']);
+});
+
 test('a destination outside the Bay Area does not silently reuse the prior Bay Area city', () => {
   const prior = resolve('旧金山今天安排一天').state;
   for (const message of ['改去上海', '明天在洛杉矶安排一天', 'Plan a day in Seattle', 'From Fremont to Sacramento, plan a day']) {

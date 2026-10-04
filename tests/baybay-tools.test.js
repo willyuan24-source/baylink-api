@@ -230,11 +230,32 @@ test('area coordinates cannot masquerade as a verified route entrance', async ()
 test('route budget and global quota prevent a fourth paid lookup', async () => {
   let calls = 0, claims = 0;
   const { research } = setup({ claimRoute: async () => { claims++; return true; }, routeCompute: async () => { calls++; return rawRoute; } });
-  for (let index = 0; index < 3; index++) assert.equal((await research.route({ fromId: 'a', toId: 'b', time: '09:00' })).ok, true);
-  assert.ok((await research.route({ fromId: 'a', toId: 'b', time: '09:00' })).error);
+  for (let index = 0; index < 3; index++) assert.equal((await research.route({ fromId: 'a', toId: 'b', time: `09:0${index}` })).ok, true);
+  assert.ok((await research.route({ fromId: 'a', toId: 'b', time: '09:03' })).error);
   assert.equal(calls, 3); assert.equal(claims, 3);
   const capped = setup({ claimRoute: async () => false, routeCompute: async () => { throw new Error('must not call'); } });
   assert.ok((await capped.research.route({ fromId: 'a', toId: 'b', time: '09:00' })).error);
+});
+
+test('published plan IDs resolve to exact known endpoints and duplicate route lookups share one charge', async () => {
+  let calls = 0, claims = 0;
+  const { research } = setup({ claimRoute: async () => { claims++; return true; }, routeCompute: async input => { calls++; assert.equal(input.from.id, 'a'); return rawRoute; } });
+  const first = await research.route({ fromId: 'place:a', toId: 'place:b', time: '09:00' });
+  assert.equal(first.ok, true);
+  assert.deepEqual(await research.route({ fromId: 'a', toId: 'b', time: '09:00' }), first);
+  assert.equal((await research.route({ fromId: 'event:a', toId: 'place:b', time: '09:00' })).code, 'route_coordinates_missing');
+  assert.equal(calls, 1); assert.equal(claims, 1);
+});
+
+test('route errors distinguish unusable departure times and provider failures without leaking responses', async () => {
+  let calls = 0;
+  const { research } = setup({ routeCompute: async () => { calls++; throw new Error('private provider response'); } });
+  assert.equal((await research.route({ fromId: 'a', toId: 'b', time: '25:00' })).code, 'route_time_invalid');
+  assert.equal((await setup({ state: { ...state, date: '2026-10-03' } }).research.route({ fromId: 'a', toId: 'b', time: '09:00' })).code, 'route_time_invalid');
+  const failed = await research.route({ fromId: 'a', toId: 'b', time: '09:00' });
+  assert.equal(failed.code, 'route_provider_unavailable');
+  assert.doesNotMatch(JSON.stringify(failed), /private provider/);
+  assert.equal(calls, 1);
 });
 
 test('routing not configured stays unavailable and never guesses a duration', async () => {
