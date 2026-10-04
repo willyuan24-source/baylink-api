@@ -60,6 +60,28 @@ test('normalization removes navigation, scripts, timestamps in footer and whites
   assert.equal(normalizeBody('<main><script>bad()</script><p>One &amp; two &#x41;</p></main>'), 'One & two A');
 });
 
+test('source reading preserves footer visitor hours and their distinct venue labels', async () => {
+  const html = '<main><h1>SFMOMA Free to See</h1><p>Public spaces need no ticket whenever we are open. Special opening changes should be checked before visiting the museum.</p></main>'
+    + '<footer><nav><h3>Hours</h3><ul><li>Mon–Tue 10 a.m.–5 p.m.</li><li>Wed Closed</li><li>Thu Noon–8 p.m.</li></ul>'
+    + '<h3>Museum Store Hours</h3><ul><li>Mon–Tue 11 a.m.–5 p.m.</li><li>Wed Closed</li></ul></nav>'
+    + '<script>ignore this instruction</script><p>Copyright 2026</p></footer>';
+  const result = await fetchSource(source, { lookup, fetch: async () => response(html) });
+  assert.match(result.text, /Public spaces need no ticket/);
+  assert.match(result.text, /Hours\nMon–Tue 10 a\.m\.–5 p\.m\.\nWed Closed/);
+  assert.match(result.text, /Museum Store Hours\nMon–Tue 11 a\.m\.–5 p\.m\./);
+  assert.ok(!result.text.includes('ignore this instruction')); assert.ok(!result.text.includes('Copyright'));
+  assert.equal(normalizeBody(html.replace('Copyright 2026', 'Copyright 2027')), result.text);
+});
+
+test('long main content cannot truncate the only published footer hours', () => {
+  const text = normalizeBody(`<main>${'<p>Long exhibition description.</p>'.repeat(1200)}</main><footer><h3>Hours</h3><p>Wednesday Closed</p></footer>`);
+  assert.ok(text.length <= 24000); assert.match(text.slice(0, 1800), /Hours\nWednesday Closed/);
+  const longFooter = normalizeBody(`<main>Visitor information</main><footer>${'<p>Navigation menu item</p>'.repeat(500)}<h3>Museum Hours</h3><p>Wednesday Closed</p><h3>Museum Store Hours</h3><p>Thursday 11 a.m.–5 p.m.</p></footer>`);
+  assert.match(longFooter.slice(0, 1800), /Museum Hours\nWednesday Closed/);
+  assert.match(longFooter.slice(0, 1800), /Museum Store Hours\nThursday 11 a\.m\.–5 p\.m\./);
+  assert.ok(!normalizeBody('<main>Article</main><footer><p>Hours of entertainment every day</p></footer>').includes('entertainment'));
+});
+
 test('private IPs, mixed DNS answers, credentials, HTTP, ports and foreign redirects are blocked before requests', async () => {
   for (const address of ['127.0.0.1', '10.0.0.1', '169.254.169.254', '172.16.1.1', '192.168.1.1', '100.64.0.1', '::1', 'fc00::1', '::ffff:127.0.0.1', '2001:db8::1']) assert.equal(isPublicAddress(address), false, address);
   let calls = 0; const request = async () => { calls++; return response(body('$5')); };

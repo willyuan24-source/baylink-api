@@ -38,6 +38,105 @@ test('page-read evidence is not downgraded by another search summary', () => {
   assert.equal(store.sources.get(read.id).text, 'Exact page text.');
   assert.equal(store.sources.get(read.id).checkedAt, '2026-10-04');
   assert.equal(store.sources.get(read.id).verification, 'page-read');
+  assert.equal(store.sources.get(read.id).title, 'Verified');
+});
+
+const realPlace = id => ({ ...require('../data/planner-catalog.json').places.find(row => row.id === id), kind: 'place', sourceKind: 'site-catalog', verification: 'site-record' });
+
+test('real bilingual editorial venue labels verify against exact official primary names', () => {
+  const cases = [
+    ['venue-sjma', 'San Jose Museum of Art', 'San José, California'],
+    ['venue-sj-king-library', 'Dr. Martin Luther King, Jr. Library', 'San Jose, California'],
+  ];
+  for (const [id, name, city] of cases) {
+    const store = storeFor([realPlace(id)]), row = store.candidates.get(id);
+    const source = store.addSource({ ...store.sources.get(row.sourceIds[0]), text: `${name}\nVisitor information: ${city}.`, verification: 'page-read' });
+    const result = verifiedCandidate({ candidate: row, source, state, today, proofs: { name, city } });
+    assert.equal(result.error, undefined, id);
+    assert.equal(result.verifiedFacts.name, name);
+    assert.equal(result.verification, 'page-verified');
+    assert.ok(verifiedCandidate({ candidate: row, source, state, today, proofs: { name: `${name} invented suffix`, city } }).error);
+  }
+});
+
+test('a parent museum or partial new web name cannot authenticate the cafe on its shared page', () => {
+  const cafe = realPlace('restaurant-el-cafecito-sjma');
+  for (const row of [cafe, { ...cafe, id: 'web-cafe', origin: 'web', kind: 'unknown' }]) {
+    const store = storeFor([row]), stored = store.candidates.get(row.id);
+    const source = store.addSource({ ...store.sources.get(stored.sourceIds[0]), text: 'San José Museum of Art is an art museum in San Jose. El Cafecito serves lunch.', verification: 'page-read' });
+    assert.ok(verifiedCandidate({ candidate: stored, source, state, today, proofs: { name: 'San José Museum of Art', city: 'San Jose' } }).error);
+    const byPrimary = verifiedCandidate({ candidate: stored, source, state, today, proofs: { name: 'El Cafecito', city: 'San Jose' } });
+    if (row.origin === 'web') assert.ok(byPrimary.error);
+    else assert.equal(byPrimary.error, undefined);
+  }
+});
+
+test('shared real museum and cafe URLs use a neutral label until a source supplies a page title', () => {
+  for (const ids of [['venue-sjma', 'restaurant-el-cafecito-sjma'], ['restaurant-el-cafecito-sjma', 'venue-sjma']]) {
+    const store = storeFor(ids.map(realPlace));
+    const sourceId = store.candidates.get('venue-sjma').sourceIds[0];
+    assert.equal(store.sources.get(sourceId).title, 'sjmusart.org/visit');
+    assert.equal(store.candidates.get(ids[0]).sourceIds[0], store.candidates.get(ids[1]).sourceIds[0]);
+    store.addSource({ url: 'https://sjmusart.org/visit', title: 'Visit | San José Museum of Art', verification: 'search-result' });
+    store.addCandidate(realPlace('restaurant-el-cafecito-sjma'));
+    assert.equal(store.sources.get(sourceId).title, 'Visit | San José Museum of Art');
+    store.addSource({ ...store.sources.get(sourceId), text: 'Museum visitor information and exact admission evidence.', verification: 'page-read' });
+    store.addCandidate(realPlace('venue-sjma'));
+    assert.equal(store.sources.get(sourceId).title, 'Visit | San José Museum of Art');
+  }
+});
+
+test('searches for a real museum merge into the museum rather than its cafe title suffix', async () => {
+  const store = storeFor([realPlace('restaurant-el-cafecito-sjma'), realPlace('venue-sjma')]);
+  const { research } = setup({ store, state: { ...state, city: 'San Jose' }, webSearch: async () => ({ sources: [{ title: 'Visit | San José Museum of Art', url: 'https://sjmusart.org/visit' }], candidates: [{ name: 'San Jose Museum of Art', city: 'San Jose', sourceUrls: ['https://sjmusart.org/visit'] }], checkedAt: '2026-10-04', answer: 'Museum visitor information.' }) });
+  const result = await research.searchWeb('San Jose Museum of Art admission');
+  assert.equal(result.candidates[0].id, 'venue-sjma');
+  assert.equal(store.sources.get(result.candidates[0].sourceIds[0]).title, 'Visit | San José Museum of Art');
+});
+
+test('same shared URL does not merge a newly found parent museum into a known cafe', async () => {
+  const store = storeFor([realPlace('restaurant-el-cafecito-sjma')]);
+  const { research } = setup({ store, state: { ...state, city: 'San Jose' }, webSearch: async () => ({ sources: [{ title: 'Museum visit', url: 'https://sjmusart.org/visit' }], candidates: [{ name: 'San José Museum of Art', city: 'San Jose', sourceUrls: ['https://sjmusart.org/visit'] }], checkedAt: '2026-10-04' }) });
+  const result = await research.searchWeb('museum admission');
+  assert.match(result.candidates[0].id, /^web-/);
+  assert.equal(result.candidates[0].kind, 'unknown');
+});
+
+test('conditional and cropped free admission quotations cannot turn a paid museum into zero dollars', () => {
+  for (const sentence of ['Free admission on the first Friday after 6 pm.', 'Members receive free admission.', 'Free admission for children; adult admission $20.', 'General admission $20 and free admission on Friday.', 'Free admission for Bank of America cardholders.', 'Free admission. Offer valid only for Bank of America cardholders.']) {
+    const store = storeFor([candidate('museum', { title: 'City Museum', cost: 'free', planning: { admissionUsd: 0 } })]);
+    const row = store.candidates.get('museum');
+    const source = store.addSource({ ...store.sources.get(row.sourceIds[0]), text: `City Museum in Fremont. ${sentence}`, verification: 'page-read' });
+    const quote = sentence.match(/free admission/i)[0];
+    const result = verifiedCandidate({ candidate: row, source, state, today, proofs: { name: 'City Museum', city: 'Fremont', admission: quote } });
+    assert.notEqual(result.cost, 'free', sentence);
+    assert.equal(result.planning.admissionUsd, null, sentence);
+    assert.equal(buildItinerary({ candidates: [result], state: { ...state, freeOnly: true }, now: NOW }).stops.length, 0, sentence);
+  }
+});
+
+test('unconditional free admission is not invalidated by an unrelated neighboring footer', () => {
+  const store = storeFor([candidate('museum', { title: 'City Museum' })]);
+  const row = store.candidates.get('museum');
+  const source = store.addSource({ ...store.sources.get(row.sourceIds[0]), text: 'City Museum in Fremont. Free admission. Contact the museum with questions. Members receive a newsletter.', verification: 'page-read' });
+  for (const admission of ['Free admission', 'Free admission.']) {
+    const result = verifiedCandidate({ candidate: row, source, state, today, proofs: { name: 'City Museum', city: 'Fremont', admission } });
+    assert.equal(result.cost, 'free');
+  }
+});
+
+test('real SJMA mixed ticket evidence remains unknown instead of making a library-plus-museum plan free', () => {
+  const store = storeFor([realPlace('venue-sjma'), realPlace('venue-sj-king-library')]);
+  const row = store.candidates.get('venue-sjma');
+  const admission = 'General admission $20; seniors $15; members free. Free admission on the first Friday after 6 pm.';
+  const source = store.addSource({ ...store.sources.get(row.sourceIds[0]), text: `San José Museum of Art in San Jose. ${admission}`, verification: 'page-read', checkedAt: new Date(NOW).toISOString() });
+  const result = verifiedCandidate({ candidate: row, source, state, today, proofs: { name: 'San José Museum of Art', city: 'San Jose', admission } });
+  assert.equal(result.error, undefined); assert.notEqual(result.cost, 'free'); assert.equal(result.planning.admissionUsd, null);
+  const plan = buildItinerary({ state: { ...state, date: '2026-10-10', city: 'San Jose' }, candidates: [store.candidates.get('venue-sj-king-library'), result], selectedIds: ['venue-sj-king-library', 'venue-sjma'], now: NOW });
+  const museum = plan.stops.find(stop => stop.entityId === 'venue-sjma');
+  assert.equal(museum.admissionStatus, 'incomplete'); assert.equal(museum.admissionUsd, undefined);
+  assert.ok(plan.budget.unknownItems.some(item => item.includes(row.title)));
+  assert.equal(plan.checks.find(check => check.type === 'budget' || check.key === 'budget' || check.code === 'budget')?.status, 'unknown');
 });
 
 test('separate relevant paragraphs of the same site guide remain available', () => {

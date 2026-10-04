@@ -72,6 +72,7 @@ test('explicit named real destinations retain requested order ahead of other sug
   const result = search(query, { catalog, state });
   assert.deepEqual(result.candidates.slice(0, 2).map(row => row.id), ['venue-sj-king-library', 'venue-sjma']);
   assert.ok(result.candidates.every(row => row.id !== 'san-jose')); assert.equal(result.originCandidate.id, 'san-jose');
+  assert.ok(result.sources.filter(source => source.sourceKind === 'site-catalog').every(source => source.titleOrigin === 'candidate'));
 });
 
 test('explicit selections bypass query shorthand only, retaining hard date and eligibility checks', () => {

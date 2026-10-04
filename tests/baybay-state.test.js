@@ -10,6 +10,93 @@ const originCatalog = { events: [], places: [
   { id: 'center', title: 'Fremont Center', city: 'Fremont', location: { precision: 'city', lat: 37.54, lng: -121.98 } },
 ] };
 
+test('utility and newcomer questions do not adopt explicitly rejected sightseeing intents', () => {
+  for (const [message, expected] of [
+    ['我刚搬到 Santa Clara 市租房，电力一定是PG&E吗？水、垃圾怎么转名？给我官方电话和入口，请不要推荐景点。', 'newcomer'],
+    ['剛來灣區，沒有車，日常買菜和交通用哪些 App？別給我安排旅遊路線。', 'newcomer'],
+    ['I just moved to Santa Clara. Which utilities should I contact? Do not recommend attractions or plan a day trip.', 'newcomer'],
+    ['只回答优惠资格和适用日期，不安排路线。', 'information'],
+  ]) {
+    const result = resolve(message);
+    assert.equal(result.state.goal, expected, message); assert.equal(result.clarification, undefined, message);
+  }
+  assert.equal(resolve('安排一天，请不要只推荐景点，也要留吃饭时间。').state.goal, 'day-plan');
+  assert.equal(resolve('Do not plan a day trip. Recommend events in San Jose.').state.goal, 'discover');
+});
+
+test('explicit service topic switches exit a signed day plan while normal followups keep its conditions', () => {
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const initial = resolve('明天在San Jose安排一天，总预算100美元，两大一小，孩子6岁。').state;
+  const previous = decodeTaskToken(encodeTaskToken({ state: initial }, options), options);
+  for (const message of ['还有哪些需要预约', '再推荐几个景点', '帮我看看附近购物选择']) {
+    const result = resolve(message, previous);
+    assert.equal(result.state.goal, 'day-plan', message); assert.equal(result.state.date, initial.date);
+    assert.equal(result.state.budget, 100); assert.equal(result.state.partySize, 3);
+  }
+  for (const [message, goal] of [
+    ['现在问生活服务：电力、水和垃圾怎么转名？不要安排旅游路线。', 'newcomer'],
+    ['不用安排行程，只回答优惠资格和适用日期。', 'information'],
+    ['Do not plan an itinerary. I need electricity service contacts.', 'newcomer'],
+    ['不要安排行程了，只推荐可买日用品的购物中心。', 'shopping'],
+  ]) assert.equal(resolve(message, previous).state.goal, goal, message);
+});
+
+test('county-qualified city corrections work independently and with signed previous state', () => {
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const first = resolve('我刚搬到 Santa Clara 市租房，电力一定是PG&E吗？水、垃圾怎么转名？给我官方电话和入口，请不要推荐景点。');
+  const previous = decodeTaskToken(encodeTaskToken({ state: first.state }, options), options);
+  for (const prior of [undefined, previous]) for (const message of [
+    '更正，不是 Santa Clara 市，是 Santa Clara 县的 Sunnyvale 市。上面电力、水和垃圾的电话还能照用吗？只给我更正后的办理入口。',
+    '更正，不是 Santa Clara 市，是 Santa Clara 縣的 Sunnyvale 市。電力和供水如何開戶？',
+    'Not in Santa Clara city. I need utilities in Sunnyvale, Santa Clara County.',
+    'Utilities in Sunnyvale in the County of Santa Clara.',
+  ]) {
+    const result = resolve(message, prior);
+    assert.equal(result.clarification, undefined, message); assert.equal(result.state.city, 'Sunnyvale', message);
+    assert.equal(result.state.goal, 'newcomer', message);
+  }
+  assert.equal(resolve('San Mateo County 的 Redwood City 怎么开户？').state.city, 'Redwood City');
+  assert.equal(resolve('Alameda County 有哪些公共服务？').state.city, null);
+  for (const message of ['Santa Clara 或 Sunnyvale 的电力服务怎么办？', 'Utilities in Santa Clara and Sunnyvale', '不要Santa Clara，给我官方办理入口']) assert.ok(resolve(message).clarification, message);
+});
+
+test('a stated home city is an origin hint rather than a competing destination or precise home location', () => {
+  const message = '我住Fremont，今天是2026年10月4日。我有一张 Bank of America 借记卡，同行成年朋友没有卡，今天去旧金山 de Young 能两个人都免费吗？这项优惠包括特别展吗？请核实官网，只回答优惠资格和适用日期，不安排路线。';
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const previous = decodeTaskToken(encodeTaskToken({ state: resolve('明天在San Jose安排一天').state }, options), options);
+  for (const prior of [undefined, previous]) for (const value of [message, '我住在Fremont，今天去旧金山 de Young，只问门票优惠，不安排行程。', 'I live in Fremont. What are the admission rules at de Young in San Francisco? No itinerary.']) {
+    const result = resolve(value, prior);
+    assert.equal(result.clarification, undefined, value); assert.equal(result.state.city, 'San Francisco', value);
+    assert.equal(result.state.origin, 'Fremont', value); assert.equal(result.state.originCandidateId, null, value);
+    assert.equal(result.state.goal, 'information', value);
+  }
+  assert.ok(resolve('Fremont 或 San Francisco 今天有什么活动？').clarification);
+});
+
+test('explicit whole-trip spending caps persist without confusing venue-price questions with budgets', () => {
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  for (const message of [
+    '明天从我家出发去那个博物馆，下午3点回来，总共不要超过50美元，帮我算准确车程。',
+    '明天安排一天，全程不超过50美元。', '明天安排一天，總共不要超過50美元。',
+    'Plan my day with a total no more than 50 dollars.',
+    'Plan my day, in total at most $50.',
+    'Plan my day, total under50.',
+  ]) {
+    const result = resolve(message); assert.equal(result.state.budget, 50, message); assert.equal(result.state.budgetScope, 'total', message);
+    const previous = decodeTaskToken(encodeTaskToken({ state: result.state }, options), options);
+    const next = resolve('再核对一下', previous).state;
+    assert.equal(next.budget, 50); assert.equal(next.budgetScope, 'total');
+  }
+  assert.equal(resolve('de Young 的门票总共不超过50美元吗？').state.budget, null);
+  assert.equal(resolve('门票总共是不是不超过50美元？').state.budget, null);
+  const prior = resolve('明天安排一天，全程不超过100美元。').state;
+  assert.equal(resolve('Would admission tickets cost a total no more than $50?', prior).state.budget, 100);
+  for (const message of ['总共超过50美元也可以', '全程超過50美元也沒關係', '一共多于50美元也可以']) {
+    assert.equal(resolve(message).state.budget, null, message);
+    assert.equal(resolve(message, prior).state.budget, 100, message);
+  }
+});
+
 test('a structured one-day request distinguishes origin from destination and keeps explicit party constraints', () => {
   const { state, clarification } = resolve('从 Fremont 出发，周六在 San Jose 安排一天。两大一小，孩子6岁，不开车，全家预算$100，上午10点出发，下午5点前回来。');
   assert.equal(clarification, undefined);
