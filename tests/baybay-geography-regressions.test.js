@@ -80,6 +80,15 @@ test('site discovery inherits the destination on a complete next question and ho
   assert.equal(changed.retrieval.city, 'San Francisco'); assert.doesNotMatch(changed.answer, /Shanghai|上海|Little Italy/);
 });
 
+test('dated city events do not append generic guides from another city or the article being read', async t => {
+  const f = await fixture(t);
+  const result = await f.ask({ message: '今天 San Jose 有什么活动？', locale: 'zh-Hans', searchMode: 'site',
+    context: { currentPath: '/guides/san-francisco-free-culture-guide' } });
+  assert.equal(result.responseMode, 'catalog');
+  assert.match(result.answer, /San Jose.*Little Italy/s);
+  assert.deepEqual(result.suggestedGuides, []);
+});
+
 test('text restart clears old history, public filters and stale outing token at the API boundary', async t => {
   const f = await fixture(t);
   const result = await f.ask({ message: '重新开始，今天湾区有什么活动？', searchMode: 'site', history: [{ role: 'user', content: '今天上海有什么活动' }, { role: 'assistant', content: '上海建议' }], searchContext: { city: 'Shanghai', date: '2026-10-10' }, outingSearchToken: 'invalid.old-token' });

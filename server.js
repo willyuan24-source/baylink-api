@@ -4563,7 +4563,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         searchContext: webRequest.input || searchContext, catalog: options.plannerCatalog, guideCatalog: GUIDE_CATALOG });
       if (local) return send({ ...localized(withGuideContext(buildGuideChatPayload(resolvedRequest, category))),
         answer: local.answer, catalogSources: local.sources, catalogCheckedAt: local.checkedAt,
-        suggestedGuides: local.suggestedGuides.length ? local.suggestedGuides : guideReferences,
+        suggestedGuides: local.suggestedGuides,
         interactiveCards: [], matchingPosts: [], degraded: false, responseMode: 'catalog', matchNote: local.matchNote },
         { preferCatalog: (local.eventIds.length > 0 || local.placeIds.length > 0) && !/最新|联网|聯網|再查|核实|核實|\b(?:latest|search the web|verify|check online|search again)\b/i.test(message) });
     }
