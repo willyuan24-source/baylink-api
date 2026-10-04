@@ -4503,17 +4503,28 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     : buildChatWebRequest({ message, history, searchMode, searchContext, locale, today: currentDatePacific, siteService: !!searchPlan || providerRequest, school: intent === 'school' });
   const requestScope = searchScope(webRequest.input || { query: resolvedRequest, locale, ...searchContext }, options.plannerNow);
   let actualGuideModel;
-  const send = async payload => {
+  const send = async (payload, { preferCatalog = false } = {}) => {
     res.set('Cache-Control', 'no-store');
     const scope = payload.responseMode === 'catalog' || selectedGuides.length || (searchPlan && !searchPlan.needsClarification) ? 'site' : 'none';
     const retrieval = { requestedMode: searchMode, scope, webStatus: webRequest.status || 'not_requested',
       requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area,
       ...(payload.catalogCheckedAt ? { catalogCheckedAt: payload.catalogCheckedAt } : {}),
       configuredModel: safeModel(config.OPENAI_MODEL || 'gpt-4o-mini'), ...(actualGuideModel ? { model: actualGuideModel } : {}) };
-    if (webRequest.question) return res.json({ ...payload, answer: webRequest.question, retrieval: { ...retrieval, scope: 'none' } });
+    if (webRequest.question) return res.json({ ...payload, answer: webRequest.question, suggestedGuides: [], suggestedActions: [], interactiveCards: [], retrieval: { ...retrieval, scope: 'none' } });
+    // Date/city matching is deterministic. A successful model search must not
+    // overwrite it with a festival range, another city's listing or a guessed free day.
+    if (preferCatalog && searchMode === 'smart') return res.json({ ...payload, retrieval: { ...retrieval, webStatus: 'not_requested' } });
     if (!webRequest.search) return res.json({ ...payload, retrieval });
     try {
       const found = await plannerWebSearch.search(webRequest.input, getClientIp(req));
+      if (payload.responseMode === 'catalog') {
+        const note = locale === 'en'
+          ? 'Additional web references are listed separately. Their event dates, sessions and admission have not been independently confirmed, so they have not replaced the date-filtered site recommendations.'
+          : locale === 'zh-Hant' ? '已列出額外聯網來源；其中新活動的日期、場次及票價未經獨立核實，因此未取代上方按日期篩選的站內推薦。'
+            : '已列出额外联网来源；其中新活动的日期、场次及票价未经独立核实，因此未取代上方按日期筛选的站内推荐。';
+        return res.json({ ...payload, answer: `${payload.answer}\n\n${note}`, webSearchReferences: found.sources, coverage: found.coverage,
+          retrieval: { ...retrieval, scope: 'site+web', webStatus: 'completed', checkedAt: found.checkedAt, cached: found.cached, sourceCount: found.sources.length, configuredModel: found.configuredModel, model: found.model }, matchNote: note });
+      }
       return res.json({ ...payload, answer: found.answer, responseMode: 'web', degraded: false,
         catalogSources: undefined,
         sources: found.sources, webCandidates: found.candidates || [], coverage: found.coverage,
@@ -4553,7 +4564,8 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       if (local) return send({ ...localized(withGuideContext(buildGuideChatPayload(resolvedRequest, category))),
         answer: local.answer, catalogSources: local.sources, catalogCheckedAt: local.checkedAt,
         suggestedGuides: local.suggestedGuides.length ? local.suggestedGuides : guideReferences,
-        interactiveCards: [], matchingPosts: [], degraded: false, responseMode: 'catalog', matchNote: local.matchNote });
+        interactiveCards: [], matchingPosts: [], degraded: false, responseMode: 'catalog', matchNote: local.matchNote },
+        { preferCatalog: (local.eventIds.length > 0 || local.placeIds.length > 0) && !/最新|联网|聯網|再查|核实|核實|\b(?:latest|search the web|verify|check online|search again)\b/i.test(message) });
     }
     if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return send(localized(fallback()));
     const guideSources = selectedGuides.map(guide => {

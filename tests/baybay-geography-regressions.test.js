@@ -18,15 +18,18 @@ async function fixture(t, overrides = {}) {
   return { ask: async body => { const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); assert.equal(response.status, 200); const data = await response.json(); assert.doesNotMatch(JSON.stringify(data), /never-include-this-secret/); return data; }, counts: () => ({ chatCalls, searchCalls, chatInput, searchInput }) };
 }
 
-test('the exact screenshot request rejects cited Shanghai and keeps date-filtered Bay Area records', async t => {
+test('the exact screenshot request prefers date-filtered Bay Area records without letting an optional model overwrite them', async t => {
   const f = await fixture(t);
   const result = await f.ask({ message: '今天有什麼活動，地方好去？', locale: 'zh-Hant', searchMode: 'smart' });
-  assert.equal(result.responseMode, 'catalog'); assert.equal(result.retrieval.webStatus, 'verification_failed');
+  assert.equal(result.responseMode, 'catalog'); assert.equal(result.retrieval.webStatus, 'not_requested');
   assert.equal(result.retrieval.requestedDate, '2026-10-04'); assert.equal(result.retrieval.city, null);
   assert.match(result.answer, /站內記錄/); assert.doesNotMatch(result.answer, /上海|周三（今天）/);
   assert.ok(result.catalogSources.length); assert.equal(result.sources, undefined);
-  assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 1);
-  assert.equal(result.retrieval.rejectedWebModel, 'gpt-4.1-mini-2025-04-14');
+  assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 0);
+  const forced = await f.ask({ message: '今天有什麼活動，地方好去？', locale: 'zh-Hant', searchMode: 'web' });
+  assert.equal(forced.responseMode, 'catalog'); assert.equal(forced.retrieval.webStatus, 'verification_failed');
+  assert.equal(forced.retrieval.rejectedWebModel, 'gpt-4.1-mini-2025-04-14');
+  assert.doesNotMatch(forced.answer, /上海/);
 });
 
 test('site-only Sunday free events do not call models or turn a Wednesday offer into today', async t => {
@@ -40,10 +43,22 @@ test('site-only Sunday free events do not call models or turn a Wednesday offer 
 
 test('a city-wide no-events claim falls back to actual San Jose records instead of surviving as a successful lookup', async t => {
   const f = await fixture(t, { web: () => web('San Jose 今天没有特定的活動安排。') });
-  const result = await f.ask({ message: '今天 San Jose 有什么活动？', locale: 'zh-Hans', searchMode: 'smart' });
+  const result = await f.ask({ message: '今天 San Jose 有什么活动？', locale: 'zh-Hans', searchMode: 'web' });
   assert.equal(result.responseMode, 'catalog'); assert.equal(result.retrieval.webStatus, 'verification_failed');
   assert.equal(result.retrieval.city, 'San Jose'); assert.ok(result.catalogSources.length);
   assert.doesNotMatch(result.answer, /今天没有|今天沒有/); assert.match(result.answer, /Little Italy|Santana/);
+});
+
+test('successful web search cannot replace exact-date records with broad festival dates or invented admission', async t => {
+  const f = await fixture(t, { web: () => web('今天旧金山 Fleet Week 10月4日至12日，可看飞行表演，Castro Street Fair 10点开放，所有博物馆今天免费。') });
+  for (const body of [{ searchMode: 'web', message: '今天旧金山有什么活动？' }, { searchMode: 'smart', message: '联网核实今天旧金山有什么活动？' }]) {
+    const result = await f.ask({ ...body, locale: 'zh-Hans' });
+    assert.equal(result.responseMode, 'catalog'); assert.equal(result.retrieval.webStatus, 'completed');
+    assert.equal(result.retrieval.scope, 'site+web'); assert.ok(result.webSearchReferences.length);
+    assert.ok(result.catalogSources.length); assert.equal(result.sources, undefined);
+    assert.doesNotMatch(result.answer, /飞行表演|10点开放|所有博物馆今天免费/);
+    assert.match(result.answer, /未经独立核实/);
+  }
 });
 
 test('explicit outside destinations are explained in all three modes without silently changing them', async t => {
@@ -51,6 +66,7 @@ test('explicit outside destinations are explained in all three modes without sil
   for (const searchMode of ['smart', 'web', 'site']) {
     const result = await f.ask({ message: '今天中国上海有什么活动？', locale: 'zh-Hans', searchMode });
     assert.match(result.answer, /目的地不在服务范围/); assert.equal(result.retrieval.scope, 'none');
+    assert.deepEqual(result.suggestedGuides, []);
   }
   assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 0);
 });
