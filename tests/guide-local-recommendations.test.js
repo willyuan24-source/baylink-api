@@ -134,6 +134,7 @@ test('production catalog Sunday SF and San Jose stay date/city grounded without 
       const result = await ask(message, catalog, { locale: 'zh-Hant' });
       assert.ok(result.eventIds.length, message);
       assert.equal(result.sources.length, result.eventIds.length);
+      assert.ok(result.answer.includes(`地點：${city} · `), 'every option names its actual city, not just a marketing/event title');
       for (const id of result.eventIds) {
         const row = catalog.events.find(row => row.id === id);
         assert.equal(row.city, city);
