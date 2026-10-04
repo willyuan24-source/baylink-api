@@ -13,8 +13,27 @@ test('shared context includes BOTH site paragraphs and actual web sources before
   const assistant = createBayBayAssistant(settings({ ai: async payload => { input = JSON.parse(payload.input[0].content); const refs = input.evidence; return final({ answer: `建议先看站内攻略，再按官网核对。 [[${refs[0].id}]] [[${refs.find(s => s.kind === 'web').id}]]`, candidateIds: [] }); } }));
   const result = await assistant.run({ message: '最新旧金山博物馆安排', locale: 'zh-Hans', searchMode: 'web' });
   assert.ok(input.evidence.some(s => s.kind === 'guide')); assert.ok(input.evidence.some(s => s.kind === 'web'));
+  assert.equal(input.webResearch[0].answer, 'Official current information.');
   assert.equal(result.responseMode, 'assistant'); assert.equal(result.retrieval.scope, 'site+web'); assert.equal(result.sources.length, 2);
   assert.ok(result.assistantSessionToken); assert.equal(result.research.model, 'fixture-reasoner');
+});
+
+test('a failed additional search does not erase the successful initial web research', async () => {
+  let calls = 0, rounds = 0;
+  const assistant = createBayBayAssistant(settings({ webSearch: async () => {
+    if (calls++) throw new Error('Unavailable supplemental search');
+    return { answer: 'The initial web result.', sources: [{ title: 'Official SFMOMA', url: 'https://www.sfmoma.org/visit/' }], candidates: [], checkedAt: new Date(NOW).toISOString() };
+  }, ai: async () => rounds++ === 0 ? invoke('search_web', { query: 'SFMOMA extra public information' }) : final({ answer: '保留首轮查到的资料；补查未完成。', candidateIds: [] }) }));
+  const result = await assistant.run({ message: '最新旧金山博物馆信息', searchMode: 'web' });
+  assert.equal(result.retrieval.scope, 'site+web'); assert.equal(result.retrieval.webStatus, 'completed');
+  assert.ok(result.research.warnings.includes('additional_web_lookup_unavailable'));
+});
+
+test('short follow-ups retain bounded conversational references alongside signed conditions', async () => {
+  let input;
+  const assistant = createBayBayAssistant(settings({ ai: async payload => { input = JSON.parse(payload.input[0].content); return final({ answer: '需以该馆官网核实。', candidateIds: [] }); } }));
+  await assistant.run({ message: '那里需要预约吗？', history: [{ role: 'user', content: '我想去 SFMOMA' }, { role: 'assistant', content: '你可以先核对 SFMOMA 的参观安排。' }], searchMode: 'site' });
+  assert.equal(input.recentConversation.length, 2); assert.match(input.recentConversation[0].content, /SFMOMA/);
 });
 
 test('assistant can read evidence, resume tool results, and then answer without losing site context', async () => {
@@ -128,7 +147,7 @@ test('a named catalog origin reaches route tools with precise coordinates and is
   assert.ok(result.research.steps.some(s => s.tool === 'get_route' && s.status === 'completed'));
 });
 
-test('a signed follow-up replacing one stop preserves the other stops and deleting the only stop stays empty', async () => {
+test('a signed follow-up replacing one stop preserves the other stops and rejects an invalid stop index', async () => {
   const catalog = { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: ['a', 'b', 'c', 'd'].map(id => ({ id, title: `Public Park ${id}`, city: 'San Jose', region: 'south-bay', officialUrl: `https://example.org/${id}`, cost: 'free' })) };
   const assistant = createBayBayAssistant(settings({ catalog, ai: async payload => {
     const data = JSON.parse(payload.input[0].content);

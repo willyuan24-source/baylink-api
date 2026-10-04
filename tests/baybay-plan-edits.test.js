@@ -127,3 +127,27 @@ test('no edit leaves normal model selection untouched and inputs remain immutabl
   select(prepare('换掉第二站').edit, ['e']);
   assert.equal(JSON.stringify({ state, lastPlan, rows }), before);
 });
+
+test('generic same-scope follow-up seeds retrieval with the published plan in its original order', () => {
+  const prepared = prepare('检查这份安排费用', { lastPlan: { selectedIds: ['c', 'a', 'b'], date: state.date } });
+  assert.equal(prepared.edit, null);
+  assert.deepEqual(prepared.state.selectedCandidateIds, ['c', 'a', 'b']);
+  const result = select(prepared.edit, ['e', 'f']);
+  assert.deepEqual(result.selectedIds, ['e', 'f']);
+  assert.equal(result.explicitSelection, false);
+});
+
+test('same-scope context seeding never revives an explicitly excluded old stop', () => {
+  const prepared = prepare('检查这份安排费用', { state: { ...state, selectedCandidateIds: [], excludedCandidateIds: ['place:b'] } });
+  assert.equal(prepared.edit, null);
+  assert.deepEqual(prepared.state.selectedCandidateIds, ['a', 'c']);
+});
+
+test('generic city, date or goal changes clear previous selections without an indexed instruction', () => {
+  for (const [message, patch] of [['改去 Berkeley', { city: 'Berkeley' }], ['改成明天', { date: '2026-10-06' }], ['查搬家资料', { goal: 'newcomer' }]]) {
+    const prepared = prepare(message, { state: { ...state, ...patch, selectedCandidateIds: ['a', 'b', 'c'] } });
+    assert.equal(prepared.edit.kind, 'invalidated');
+    assert.deepEqual(prepared.state.selectedCandidateIds, []);
+    assert.equal(select(prepared.edit).explicitSelection, false);
+  }
+});
