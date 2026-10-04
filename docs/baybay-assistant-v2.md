@@ -29,6 +29,18 @@ their existing handlers. `BAYBAY_AGENT_ENABLED=false` restores the old handler.
 
 ## Configuration
 
+Set a dedicated server-only `BAYBAY_STATE_SECRET` using at least 32 random bytes
+for signed task memory. It is independent of account-login `JWT_SECRET`; do not
+change that authentication key to enable BayBay memory. If the dedicated value
+is missing or shorter than 16 characters, a `JWT_SECRET` of at least 16 characters
+is the compatibility fallback. Without either usable value, single-turn answers
+still work but no task token is issued. Capability `taskMemory` reports only this
+configuration check. A response with no token reports `task_memory_unavailable`
+in `research.warnings`, including when its bounded token would be too large.
+Changing the selected task-signing key invalidates existing BayBay task tokens;
+start a new BayBay conversation after such a rotation. Keys never appear in
+capabilities, responses, or client environment variables.
+
 Existing `OPENAI_API_KEY` is reused server-side. No key belongs in a `VITE_*`
 variable or in a chat. The preferred `OPENAI_BAYBAY_MODEL` defaults to
 `gpt-6.1-sol`; a provider rejection for that model uses

@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createBayBayAssistant, parseDraft } = require('../lib/baybayAgent');
+const { resolveTaskSecret, encodeTaskToken, decodeTaskToken } = require('../lib/baybayState');
+const jwt = require('jsonwebtoken');
 
 const NOW = Date.parse('2026-10-04T19:00:00Z');
 const config = { JWT_SECRET: 'private-recovery-test-key' };
@@ -8,6 +10,39 @@ const answer = value => ({ status: 'completed', output: [{ type: 'message', role
 const call = (name, args, id = name) => ({ status: 'completed', output: [{ type: 'function_call', name, call_id: id, arguments: JSON.stringify(args) }] });
 const options = extra => ({ config, isTest: true, now: () => NOW, ...extra });
 const precisePrompt = '2026-10-10 从 The Tech Interactive 出发，早上9点开车，两位成人，想去 San Jose 的 King Library 和 San José Museum of Art，17点前回出发点，总预算100美元。请安排并核算车程。';
+
+test('dedicated task secret enables signed follow-ups without changing account authentication', async () => {
+  const dedicated = 'a-separate-random-test-task-signing-key';
+  const authConfig = { JWT_SECRET: 'legacy-auth', BAYBAY_STATE_SECRET: dedicated };
+  const authToken = jwt.sign({ id: 'fixture-account' }, authConfig.JWT_SECRET, { algorithm: 'HS256' });
+  const assistant = createBayBayAssistant(options({ config: authConfig, ai: async () => answer('已按你提供的条件核对。') }));
+  assert.equal(assistant.capabilities().taskMemory, true);
+  assert.doesNotMatch(JSON.stringify(assistant.capabilities()), /legacy-auth|random-test-task-signing/);
+  const first = await assistant.run({ message: precisePrompt, searchMode: 'site' });
+  assert.ok(first.assistantSessionToken);
+  assert.equal(decodeTaskToken(first.assistantSessionToken, { secret: dedicated, now: NOW }).state.origin, 'The Tech Interactive');
+  assert.equal(decodeTaskToken(first.assistantSessionToken, { secret: 'a-different-valid-auth-key', now: NOW }), null);
+  assert.equal(first.research.warnings.includes('task_memory_unavailable'), false);
+  const second = await assistant.run({ message: '检查这份安排费用', searchMode: 'site', sessionToken: first.assistantSessionToken });
+  assert.deepEqual(second.assistantPlan.stops.map(stop => stop.entityId), ['venue-sj-king-library', 'venue-sjma']);
+  assert.equal(jwt.verify(authToken, authConfig.JWT_SECRET, { algorithms: ['HS256'] }).id, 'fixture-account');
+  assert.equal(authConfig.JWT_SECRET, 'legacy-auth');
+});
+
+test('task memory preserves strong JWT compatibility but never accepts a weak key or silently omits its warning', async () => {
+  assert.equal(resolveTaskSecret({ BAYBAY_STATE_SECRET: 'dedicated-test-secret-long', JWT_SECRET: config.JWT_SECRET }), 'dedicated-test-secret-long');
+  assert.equal(resolveTaskSecret(config), config.JWT_SECRET);
+  assert.equal(resolveTaskSecret({ BAYBAY_STATE_SECRET: 'short', JWT_SECRET: config.JWT_SECRET }), config.JWT_SECRET);
+  assert.equal(resolveTaskSecret({ BAYBAY_STATE_SECRET: 'short', JWT_SECRET: 'tiny' }), null);
+  assert.equal(encodeTaskToken({ state: {} }, { secret: null, now: NOW }), null, 'an explicitly disabled key cannot fall back to another environment key');
+  for (const unusable of [{}, { JWT_SECRET: 'short' }, { BAYBAY_STATE_SECRET: 'tiny', JWT_SECRET: 'short' }]) {
+    const assistant = createBayBayAssistant(options({ config: unusable, ai: async () => answer('这轮只核对当前资料。') }));
+    assert.equal(assistant.capabilities().taskMemory, false);
+    const result = await assistant.run({ message: 'San Jose 博物馆资料', searchMode: 'site' });
+    assert.equal(result.assistantSessionToken, null); assert.equal(result.degraded, false);
+    assert.ok(result.research.warnings.includes('task_memory_unavailable'));
+  }
+});
 
 test('max-token incomplete output is usable only when the entire final JSON is complete', () => {
   const complete = { ...answer('只说明已有事实。'), status: 'incomplete', incomplete_details: { reason: 'max_output_tokens' } };
