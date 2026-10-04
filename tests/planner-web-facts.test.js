@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { requestSearch } = require('../lib/plannerWebSearch');
-const { needsSourceFacts, validateSourceFacts, sourceConditions, groundSearchFacts } = require('../lib/plannerWebFacts');
+const { needsSourceFacts, validateSourceFacts, sourceConditions, groundSearchFacts, regularHoursQuote } = require('../lib/plannerWebFacts');
 const lookup = async () => [{ address: '93.184.216.34', family: 4 }];
 const sources = [
   { title: 'Oakland Museum of California visit', url: 'https://museumca.org/visit/' },
@@ -19,7 +19,7 @@ function searchResponse() {
 }
 
 test('only visiting-hours and admission questions use fact formatting; dated discovery remains broad', () => {
-  for (const query of ['Oakland 博物馆门票和营业时间', 'museum hours and admission', '入場截止', 'last entry']) assert.equal(needsSourceFacts({ query }), true);
+  for (const query of ['Oakland 博物馆门票和营业时间', 'museum hours and admission', '入場截止', 'last entry', 'SFMOMA周三开馆吗', 'SFMOMA週三開館嗎', 'SFMOMA幾點關門', 'Is SFMOMA closed on Wednesdays?']) assert.equal(needsSourceFacts({ query }), true);
   for (const query of ['湾区10月活动和新店', 'free local events', 'Find a local cafe']) assert.equal(needsSourceFacts({ query, date: '2026-10-17' }), false);
 });
 
@@ -111,4 +111,60 @@ test('exhausted shared deadline skips all new work, and hung source transport ca
   const start = Date.now();
   const bounded = await groundSearchFacts(base, input, { deadline: Date.now() + 750, lookup, sourceFetch: () => new Promise(() => {}) });
   assert.ok(Date.now() - start < 1400); assert.equal(bounded.factsStatus, 'sources-only');
+});
+
+test('visitor child pages recover exact hours from one same-origin parent and retain free public-space scope', async () => {
+  const sfSources = [
+    { title: 'Getting Here · SFMOMA', url: 'https://www.sfmoma.org/visit/getting-here/?utm_source=openai' },
+    { title: 'Free to See · SFMOMA', url: 'https://www.sfmoma.org/visit/free-to-see/?utm_source=openai' },
+  ];
+  const bodies = {
+    '/visit/getting-here/': '<main><h1>Getting Here</h1><h2>Parking</h2><p>SFMOMA garage at 147 Minna Street.</p><h3>Hours</h3><p>7 a.m.–11 p.m. (daily)</p><p>Rates $4 per 30 minutes; parking is separate from museum admission.</p></main><footer>Wednesday: Closed</footer>',
+    '/visit/free-to-see/': '<main><h1>Free to See</h1><p>In addition to our regular free days and free admission every day for guests 18 and younger, SFMOMA offers 45,000 square feet of art-filled public spaces — no ticket required — whenever we’re open.</p></main><footer>Wednesday: Closed</footer>',
+    '/visit/': '<main><h1>Visit SFMOMA</h1><h2>Standard Hours</h2><p>Monday–Tuesday: 10 a.m.&ndash;5 p.m.</p><p>Wednesday: Closed</p><p>Thursday: Noon&ndash;8 p.m.</p><p>Friday–Sunday: 10 a.m.&ndash;5 p.m.</p><p>Confirm special events before visiting.</p></main>',
+  };
+  const fetched = [];
+  const result = await groundSearchFacts({ sources: sfSources }, { query: 'SFMOMA 平常週三開館嗎？免費公共藝術區能進嗎？', date: '2026-10-07', locale: 'zh-Hant' }, {
+    lookup, sourceFetch: async url => { fetched.push(url.href); return response(bodies[url.pathname]); },
+    ai: async () => ({ places: [{ sourceNumber: 2, name: 'SFMOMA', city: null, regularHours: null, admission: null, lastEntry: null, lastTicketSale: null, conditions: [] }] }),
+  });
+  assert.deepEqual(fetched, [...sfSources.map(row => row.url), 'https://www.sfmoma.org/visit/']);
+  assert.equal(result.sources.length, 3);
+  assert.match(result.answer, /Wednesday: Closed.*\[3\]/);
+  assert.match(result.answer, /10 a.m.–5 p.m./);
+  assert.match(result.answer, /public spaces — no ticket required — whenever we’re open.*\[2\]/);
+  assert.match(result.answer, /常規開放規則/);
+  assert.doesNotMatch(result.answer, /7 a.m.|\$4|2026-10-07 當日|免费全馆|免費全館/);
+  assert.ok(result.candidates.some(row => row.sourceUrls[0] === 'https://www.sfmoma.org/visit/' && row.timeSummary.includes('Wednesday: Closed')));
+});
+
+test('exact regular-hours fallback works without a formatter and does not use cafe/parking or ambiguous schedules', async () => {
+  for (const text of ['Museum\nWednesday: 10 am–5 pm', 'Museum\nEvening lecture\nWednesday: 6 pm–8 pm', 'Museum\nDining at the terrace\nWednesday: 10 am–6 pm', 'Museum\nStandard Hours\nUpcoming program\nWednesday: 6 pm–8 pm']) assert.equal(regularHoursQuote(text), null);
+  assert.equal(regularHoursQuote('Museum\nParking\nHours\nWednesday: 7 am–11 pm'), null);
+  assert.equal(regularHoursQuote('Museum\nMuseum Store Hours\nWednesday: 10 am–6 pm'), null);
+  assert.equal(regularHoursQuote('Museum\nStandard Hours\nWednesday: Closed\nOther building\nWednesday: 10 am–5 pm'), null);
+  assert.equal(regularHoursQuote('Museum\nParking\nHours\nWednesday: 7 am–11 pm\nMuseum Hours\nWednesday: Closed'), 'Wednesday: Closed');
+  const text = 'Example Museum\nStandard Hours\nWednesday: Closed\nThursday: Noon–8 pm\nRegular hours may change for special programs; consult the official page before visiting.';
+  const result = await groundSearchFacts({ sources: [{ title: 'Example Museum', url: 'https://example.org/visit/' }] }, { query: 'Is Example Museum closed on Wednesdays?', date: '2026-10-07', locale: 'en' }, { lookup, sourceFetch: async () => response(text) });
+  assert.match(result.answer, /published regular visiting rules/);
+  assert.match(result.answer, /Wednesday: Closed Thursday: Noon–8 pm \[1\]/);
+  assert.doesNotMatch(result.answer, /2026-10-07 opening/);
+});
+
+test('an explicit visit date keeps date-specific uncertainty separate from regular Wednesday closure', async () => {
+  const text = 'Example Museum\nStandard Hours\nWednesday: Closed\nThursday: Noon–8 pm\nRegular hours may change for special programs; consult the official page before visiting.';
+  const result = await groundSearchFacts({ sources: [{ title: 'Example Museum', url: 'https://example.org/visit/' }] }, { query: 'Example Museum hours on 2026-10-07 Wednesday', date: '2026-10-07', locale: 'en' }, { lookup, sourceFetch: async () => response(text) });
+  assert.match(result.answer, /2026-10-07 opening and ticket availability: not independently confirmed/);
+  assert.match(result.answer, /Wednesday: Closed/);
+});
+
+test('blocked visitor parents add neither a citation nor guessed hours, and title-only identity is not evidence', async () => {
+  const source = { title: 'Free to See · Example Museum', url: 'https://example.org/visit/free-to-see/' };
+  const text = 'Free to See\nExample Museum offers public spaces — no ticket required — whenever we are open. Please check the visitor schedule and current exhibit page before visiting.';
+  const result = await groundSearchFacts({ sources: [source] }, { query: 'Example Museum hours', locale: 'en' }, { lookup, sourceFetch: async url => { if (url.pathname === '/visit/') throw Error('blocked'); return response(text); } });
+  assert.deepEqual(result.sources, [source]);
+  assert.doesNotMatch(result.answer, /Wednesday|\[2\]/);
+  const missingIdentity = await groundSearchFacts({ sources: [{ title: 'Invented Museum', url: 'https://example.org/info/' }] }, { query: 'museum hours', locale: 'en' }, { lookup, sourceFetch: async () => response('Standard Hours\nWednesday: Closed\nThursday: Noon–8 pm\nThis is a generic page with no named institution. A source title alone cannot identify the institution for these hours.') });
+  assert.deepEqual(missingIdentity.candidates, []);
+  assert.doesNotMatch(missingIdentity.answer, /Wednesday: Closed/);
 });

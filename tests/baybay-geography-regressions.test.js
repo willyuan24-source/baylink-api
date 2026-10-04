@@ -104,3 +104,12 @@ test('normal guide responses report actual provider model separately from deploy
   assert.equal(f.counts().chatInput.currentDatePacific, '2026-10-04');
   assert.equal(f.counts().chatInput.searchScope.country, 'US');
 });
+
+test('an unusable activity catalog cannot fall through to a model-generated event list', async t => {
+  const f = await fixture(t, { options: { plannerCatalog: { version: 0 } } });
+  const result = await f.ask({ message: '今天 Alameda 有什么活动？', locale: 'zh-Hans', searchMode: 'site' });
+  assert.equal(result.responseMode, 'fallback'); assert.equal(result.degraded, true);
+  assert.match(result.answer, /未能可靠匹配.*不代表当地没有活动/s);
+  assert.deepEqual(result.suggestedGuides, []);
+  assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 0);
+});

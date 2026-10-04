@@ -16,9 +16,10 @@ const { MAX_CANDIDATES, POST_FIELDS, isProviderRequest, planPostSearch, summariz
 const { fetchAiJson } = require('./lib/aiRequest');
 const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest, isSchoolRequest } = require('./lib/guideConversation');
+const { isPublicTransitRequest, unverifiedTransitTiming, transitInstruction, transitTimingFallback } = require('./lib/guideTransit');
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
 const { bayAreaDate, searchScope, safeModel, assertSearchScope } = require('./lib/bayAreaSearchScope');
-const { buildGuideLocalRecommendations } = require('./lib/guideLocalRecommendations');
+const { buildGuideLocalRecommendations, isGuideLocalDiscovery } = require('./lib/guideLocalRecommendations');
 const { needsSourceFacts } = require('./lib/plannerWebFacts');
 const { PROFILE_THEMES, SOCIAL_INTENTS, validSocialIntents, normalizeSocialIntents, validProfileVisibilityPatch, normalizeProfileVisibility, publicProfileCity,
   MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
@@ -3961,6 +3962,7 @@ const normalizeCategoryHint = (categoryHint) => {
 function inferBayBayIntent(message = '', categoryHint = '') {
   const text = String(message || '').toLowerCase();
   if (isSchoolRequest(text)) return 'school';
+  if (isPublicTransitRequest(text)) return 'transit';
   if (/翻译|口译|笔译|\b(?:translation|translator|interpretation)\b/.test(text)) return 'translation';
   if (/兼职|招聘|找工作|\b(?:part.time|hiring|jobs?)\b/.test(text)) return 'part-time';
   if (/室友|合租|找人合租|\b(?:roommates?|share room)\b/.test(text)) return 'roommate';
@@ -4420,7 +4422,7 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
       max_completion_tokens: 2000,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}` },
+        { role: 'system', content: `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}${intent === 'transit' ? `\n${transitInstruction}` : ''}` },
         ...history,
         {
           role: 'user',
@@ -4471,7 +4473,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)
     .map(guide => GUIDE_CATALOG.find(canonical => canonical.slug === guide.slug));
   const guideReferences = selectedGuides.map(guide => ({ title: guide.title, slug: guide.slug, url: guide.url }));
-  const readingRequest = category === 'other' && (intent === 'school' || selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(analysisMessage));
+  const readingRequest = category === 'other' && (intent === 'school' || intent === 'transit' || selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(analysisMessage));
   const withGuideContext = payload => ({ ...payload, suggestedGuides: guideReferences,
     ...(readingRequest ? { interactiveCards: [], suggestedActions: [
       { label: '浏览全部生活指南', type: 'guide', url: '/guides' },
@@ -4566,6 +4568,17 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         suggestedGuides: local.suggestedGuides,
         interactiveCards: [], matchingPosts: [], degraded: false, responseMode: 'catalog', matchNote: local.matchNote },
         { preferCatalog: (local.eventIds.length > 0 || local.placeIds.length > 0) && !/最新|联网|聯網|再查|核实|核實|\b(?:latest|search the web|verify|check online|search again)\b/i.test(message) });
+      // A failed catalog/constraint match is not permission to invent a dated
+      // activity list from model memory or repeat an earlier assistant answer.
+      if (isGuideLocalDiscovery(webRequest.input?.query || message, message)) {
+        res.set('Cache-Control', 'no-store');
+        return res.json({ ok: true, degraded: true, responseMode: 'fallback',
+          answer: locale === 'en' ? 'I could not reliably match this request to the site activity records. This does not mean there are no events. Please use the activity calendar or specify one Bay Area city and one date; I have not generated an unverified event list.'
+            : locale === 'zh-Hant' ? '這次未能可靠匹配站內活動記錄，不代表當地沒有活動。請查看活動日曆，或指定一個灣區城市和日期；本次沒有生成未核實的活動清單。'
+              : '这次未能可靠匹配站内活动记录，不代表当地没有活动。请查看活动日历，或指定一个湾区城市和日期；本次没有生成未核实的活动清单。',
+          suggestedGuides: [], interactiveCards: [], matchingPosts: [], suggestedActions: [{ label: locale === 'en' ? 'Activity calendar' : locale === 'zh-Hant' ? '活動日曆' : '活动日历', type: 'guide', url: '/calendar' }],
+          retrieval: { requestedMode: searchMode, scope: 'none', webStatus: 'not_requested', requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area } });
+      }
     }
     if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return send(localized(fallback()));
     const guideSources = selectedGuides.map(guide => {
@@ -4580,6 +4593,9 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     actualGuideModel = safeModel(aiRaw?.providerModel);
     if (typeof aiRaw?.answer !== 'string' || aiRaw.answer.trim().length < 10 || aiRaw.answer.trim().length > GUIDE_CHAT_MAX_ANSWER_LENGTH) return send(localized(fallback()));
     const payload = normalizeGuideChatResponse(aiRaw, resolvedRequest, category);
+    if (intent === 'transit' && unverifiedTransitTiming(payload.answer)) {
+      return send({ ...localized(fallback()), answer: transitTimingFallback(locale) });
+    }
     if (/活动|活動|周末|免费|免費|景点|景點|博物馆|博物館|\b(?:events?|museums?|things to do|places to go|free|weekend)\b/i.test(message) && !isSchoolRequest(message)) {
       try { assertSearchScope(payload, { query: message, locale }, requestScope); }
       catch { return send(localized(fallback())); }
