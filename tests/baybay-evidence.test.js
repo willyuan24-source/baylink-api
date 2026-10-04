@@ -1,0 +1,132 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { buildSiteEvidence } = require('../lib/baybayEvidence');
+const { validateTaskState } = require('../lib/baybayState');
+const TODAY = '2026-10-04';
+const event = (id, overrides = {}) => ({ id, title: 'San Jose family museum event', city: 'San Jose', region: 'south-bay', startDate: TODAY, endDate: TODAY, cost: 'free', costLabel: 'Free admission for everyone.', officialUrl: `https://example.org/events/${id}`, summary: 'An all-ages museum event for families.', planning: { admissionUsd: 0, allAges: true }, ...overrides });
+const fixture = (events = [], places = []) => ({ version: 1, checkedAt: TODAY, events, places, guides: [] });
+const guide = (slug, title, content) => ({ slug, title, content, url: `/guides/${slug}`, updatedAt: TODAY, sources: [{ title: 'Publisher', url: 'https://example.org/info' }] });
+const search = (query, rest = {}) => buildSiteEvidence({ query, state: validateTaskState({ city: 'San Jose', date: TODAY }), today: TODAY, ...rest });
+
+test('paragraph retrieval matches a user need across languages and returns the supporting passage', () => {
+  const guideCatalog = [
+    guide('museum', 'San Jose museum guide', 'The museum has an accessible entrance, wheelchair access, elevators and benches for resting between galleries.\n\nMembership tickets cost more and have a separate benefit schedule.'),
+    guide('unrelated', 'San Jose restaurants', 'This restaurant has six different spicy noodle bowls available at lunchtime and dinner.'),
+  ];
+  const result = search('带老人，不想走太多', { guideCatalog, catalog: fixture() });
+  assert.equal(result.guides[0].slug, 'museum'); assert.match(result.guides[0].text, /wheelchair access/);
+  assert.equal(result.guides[0].verification, 'site-record'); assert.equal(result.guides[0].verifiedLive, false);
+  assert.ok(result.sources.some(source => source.evidenceId === result.guides[0].evidenceId));
+});
+
+test('city sections in a general utilities article do not leak other cities contact numbers', () => {
+  const guideCatalog = [guide('utilities', '湾区各城市水电网办理', 'Oakland\n\nOakland water utilities contact is 510-555-0100. This utility serves the Oakland service area.\n\nSan Jose\n\nSan Jose water utilities contact is 408-555-0100. Confirm the exact service address with the utility.')];
+  const result = search('水电开户', { guideCatalog, catalog: fixture() });
+  assert.ok(result.guides.length); assert.ok(result.guides.some(row => row.text.includes('408-555-0100')));
+  assert.ok(result.guides.every(row => !row.text.includes('510-555-0100')));
+});
+
+test('county/city directory layout does not confuse Alameda County with the city of Alameda', () => {
+  const guideCatalog = [guide('utilities', '湾区101城水电联络大全', 'Alameda\nNewark\nWater: Alameda County Water District, phone 510-668-4200, serving Fremont, Newark and Union City.\nhttps://acwd.org/start\n\nAlameda\nAlameda\nWater: East Bay Municipal Utility District, phone 866-403-2683. Use the address lookup to confirm service.\nhttps://www.ebmud.com/customers/start-service\n\nAlameda\nLivermore\nWater: Livermore Municipal Water, phone 925-960-4320. Check your address before calling.')];
+  const result = search('Alameda 水电网开户', { guideCatalog, catalog: fixture(), state: { city: 'Alameda', goal: 'newcomer' } });
+  assert.ok(result.guides.length); assert.ok(result.guides.every(row => !/510-668-4200|925-960-4320/.test(row.text)));
+  assert.match(result.guides[0].text, /866-403-2683/);
+  assert.equal(result.guides[0].sourceUrls[0].url, 'https://www.ebmud.com/customers/start-service');
+});
+
+test('a guide inherits verified catalog location even when its title only names a landmark', () => {
+  const guideCatalog = [guide('presidio-picnic', 'Presidio picnic', 'The wheelchair accessible paths and resting benches make this an option for visitors who want limited walking.')];
+  const catalog = fixture([], [{ id: 'presidio', title: 'Presidio', city: 'San Francisco', region: 'sf', guideSlug: 'presidio-picnic', officialUrl: 'https://presidio.gov/visit' }]);
+  assert.deepEqual(search('少走路，无障碍', { guideCatalog, catalog }).guides, []);
+});
+
+test('a precise origin is returned separately from destination candidates without using a city center', () => {
+  const origin = { id: 'gate', title: 'Golden Gate Bridge Welcome Center', city: 'San Francisco', region: 'sf', officialUrl: 'https://presidio.gov/visit', location: { precision: 'venue', label: 'Golden Gate Bridge Welcome Center', lat: 37.80779, lng: -122.47484 } };
+  const catalog = fixture(Array.from({ length: 8 }, (_, i) => event(`destination-${i}`)), [origin]);
+  const result = search('museum', { catalog, state: { goal: 'day-plan', city: 'San Jose', date: TODAY, originCandidateId: 'gate' } });
+  assert.equal(result.candidates.length, 6); assert.equal(result.originCandidate.id, 'gate');
+  assert.deepEqual(result.originCandidate.location, origin.location); assert.equal(result.originCandidate.kind, 'place');
+  assert.ok(result.candidates.every(candidate => candidate.city === 'San Jose'));
+  assert.equal(search('museum', { catalog, state: { origin: 'Fremont' } }).originCandidate, undefined);
+  assert.equal(search('museum', { catalog: fixture([], [{ ...origin, location: { ...origin.location, precision: 'city' } }]), state: { originCandidateId: 'gate' } }).originCandidate, undefined);
+  assert.equal(search('museum', { catalog: fixture([], [{ ...origin, location: { ...origin.location, lat: 0 } }]), state: { originCandidateId: 'gate' } }).originCandidate, undefined);
+});
+
+test('explicit city filters never turn similarly named or neighboring cities into local matches', () => {
+  const catalog = fixture([event('sj'), event('sf', { city: 'San Francisco', region: 'sf' }), event('ss', { city: 'South San Francisco', region: 'peninsula' }), event('alameda', { city: 'Alameda', region: 'east-bay' })]);
+  const result = search('free events', { catalog });
+  assert.deepEqual(result.candidates.map(row => row.id), ['sj']);
+  assert.deepEqual(search('free events', { catalog, state: { city: 'Berkeley', date: TODAY } }).candidates, []);
+});
+
+test('dated records require exact occurrences and exclude cancelled or ambiguous recurring events', () => {
+  const catalog = fixture([
+    event('correct'), event('next-day', { startDate: '2026-10-05', endDate: '2026-10-05' }),
+    event('wrong-occurrence', { startDate: '2026-10-01', endDate: '2026-10-30', occurrenceDates: ['2026-10-05'] }),
+    event('unconfirmed-recurrence', { startDate: '2026-10-01', endDate: '2026-10-30', dateLabel: 'Every Friday' }),
+    event('cancelled', { cancelled: true }),
+  ]);
+  assert.deepEqual(search('museum events', { catalog }).candidates.map(row => row.id), ['correct']);
+});
+
+test('all free filters reject eligibility-only claims and do not claim unknown admission as zero', () => {
+  const catalog = fixture([
+    event('everyone'), event('members', { costLabel: 'Free for members; non-members $25.' }),
+    event('children', { costLabel: 'Free admission for children under 12; adults $20.' }),
+    event('unknown', { cost: 'unknown', costLabel: 'Tickets required, pricing not yet announced', planning: { admissionUsd: null } }),
+  ]);
+  const result = search('free museum events', { catalog, state: { city: 'San Jose', date: TODAY, freeOnly: true } });
+  assert.deepEqual(result.candidates.map(row => row.id), ['everyone']);
+  const unknown = search('museum events', { catalog }).candidates.find(row => row.id === 'unknown');
+  assert.equal(unknown.planning.admissionUsd, null); assert.equal(unknown.cost, 'unknown');
+});
+
+test('known child age restrictions and total admission budget reject impossible options', () => {
+  const catalog = fixture([
+    event('family'), event('adult-only', { planning: { minAge: 18, admissionUsd: 0 } }),
+    event('costly', { cost: 'paid', costLabel: 'General admission $40', planning: { admissionUsd: 40 } }),
+  ]);
+  const result = search('museum', { catalog, state: { city: 'San Jose', date: TODAY, childAges: [6], partySize: 3, budget: 100, budgetScope: 'total' } });
+  assert.deepEqual(result.candidates.map(row => row.id), ['family']);
+});
+
+test('selected candidates are preserved and rejected candidates stay out of alternatives', () => {
+  const catalog = fixture(Array.from({ length: 12 }, (_, index) => event(`event-${String(index).padStart(2, '0')}`)));
+  const result = search('museum', { catalog, state: { city: 'San Jose', date: TODAY, selectedCandidateIds: ['event:event-11'], excludedCandidateIds: ['event:event-00', 'event-01'] } });
+  assert.equal(result.candidates.length, 6); assert.equal(result.candidates[0].id, 'event-11');
+  assert.ok(result.candidates.every(row => !['event-00', 'event-01'].includes(row.id)));
+});
+
+test('site records never masquerade as live official facts; directory links carry an explicit limitation', () => {
+  const catalog = fixture([event('directory', { officialUrl: 'https://example.org/events', verifiedAt: '2026-10-01', planning: { admissionUsd: 0, durationMinutes: 60 } })]);
+  const result = search('museum', { catalog });
+  const row = result.candidates[0]; assert.equal(row.sourceSpecificity, 'directory');
+  assert.equal(row.verifiedLive, false); assert.equal(row.verification, 'site-record'); assert.equal(row.recordedAt, '2026-10-01');
+  assert.equal(row.catalogDateMatch, true); assert.ok(row.requiresVerification.includes('availability'));
+  assert.equal(row.planning.durationMinutes, 60); assert.equal(result.sources[0].verifiedLive, false);
+});
+
+test('retrieval output is bounded and stable, unsafe source links are dropped', () => {
+  const guideCatalog = Array.from({ length: 10 }, (_, index) => guide(`guide-${index}`, 'San Jose museum guide', Array.from({ length: 5 }, (_, part) => `Museum accessibility paragraph ${part}: wheelchair accessible galleries and convenient entrance help visitors move comfortably. ${index}`).join('\n\n')));
+  const catalog = fixture([event('javascript', { officialUrl: 'javascript:alert(1)' }), event('userinfo', { officialUrl: 'https://user:pass@example.org/event' }), event('good')]);
+  const a = search('museum accessibility', { guideCatalog, catalog }); const b = search('museum accessibility', { guideCatalog, catalog });
+  assert.equal(a.guides.length, 8); assert.ok(a.guides.every(row => row.text.length <= 1730));
+  assert.ok(a.guides.filter(row => row.slug === 'guide-0').length <= 3);
+  assert.deepEqual(a.guides.map(row => row.evidenceId), b.guides.map(row => row.evidenceId));
+  assert.deepEqual(a.candidates.map(row => row.id), ['good']);
+});
+
+test('unknown catalog data fails closed without inventing candidates or current conditions', () => {
+  assert.deepEqual(search('anything', { catalog: { events: 'invalid' } }).candidates, []);
+  const result = search('museum', { catalog: fixture([], [{ id: 'place', title: 'Museum', city: 'San Jose', region: 'south-bay', officialUrl: 'https://example.org/museum', planning: { admissionUsd: null } }]) });
+  assert.equal(result.candidates[0].kind, 'place'); assert.equal(result.candidates[0].catalogDateMatch, false);
+  assert.ok(result.candidates[0].requiresVerification.includes('opening-hours'));
+});
+
+test('a named venue question cannot inject unrelated city festivals into evidence', () => {
+  const catalog = fixture([event('sf-festival', { title: 'San Francisco weekly arts festival', city: 'San Francisco', region: 'sf', summary: 'Admission 门票信息请参照售票网站' })]);
+  const result = search('SFMOMA 平常週三開館嗎？门票多少？', { catalog, state: { city: 'San Francisco', goal: 'information' } });
+  assert.deepEqual(result.candidates, []);
+  const generic = search('San Jose water utility account opening', { catalog: fixture([event('festival')]), state: { city: 'San Jose', goal: 'newcomer' } });
+  assert.deepEqual(generic.candidates, []);
+});

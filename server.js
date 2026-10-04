@@ -36,6 +36,7 @@ const { createServiceBookingModel, registerServiceBookings } = require('./lib/se
 const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
+const { createBayBayAssistant } = require('./lib/baybayAgent');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -4435,6 +4436,16 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
   return { ...parseGuideChatCompletion(data), providerModel: safeModel(data.model) };
 };
 
+const baybayAssistant = createBayBayAssistant({ config, catalog: options.plannerCatalog,
+  guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_SEARCH_CATALOG, isTest,
+  ai: options.ai?.baybay, webSearch: plannerWebSearch.search, Quota: PostTranslationQuota,
+  now: options.plannerNow || Date.now, sourceFetch: options.baybaySourceFetch,
+  fetchImpl: options.baybayFetch, routeCompute: options.plannerTravelCompute,
+  monitorStatus: () => sourceMonitor.service.list(true),
+});
+app.get('/api/ai/baybay-capabilities', (_req, res) => {
+  res.set('Cache-Control', 'no-store'); res.json(baybayAssistant.capabilities());
+});
 app.post('/api/ai/guide-chat', async (req, res) => {
   const locale = normalizeGuideLocale(req.body?.locale);
   const errorResponse = error => ({ ok: false, error: guideLocaleError(error, locale) });
@@ -4482,6 +4493,25 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   });
   const searchPlan = intent === 'school' ? null : planPostSearch(resolvedRequest, category);
   const providerRequest = intent !== 'school' && isProviderRequest(resolvedRequest);
+  // Version negotiation keeps existing clients and specialized account/post flows
+  // compatible while the unified assistant owns public research and day plans.
+  if (req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && intent !== 'school') {
+    res.set('Cache-Control', 'no-store');
+    try {
+      let preferences;
+      const userId = await getCurrentUserIdFromRequest(req);
+      if (userId) {
+        const account = await PlannerAccount.findOne({ userId }).select('preferences').lean();
+        preferences = account?.preferences;
+      }
+      return res.json(await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath,
+        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req) }));
+    } catch (error) {
+      return res.status(error.status || 503).json({ ok: false, code: error.code || 'ASSISTANT_UNAVAILABLE',
+        error: locale === 'en' ? error.status === 400 ? 'This conversation context expired. Please start a new conversation.' : 'BayBay could not finish this request. Please try again.'
+          : error.status === 400 ? '会话条件已过期，请开启新对话后重试。' : 'BayBay 暂时无法完成本次查询，请稍后重试。' });
+    }
+  }
   const localized = payload => localizeGuidePayload(payload, { locale, intent, category, providerRequest, readingRequest, selectedGuides, englishCatalog: ENGLISH_GUIDE_CATALOG, today: currentDatePacific, searchPlan });
   const offerLabel = category === 'part-time' ? '招聘信息' : ['rent', 'roommate'].includes(category) ? '出租信息' : category === 'used' ? '出售信息' : '服务介绍';
   const withPostDirection = (payload) => providerRequest ? {
