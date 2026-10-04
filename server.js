@@ -17,13 +17,16 @@ const { fetchAiJson } = require('./lib/aiRequest');
 const { sanitizeAiDescription } = require('./lib/postDraft');
 const { normalizeGuideHistory, selectConversationGuides, groundedGuideFallback, guideSourceExcerpt, guideEditionMonth, resolveConversationRequest, isSchoolRequest } = require('./lib/guideConversation');
 const { normalizeGuideLocale, guideLanguageInstruction, normalizeGuideQuery, guideLocaleError, localizeGuidePayload } = require('./lib/guideLocale');
+const { bayAreaDate, searchScope, safeModel, assertSearchScope } = require('./lib/bayAreaSearchScope');
+const { buildGuideLocalRecommendations } = require('./lib/guideLocalRecommendations');
+const { needsSourceFacts } = require('./lib/plannerWebFacts');
 const { PROFILE_THEMES, SOCIAL_INTENTS, validSocialIntents, normalizeSocialIntents, validProfileVisibilityPatch, normalizeProfileVisibility, publicProfileCity,
   MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 const { registerEventEngagement } = require('./lib/eventEngagement');
 const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
 const { registerPlannerWebSearch } = require('./lib/plannerWebSearch');
 const { registerPlannerTravel } = require('./lib/plannerTravel');
-const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest } = require('./lib/guideWebSearch');
+const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
@@ -3921,6 +3924,7 @@ const GUIDE_CHAT_SYSTEM = `你是 BAYLINK 湾区华人本地生活平台的 BayB
 - 个性像亲切、务实、有判断力的本地朋友：有足够事实时先给 2–3 个适合的选择，每个用一句说明适合谁和实际取舍，不为凑数编造选项。先说明最推荐哪个及依据；只在缺少会改变选择的条件时问 1–2 个关键问题。不要机械问卷、夸张保证或假装亲历；未知的价格、时间和资格直接说待核实。此风格不得放宽以下事实、来源、隐私和动作限制。
 - currentPath 是当前页面路径；currentGuideTitle 若非空，表示用户正在读这篇攻略。用户说“这篇”时根据对应 guideSources 回答，不要猜测其他文章。
 - 不实时联网。currentDatePacific 是服务器提供的湾区日期。不要声称已打开商家网站、Instagram、核验今天名额或实时查价。
+- 默认服务范围是美国加利福尼亚州旧金山湾区，不是中国上海或粤港澳大湾区；语言不代表地理位置。地理和日期以 searchScope 为准。一般营业规律不能改写为今天已确认，周三免费不能说成周日免费。没有查到活动只表示资料不足，不能说城市没有活动。
 - 周末、亲子、优惠等问题优先参考 guideSources，给出具体指南中的方向、适用条件和下一步；资料不足就说明缺少什么，不得编造活动、日期、免费资格、预约、营业时间或价格。已结束的项目不得推荐为接下来可参加；指南更新时间不表示活动仍有效。
 - 学校、学区、孩子入学与大学申请问题优先使用相关 guideSources 和其中官方来源，区分本学年新生、下一学年、区内转校、跨学区与大学申请；不要因“孩子”转成亲子活动或优惠。没有相关来源时说明资料不足，不虚构学位名额、录取、排名、申请截止或学费资格。
 - 城市、邮编和房产描述不等于学区，各年级学区可能不同；只能请用户自行在官方 School Locator/学区渠道输入地址核对。需要澄清时只问城市、年级、目标学年及申请类型，不向 AI 索取孩子姓名、出生日期、证件、学生记录或完整住址。SFUSD 等申请分配制度不能说成就近保证；看校和大学参观须官方确认。学校问题引导查看官方指南，不引导发布含学生资料的帖子。
@@ -4393,12 +4397,12 @@ const parseGuideChatCompletion = (data) => {
   return parsed;
 };
 
-const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale = 'zh-Hans', category, intent, currentPath, guideSources, history = [], currentDatePacific, matchingPosts = [], searchPerformed = false }) => {
+const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale = 'zh-Hans', category, intent, currentPath, guideSources, history = [], currentDatePacific, matchingPosts = [], searchPerformed = false, searchScope: requestScope }) => {
   const currentGuideTitle = guideSources.find(guide => guide.url === currentPath)?.title || '';
-  const userPayload = { message, resolvedRequest, locale, inferredIntent: intent, inferredCategory: category, inferredPostType: isProviderRequest(resolvedRequest) ? 'provider' : 'client', currentPath: currentPath || '/', currentGuideTitle, currentDatePacific, guideSources, matchingPosts, searchPerformed, history };
+  const userPayload = { message, resolvedRequest, locale, inferredIntent: intent, inferredCategory: category, inferredPostType: isProviderRequest(resolvedRequest) ? 'provider' : 'client', currentPath: currentPath || '/', currentGuideTitle, currentDatePacific, searchScope: requestScope, guideSources, matchingPosts, searchPerformed, history };
   if (options.ai?.guideChat) {
     const result = await options.ai.guideChat(userPayload);
-    return result?.choices ? parseGuideChatCompletion(result) : result;
+    return result?.choices ? { ...parseGuideChatCompletion(result), providerModel: safeModel(result.model) } : result;
   }
   if (isTest) throw new Error('External AI requests are disabled in tests');
   const model = config.OPENAI_MODEL || 'gpt-4o-mini';
@@ -4411,8 +4415,9 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
     },
     body: JSON.stringify({
       model,
-      temperature: 0.4,
-      max_tokens: 2000,
+      store: false,
+      ...(/^(?:gpt-5(?:[.-]|$)|o[134](?:[.-]|$))/.test(model) ? { reasoning_effort: 'low' } : { temperature: 0.2 }),
+      max_completion_tokens: 2000,
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}` },
@@ -4425,7 +4430,7 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
     }),
   }, { timeoutMs: 20000 });
 
-  return parseGuideChatCompletion(data);
+  return { ...parseGuideChatCompletion(data), providerModel: safeModel(data.model) };
 };
 
 app.post('/api/ai/guide-chat', async (req, res) => {
@@ -4438,13 +4443,14 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   let searchMode, searchContext;
   try { searchMode = validateChatSearchMode(req.body?.searchMode); searchContext = validateChatSearchContext(req.body?.searchContext); }
   catch (error) { return res.status(400).json(errorResponse(error.message)); }
-  const history = normalizedHistory.history;
+  const history = isSearchReset(normalized.message) ? [] : normalizedHistory.history;
+  if (isSearchReset(normalized.message)) searchContext = {};
   if (!checkGuideChatRateLimit(getClientIp(req))) {
     return res.status(429).json(errorResponse('提问过于频繁，请 60 秒后再试'));
   }
   const message = normalized.message;
   let outingReply;
-  try { outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now(), secret: config.JWT_SECRET, continuationToken: req.body?.outingSearchToken }); }
+  try { outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now(), secret: config.JWT_SECRET, continuationToken: isSearchReset(message) ? undefined : req.body?.outingSearchToken }); }
   catch (error) {
     if (error.code !== 'INVALID_OUTING_SEARCH_TOKEN') throw error;
     res.set('Cache-Control', 'no-store');
@@ -4461,7 +4467,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   const currentPath = String(req.body?.context?.currentPath ?? '/').trim().slice(0, 200) || '/';
   const intent = inferBayBayIntent(resolvedRequest, categoryHint);
   const category = intentToGuideCategory(intent);
-  const currentDatePacific = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const currentDatePacific = bayAreaDate(options.plannerNow);
   const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)
     .map(guide => GUIDE_CATALOG.find(canonical => canonical.slug === guide.slug));
   const guideReferences = selectedGuides.map(guide => ({ title: guide.title, slug: guide.slug, url: guide.url }));
@@ -4495,21 +4501,32 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     && !/最新|目前|临时|臨時|核实|核實|联网|聯網|\b(?:latest|current|today|verify|search the web)\b/i.test(message);
   const webRequest = searchMode === 'smart' && readingCurrentGuide ? { search: false, status: 'not_requested' }
     : buildChatWebRequest({ message, history, searchMode, searchContext, locale, today: currentDatePacific, siteService: !!searchPlan || providerRequest, school: intent === 'school' });
+  const requestScope = searchScope(webRequest.input || { query: resolvedRequest, locale, ...searchContext }, options.plannerNow);
+  let actualGuideModel;
   const send = async payload => {
     res.set('Cache-Control', 'no-store');
-    const scope = selectedGuides.length || (searchPlan && !searchPlan.needsClarification) ? 'site' : 'none';
-    const retrieval = { requestedMode: searchMode, scope, webStatus: webRequest.status || 'not_requested' };
+    const scope = payload.responseMode === 'catalog' || selectedGuides.length || (searchPlan && !searchPlan.needsClarification) ? 'site' : 'none';
+    const retrieval = { requestedMode: searchMode, scope, webStatus: webRequest.status || 'not_requested',
+      requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area,
+      ...(payload.catalogCheckedAt ? { catalogCheckedAt: payload.catalogCheckedAt } : {}),
+      configuredModel: safeModel(config.OPENAI_MODEL || 'gpt-4o-mini'), ...(actualGuideModel ? { model: actualGuideModel } : {}) };
     if (webRequest.question) return res.json({ ...payload, answer: webRequest.question, retrieval: { ...retrieval, scope: 'none' } });
     if (!webRequest.search) return res.json({ ...payload, retrieval });
     try {
       const found = await plannerWebSearch.search(webRequest.input, getClientIp(req));
       return res.json({ ...payload, answer: found.answer, responseMode: 'web', degraded: false,
+        catalogSources: undefined,
         sources: found.sources, webCandidates: found.candidates || [], coverage: found.coverage,
-        retrieval: { requestedMode: searchMode, scope: scope === 'site' ? 'site+web' : 'web', webStatus: 'completed', checkedAt: found.checkedAt, requestedDate: webRequest.input.date || null, cached: found.cached, sourceCount: found.sources.length },
+        retrieval: { ...retrieval, scope: scope === 'site' ? 'site+web' : 'web', webStatus: 'completed', checkedAt: found.checkedAt, requestedDate: webRequest.input.date || requestScope.date, cached: found.cached, sourceCount: found.sources.length,
+          configuredModel: found.configuredModel, model: found.model },
         matchNote: locale === 'en' ? 'Public web sources were searched. Check the sources for current availability and conditions.' : locale === 'zh-Hant' ? '已查詢公開網頁來源；當日名額與適用條件仍以原文為準。' : '已查询公开网页来源；当日名额与适用条件仍以原文为准。' });
-    } catch {
-      return res.json({ ...payload, retrieval: { ...retrieval, webStatus: 'unavailable' },
-        matchNote: locale === 'en' ? 'Web search is unavailable right now. Existing guidance is shown; no new web facts were retrieved.' : locale === 'zh-Hant' ? '本次聯網未完成；以下保留原有參考答覆，沒有取得新的網頁事實。' : '本次联网未完成；以下保留原有参考答复，没有取得新的网页事实。' });
+    } catch (error) {
+      const rejected = error.code === 'SEARCH_VERIFICATION_FAILED';
+      return res.json({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
+        webConfiguredModel: safeModel(config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
+        matchNote: rejected
+          ? locale === 'en' ? 'The web answer did not pass location/date checks. Only existing site guidance is shown.' : locale === 'zh-Hant' ? '聯網答覆未通過地點／日期檢查；以下僅保留站內參考資料。' : '联网答复未通过地点／日期检查；以下仅保留站内参考资料。'
+          : locale === 'en' ? 'Web search is unavailable right now. Existing guidance is shown; no new web facts were retrieved.' : locale === 'zh-Hant' ? '本次聯網未完成；以下保留原有參考答覆，沒有取得新的網頁事實。' : '本次联网未完成；以下保留原有参考答复，没有取得新的网页事实。' });
     }
   };
   try {
@@ -4530,6 +4547,14 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       }));
     }
     if (webRequest.question) return send(localized({ ...fallback(), degraded: false, responseMode: 'search', interactiveCards: [], suggestedActions: [] }));
+    if (!providerRequest && intent !== 'school' && !readingCurrentGuide && (!needsSourceFacts({ query: message }) || /活动|活動|\bevents?\b/i.test(message))) {
+      const local = await buildGuideLocalRecommendations({ message: webRequest.input?.query || message, locale, today: currentDatePacific,
+        searchContext: webRequest.input || searchContext, catalog: options.plannerCatalog, guideCatalog: GUIDE_CATALOG });
+      if (local) return send({ ...localized(withGuideContext(buildGuideChatPayload(resolvedRequest, category))),
+        answer: local.answer, catalogSources: local.sources, catalogCheckedAt: local.checkedAt,
+        suggestedGuides: local.suggestedGuides.length ? local.suggestedGuides : guideReferences,
+        interactiveCards: [], matchingPosts: [], degraded: false, responseMode: 'catalog', matchNote: local.matchNote });
+    }
     if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return send(localized(fallback()));
     const guideSources = selectedGuides.map(guide => {
       const english = locale === 'en' && ENGLISH_GUIDE_CATALOG.get(guide.slug);
@@ -4539,9 +4564,14 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         editionMonth: guideEditionMonth(guide), archived: !!guideEditionMonth(guide) && guideEditionMonth(guide) < currentDatePacific.slice(0, 7),
       };
     });
-    const aiRaw = await callOpenAiGuideChat({ message, resolvedRequest, locale, category, intent, currentPath, guideSources, history, currentDatePacific, matchingPosts: [], searchPerformed: false });
+    const aiRaw = await callOpenAiGuideChat({ message, resolvedRequest, locale, category, intent, currentPath, guideSources, history, currentDatePacific, matchingPosts: [], searchPerformed: false, searchScope: requestScope });
+    actualGuideModel = safeModel(aiRaw?.providerModel);
     if (typeof aiRaw?.answer !== 'string' || aiRaw.answer.trim().length < 10 || aiRaw.answer.trim().length > GUIDE_CHAT_MAX_ANSWER_LENGTH) return send(localized(fallback()));
     const payload = normalizeGuideChatResponse(aiRaw, resolvedRequest, category);
+    if (/活动|活動|周末|免费|免費|景点|景點|博物馆|博物館|\b(?:events?|museums?|things to do|places to go|free|weekend)\b/i.test(message) && !isSchoolRequest(message)) {
+      try { assertSearchScope(payload, { query: message, locale }, requestScope); }
+      catch { return send(localized(fallback())); }
+    }
     const schoolResponse = intent === 'school' || selectedGuides.some(guide => guide.url === currentPath && /(?:^|-)school-district-enrollment-guide$/.test(guide.slug));
     // Geographic editorial regions are not district names. Reject this narrow class of
     // invented authorities rather than preserving advice attributed to one of them.

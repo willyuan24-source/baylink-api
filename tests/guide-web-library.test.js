@@ -56,7 +56,7 @@ test('site mode never calls web; smart uses cited sources and shares planner cac
   const again = await request('/ai/guide-chat', { message: query, locale: 'en', searchMode: 'web' });
   assert.equal(calls, 1); assert.equal(again.data.retrieval.cached, true);
   assert.equal(again.data.retrieval.checkedAt, smart.data.retrieval.checkedAt);
-  assert.equal(smart.data.retrieval.requestedDate, null);
+  assert.equal(smart.data.retrieval.requestedDate, '2026-10-01');
   const dated = await request('/ai/guide-chat', { message: 'Oakland museums on 2026-10-17', locale: 'en', searchMode: 'smart' });
   assert.equal(dated.data.retrieval.requestedDate, '2026-10-17');
 });

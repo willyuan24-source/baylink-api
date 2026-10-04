@@ -123,7 +123,7 @@ test('provider request bounds Responses web_search to two calls, medium context 
   assert.equal(request.url, 'https://api.openai.com/v1/responses');
   assert.equal(request.body.model, 'gpt-4.1-mini');
   assert.equal(request.body.store, false); assert.equal(request.body.tool_choice, 'required'); assert.equal(request.body.max_tool_calls, 2);
-  assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'medium', external_web_access: true }]);
+  assert.deepEqual(request.body.tools, [{ type: 'web_search', search_context_size: 'medium', external_web_access: true, user_location: { type: 'approximate', country: 'US', region: 'California', city: 'San Francisco', timezone: 'America/Los_Angeles' } }]);
   assert.equal(request.body.input, JSON.stringify(input)); assert.ok(request.signal instanceof AbortSignal);
   assert.match(request.body.instructions, /plain text: no Markdown headings/);
   assert.match(request.body.instructions, /recurring weekly schedule.*regular weekday hours, not confirmed hours for the requested date/);
@@ -147,9 +147,9 @@ test('dated event discovery retains the useful cited answer and an application r
   };
   for (const [locale, reminder] of Object.entries(reminders)) {
     const result = await requestSearch({ query: '湾区秋季艺术活动', date: '2026-10-03', locale }, options);
-    assert.deepEqual(result, { ...extracted, candidateStatus: 'unavailable', answer: `${extracted.answer}\n\n${reminder}` });
+    assert.deepEqual(result, { ...extracted, configuredModel: 'gpt-4.1-mini', candidateStatus: 'unavailable', answer: `${extracted.answer}\n\n${reminder}` });
   }
-  assert.deepEqual(await requestSearch({ query: '湾区秋季艺术活动', locale: 'en' }, options), { ...extracted, candidateStatus: 'unavailable' });
+  assert.deepEqual(await requestSearch({ query: '湾区秋季艺术活动', locale: 'en' }, options), { ...extracted, configuredModel: 'gpt-4.1-mini', candidateStatus: 'unavailable' });
 });
 test('same query cache preserves original checkedAt and same in-flight query spends only one call', async t => {
   let calls = 0; let time = NOW;
