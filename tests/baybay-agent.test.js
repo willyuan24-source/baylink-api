@@ -73,6 +73,24 @@ test('model failures keep grounded site material and explicitly degrade', async 
   assert.equal(result.degraded, true); assert.ok(result.evidence.length); assert.match(result.answer, /站内资料/);
 });
 
+test('provider rejection or timeout uses an explicit fallback model with structured output', async () => {
+  for (const failure of ['rejected', 'timeout']) {
+    const models = [];
+    const assistant = createBayBayAssistant(settings({ isTest: false, config: { JWT_SECRET: 'private-test-baybay-secret-only', OPENAI_API_KEY: 'test-key' },
+      Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
+      fetchImpl: async (_url, init) => {
+        const payload = JSON.parse(init.body); models.push(payload.model); assert.equal(payload.text.format.type, 'json_schema');
+        if (models.length === 1) { if (failure === 'timeout') throw new Error('AI request timed out'); return { ok: false, status: 404 }; }
+        assert.equal(payload.reasoning, undefined);
+        return { ok: true, json: async () => ({ ...final({ answer: '按站内资料给出参考。', candidateIds: [], followups: [] }), model: 'gpt-4.1-mini' }) };
+      },
+    }));
+    const result = await assistant.run({ message: '旧金山博物馆攻略', searchMode: 'site' });
+    assert.deepEqual(models, ['gpt-6.1-sol', 'gpt-4.1-mini']); assert.equal(result.research.model, 'gpt-4.1-mini');
+    assert.ok(result.research.warnings.includes(failure === 'timeout' ? 'preferred_model_timeout' : 'preferred_model_unavailable'));
+  }
+});
+
 test('unbounded model tool loops stop at the configured limit', async () => {
   let count = 0;
   const assistant = createBayBayAssistant(settings({ config: { JWT_SECRET: 'private-test-baybay-secret-only', BAYBAY_MAX_MODEL_ROUNDS: 2 }, ai: async () => { count++; return invoke('search_site', { query: '博物馆' }, `call-${count}`); } }));

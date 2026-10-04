@@ -22,6 +22,90 @@ test('a structured one-day request distinguishes origin from destination and kee
   assert.equal(state.startTime, '10:00'); assert.equal(state.finishBy, '17:00');
 });
 
+test('natural named-venue trip with driving calculations becomes a day plan with exact departure and return times', () => {
+  const message = '2026-10-10 从 The Tech Interactive 出发，早上9点开车，两位成人，想去 San Jose 的 King Library 和 San José Museum of Art，17点前回出发点，总预算100美元。请安排并核算车程。';
+  const { state, clarification } = resolve(message, undefined, { catalog: originCatalog });
+  assert.equal(clarification, undefined);
+  assert.equal(state.goal, 'day-plan');
+  assert.equal(state.startTime, '09:00');
+  assert.equal(state.finishBy, '17:00');
+  assert.equal(state.originCandidateId, 'tech');
+  assert.equal(state.city, 'San Jose');
+  assert.equal(state.travelMode, 'drive');
+  assert.equal(state.partySize, 2);
+  assert.equal(state.budget, 100);
+  assert.equal(state.budgetScope, 'total');
+});
+
+test('half-hour Chinese departure and return-to-start wording preserve explicit clock values', () => {
+  for (const departure of ['早上8点半开车', '早上八点半出发', '上午8:30出发']) {
+    const result = resolve(`明天从The Tech Interactive出发，${departure}，参观博物馆和图书馆，下午5点前回到起点。请安排并核算车程。`, undefined, { catalog: originCatalog });
+    assert.equal(result.state.goal, 'day-plan', departure);
+    assert.equal(result.state.startTime, '08:30', departure);
+    assert.equal(result.state.finishBy, '17:00', departure);
+  }
+  assert.equal(resolve('安排一天，下午五点半前返回出发点').state.finishBy, '17:30');
+});
+
+test('English visit schedule and travel-time request supports explicit 12-hour and 24-hour clocks', () => {
+  const result = resolve('Tomorrow from The Tech Interactive, leave at 9 am, visit King Library and San Jose Museum of Art, return to the starting point by 17:00. Please arrange the visits and calculate driving time.', undefined, { catalog: originCatalog });
+  assert.equal(result.state.goal, 'day-plan');
+  assert.equal(result.state.startTime, '09:00');
+  assert.equal(result.state.finishBy, '17:00');
+  const explicit = resolve('Plan my itinerary, start at 08:30 and return by 5 pm.');
+  assert.equal(explicit.state.startTime, '08:30');
+  assert.equal(explicit.state.finishBy, '17:00');
+});
+
+test('ordinary one-off route/time inquiries remain transit and do not receive invented clock times', () => {
+  for (const message of ['从SFO到San Jose开车要多久？', 'How long does it take to drive from SFO to San Jose?', 'Calculate the travel time from Fremont to San Jose.', '请安排从SFO到San Jose的路线，并计算车程。']) {
+    const result = resolve(message);
+    assert.equal(result.state.goal, 'transit', message);
+    assert.equal(result.state.startTime, null);
+    assert.equal(result.state.finishBy, null);
+  }
+  const unknown = resolve('明天想去博物馆和图书馆，请安排并核算车程。');
+  assert.equal(unknown.state.goal, 'day-plan');
+  assert.equal(unknown.state.startTime, null);
+  assert.equal(unknown.state.finishBy, null);
+});
+
+test('unrelated opening hours and invalid or negated clock values are not departure times', () => {
+  const opening = resolve('SFMOMA早上9点开门吗？');
+  assert.equal(opening.state.startTime, null);
+  assert.equal(opening.state.finishBy, null);
+  assert.equal(resolve('安排一天，25点出发').state.startTime, null);
+  assert.equal(resolve('Plan a day, leave at 13 pm').state.startTime, null);
+  assert.equal(resolve('安排一天，不要9点出发，11点再出发').state.startTime, '11:00');
+});
+
+test('free museum areas and eligibility questions do not become a zero-budget free-only search', () => {
+  for (const message of ['SFMOMA 平常周三开馆吗？免费公共空间是不是也可以进去？请核对官网。', 'Does SFMOMA have free public spaces?', '图书馆会员免费入场的规则是什么？']) {
+    const result = resolve(message);
+    assert.equal(result.state.goal, 'information', message);
+    assert.equal(result.state.budget, null, message);
+    assert.equal(result.state.freeOnly, null, message);
+  }
+  const previous = resolve('San Jose今天有什么免费活动？').state;
+  assert.equal(previous.freeOnly, true);
+  const followup = resolve('SFMOMA的免费公共空间有哪些限制？', previous).state;
+  assert.equal(followup.freeOnly, true);
+  assert.equal(followup.budget, 0);
+  const paidPlan = resolve('明天在San Francisco安排一天，总预算100美元。').state;
+  const freeAreaQuestion = resolve('帮我查SFMOMA的免费公共空间有哪些限制？', paidPlan).state;
+  assert.equal(freeAreaQuestion.freeOnly, null);
+  assert.equal(freeAreaQuestion.budget, 100);
+});
+
+test('explicit free-only instructions and free activity discovery still set real search constraints', () => {
+  for (const message of ['今天San Jose有什么免费活动？', '明天安排一天，找免费景点', 'Only show free options', '只看免费']) {
+    const result = resolve(message);
+    assert.equal(result.state.freeOnly, true, message);
+    assert.equal(result.state.budget, 0, message);
+  }
+  assert.equal(resolve('SFMOMA门票怎么收费？预算0美元。').state.budget, 0);
+});
+
 test('state persists through many short turns without reparsing assistant statements or old dates', () => {
   let state = resolve('Plan a day in San Jose tomorrow, from Fremont, two adults and one child aged 6, total budget $100, by 5 pm.').state;
   for (const message of ['多说一点', '这个怎么样', '再比较一下', '保留这个条件', '还有哪些需要预约', '继续', '先不改', '多看一些']) state = resolve(message, state).state;

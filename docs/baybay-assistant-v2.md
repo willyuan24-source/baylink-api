@@ -33,9 +33,13 @@ variable or in a chat. The preferred `OPENAI_BAYBAY_MODEL` defaults to
 returned model. A ten-minute circuit breaker avoids repeatedly trying an
 unavailable preferred model. Model availability is established by real provider
 calls, not by the capability endpoint.
+When a preferred request times out and enough research time remains, the same
+turn tries the fallback and records that timeout; this does not imply the
+preferred model is unavailable on later turns.
 
 `BAYBAY_MAX_MODEL_ROUNDS` defaults to four (hard ceiling four), with at most eight
-function tool calls per run. Model output is bounded to 2,400 tokens per round.
+function tool calls per run. Research rounds allow 2,400 output tokens; the final
+structured answer allows up to 4,000 so reasoning does not truncate its JSON.
 The run has a 75-second research deadline. `BAYBAY_DAILY_RUN_LIMIT` defaults to
 200 shared model runs per UTC day. This is a run limit, not a currency cap;
 one run can include several model requests and separately metered web lookup.

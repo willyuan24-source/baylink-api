@@ -52,6 +52,18 @@ test('a precise origin is returned separately from destination candidates withou
   assert.equal(search('museum', { catalog: fixture([], [{ ...origin, location: { ...origin.location, lat: 0 } }]), state: { originCandidateId: 'gate' } }).originCandidate, undefined);
 });
 
+test('the real Tech origin remains available for routing without becoming a duplicate destination stop', () => {
+  const catalog = require('../data/planner-catalog.json');
+  const tech = catalog.places.find(row => row.id === 'san-jose');
+  assert.equal(tech.location.label, 'The Tech Interactive');
+  assert.equal(tech.location.precision, 'venue');
+  const result = search('San Jose museums family day plan', { catalog, state: { goal: 'day-plan', city: 'San Jose', date: '2026-10-10', origin: 'The Tech Interactive', originCandidateId: tech.id } });
+  assert.equal(result.originCandidate.id, tech.id);
+  assert.deepEqual(result.originCandidate.location, tech.location);
+  assert.ok(result.candidates.length > 0);
+  assert.ok(result.candidates.every(row => row.id !== tech.id));
+});
+
 test('explicit city filters never turn similarly named or neighboring cities into local matches', () => {
   const catalog = fixture([event('sj'), event('sf', { city: 'San Francisco', region: 'sf' }), event('ss', { city: 'South San Francisco', region: 'peninsula' }), event('alameda', { city: 'Alameda', region: 'east-bay' })]);
   const result = search('free events', { catalog });
@@ -129,4 +141,46 @@ test('a named venue question cannot inject unrelated city festivals into evidenc
   assert.deepEqual(result.candidates, []);
   const generic = search('San Jose water utility account opening', { catalog: fixture([event('festival')]), state: { city: 'San Jose', goal: 'newcomer' } });
   assert.deepEqual(generic.candidates, []);
+});
+
+test('warm guide indexing reuses immutable text while applying each query city and exclusions afresh', () => {
+  let reads = 0;
+  const article = guide('utilities', '湾区水电 utilities', '');
+  Object.defineProperty(article, 'content', { get() { reads++; return 'Alameda\nAlameda\nWater utility EBMUD customer contact 866-403-2683 and address service lookup.\n\nAlameda\nNewark\nWater utility ACWD customer contact 510-668-4200 and address service lookup.'; } });
+  const guideCatalog = [article], catalog = fixture();
+  const first = search('water utility', { guideCatalog, catalog, state: { city: 'Alameda', goal: 'newcomer' } });
+  assert.ok(reads > 0); const coldReads = reads;
+  assert.ok(first.guides.every(row => !row.text.includes('510-668-4200')));
+  // Returned objects must not grant callers mutation access to the cached index.
+  first.guides[0].cities.push('San Jose'); first.guides[0].sourceUrls[0].url = 'https://bad.invalid';
+  const second = search('water utility account', { guideCatalog, catalog, state: { city: 'Newark', goal: 'newcomer' } });
+  assert.equal(reads, coldReads, 'warm queries must not reread/reparse the article');
+  assert.ok(second.guides.some(row => row.text.includes('510-668-4200')));
+  assert.ok(second.guides.every(row => !row.text.includes('866-403-2683')));
+  const back = search('water utility', { guideCatalog, catalog, state: { city: 'Alameda', goal: 'newcomer' } });
+  assert.deepEqual(back.guides[0].cities, ['Alameda']); assert.notEqual(back.guides[0].sourceUrls[0].url, 'https://bad.invalid');
+  const excluded = search('water utility', { guideCatalog, catalog, state: { excludedCities: ['Alameda'], goal: 'newcomer' } });
+  assert.ok(excluded.guides.every(row => !row.text.includes('866-403-2683')));
+});
+
+test('warm candidate tokens never cache date, free eligibility or rejection decisions', () => {
+  const catalog = fixture([event('today'), event('tomorrow', { startDate: '2026-10-05', endDate: '2026-10-05' }), event('paid', { cost: 'paid', costLabel: 'General admission $30', planning: { admissionUsd: 30 } })]);
+  const today = search('museum', { catalog, state: { city: 'San Jose', date: TODAY, goal: 'day-plan' } });
+  assert.deepEqual(new Set(today.candidates.map(row => row.id)), new Set(['today', 'paid']));
+  const free = search('museum', { catalog, state: { city: 'San Jose', date: TODAY, freeOnly: true, goal: 'day-plan' } });
+  assert.deepEqual(free.candidates.map(row => row.id), ['today']);
+  const next = search('museum', { catalog, state: { city: 'San Jose', date: '2026-10-05', goal: 'day-plan' } });
+  assert.deepEqual(next.candidates.map(row => row.id), ['tomorrow']);
+  const removed = search('museum', { catalog, state: { city: 'San Jose', date: TODAY, excludedCandidateIds: ['today'], goal: 'day-plan' } });
+  assert.deepEqual(removed.candidates.map(row => row.id), ['paid']);
+});
+
+test('replacing an immutable guide or location catalog snapshot creates a fresh index', () => {
+  const guideCatalog = [guide('venue', 'Museum guide', 'The museum has wheelchair accessible galleries, elevators and benches for resting.')];
+  const sf = fixture([], [{ id: 'venue', title: 'Museum', city: 'San Francisco', region: 'sf', guideSlug: 'venue', officialUrl: 'https://example.org/museum' }]);
+  const sj = fixture([], [{ ...sf.places[0], city: 'San Jose', region: 'south-bay' }]);
+  assert.deepEqual(search('wheelchair museum', { guideCatalog, catalog: sf }).guides, []);
+  assert.ok(search('wheelchair museum', { guideCatalog, catalog: sj }).guides.length);
+  const revised = [guide('venue', 'Museum guide', 'Newly revised wheelchair access details provide a different entrance for visitors to these galleries.')];
+  assert.match(search('wheelchair museum', { guideCatalog: revised, catalog: sj }).guides[0].text, /Newly revised/);
 });

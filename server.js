@@ -4481,16 +4481,6 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   const intent = inferBayBayIntent(resolvedRequest, categoryHint);
   const category = intentToGuideCategory(intent);
   const currentDatePacific = bayAreaDate(options.plannerNow);
-  const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)
-    .map(guide => GUIDE_CATALOG.find(canonical => canonical.slug === guide.slug));
-  const guideReferences = selectedGuides.map(guide => ({ title: guide.title, slug: guide.slug, url: guide.url }));
-  const readingRequest = category === 'other' && (intent === 'school' || intent === 'transit' || selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(analysisMessage));
-  const withGuideContext = payload => ({ ...payload, suggestedGuides: guideReferences,
-    ...(readingRequest ? { interactiveCards: [], suggestedActions: [
-      { label: '浏览全部生活指南', type: 'guide', url: '/guides' },
-      { label: '打开生活工具箱', type: 'guide', url: '/tools' },
-    ] } : {}),
-  });
   const searchPlan = intent === 'school' ? null : planPostSearch(resolvedRequest, category);
   const providerRequest = intent !== 'school' && isProviderRequest(resolvedRequest);
   // Version negotiation keeps existing clients and specialized account/post flows
@@ -4512,6 +4502,16 @@ app.post('/api/ai/guide-chat', async (req, res) => {
           : error.status === 400 ? '会话条件已过期，请开启新对话后重试。' : 'BayBay 暂时无法完成本次查询，请稍后重试。' });
     }
   }
+  const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)
+    .map(guide => GUIDE_CATALOG.find(canonical => canonical.slug === guide.slug));
+  const guideReferences = selectedGuides.map(guide => ({ title: guide.title, slug: guide.slug, url: guide.url }));
+  const readingRequest = category === 'other' && (intent === 'school' || intent === 'transit' || selectedGuides.length > 0 || /周末|亲子|优惠|免费|攻略|这篇|孩子|行程/.test(analysisMessage));
+  const withGuideContext = payload => ({ ...payload, suggestedGuides: guideReferences,
+    ...(readingRequest ? { interactiveCards: [], suggestedActions: [
+      { label: '浏览全部生活指南', type: 'guide', url: '/guides' },
+      { label: '打开生活工具箱', type: 'guide', url: '/tools' },
+    ] } : {}),
+  });
   const localized = payload => localizeGuidePayload(payload, { locale, intent, category, providerRequest, readingRequest, selectedGuides, englishCatalog: ENGLISH_GUIDE_CATALOG, today: currentDatePacific, searchPlan });
   const offerLabel = category === 'part-time' ? '招聘信息' : ['rent', 'roommate'].includes(category) ? '出租信息' : category === 'used' ? '出售信息' : '服务介绍';
   const withPostDirection = (payload) => providerRequest ? {
