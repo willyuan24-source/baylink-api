@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createBayBayAssistant, parseDraft, renderCitations } = require('../lib/baybayAgent');
+const { createBayBayAssistant, parseDraft, renderCitations, TOOLS } = require('../lib/baybayAgent');
 const { createEvidenceStore, createResearchTools, verifiedCandidate } = require('../lib/baybayTools');
 const NOW = Date.parse('2026-10-04T19:00:00Z');
 const guide = { slug: 'sf-museum', url: '/guides/sf-museum', title: '旧金山博物馆攻略', content: '亲子博物馆\n\n旧金山博物馆安排：SFMOMA 适合看艺术。免费区域须在开放时段进入。', keywords: ['旧金山','博物馆','亲子'], summary: '旧金山博物馆参考', updatedAt: '2026-10-02' };
@@ -48,11 +48,60 @@ test('assistant can read evidence, resume tool results, and then answer without 
   assert.match(result.answer, /周三闭馆/); assert.equal(result.sources[0].url, 'https://www.sfmoma.org/visit');
 });
 
-test('site-only prohibits web and page/weather tools even if the model requests them', async () => {
+test('site-only rejects every hidden external tool even if the model emits undeclared calls', async () => {
   let external = 0, count = 0;
-  const assistant = createBayBayAssistant(settings({ webSearch: async () => { external++; }, sourceFetch: async () => { external++; }, ai: async p => count++ === 0 ? invoke('search_web', { query: 'SFMOMA' }) : final({ answer: '仅参考站内资料。', candidateIds: [] }) }));
+  const hidden = [
+    ['search_web', { query: 'SFMOMA' }], ['read_source', { sourceId: 'any' }],
+    ['verify_candidate', { candidateId: 'any', sourceId: 'any', kind: 'place', proofs: {} }],
+    ['get_weather', { candidateId: 'any' }], ['get_route', { fromId: 'origin', toId: 'any', time: '10:00' }],
+  ];
+  const externalCall = async () => { external++; throw new Error('Site-only must never call this dependency'); };
+  const assistant = createBayBayAssistant(settings({ webSearch: externalCall, sourceFetch: externalCall, fetchImpl: externalCall, routeCompute: externalCall, ai: async payload => {
+    assert.deepEqual(payload.tools.map(item => item.name), ['search_site', 'create_plan']);
+    if (!count++) return { status: 'completed', model: 'fixture-reasoner', output: hidden.flatMap(([name, args], index) => invoke(name, args, `forbidden-${index}`).output) };
+    const results = payload.input.filter(item => item.type === 'function_call_output').map(item => JSON.parse(item.output));
+    assert.equal(results.length, hidden.length);
+    assert.ok(results.every(item => item.code === 'site_only' && item.retryable === false));
+    return final({ answer: '按你选择的仅站内模式参考站内快照；当前官方情况可切换智能检索核实。', candidateIds: [] });
+  } }));
   const result = await assistant.run({ message: '旧金山博物馆攻略', searchMode: 'site' });
   assert.equal(external, 0); assert.equal(result.retrieval.webStatus, 'not_requested');
+  assert.equal(result.research.steps.filter(item => item.code === 'site_only').length, hidden.length);
+  assert.equal(result.degraded, false);
+});
+
+test('serialized Responses API payload advertises mode-appropriate tools and keeps final rounds tool-free', async () => {
+  for (const searchMode of ['site', 'smart', 'web']) {
+    const requests = [], external = [];
+    const assistant = createBayBayAssistant(settings({ isTest: false,
+      config: { JWT_SECRET: 'private-test-baybay-secret-only', OPENAI_API_KEY: 'fixture-only-key', BAYBAY_MAX_MODEL_ROUNDS: 2, PLANNER_TRAVEL_ENABLED: 'true', GOOGLE_ROUTES_API_KEY: 'fixture-only-route-key' },
+      Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
+      webSearch: async () => { external.push('web'); return { answer: 'Official information.', sources: [{ title: 'Official source', url: 'https://www.sfpl.org/' }], candidates: [] }; },
+      fetchImpl: async (url, init) => {
+        assert.equal(url, 'https://api.openai.com/v1/responses');
+        const payload = JSON.parse(init.body); requests.push(payload);
+        assert.equal(payload.store, false); assert.equal(payload.text.format.type, 'json_schema');
+        const context = JSON.parse(payload.input[0].content);
+        assert.equal(context.capabilities.searchMode, searchMode);
+        assert.equal(context.capabilities.routes, searchMode !== 'site');
+        if (searchMode === 'site') {
+          assert.match(payload.instructions, /user explicitly selected site-only mode/i);
+          assert.match(payload.instructions, /editorial site snapshots/);
+          assert.match(payload.instructions, /not a network failure or service outage/);
+          assert.match(payload.instructions, /switching to Smart or Web mode/);
+          assert.doesNotMatch(payload.instructions, /BOTH site evidence and web evidence/);
+        } else assert.match(payload.instructions, /BOTH site evidence and web evidence/);
+        const reply = requests.length === 1 ? invoke('search_site', { query: 'San Francisco library card' }) : final({ answer: 'Use the recorded site reference; current eligibility still needs checking.', candidateIds: [], followups: [] });
+        return { ok: true, json: async () => reply };
+      },
+    }));
+    const result = await assistant.run({ message: 'San Francisco library card information', locale: 'en', searchMode });
+    assert.equal(requests.length, 2);
+    assert.deepEqual(requests[0].tools.map(item => item.name), searchMode === 'site' ? ['search_site', 'create_plan'] : TOOLS.map(item => item.name));
+    assert.deepEqual(requests[1].tools, []);
+    if (searchMode === 'site') { assert.equal(external.length, 0); assert.equal(result.retrieval.webStatus, 'not_requested'); }
+    assert.equal(result.degraded, false);
+  }
 });
 
 test('signed state survives beyond four history turns and clear/reset are authoritative', async () => {
@@ -237,6 +286,29 @@ test('a final selection cannot override explicitly named destinations or erase a
   assert.deepEqual(named.assistantPlan.stops.map(stop => stop.entityId), ['a', 'b']);
   const followup = await assistant.run({ message: '继续核实这份行程的门票', searchMode: 'site', sessionToken: named.assistantSessionToken });
   assert.deepEqual(followup.assistantPlan.stops.map(stop => stop.entityId), ['a', 'b']);
+});
+
+test('the live strict waterfront request forbids extra or replacement destinations in alternatives and handoff', async () => {
+  const message = '请规划 2026 年 10 月 10 日的旧金山路线，严格按 Ferry Building → Exploratorium → Pier 39 的顺序，不加其他景点。2 位成人和 1 名 5 岁孩子，10:00 从 Ferry Building 出发，17:00 在 Pier 39 结束，只步行或公交，全家总预算 $120 包括门票、交通和午餐。请核对三处的营业安排、孩子票价与路线时长；预算不够或没有查到的内容请直接说明，不要当作免费或已确认。';
+  const rows = [['venue-ferry-building', 'Ferry Building'], ['venue-exploratorium-daytime', 'Exploratorium'], ['pier39', 'Pier 39'], ['ferry-plaza-market', 'Ferry Plaza Farmers Market']].map(([id, title]) => ({ id, title, city: 'San Francisco', region: 'sf', officialUrl: `https://example.org/${id}`, cost: 'unknown', location: { lat: 37.795, lng: -122.393, precision: 'venue' } }));
+  const assistant = createBayBayAssistant(settings({ catalog: { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: rows },
+    ai: async () => final({ answer: '保留指定的两处目的地，官方营业与费用仍需核实。', candidateIds: ['venue-exploratorium-daytime', 'ferry-plaza-market'] }),
+  }));
+  for (const instruction of ['不加其他景点', '不加景点', '不再增加其他景點']) {
+    const result = await assistant.run({ message: message.replace('不加其他景点', instruction), searchMode: 'site' });
+    assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), ['venue-exploratorium-daytime', 'pier39'], instruction);
+    assert.deepEqual(result.assistantPlan.handoff.stops.map(stop => stop.id), ['venue-exploratorium-daytime', 'pier39'], instruction);
+    assert.deepEqual(result.assistantPlan.alternatives, [], instruction);
+    assert.equal(result.taskState.returnToOrigin, false);
+    const followup = await assistant.run({ message: '这些地方5岁孩子的门票是多少？', searchMode: 'site', sessionToken: result.assistantSessionToken });
+    assert.deepEqual(followup.assistantPlan.stops.map(stop => stop.entityId), ['venue-exploratorium-daytime', 'pier39'], instruction);
+    assert.deepEqual(followup.assistantPlan.handoff.stops.map(stop => stop.id), ['venue-exploratorium-daytime', 'pier39'], instruction);
+    assert.deepEqual(followup.assistantPlan.alternatives, [], instruction);
+    if (instruction === '不加其他景点') for (const request of ['请比较一个备选方案', '請比較一個備選方案', 'Compare an alternative']) {
+      const alternative = await assistant.run({ message: request, searchMode: 'site', sessionToken: followup.assistantSessionToken });
+      assert.ok(alternative.assistantPlan.alternatives.length > 0, request);
+    }
+  }
 });
 
 test('published automatic selections clear on a replan and on a city change', async () => {
