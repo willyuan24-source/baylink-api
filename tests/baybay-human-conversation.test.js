@@ -38,3 +38,42 @@ test('a new service question does not receive the prior sightseeing plan as curr
   const result = await assistant.run({ message: '换个话题，图书馆打印怎么收费？', searchMode: 'site', sessionToken: encodeTaskToken({ state, lastPlan }, { secret, now: NOW }) });
   assert.equal(result.assistantPlan, undefined);
 });
+
+test('an uncited casual plan gets one evidence-based synthesis recovery without replaying its unsupported prose', async () => {
+  let rounds = 0;
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: secret }, isTest: true, now: () => NOW, ai: async payload => {
+    const context = JSON.parse(payload.input[0].content);
+    assert.deepEqual(payload.tools, []);
+    assert.deepEqual(context.currentPlan.stops.map(stop => stop.entityId), state.selectedCandidateIds);
+    if (!rounds++) return final('这两站走路只要三分钟，随便安排都来得及。');
+    assert.match(payload.instructions, /previous final answer did not cite/);
+    assert.doesNotMatch(JSON.stringify(payload.input), /走路只要三分钟/);
+    const refs = context.currentPlan.stops.map(stop => stop.sourceIds[0]);
+    assert.ok(refs.every(id => context.evidence.some(source => source.id === id)));
+    return final(`保留先科学馆、再 PIER 39 的两站框架。PIER 39 公共区域入场记录为免费，付费项目另算。 [[${refs[1]}]] 具体路程和所选日期开放仍需核对。你预计几点到首站、从哪个公共地点出发？`);
+  } });
+  const result = await assistant.run({ message: '周六想去 Exploratorium 再去 Pier 39，带5岁小朋友，怎么排比较轻松？', searchMode: 'site' });
+  assert.equal(rounds, 2);
+  assert.equal(result.degraded, false);
+  assert.equal(result.research.steps.filter(step => step.tool === 'create_plan').length, 2, 'recovery reuses the existing plan instead of starting another route-enrichment pass');
+  assert.ok(result.research.warnings.includes('answer_plan_citation_retry'));
+  assert.ok(!result.research.warnings.includes('answer_plan_citations_repaired'));
+  assert.doesNotMatch(result.answer, /三分钟|随便安排/);
+  assert.match(result.answer, /预计几点/);
+  assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), state.selectedCandidateIds);
+  assert.ok(result.sources.some(source => /pier39\.com/.test(source.url)));
+});
+
+test('repeated uncited plan output stops after one recovery and remains visibly degraded', async () => {
+  let rounds = 0;
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: secret }, isTest: true, now: () => NOW, ai: async () => {
+    rounds++;
+    return final('去两站就好，门票一共只要 $1，完全来得及。');
+  } });
+  const result = await assistant.run({ message: '周六想去 Exploratorium 再去 Pier 39，带5岁小朋友，怎么排比较轻松？', searchMode: 'site' });
+  assert.equal(rounds, 2);
+  assert.equal(result.degraded, true);
+  assert.ok(result.research.warnings.includes('answer_plan_citations_repaired'));
+  assert.doesNotMatch(result.answer, /只要 \$1|完全来得及/);
+  assert.ok(result.sources.length > 0);
+});

@@ -229,6 +229,62 @@ test('no-source plan records cannot invent a citation or expose unsourced dollar
   assert.match(summary.answer, /no sourced admission subtotal/);
 });
 
+test('live casual family fallback puts the incomplete total before scoped free access and preserves the paid reference', () => {
+  const sources = new Map([
+    ['museum', { id: 'museum', url: 'https://www.exploratorium.edu/visit' }],
+    ['pier', { id: 'pier', url: 'https://www.pier39.com/frequently-asked-questions' }],
+  ]);
+  const publicScope = 'Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date.';
+  const plan = { stops: [
+    { title: 'Exploratorium', sourceIds: ['museum'], admissionFacts: { status: 'partial', basis: 'catalog-snapshot', knownTotalUsd: null, knownPerPersonUsd: 39.95, partySize: null, childAges: [5], breakdown: [], sourceIds: ['museum'], sourceUrl: sources.get('museum').url, checkedAt: '2026-10-02', note: 'Regular daytime general admission only. After Dark and optional purchases are not included.' } },
+    { title: 'PIER 39', sourceIds: ['pier'], admissionFacts: { status: 'partial', basis: 'catalog-snapshot', knownTotalUsd: 0, knownPerPersonUsd: 0, partySize: null, childAges: [5], breakdown: [], sourceIds: ['pier'], sourceUrl: sources.get('pier').url + '/', checkedAt: '2026-10-04', note: publicScope } },
+  ] };
+  const before = JSON.stringify(plan);
+  for (const [locale, gap, known, scope] of [
+    ['zh-Hans', '完整门票小计还不能计算', '仅已知门票小计：$0.00', '免费只适用于来源写明的范围'],
+    ['zh-Hant', '完整門票小計還不能計算', '僅已知門票小計：$0.00', '免費只適用於來源寫明的範圍'],
+  ]) {
+    const summary = sourcedPlanSummary(plan, sources, locale);
+    assert.ok(summary.answer.indexOf(gap) < summary.answer.indexOf('$'), locale);
+    assert.ok(summary.sections.admission.startsWith(gap), locale);
+    assert.ok(summary.sections.budget.includes(known), locale);
+    assert.match(summary.answer, /\$39\.95/);
+    assert.ok(summary.answer.includes(scope), locale);
+    assert.doesNotMatch(summary.answer, /Public pedestrian|Regular daytime|adult 1|成人 1|儿童.*39\.95|兒童.*39\.95/);
+    assert.deepEqual(summary.sourceIds, ['museum', 'pier']);
+    assert.match(summary.answer, /2026-10-02/);
+  }
+  const english = sourcedPlanSummary(plan, sources, 'en');
+  assert.match(english.sections.budget, /^The complete admission subtotal cannot be calculated yet\. Known portions only: \$0\.00/);
+  assert.ok(english.answer.includes(publicScope));
+  assert.match(english.answer, /recorded applicable per-person reference \$39\.95/);
+  assert.equal(JSON.stringify(plan), before, 'the detailed source scope remains intact in plan facts');
+});
+
+test('fallback keeps sourced adult and child tiers when the overall party total is unavailable', () => {
+  const sources = new Map([['museum', { id: 'museum', url: 'https://example.org/museum' }]]);
+  const summary = sourcedPlanSummary({ stops: [{ title: 'Museum', sourceIds: ['museum'], admissionFacts: {
+    status: 'partial', basis: 'page-read', knownTotalUsd: null, knownPerPersonUsd: 40, sourceIds: ['museum'], sourceUrl: 'https://example.org/museum', checkedAt: '2026-10-05',
+    breakdown: [{ category: 'adult', unitUsd: 40 }, { category: 'child', age: 5, unitUsd: 20, quantity: 1 }], note: '普通日间入场；特别体验另收费。',
+  } }] }, sources);
+  assert.match(summary.answer, /成人 \$40\.00；5 岁儿童 1 × \$20\.00/);
+  assert.match(summary.answer, /仍需确认人数及各人的适用票档/);
+  assert.match(summary.answer, /普通日间入场；特别体验另收费。/);
+  assert.match(summary.answer, /已读官方记录 · 2026-10-05/);
+  assert.doesNotMatch(summary.answer, /\$60\.00|已知门票小计：/);
+});
+
+test('complete sourced subtotals keep their numbers while mismatched price sources cannot expose a per-person price', () => {
+  const sources = new Map([['venue', { id: 'venue', url: 'https://example.org/venue' }]]);
+  const priced = { title: 'Venue', sourceIds: ['venue'], admissionFacts: { status: 'complete', knownTotalUsd: 50, knownPerPersonUsd: 25, sourceIds: ['venue'], sourceUrl: 'https://example.org/venue', breakdown: [{ category: 'adult', unitUsd: 25, quantity: 2 }] } };
+  const complete = sourcedPlanSummary({ stops: [priced] }, sources, 'en');
+  assert.match(complete.sections.budget, /^Recorded admission subtotal: \$50\.00/);
+  assert.doesNotMatch(complete.answer, /cannot be calculated|Known portions only/);
+  const mismatched = sourcedPlanSummary({ stops: [{ ...priced, admissionFacts: { ...priced.admissionFacts, knownTotalUsd: null, sourceUrl: 'https://example.org/other' } }] }, sources, 'en');
+  assert.doesNotMatch(mismatched.answer, /\$25|\$50/);
+  assert.match(mismatched.answer, /no sourced admission subtotal/);
+});
+
 test('official entry links reuse cited institutions before filling the cap with one institution', () => {
   const sources = new Map(['ac-print', 'ac-card', 'ac-film', 'sf-card', 'sm-film'].map(id => [id, { id, title: id, url: `https://${id.startsWith('ac') ? 'aclibrary.org' : id.startsWith('sf') ? 'sfpl.org' : 'smcl.org'}/${id}` }]));
   const coverage = coverageFor({ checklist: requestChecklist(libraryQuestion), sources, locale: 'en', draft: { coverage: [
