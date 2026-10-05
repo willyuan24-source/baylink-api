@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "title": "BAYBAY everyday non-trip conversations",
+  "validUntil": "2026-10-10",
+  "privacy": "All people, incidents and preferences are synthetic. Do not add account numbers, private addresses, real contact details or other identifying data. Advice and message drafting only: no sending, booking, payment, registration or saving.",
+  "design": {
+    "scope": "Twelve natural non-trip questions. Three web cases need current information: a dated store event, same-day provider availability and a reported current outage. Site cases test grounded use of local records; smart cases test whether extra research actually helps.",
+    "execution": "Run in file order with the existing runner. Preserve continuation only for follows chains. Stop on quota or rate-limit results, never relabel a site-only fallback as a completed web verification.",
+    "assertionPolicy": "Only unambiguous, relevant state fields are asserted. Specialized legacy routes are explicitly permitted where applicable. All cases reject unrequested itineraries. Source accuracy and local applicability require manual review.",
+    "manualDimensions": [
+      "Answer the latest everyday need before related background; give a short next step or one useful clarification instead of a full generic guide.",
+      "Keep provider, geography and service eligibility separate. Do not turn city residence into school assignment, library-pass eligibility or store participation.",
+      "A brand correction or a new subtopic must replace stale subject context while retaining still-relevant location and facts within that chain.",
+      "Do not produce an outing plan, route schedule, selected attractions or planner handoff for these non-trip requests.",
+      "Separate dated local records, a source found by search and an actually read official page. Do not promise current stock, service availability, restoration time or enrollment without supporting evidence.",
+      "Do not contact a business or group, send a message, reserve a service, transfer funds or collect private identifiers. Drafts must remain drafts.",
+      "Source failures and honest unknowns are not by themselves wrong; the response should still explain a useful safe next step without pretending verification succeeded."
+    ]
+  },
+  "cases": [
+    {
+      "id": "target-vague-local",
+      "request": {
+        "message": "刷到 Target 有东西白拿，Fremont 这边咋领？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true
+      },
+      "manualReview": [
+        "先问赠品名称、日期或帖文信息，不猜定具体活动；最多用少量简短例子帮助辨别。",
+        "保留Fremont语境，不能据城市名断言某店参与或有库存；消费折扣、买赠和无消费赠品分清。",
+        "只用站内快照，未知条件不说刚核实；不生成出行卡。"
+      ]
+    },
+    {
+      "id": "lowes-brand-correction-current",
+      "follows": "target-vague-local",
+      "request": {
+        "message": "哦不是 Target，是 Lowe’s 那个 MrBeast。10月24号几点去啊，不买东西也能领吗？",
+        "searchMode": "web",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "state": {
+          "startTime": null
+        },
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true
+      },
+      "manualReview": [
+        "正确切换品牌和活动，保留Fremont语境，不沿用Target消费条款或生成游玩计划。",
+        "官方已公布赠品条款与仍需问本店的起始时间、参与门店、库存分开；不能套用儿童手工的10点时间。",
+        "回答是否需购买时保留会员、数量及限额条件；没有实读当前规则时不能把旧收录或搜索摘要当本次确认。",
+        "活动时间咨询不成为行程startTime；不代用户加入会员、领券或预约。"
+      ]
+    },
+    {
+      "id": "library-card-printing",
+      "request": {
+        "message": "刚搬到 Fremont，图书馆卡网上办行不行？能顺便免费打印吗？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "coverageIds": [
+          "printing",
+          "card_eligibility"
+        ]
+      },
+      "manualReview": [
+        "识别Fremont对应AC Library体系，线上eCard与正式实体卡的资格/使用范围分开；不把Alameda市图书馆混进来。",
+        "给网上办卡和打印的实际下一步，按AC自己的免费额度及收费解释，不套SMCL的25页。",
+        "不把Discover&Go的年龄/实体卡条件移到全部办卡或打印；卡号、PIN和住址证明由用户在官方入口处理，不要求贴在聊天里。"
+      ]
+    },
+    {
+      "id": "printing-twelve-pages-followup",
+      "follows": "library-card-printing",
+      "request": {
+        "message": "那我打12页黑白呢？今天还没打过。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true
+      },
+      "manualReview": [
+        "承接AC Library与当天额度未用的条件，先给适用卡资格下的费用计算和取件方法。",
+        "用户上一轮只是询问办卡，不能把卡已办好当事实；免费部分与需先有合资格卡的前提一起说明。",
+        "不额外混入彩印、其他馆的额度或当天实时开放保证；不生成日程。"
+      ]
+    },
+    {
+      "id": "kanopy-card-followup",
+      "follows": "printing-twelve-pages-followup",
+      "request": {
+        "message": "那 Kanopy 也能看？一定要再办 SF 的卡吗？",
+        "searchMode": "smart",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "state": {
+          "city": "Fremont"
+        }
+      },
+      "manualReview": [
+        "那张卡指AC Library申请背景，不能突然当用户已有SFPL卡，也不把机构名SF当作旅游目的地。",
+        "没查到AC Kanopy入口只能说未确认，不应断言服务绝不存在；也不能把hoopla和Kanopy混成同一服务。",
+        "若提SFPL，办卡居住条件与Kanopy资格、馆票资格分开；不套SMCL票数或馆票年龄要求。",
+        "给匹配问题的官方服务/办卡入口，不倾倒湾区所有图书馆清单。"
+      ]
+    },
+    {
+      "id": "sunnyvale-school-boundary",
+      "request": {
+        "message": "住 Sunnyvale 是不是就能去 Cupertino 的学校？孩子明年上一年级。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "webStatus": "not_requested",
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai",
+          "web",
+          "search"
+        ]
+      },
+      "manualReview": [
+        "先直接解释城市名不等于学区或具体学校，需按居住地址、年级与学年确认，不能给保证录取。",
+        "一年级应核对K–8学区，不把高中FUHSD边界套用；明年指哪个学年不明时用简短澄清。",
+        "给官方地址查询/招生入口，让用户在官方系统输入私宅地址；不要求公开地址或猜出生日期、具体学校。",
+        "这不是去学校游览，不生成路线、景点或出行计划。"
+      ]
+    },
+    {
+      "id": "rental-deposit-scam",
+      "request": {
+        "message": "Fremont 有个房东说人在国外，先 Zelle 押金才给钥匙，这能信吗？",
+        "searchMode": "smart",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true
+      },
+      "manualReview": [
+        "直接回应这是明显风险信号、先停下付款并核验房源与管理权；不要为了中立而建议先交小额试试。",
+        "不能仅凭描述认定某个具体人犯罪，也不能保证平台退款或警方追款。",
+        "给可执行的看房/独立联系管理方/保留记录等步骤与官方反诈依据，不推断租约已签或押金已付。",
+        "不要求上传身份证、账户或银行卡，不替用户转账或联络房东。"
+      ]
+    },
+    {
+      "id": "sunnyvale-plumber-today",
+      "request": {
+        "message": "Sunnyvale 厨房水槽一直漏，想找今天能来的水管工，最好会中文，有靠谱的吗？",
+        "searchMode": "web",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai",
+          "web",
+          "search"
+        ]
+      },
+      "manualReview": [
+        "围绕Sunnyvale维修服务，先确认问题是否需要紧急处理，再给实际找人或核验路径；不推荐旅游、学校或无关折扣。",
+        "今天能来、会中文、报价及服务区都需业务方实际确认，不能从商家营业时间或简介推成已保证。",
+        "可靠性需说明可核验依据，例如CSLB执照和书面报价，不把搜索排名/官网自夸当质量保证。",
+        "只提供联系渠道和询价建议，不替用户预约、拨号或发送地址。"
+      ]
+    },
+    {
+      "id": "dmv-casual-newcomer",
+      "request": {
+        "message": "我刚从外州搬到 Fremont，外州驾照还能用多久？车也带来了，这俩是不是一起办？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "coverageIds": [
+          "driving_license",
+          "vehicle_registration"
+        ]
+      },
+      "manualReview": [
+        "先回答驾驶资格与车辆登记是两件事，再简明区分适用的新居民驾驶豁免和车辆期限，不塞整篇DMV百科。",
+        "10天不能写成只要提交申请或预约就能继续开车；受雇驾驶和居民认定前提不应被删掉。",
+        "车辆登记20天与驾照寄到无关，未给个人迁入/居住日期不计算具体截止日；不凭一句外州驾照断言所有个人资格。",
+        "提供对应官方入口与材料下一步，说明这是站内快照，不虚称本次实读官网。"
+      ]
+    },
+    {
+      "id": "santa-clara-outage-now",
+      "request": {
+        "message": "Santa Clara 市这会儿停电了，是不是找 PG&E？大概啥时候来电？",
+        "searchMode": "web",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true
+      },
+      "manualReview": [
+        "明确SantaClara市与SantaClara县不同，先找正确电力服务商官方停电渠道，不能默认湾区全是PG&E。",
+        "当前是否有对应停电、影响区与恢复时间要以可访问实时官方记录为依据；查不到就明确无法确认，不凭用户描述编造全市事故。",
+        "没有足够定位时问附近公共路口/区域或让用户自行输入地址到官方系统，不要求账户或私宅明文。",
+        "服务商公布的预计恢复时间仍是估计，不保证准时恢复；不擅自报修或产生出行安排。"
+      ]
+    },
+    {
+      "id": "fremont-english-community",
+      "request": {
+        "message": "刚搬来 Fremont，想找人一起练英语，别太正式，平台上有这样的小队吗？",
+        "searchMode": "smart",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "forbiddenTools": [
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "outing-search",
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "回应找人/小队的社交目的，优先说明平台实际可查的公开小队或如何查找；不能虚构用户、招募帖、群聊或活跃人数。",
+        "若没有可核实站内小队，直接说明，并给有来源的本地练习活动作为另一个选择；不把图书馆课程冒充平台小队。",
+        "年龄、报名、日期和人数未知不能保证适合或有空位；不给未经验证的私人群二维码。",
+        "不替用户加入、发帖、邀请或发消息，也不要输出游览行程。"
+      ]
+    },
+    {
+      "id": "plumber-bilingual-draft",
+      "follows": "sunnyvale-plumber-today",
+      "request": {
+        "message": "帮我用英文问一下吧：今天有没有空来看看，先说清上门费和大概怎么报价。我英文不太好。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai",
+          "web",
+          "search"
+        ]
+      },
+      "manualReview": [
+        "直接给可复制的简短英文询价草稿，承接Sunnyvale厨房水槽漏水，不跳回前一条无关社交话题。",
+        "明确是在写草稿，不能声称已经替用户联系或得到答复。",
+        "英文应询问当天是否有空、上门/诊断费及报价方式；不写对方已经答应免费、承诺时间或报价上限。",
+        "不发明师傅姓名、电话、家庭地址或已付定金；可以附一句中文解释但不展开维修教程。"
+      ]
+    }
+  ]
+}

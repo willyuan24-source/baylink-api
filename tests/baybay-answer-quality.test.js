@@ -11,6 +11,32 @@ const calls = rows => ({ status: 'completed', output: rows.map(([name, args], in
 const base = extra => ({ config: { JWT_SECRET: 'quality-fixture-signing-key' }, isTest: true, now: () => NOW, catalog: { version: 1, checkedAt: '2026-10-04', places: [], events: [], guides: [] }, ...extra });
 const libraryGuide = { slug: 'library-fixture', title: '图书馆服务资格比较', summary: 'Library service eligibility', keywords: ['Kanopy', '图书馆', '打印'], content: '打印服务\n\n站内记录区分打印、Kanopy 和借博物馆门票。不同发卡馆的居住地、年龄、eCard 与正式卡规则各自适用，不能把一张卡的借阅权限用于另一馆。此测试站内段落不代表实时官方核验。', updatedAt: '2026-10-04' };
 
+test('colloquial card and new-resident questions do not mark only one of two needs complete', () => {
+  const checklist = requestChecklist('刚搬到 Fremont，图书馆卡网上办行不行？能顺便免费打印吗？');
+  assert.deepEqual(checklist.items.map(row => row.id), ['printing', 'card_eligibility']);
+  const coverage = coverageFor({ checklist, locale: 'zh-Hans', sources: new Map([['printing-source', { title: 'Printing FAQ', url: 'https://example.org/printing' }]]),
+    draft: { coverage: [{ id: 'printing', status: 'answered', summary: '持合资格实体卡可用每日免费额度。', sourceIds: ['printing-source'] }] } });
+  assert.equal(coverage.status, 'partial');
+  assert.equal(coverage.items.find(row => row.id === 'card_eligibility').status, 'unknown');
+  assert.deepEqual(requestChecklist('我刚从外州搬到 Fremont，外州驾照还能用多久？车也带来了，这俩是不是一起办？').items.map(row => row.id), ['driving_license', 'vehicle_registration']);
+  assert.ok(!requestChecklist('周末开车带孩子去图书馆，附近有地方玩吗？').items.some(row => row.id === 'vehicle_registration'));
+});
+
+test('library events and nonmotorized belongings do not create unrelated eligibility requests', () => {
+  for (const message of ['Fremont 图书馆这周末举办什么活动？', 'Fremont 圖書館這週末舉辦什麼活動？', 'What is the library budget this year?']) {
+    assert.ok(!requestChecklist(message).items.some(row => row.id === 'card_eligibility'), message);
+  }
+  for (const message of ['我刚搬来 Fremont，婴儿车也带来了，公交上能放吗？', '我剛搬到 Fremont，嬰兒推車也帶來了，公車上能放嗎？', '我刚搬到 Fremont，自行车也带来了，BART 上能放吗？', 'I moved to Fremont and brought my bicycle. Can I take it on BART?']) {
+    assert.ok(!requestChecklist(message).items.some(row => row.id === 'vehicle_registration'), message);
+  }
+  for (const message of ['圖書館卡網上辦行不行？', 'Fremont 图书馆怎么申请卡？', 'Can I get a library card online?', 'Can I apply online for a library card?']) {
+    assert.ok(requestChecklist(message).items.some(row => row.id === 'card_eligibility'), message);
+  }
+  for (const message of ['我剛從外州搬到 Fremont，車也帶來了，要怎麼辦？', '我刚搬来 Fremont，汽车也带来了，要登记吗？', 'I moved to Fremont and brought my car. What do I need to do?']) {
+    assert.ok(requestChecklist(message).items.some(row => row.id === 'vehicle_registration'), message);
+  }
+});
+
 test('the audited library prompt preserves each requested subject without inventing eligibility', () => {
   const checklist = requestChecklist(libraryQuestion, 'zh-Hans');
   assert.equal(checklist.complex, true);

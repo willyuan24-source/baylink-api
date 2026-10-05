@@ -151,6 +151,21 @@ test('supplier and recruiter requests do not incorrectly search for competing pr
   assert.equal(planPostSearch('我在东湾找清洁服务', 'cleaning').query.type, 'provider');
 });
 
+test('service search explains unverified language and availability without promising a provider', () => {
+  const plan = planPostSearch('Sunnyvale 厨房水槽一直漏，想找今天能来的水管工，最好会中文，有靠谱的吗？', 'repair');
+  const empty = summarizeMatches([], plan);
+  assert.deepEqual(empty.matchingPosts, []);
+  assert.match(empty.answer, /只查了站内公开帖子/);
+  assert.match(empty.answer, /尚未确认：今天能否服务、是否可用中文沟通/);
+  assert.match(empty.answer, /上门或诊断费/);
+  const { localizeGuidePayload } = require('../lib/guideLocale');
+  const english = localizeGuidePayload({ ...empty, responseMode: 'search' }, { locale: 'en', category: 'repair', searchPlan: plan, englishCatalog: new Map() });
+  assert.match(english.answer, /Still unverified: availability today and Chinese-language service/);
+  assert.match(english.answer, /written estimate for labor and parts/);
+  assert.doesNotMatch(english.answer, /[\u3400-\u9fff]/);
+  assert.doesNotMatch(summarizeMatches([], planPostSearch('Fremont 找房', 'rent')).answer, /diagnostic|诊断费|中文沟通/);
+});
+
 test('supplier and recruiter responses use provider actions and remove consumer checklists end to end', async t => {
   const { request } = await fixture(t);
   for (const [message, category, label] of [

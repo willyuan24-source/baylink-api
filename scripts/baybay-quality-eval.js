@@ -23,7 +23,7 @@ function sanitize(value, depth = 0) {
 
 function quotaStop(status, body) {
   if (status === 429) return 'http_429';
-  const values = [body?.code, ...(body?.research?.warnings || []), ...(body?.research?.steps || []).map(step => step.code)];
+  const values = [body?.code, body?.retrieval?.failureCode, ...(body?.research?.warnings || []), ...(body?.research?.steps || []).map(step => step.code)];
   return values.find(value => typeof value === 'string' && LIMIT_CODES.test(value)) || null;
 }
 
@@ -31,7 +31,8 @@ function structuralChecks(item, status, body, previous) {
   const checks = [];
   const check = (id, passed, detail) => checks.push({ id, status: passed ? 'pass' : 'fail', ...(detail ? { detail } : {}) });
   check('transport_success', status === 200 && body?.ok === true);
-  check('structured_assistant', body?.responseMode === 'assistant');
+  const allowedModes = item.assertions?.responseModes || ['assistant'];
+  check('expected_response_mode', allowedModes.includes(body?.responseMode));
   check('substantive_answer_present', typeof body?.answer === 'string' && body.answer.trim().length >= 20);
   check('not_degraded', body?.degraded === false);
   const sources = Array.isArray(body?.sources) ? body.sources : [];
@@ -44,13 +45,25 @@ function structuralChecks(item, status, body, previous) {
   }
   const evidenceIds = new Set((body?.evidence || []).map(source => source.id));
   const coverage = body?.answerCoverage;
-  check('coverage_contract', ['complete', 'partial', 'unassessed'].includes(coverage?.status) && Array.isArray(coverage?.items) && coverage.items.length <= 8);
-  check('coverage_sources_resolve', (coverage?.items || []).every(row => Array.isArray(row.sourceIds) && row.sourceIds.every(id => evidenceIds.has(id))));
+  if (body?.responseMode === 'assistant' || item.assertions?.coverageIds?.length) {
+    check('coverage_contract', ['complete', 'partial', 'unassessed'].includes(coverage?.status) && Array.isArray(coverage?.items) && coverage.items.length <= 8);
+    check('coverage_sources_resolve', (coverage?.items || []).every(row => Array.isArray(row.sourceIds) && row.sourceIds.every(id => evidenceIds.has(id))));
+  } else {
+    check('specialized_retrieval_scope', ['site', 'site+web', 'web', 'none'].includes(body?.retrieval?.scope));
+    if (body?.responseMode === 'search') check('post_results_contract', Array.isArray(body.matchingPosts));
+    if (body?.responseMode === 'outing-search') check('outing_results_contract', ['ready', 'needs_clarification'].includes(body.outingSearch?.state));
+  }
   for (const id of item.assertions?.coverageIds || []) check(`coverage_${id}`, (coverage?.items || []).some(row => row.id === id && typeof row.summary === 'string' && row.summary.trim()));
   const timings = body?.research?.timings;
-  check('numeric_stage_timings', timings && ['stateMs', 'siteMs', 'monitorMs', 'quotaMs', 'searchMs', 'readMs', 'modelMs', 'finalMs', 'routeMs', 'totalMs'].every(key => Number.isFinite(timings[key]) && timings[key] >= 0 && timings[key] <= 180000));
+  if (body?.responseMode === 'assistant') check('numeric_stage_timings', timings && ['stateMs', 'siteMs', 'monitorMs', 'quotaMs', 'searchMs', 'readMs', 'modelMs', 'finalMs', 'routeMs', 'totalMs'].every(key => Number.isFinite(timings[key]) && timings[key] >= 0 && timings[key] <= 180000));
+  if (item.assertions?.noPlan) check('no_unrequested_itinerary', !body?.assistantPlan);
+  if (item.assertions?.webCompleted) check('web_research_completed', body?.retrieval?.webStatus === 'completed' && sources.length > 0);
   for (const [key, value] of Object.entries(item.assertions?.state || {})) check(`state_${key}`, isDeepStrictEqual(body?.taskState?.[key], value));
-  if (item.assertions?.webStatus) check('chosen_search_scope', body?.retrieval?.webStatus === item.assertions.webStatus);
+  if (item.assertions?.webStatus) {
+    const scopedSiteFlow = item.request?.searchMode === 'site' && body?.responseMode !== 'assistant'
+      && item.assertions.webStatus === 'not_requested' && body?.retrieval?.webStatus === 'not_applicable';
+    check('chosen_search_scope', body?.retrieval?.webStatus === item.assertions.webStatus || scopedSiteFlow);
+  }
   for (const name of item.assertions?.forbiddenTools || []) check(`no_${name}`, !(body?.research?.steps || []).some(step => step.tool === name && step.status === 'completed'));
   const planIds = plan => (plan?.stops || []).map(stop => stop.entityId || stop.id);
   if (item.assertions?.planIds) {
@@ -100,10 +113,11 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
       health = await probe.json();
       if (!probe.ok || health?.status !== 'ok' || health?.commit !== expectedCommit.toLowerCase()) { report.status = 'stopped_release_mismatch'; report.health = sanitize({ status: health?.status, commit: health?.commit }); break; }
     } catch { report.status = 'stopped_health_unavailable'; break; }
-    const token = item.follows ? tokens.get(item.follows) : null;
-    if (item.follows && !token) { report.status = 'stopped_missing_continuation'; report.stoppedBeforeCase = item.id; break; }
+    const continuation = item.follows ? tokens.get(item.follows) || {} : {};
+    const parentMode = item.follows ? responses.get(item.follows)?.responseMode : null;
+    if (item.follows && (parentMode === 'assistant' && !continuation.assistantSessionToken || parentMode === 'outing-search' && !continuation.outingSearchToken)) { report.status = 'stopped_missing_continuation'; report.stoppedBeforeCase = item.id; break; }
     const history = item.follows ? conversations.get(item.follows) || [] : [];
-    const request = { ...item.request, assistantVersion: 2, context: { currentPath: '/' }, ...(history.length ? { history } : {}), ...(token ? { assistantSessionToken: token } : {}) };
+    const request = { ...item.request, assistantVersion: 2, context: { currentPath: '/' }, ...(history.length ? { history } : {}), ...continuation };
     lastStart = now(); log(`Running ${item.id}; deployed commit verified.`);
     let response, body;
     try {
@@ -114,7 +128,10 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
       report.status = 'stopped_transport_unavailable'; await persist(sanitize(report)); break;
     }
     const elapsedMs = Math.max(0, now() - lastStart);
-    if (typeof body?.assistantSessionToken === 'string') tokens.set(item.id, body.assistantSessionToken);
+    tokens.set(item.id, {
+      ...(typeof body?.assistantSessionToken === 'string' ? { assistantSessionToken: body.assistantSessionToken } : {}),
+      ...(typeof body?.outingSearch?.continuationToken === 'string' ? { outingSearchToken: body.outingSearch.continuationToken } : {}),
+    });
     const clean = sanitize(body); responses.set(item.id, clean);
     if (typeof clean.answer === 'string') conversations.set(item.id, [...history, { role: 'user', content: item.request.message.slice(0, 500) }, { role: 'assistant', content: clean.answer.slice(0, 1200) }].slice(-8));
     report.cases.push({ id: item.id, startedAt: new Date(lastStart).toISOString(), httpStatus: response.status, elapsedMs, serverTiming: response.headers?.get?.('server-timing') || null,

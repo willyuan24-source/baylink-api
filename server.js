@@ -25,9 +25,9 @@ const { PROFILE_THEMES, SOCIAL_INTENTS, validSocialIntents, normalizeSocialInten
   MESSAGE_REACTIONS, validateProfileImage, reactionKey, publicMessage, buildReplyPreview } = require('./lib/memberSocial');
 const { registerEventEngagement } = require('./lib/eventEngagement');
 const { createPlannerModel, registerPlanner } = require('./lib/plannerRoutes');
-const { registerPlannerWebSearch } = require('./lib/plannerWebSearch');
+const { registerPlannerWebSearch, normalizeWebSearchError } = require('./lib/plannerWebSearch');
 const { registerPlannerTravel } = require('./lib/plannerTravel');
-const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset } = require('./lib/guideWebSearch');
+const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset, hasPrivateSearchData } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
@@ -4487,7 +4487,11 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   const providerRequest = intent !== 'school' && isProviderRequest(resolvedRequest);
   // Version negotiation keeps existing clients and specialized account/post flows
   // compatible while the unified assistant owns public research and day plans.
-  if (req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && intent !== 'school') {
+  // Public enrollment policy can use the same evidence workflow as other
+  // public questions. Identifying school/address requests retain the private,
+  // site-guidance path and cannot send those details to external search.
+  const privateSchoolRequest = intent === 'school' && hasPrivateSearchData(message);
+  if (req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && !privateSchoolRequest) {
     res.set('Cache-Control', 'no-store');
     let progressStream;
     try {
@@ -4583,6 +4587,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     } catch (error) {
       const rejected = ['SEARCH_VERIFICATION_FAILED', 'web_verification_failed'].includes(error.code);
       return res.json({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
+        failureCode: normalizeWebSearchError(error).code,
         webConfiguredModel: safeModel(config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
         matchNote: rejected
           ? locale === 'en' ? 'The web answer did not pass location/date checks. Only existing site guidance is shown.' : locale === 'zh-Hant' ? '聯網答覆未通過地點／日期檢查；以下僅保留站內參考資料。' : '联网答复未通过地点／日期检查；以下仅保留站内参考资料。'

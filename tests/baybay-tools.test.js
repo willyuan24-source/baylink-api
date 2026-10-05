@@ -14,6 +14,18 @@ function setup(options = {}) {
   return { store, research };
 }
 const rawRoute = { routes: [{ duration: '1200s', distanceMeters: 9000 }] };
+
+test('school research rejects child identity and home addresses before any external search', async () => {
+  let searches = 0;
+  const { research } = setup({ webSearch: async () => { searches++; return { sources: [], candidates: [] }; } });
+  for (const query of ['My child is named Example Child; Fremont school enrollment', '孩子名字叫示例，Fremont学校', 'School enrollment at 123 Example Street', 'DOB: 2020-03-04 school enrollment',
+    '孩子叫示例宝宝，2020年3月4日出生，Sunnyvale 入学怎么办？', 'My son Example Child was born on March 4, 2020. How do I enroll him in Fremont school?', '孩子2020年3月4日出生，Fremont 入学要求？']) {
+    assert.equal((await research.searchWeb(query)).code, 'web_private_query', query);
+  }
+  assert.equal(searches, 0);
+  await research.searchWeb('Fremont first grade enrollment 2027–28 academic year');
+  assert.equal(searches, 1);
+});
 function proofFixture({ kind = 'event', text, city = 'Fremont' }) {
   const store = storeFor([candidate('web-test', { title: 'City Festival', kind, city, origin: 'web', verification: 'search-result' })]);
   const row = store.candidates.get('web-test');

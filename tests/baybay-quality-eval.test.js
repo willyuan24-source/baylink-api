@@ -54,7 +54,7 @@ test('requests start at least 65 seconds apart, continuation remains only in mem
 });
 
 test('429 and embedded quota failures stop immediately without a retry or next request', async () => {
-  for (const failure of [{ status: 429, body: { code: 'RATE_LIMIT' } }, { status: 200, body: result({ research: { warnings: [], steps: [{ tool: 'search_web', status: 'unavailable', code: 'web_daily_limit' }] } }) }]) {
+  for (const failure of [{ status: 429, body: { code: 'RATE_LIMIT' } }, { status: 200, body: result({ research: { warnings: [], steps: [{ tool: 'search_web', status: 'unavailable', code: 'web_daily_limit' }] } }) }, { status: 200, body: result({ retrieval: { failureCode: 'web_daily_limit' } }) }]) {
     let assistantRequests = 0;
     const report = await runEvaluation({ casebook: { validUntil: '2026-10-10', cases: [item('one'), item('two')] }, expectedCommit: COMMIT, now: () => NOW,
       fetchImpl: async url => String(url).endsWith('/health') ? response({ status: 'ok', commit: COMMIT }) : (assistantRequests++, response(failure.body, failure.status)),
@@ -110,4 +110,38 @@ test('factual plans cannot pass with no citations or a citation unrelated to the
   const safelyDegraded = structuralChecks(item('plan'), 200, result({ ...common, degraded: true, answer: 'A sourced snapshot still has incomplete current-date verification. [1]', sources: [{ title: 'Museum', url: 'https://example.org/museum' }] }));
   assert.equal(safelyDegraded.checks.find(row => row.id === 'factual_plan_has_citation').status, 'pass');
   assert.equal(safelyDegraded.checks.find(row => row.id === 'not_degraded').status, 'fail');
+});
+
+test('specialized routes require explicit expectations and cannot hide an unwanted itinerary', () => {
+  const specialized = { ok: true, responseMode: 'search', degraded: false, answer: 'A bounded public post search needs separate factual review.', matchingPosts: [], retrieval: { scope: 'site', webStatus: 'not_requested' } };
+  assert.equal(structuralChecks(item('default'), 200, specialized).status, 'fail');
+  const expected = item('posts', { assertions: { responseModes: ['search'], noPlan: true } });
+  assert.equal(structuralChecks(expected, 200, specialized).status, 'pass');
+  assert.equal(structuralChecks(expected, 200, { ...specialized, assistantPlan: { stops: [] } }).checks.find(check => check.id === 'no_unrequested_itinerary').status, 'fail');
+  assert.equal(structuralChecks(expected, 200, { ...specialized, matchingPosts: undefined }).checks.find(check => check.id === 'post_results_contract').status, 'fail');
+  const site = item('posts', { assertions: { responseModes: ['search'], webStatus: 'not_requested' } });
+  assert.equal(structuralChecks(site, 200, { ...specialized, retrieval: { scope: 'site', webStatus: 'not_applicable' } }).status, 'pass');
+  assert.equal(structuralChecks(site, 200, { ...specialized, retrieval: { scope: 'site+web', webStatus: 'completed' } }).status, 'fail');
+});
+
+test('legacy conversations use actual history and outing continuation maps its nested token without persisting it', async () => {
+  for (const mode of ['ai', 'outing-search']) {
+    let clock = NOW, requests = 0;
+    const assertions = { responseModes: [mode], noPlan: true };
+    const book = { cases: [item('first', { assertions }), item('followup', { follows: 'first', assertions })] };
+    const body = { ok: true, responseMode: mode, degraded: false, answer: 'A specialized response with enough context for the next question.', retrieval: { scope: 'site' },
+      ...(mode === 'outing-search' ? { outingSearch: { state: 'needs_clarification', continuationToken: 'nested-credential' } } : {}) };
+    const report = await runEvaluation({ casebook: book, expectedCommit: COMMIT, now: () => clock, sleep: async ms => { clock += ms; }, fetchImpl: async (url, options) => {
+      if (String(url).endsWith('/health')) return response({ status: 'ok', commit: COMMIT });
+      const request = JSON.parse(options.body);
+      if (++requests === 2) {
+        assert.deepEqual(request.history, [{ role: 'user', content: 'Synthetic first' }, { role: 'assistant', content: body.answer }]);
+        assert.equal(request.assistantSessionToken, undefined);
+        assert.equal(request.outingSearchToken, mode === 'outing-search' ? 'nested-credential' : undefined);
+      }
+      return response(body);
+    } });
+    assert.equal(requests, 2); assert.equal(report.automated.passed, 2);
+    assert.doesNotMatch(JSON.stringify(report), /nested-credential|continuationToken|outingSearchToken/);
+  }
 });

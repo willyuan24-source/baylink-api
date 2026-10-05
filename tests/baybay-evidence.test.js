@@ -256,7 +256,7 @@ test('the complete multi-library question retains printing, films and separate p
     state: { goal: 'information', city: null, origin: 'Fremont' }, guideCatalog: require('../data/guide-catalog.json'), today: '2026-10-04',
   });
   const text = result.guides.map(guide => guide.text).join('\n');
-  for (const expected of ['10 页黑白', '每天最多 25 页', 'SFPL · KANOPY', '15 岁', '16 岁', 'eCard', 'SF 居民']) assert.ok(text.includes(expected), expected);
+  for (const expected of ['10 页黑白', '每天最多 25 页', 'SFPL 官方 Movies & TV 页面提供 Kanopy 入口', '15 岁', '16 岁', 'eCard', 'SF 居民']) assert.ok(text.includes(expected), expected);
   const sources = result.guides.flatMap(guide => guide.sourceUrls.map(source => source.url));
   for (const url of ['https://aclibrary.org/faq/print-scan-fax/', 'https://smcl.org/printanywhere/', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv', 'https://smcl.org/faq/museum-passes-discover-go/']) assert.ok(sources.includes(url), url);
   assert.ok(result.guides.length <= 8);

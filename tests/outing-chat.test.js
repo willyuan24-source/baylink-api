@@ -18,6 +18,41 @@ test('explicit social searches produce only server filters and no invented outin
   assert.doesNotThrow(() => outingSearch(reply.outingSearch.filters, NOW, 'isolated-search-secret'));
 });
 
+test('casual English practice remains the group topic and survives an unrestricted-date followup', () => {
+  for (const message of ['刚搬来 Fremont，想找人一起练英语，别太正式，平台上有这样的小队吗？', 'Find an English conversation group in Fremont']) {
+    const first = read(message, [], { secret: TOKEN_SECRET });
+    assert.equal(first.outingSearch.state, 'needs_clarification');
+    assert.deepEqual(first.outingSearch.filters, { sort: 'soonest', city: 'Fremont', q: 'English practice' });
+    assert.match(first.answer, /Fremont.*英语练习/);
+    const second = read('不限日期', [], { secret: TOKEN_SECRET, continuationToken: first.outingSearch.continuationToken });
+    assert.equal(second.outingSearch.state, 'ready');
+    assert.equal(second.outingSearch.filters.q, 'English practice');
+    const query = outingSearch(second.outingSearch.filters, NOW, TOKEN_SECRET);
+    const regex = query.filter.$and.find(clause => clause.$or)?.$or[0].title;
+    assert.ok(regex.test('Fremont 英语角')); assert.ok(regex.test('Casual English conversation'));
+    assert.ok(!regex.test('Fremont coffee meetup'));
+  }
+  const bilingual = read('找 Fremont 练英语的小队，不限日期，中文交流');
+  assert.equal(bilingual.outingSearch.filters.language, 'zh');
+  assert.equal(bilingual.outingSearch.filters.q, 'English practice');
+});
+
+test('bilingual names for one practice topic do not broaden the search to all activities', () => {
+  for (const message of ['想找Fremont的英语练习小队，English practice那种，不限日期', '想找 Fremont 英語練習小隊，English conversation 那種，不限日期']) {
+    const first = read(message, [], { secret: TOKEN_SECRET });
+    assert.equal(first.outingSearch.state, 'ready');
+    assert.deepEqual(first.outingSearch.filters, { sort: 'soonest', city: 'Fremont', q: 'English practice' });
+    const second = read('只看有空位的', [], { secret: TOKEN_SECRET, continuationToken: first.outingSearch.continuationToken });
+    assert.equal(second.outingSearch.filters.q, 'English practice');
+    assert.equal(second.outingSearch.filters.seats, 'open');
+  }
+  for (const message of ['Fremont找英语练习或咖啡小队，不限日期', 'Fremont找咖啡小队，不练英语，不限日期']) {
+    const reply = read(message);
+    assert.equal(reply.outingSearch.filters.q, undefined);
+    assert.match(reply.answer, /主题|主題/);
+  }
+});
+
 test('unknown cities and dates ask one question; only explicit unrestricted preferences broaden search', () => {
   const first = read('我想找搭子一起去，请先问我城市和日期。');
   assert.deepEqual(first.outingSearch.missing, ['city', 'date']); assert.match(first.outingSearch.question, /城市/);

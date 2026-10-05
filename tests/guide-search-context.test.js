@@ -247,7 +247,7 @@ test('existing clarification, site-only, school, and service boundaries remain i
   assert.ok(ask('Oakland or Berkeley museums today', { locale: 'en' }).question);
   assert.equal(ask('今天有什么活动？', { searchMode: 'site' }).search, false);
   assert.equal(ask('根据站内指南整理湾区活动').search, false);
-  assert.equal(ask('Find Bay Area schools', { school: true }).search, false);
+  assert.equal(ask('Find Bay Area schools', { school: true }).search, true);
   assert.equal(ask('Find Bay Area cleaning', { siteService: true }).search, false);
   assert.equal(ask('What is two plus two?', { history: history('Oakland museums') }).search, false);
 });
