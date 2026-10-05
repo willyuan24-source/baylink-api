@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createEvidenceStore, createResearchTools, verifiedCandidate, canonical } = require('../lib/baybayTools');
+const { createEvidenceStore, createResearchTools, verifiedCandidate, canonical, normalizeResearchError } = require('../lib/baybayTools');
 const { buildItinerary } = require('../lib/baybayPlan');
 
 const NOW = Date.parse('2026-10-04T16:00:00Z');
@@ -326,6 +326,60 @@ test('web lookup has a two-distinct-query budget and no duplicate charge', async
   await research.searchWeb('park hours');
   assert.ok((await research.searchWeb('another query')).error);
   assert.equal(calls, 2);
+});
+
+test('web capacity and configuration failures block repeated provider calls only within the same run', async () => {
+  for (const code of ['web_daily_limit', 'web_rate_limit', 'web_disabled', 'web_not_configured', 'web_quota_unavailable', 'web_provider_access', 'web_provider_rate_limit']) {
+    let calls = 0;
+    const webSearch = async () => { calls++; throw Object.assign(new Error('private provider detail must never be returned'), { code }); };
+    const { research } = setup({ webSearch });
+    const first = await research.searchWeb('official museum eligibility');
+    assert.equal(first.code, code); assert.equal(first.retryable, false); assert.doesNotMatch(first.error, /private provider/);
+    first.code = 'caller mutation';
+    const second = await research.searchWeb('a different official museum source');
+    assert.equal(second.code, code); assert.equal(calls, 1);
+    await setup({ webSearch }).research.searchWeb('official museum eligibility');
+    assert.equal(calls, 2, 'a new run must independently check availability');
+  }
+});
+
+test('location verification and transient failures permit one refined search within the original budget', async () => {
+  for (const failure of [{ code: 'SEARCH_VERIFICATION_FAILED', reason: 'wrong_candidate_city' }, { code: 'web_timeout' }, { code: 'web_busy' }]) {
+    let calls = 0;
+    const { research } = setup({ webSearch: async () => { if (++calls === 1) throw Object.assign(new Error('untrusted details'), failure); return { sources: [], candidates: [], answer: 'More specific source search completed.' }; } });
+    const first = await research.searchWeb('museum eligibility');
+    assert.equal(first.retryable, true);
+    if (failure.reason) { assert.equal(first.code, 'web_verification_failed'); assert.equal(first.reason, failure.reason); }
+    assert.equal((await research.searchWeb('museum eligibility')).code, 'web_duplicate_query');
+    assert.equal((await research.searchWeb('Fremont museum official eligibility')).error, undefined);
+    assert.equal((await research.searchWeb('third query')).code, 'web_tool_limit'); assert.equal(calls, 2);
+  }
+});
+
+test('source diagnostics are enumerated without exposing publisher errors or bypassing page limits', async () => {
+  const cases = { 'http-403': 'source_forbidden', 'http-429': 'source_rate_limit', 'http-404': 'source_not_found', timeout: 'source_timeout', 'page-too-large': 'source_page_too_large', 'unsafe-address': 'source_unsafe_url', 'redirect-limit': 'source_redirect_limit', 'unsupported-content': 'source_unsupported_format', 'manual-required': 'source_manual_required' };
+  for (const [code, expected] of Object.entries(cases)) {
+    const { store, research } = setup({ sourceFetch: async () => { throw Object.assign(new Error('private-reader-detail'), { code }); } });
+    const result = await research.readSource(store.candidates.get('a').sourceIds[0]);
+    assert.equal(result.code, expected); assert.equal(typeof result.retryable, 'boolean'); assert.doesNotMatch(result.error, /private-reader-detail/);
+  }
+  let calls = 0; const store = storeFor(['a', 'b', 'c', 'd'].map(id => candidate(id)));
+  const { research } = setup({ store, sourceFetch: async () => { calls++; throw Object.assign(new Error('blocked'), { code: 'http-403' }); } });
+  const firstId = store.candidates.get('a').sourceIds[0];
+  assert.equal((await research.readSource(firstId)).code, 'source_forbidden');
+  assert.equal((await research.readSource(firstId)).code, 'source_attempted');
+  for (const id of ['b', 'c']) assert.equal((await research.readSource(store.candidates.get(id).sourceIds[0])).code, 'source_forbidden');
+  assert.equal((await research.readSource(store.candidates.get('d').sourceIds[0])).code, 'source_tool_limit'); assert.equal(calls, 3);
+});
+
+test('research failure normalization accepts only allowlisted codes and verification reasons', () => {
+  const privateError = Object.assign(new Error('do not expose private diagnostics'), { code: 'untrusted_secret_code', status: 401, reason: 'private query' });
+  for (const tool of ['search_web', 'read_source', 'get_weather']) {
+    const result = normalizeResearchError(privateError, tool);
+    assert.doesNotMatch(JSON.stringify(result), /private|secret|401/); assert.equal(result.reason, undefined);
+  }
+  assert.equal(normalizeResearchError({ code: 'SEARCH_VERIFICATION_FAILED', reason: 'private query' }, 'search_web').reason, undefined);
+  assert.equal(normalizeResearchError(new Error('AI provider HTTP 401'), 'search_web').code, 'web_provider_access');
 });
 
 test('source read budget includes failed attempts and prevents a repeated failing page loop', async () => {

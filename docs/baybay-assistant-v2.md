@@ -24,6 +24,9 @@ their existing handlers. `BAYBAY_AGENT_ENABLED=false` restores the old handler.
 - Explicitly named published stops become an ordered selection. The departure
   venue stays separate; ambiguous names or alternatives need clarification.
   The model cannot silently add another stop to an exact requested itinerary.
+- Named follow-ups such as "cancel Exploratorium, keep only SFMOMA" update the
+  signed selection and plan handoff together. Budget reductions and departure
+  times before a named origin also update the task, rather than only the prose.
 - The source monitor's pending-review state is exposed to the research model.
   A fetched page is an observation, not automatic editorial approval.
 
@@ -66,6 +69,15 @@ The existing web-search cache and shared
 quota remain authoritative, including model-triggered searches; no tool bypasses
 that service. The service reads at most three pages and requests one weather
 forecast per run. Site-only mode disables web, page, weather and route requests.
+Official HTML responses have a hard 2 MiB limit so modern site navigation and
+styles do not prevent the actual visitor rules from being read. Extracted text
+and model excerpts remain separately bounded. Publisher restrictions, HTTPS/DNS
+checks, timeouts and redirect limits still apply; this does not bypass blocking.
+Tool failures expose safe diagnostic codes and retryability, never provider
+response bodies or credentials. A non-retryable web capacity/configuration
+failure is reused within that answer rather than calling the provider again;
+official page reading and site evidence remain available. Verification failures
+can still be followed by a more focused query.
 
 Routes require all of:
 
@@ -96,6 +108,9 @@ Responses retain ordinary fields and add `taskState`, `assistantSessionToken`,
 refer to `sources` in order; `evidence` has stable IDs for the plan cards.
 Source URLs come from server retrieval and are validated before links render.
 `degraded` is true when only the grounded fallback could be produced.
+Optional bounded `followups` are contextual prompts for the user to select;
+they never submit automatically. Cited site guides take priority in related
+reading cards so a follow-up answer does not promote unrelated keyword matches.
 
 Adding a plan remains an explicit user action. The existing plan-page handoff
 accepts only actual published event/place IDs. It does not create a reservation,

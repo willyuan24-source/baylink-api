@@ -91,10 +91,61 @@ test('explicit whole-trip spending caps persist without confusing venue-price qu
   assert.equal(resolve('门票总共是不是不超过50美元？').state.budget, null);
   const prior = resolve('明天安排一天，全程不超过100美元。').state;
   assert.equal(resolve('Would admission tickets cost a total no more than $50?', prior).state.budget, 100);
-  for (const message of ['总共超过50美元也可以', '全程超過50美元也沒關係', '一共多于50美元也可以']) {
+  for (const message of ['总共超过50美元也可以', '总共超过$50也可以', '超过50美元也可以', '全程超過$50也沒關係', '一共多于50美元也可以']) {
     assert.equal(resolve(message).state.budget, null, message);
     assert.equal(resolve(message, prior).state.budget, 100, message);
   }
+  assert.equal(resolve('总共不超过$50', prior).state.budget, 50);
+  assert.equal(resolve('不超过$50也可以', prior).state.budget, 50);
+  assert.equal(resolve('超过$50也可以，但总预算降到70美元', prior).state.budget, 70);
+});
+
+test('explicit total budget sums and reductions update the saved cap, not quoted admission prices', () => {
+  const previous = resolve('安排一天，总预算200美元').state;
+  for (const message of ['门票加停车预算总共50美元', '門票加停車預算總共50美元', 'Admission and parking budget total $50']) {
+    const result = resolve(message, previous).state;
+    assert.equal(result.budget, 50, message); assert.equal(result.budgetScope, 'total', message);
+  }
+  assert.equal(resolve('全程总预算降到70美元', previous).state.budget, 70);
+  assert.equal(resolve('Total budget reduced to $70', previous).state.budget, 70);
+  assert.equal(resolve('门票加停车总共50美元吗？', previous).state.budget, 200);
+});
+
+test('a known branded venue uses its catalog city without replacing an explicit departure city', () => {
+  const actual = require('../data/planner-catalog.json');
+  const message = '我第一次来湾区，想去 San Francisco Premium Outlets。它是在旧金山市区吗？2026年10月4日周日，从旧金山 Powell Street BART 站出发，没有车是否现实？请核实商场和公交官网，告诉我实际城市、公交接驳方式和周末班次的大致频率。没有实时路线结果就不要编精确全程分钟数，也不用安排其他景点。';
+  const result = resolve(message, undefined, { catalog: actual });
+  assert.equal(result.clarification, undefined); assert.equal(result.state.city, 'Livermore');
+  assert.equal(result.state.origin, 'San Francisco'); assert.equal(result.state.originCandidateId, null);
+  assert.equal(result.state.goal, 'shopping'); assert.deepEqual(result.state.selectedCandidateIds, []);
+  const priced = resolve('San Francisco Premium Outlets 的停车收费是多少？', undefined, { catalog: actual });
+  assert.equal(priced.state.city, 'Livermore'); assert.notEqual(priced.state.goal, 'day-plan');
+  assert.deepEqual(priced.state.selectedCandidateIds, []);
+  const ambiguous = { places: [{ id: 'one', title: 'Example Museum', city: 'San Jose' }, { id: 'two', title: 'Example Museum', city: 'Oakland' }], events: [] };
+  assert.ok(resolve('Example Museum 的门票多少钱？', undefined, { catalog: ambiguous }).clarification);
+});
+
+test('negated venue names and a return city are not destination alternatives', () => {
+  const actual = require('../data/planner-catalog.json');
+  const previous = validateTaskState({ goal: 'day-plan', city: 'Oakland', origin: 'Millbrae', date: '2026-10-10', budget: 150, budgetScope: 'total', partySize: 3, childAges: [6] });
+  const message = '那就取消Oakland Museum of California，只去旧金山Exploratorium，其他条件保持不变。请保留孩子6岁、公共交通、150美元全家总预算和17:00回Millbrae BART站的限制；查不到当日返程时刻就明确说不能保证。';
+  const result = resolve(message, previous, { catalog: actual });
+  assert.equal(result.clarification, undefined); assert.equal(result.state.city, 'San Francisco');
+  assert.equal(result.state.origin, 'Millbrae'); assert.equal(result.state.finishBy, '17:00');
+  assert.equal(result.state.budget, 150); assert.deepEqual(result.state.childAges, [6]);
+  assert.ok(resolve('想去旧金山Exploratorium或Oakland Museum of California，安排一天', previous, { catalog: actual }).clarification);
+});
+
+test('clock-before-departure phrasing and an explicit multi-visit return schedule retain planning intent', () => {
+  const first = resolve('两名成人带6岁孩子，09:30从Millbrae BART站出发，17:00前必须回到同一站。想去旧金山Exploratorium和奥克兰Oakland Museum of California。请判断跨城是否现实，再安排。');
+  assert.equal(first.state.goal, 'day-plan'); assert.equal(first.state.startTime, '09:30'); assert.equal(first.state.finishBy, '17:00');
+  const named = resolve('10:00从San Jose的The Tech Interactive出发，请安排一天', undefined, { catalog: originCatalog });
+  // An extra unrecognized joiner must not manufacture a precise venue origin.
+  assert.equal(named.state.originCandidateId, null);
+  const precise = resolve('10:00从San Jose The Tech Interactive出发，请安排一天', undefined, { catalog: originCatalog });
+  assert.equal(precise.state.originCandidateId, 'tech'); assert.equal(precise.state.startTime, '10:00');
+  assert.equal(precise.state.origin, 'The Tech Interactive');
+  assert.equal(resolve('博物馆10:00开门吗？').state.startTime, null);
 });
 
 test('a structured one-day request distinguishes origin from destination and keeps explicit party constraints', () => {
@@ -191,6 +242,17 @@ test('explicit free-only instructions and free activity discovery still set real
     assert.equal(result.state.budget, 0, message);
   }
   assert.equal(resolve('SFMOMA门票怎么收费？预算0美元。').state.budget, 0);
+});
+
+test('requests not to assume free child admission are not free-only filters', () => {
+  const previous = resolve('明天安排一天，两大一小，孩子6岁，全家总预算150美元。').state;
+  for (const message of ['请继续安排，不要假设孩子全部免费。', '請繼續安排，別假設孩子全部免費。', 'Continue the day plan. Do not assume all children enter free.']) {
+    const result = resolve(message, previous).state;
+    assert.equal(result.freeOnly, null, message); assert.equal(result.budget, 150, message);
+  }
+  for (const message of ['只要免费，不要假设孩子全部免费，请核实规则。', 'Only show free options. Do not assume children are free.']) {
+    assert.equal(resolve(message, previous).state.freeOnly, true, message);
+  }
 });
 
 test('state persists through many short turns without reparsing assistant statements or old dates', () => {
@@ -311,6 +373,25 @@ test('a shared published venue alias asks for clarification instead of choosing 
   assert.ok(result.clarification); assert.equal(result.explicitCandidateIds, undefined); assert.deepEqual(result.state.selectedCandidateIds, []);
 });
 
+test('same-source venue overview aliases defer only to one exact primary venue name', () => {
+  const actual = require('../data/planner-catalog.json');
+  assert.deepEqual(resolve('明天安排一天，想去Oakland Museum of California', undefined, { catalog: actual }).explicitCandidateIds, ['venue-omca']);
+  const officialUrl = 'https://museumca.org/visit/';
+  const fixtures = { events: [], places: [
+    { id: 'overview', title: 'The lake and its museums', city: 'Oakland', officialUrl, location: { label: 'Example Museum' } },
+    { id: 'museum', title: 'Example Museum · Visitor galleries', city: 'Oakland', officialUrl },
+    { id: 'cafe', title: 'Example Cafe · Example Museum', city: 'Oakland', officialUrl },
+  ] };
+  assert.deepEqual(resolve('Plan a day and visit Example Museum', undefined, { catalog: fixtures }).explicitCandidateIds, ['museum']);
+  assert.deepEqual(resolve('Plan a day and visit Example Cafe', undefined, { catalog: fixtures }).explicitCandidateIds, ['cafe']);
+  const distinctSource = { ...fixtures, places: fixtures.places.map(row => row.id === 'overview' ? { ...row, officialUrl: 'https://differentmuseum.org/visit/' } : row) };
+  assert.ok(resolve('Plan a day and visit Example Museum', undefined, { catalog: distinctSource }).clarification);
+  const duplicatePrimary = { ...fixtures, places: [...fixtures.places, { ...fixtures.places[1], id: 'other-primary' }] };
+  assert.ok(resolve('Plan a day and visit Example Museum', undefined, { catalog: duplicatePrimary }).clarification);
+  const conflictingCoordinates = { ...fixtures, places: fixtures.places.map(row => ({ ...row, location: { ...row.location, precision: 'venue', lat: row.id === 'museum' ? 37.8 : 37.7, lng: -122.2 } })) };
+  assert.ok(resolve('Plan a day and visit Example Museum', undefined, { catalog: conflictingCoordinates }).clarification);
+});
+
 test('a place name in an event venue does not select the event as a desired visit', () => {
   const venues = { places: [{ id: 'museum', title: 'Example Art Museum', city: 'San Jose' }], events: [
     { id: 'museum-concert', title: 'Friday Jazz Night', venue: 'Example Art Museum', city: 'San Jose' },
@@ -326,6 +407,61 @@ test('a destination outside the Bay Area does not silently reuse the prior Bay A
     assert.ok(result.clarification, message); assert.equal(result.state.city, null, message);
   }
   assert.equal(resolve('从洛杉矶去旧金山，明天安排一天').clarification, undefined);
+  assert.equal(resolve('San Francisco Shanghai Dumpling 今天有什么活动').clarification, undefined);
+});
+
+test('a former home is distinct from the new service city, including overlapping long city names', () => {
+  for (const [message, origin, city] of [
+    ['我原来住 Palo Alto，现在搬到 East Palo Alto，垃圾和供水怎样开户？', 'Palo Alto', 'East Palo Alto'],
+    ['我原來住在 East Palo Alto，現在搬到 Palo Alto，供水怎樣開戶？', 'East Palo Alto', 'Palo Alto'],
+    ['I used to live in South San Francisco. Now I am moving to San Francisco and need utilities.', 'South San Francisco', 'San Francisco'],
+    ['I previously lived in San Francisco; now I am moving to South San Francisco. Which utilities do I contact?', 'San Francisco', 'South San Francisco'],
+  ]) {
+    const result = resolve(message);
+    assert.equal(result.clarification, undefined, message); assert.equal(result.state.city, city, message);
+    assert.equal(result.state.origin, origin, message); assert.equal(result.state.originCandidateId, null, message);
+    assert.equal(result.state.goal, 'newcomer', message);
+  }
+  const corrected = resolve('不是 Palo Alto，是 East Palo Alto，供水怎样开户？');
+  assert.equal(corrected.state.city, 'East Palo Alto'); assert.equal(corrected.clarification, undefined);
+  assert.ok(resolve('我想在 Palo Alto 或 East Palo Alto 租房，两个城市的水电怎么开户？').clarification);
+});
+
+test('new outside service and information topics clear old Bay Area geography but retain other confirmed requirements', () => {
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const state = resolve('San Jose明天安排一天，总预算100美元，3个人。').state;
+  const previous = decodeTaskToken(encodeTaskToken({ state }, options), options);
+  for (const message of [
+    '我现在从 San Jose 搬到 Seattle，只问水电和垃圾开户，不要安排旅游路线。',
+    '現在問 Los Angeles 的圖書館辦卡條件，只回答生活資訊，不安排行程。',
+    'I am moving to Seattle. How do I start electricity service? No itinerary.',
+    'Now tell me about library cards in LA. Do not plan an itinerary.',
+  ]) {
+    for (const prior of [undefined, previous]) {
+      const result = resolve(message, prior);
+      assert.match(result.clarification || '', /湾区/, message); assert.equal(result.state.city, null, message); assert.equal(result.state.region, null, message);
+      assert.ok(result.state.clearedFields.includes('city')); assert.ok(result.state.clearedFields.includes('region'));
+      assert.equal(result.state.budget, prior ? 100 : null, message); assert.equal(result.state.partySize, prior ? 3 : null, message);
+    }
+  }
+  const outside = resolve('现在问 Seattle 的供水开户，不安排行程。', previous);
+  const later = resolveTaskState({ message: '继续', previous: outside.state, searchContext: { city: 'San Jose', region: 'south-bay' }, today: TODAY });
+  assert.equal(later.state.city, null); assert.equal(later.state.region, null); assert.equal(later.state.budget, 100);
+});
+
+test('outside departure, residence and rejected outside cities do not block Bay Area questions', () => {
+  for (const [message, city] of [
+    ['我从 Seattle 搬到 San Jose，水电怎么开户？', 'San Jose'],
+    ['I used to live in Seattle. Now I am moving to San Jose and need utilities.', 'San Jose'],
+    ['我以前住洛杉矶，现在搬到 East Palo Alto，供水怎么开户？', 'East Palo Alto'],
+    ['I live in Los Angeles. What are the utility providers in Palo Alto?', 'Palo Alto'],
+    ['不是 Seattle，而是 San Jose，电力怎么开户？', 'San Jose'],
+    ['不查 Seattle，仍问 San Jose 的生活信息。', 'San Jose'],
+    ['Not about Seattle. Tell me about libraries in San Jose.', 'San Jose'],
+  ]) {
+    const result = resolve(message); assert.equal(result.clarification, undefined, message); assert.equal(result.state.city, city, message);
+  }
+  for (const message of ['我住 LA，明天飞 SFO。', 'I live in LA and fly to SFO tomorrow.']) assert.equal(resolve(message).clarification, undefined, message);
   assert.equal(resolve('San Francisco Shanghai Dumpling 今天有什么活动').clarification, undefined);
 });
 

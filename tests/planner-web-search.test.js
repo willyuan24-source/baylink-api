@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const { registerPlannerWebSearch, validateSearchInput, safeUrl, checkedSourceUrl, extractSearchResult, requestSearch } = require('../lib/plannerWebSearch');
+const { registerPlannerWebSearch, validateSearchInput, safeUrl, checkedSourceUrl, extractSearchResult, requestSearch, normalizeWebSearchError } = require('../lib/plannerWebSearch');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
 const NOW = Date.parse('2026-09-29T19:00:00Z');
@@ -210,8 +210,56 @@ test('missing or disabled service returns 503 without quota spend; IP limits pre
 });
 test('provider and body timeouts are bounded and never produce pretend results', async t => {
   const { request } = await fixture(t, { config: { PLANNER_WEB_SEARCH_TEST_TIMEOUT_MS: 20 }, ai: () => new Promise(() => {}) });
-  assert.equal((await request({ query: 'SF museums' })).status, 503);
+  const timedOut = await request({ query: 'SF museums' });
+  assert.equal(timedOut.status, 503); assert.equal(timedOut.data.code, 'web_timeout'); assert.equal(timedOut.data.retryable, true);
   await assert.rejects(requestSearch({ query: 'SF museums' }, { config: { OPENAI_API_KEY: 'fixture' }, timeoutMs: 20, fetchImpl: async () => ({ ok: true, json: () => new Promise(() => {}) }) }), error => error.status === 503 || /timed out/.test(error.message));
+});
+
+test('service failures expose safe distinct codes without raw provider or storage details', async t => {
+  const cases = [
+    [{ ai: undefined }, 'web_not_configured', false],
+    [{ config: { OPENAI_WEB_SEARCH_ENABLED: 'false' } }, 'web_disabled', false],
+    [{ checkRateLimit: () => false }, 'web_rate_limit', false],
+    [{ Quota: undefined }, 'web_quota_unavailable', false],
+    [{ Quota: { updateOne: async () => { throw Error('private storage connection'); } } }, 'web_quota_unavailable', false],
+    [{ ai: async () => { throw Error('AI provider HTTP 401'); } }, 'web_provider_access', false],
+    [{ ai: async () => { throw Error('AI provider HTTP 429'); } }, 'web_provider_rate_limit', false],
+    [{ ai: async () => { throw Object.assign(Error('private provider response'), { status: 401, code: 'secretcode' }); } }, 'web_provider_unavailable', true],
+    [{ ai: async () => ({ ...raw(), status: 'incomplete' }) }, 'web_incomplete_response', true],
+    [{ ai: async () => { const response = raw(); response.output[1].content[0].annotations = []; return response; } }, 'web_no_cited_sources', true],
+    [{ ai: async () => { throw Object.assign(Error('private scope details'), { code: 'SEARCH_VERIFICATION_FAILED', reason: 'wrong_candidate_city' }); } }, 'web_verification_failed', true],
+  ];
+  for (const [options, expected, retryable] of cases) {
+    const { request } = await fixture(t, options), result = await request({ query: 'official shops' });
+    assert.equal(result.data.code, expected); assert.equal(result.data.retryable, retryable);
+    assert.doesNotMatch(JSON.stringify(result.data), /private|secretcode|HTTP 401/);
+    if (expected === 'web_verification_failed') assert.equal(result.data.reason, 'wrong_candidate_city');
+  }
+});
+
+test('verification normalization preserves safe legacy model diagnostics only', () => {
+  const error = normalizeWebSearchError(Object.assign(Error('private provider details'), {
+    code: 'SEARCH_VERIFICATION_FAILED', reason: 'wrong_candidate_city',
+    model: 'gpt-4.1-mini-2025-04-14', configuredModel: 'gpt-4.1-mini', privateMetadata: 'never expose',
+  }));
+  assert.equal(error.code, 'web_verification_failed');
+  assert.equal(error.reason, 'wrong_candidate_city');
+  assert.equal(error.model, 'gpt-4.1-mini-2025-04-14');
+  assert.equal(error.configuredModel, 'gpt-4.1-mini');
+  assert.equal(error.privateMetadata, undefined);
+  assert.doesNotMatch(error.message, /private/);
+  const invalid = normalizeWebSearchError({ code: 'web_verification_failed', reason: 'private reason', model: 'Bearer private credential', configuredModel: '<invalid>' });
+  assert.equal(invalid.reason, undefined); assert.equal(invalid.model, undefined); assert.equal(invalid.configuredModel, undefined);
+  assert.equal(normalizeWebSearchError({ code: 'web_provider_access', model: 'gpt-4.1-mini' }).model, undefined);
+});
+
+test('daily quota exhaustion and query cooldown have distinct bounded failures', async t => {
+  let calls = 0;
+  const { request } = await fixture(t, { config: { PLANNER_WEB_SEARCH_DAILY_LIMIT: '1' }, ai: async () => { calls++; throw Error('provider failed'); } });
+  assert.equal((await request({ query: 'SF shops' })).data.code, 'web_provider_unavailable');
+  assert.equal((await request({ query: 'SF shops' })).data.code, 'web_cooldown');
+  assert.equal((await request({ query: 'Fremont shops' })).data.code, 'web_daily_limit');
+  assert.equal(calls, 1);
 });
 test('application registers the real web route with isolated provider and DNS dependencies', async t => {
   let extractions = 0;

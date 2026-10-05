@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
+const { encodeTaskToken, validateTaskState } = require('../lib/baybayState');
 const NOW = Date.parse('2026-10-04T19:00:00Z');
 function web(answer) {
   const text = `${answer} [official]`;
@@ -67,6 +68,18 @@ test('explicit outside destinations are explained in all three modes without sil
     const result = await f.ask({ message: '今天中国上海有什么活动？', locale: 'zh-Hans', searchMode });
     assert.match(result.answer, /目的地不在服务范围/); assert.equal(result.retrieval.scope, 'none');
     assert.deepEqual(result.suggestedGuides, []);
+  }
+  assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 0);
+});
+
+test('v2 outside life questions cannot inherit a signed Bay Area destination and do not erase unrelated constraints', async t => {
+  const f = await fixture(t);
+  const state = validateTaskState({ goal: 'day-plan', city: 'San Jose', region: 'south-bay', budget: 100, budgetScope: 'total', partySize: 3 });
+  const token = encodeTaskToken({ state }, { secret: 'isolated-baybay-geography', now: NOW });
+  for (const message of ['我从 San Jose 搬到 Seattle，水电怎么开户？不要安排行程。', '现在问 Los Angeles 的图书馆办卡条件，不安排行程。']) {
+    const result = await f.ask({ message, assistantVersion: 2, assistantSessionToken: token, searchMode: 'site', locale: 'zh-Hans' });
+    assert.match(result.answer, /湾区/); assert.equal(result.taskState.city, null); assert.equal(result.taskState.region, null);
+    assert.equal(result.taskState.budget, 100); assert.equal(result.taskState.partySize, 3); assert.equal(result.assistantPlan, undefined);
   }
   assert.equal(f.counts().chatCalls, 0); assert.equal(f.counts().searchCalls, 0);
 });

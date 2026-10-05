@@ -18,3 +18,11 @@ test('short source text is unchanged and an oversized paragraph is never present
   const result = sourceContextText(`Museum program\n${long}`, 'admission eligibility');
   assert.equal(result, 'Museum program'); assert.ok(!result.includes('Admission eligibility'));
 });
+
+test('Chinese child-meal questions retain English age, purchase and date restrictions among unrelated same-brand deals', () => {
+  const terms = 'Offer valid 10/7/26-10/28/26. IKEA Family Members only. Dine-in purchases Wednesdays only from October 7, 2026 through October 28, 2026. Limit: two kids entrees for kids aged 12 and under only per adult entree purchased. Each child must be present at time of purchase. Same transaction required.';
+  const content = ['IKEA offer terms', ...Array.from({ length: 14 }, (_, i) => `IKEA Family member offer ${i}. Admission to the furniture discount program requires IKEA Family membership. ${'Selection varies by store. '.repeat(6)}`), '2 free kids entrees with purchase of 1 adult entree', terms].join('\n');
+  const result = sourceContextText(content, 'IKEA Emeryville 周三带8岁和13岁的孩子吃饭，儿童餐免费吗？必须堂食和孩子在场吗？');
+  assert.ok(result.length <= 1800); assert.ok(result.includes(terms));
+  assert.ok(result.split('\n\n').every(paragraph => content.split('\n').map(line => line.trim()).includes(paragraph)));
+});

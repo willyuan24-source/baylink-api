@@ -15738,6 +15738,27 @@
       }
     },
     {
+      "id": "venue-sfmoma",
+      "title": "SFMOMA · San Francisco Museum of Modern Art",
+      "aliases": [
+        "San Francisco Museum of Modern Art"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "category": "attraction",
+      "summary": "旧金山市中心的现代与当代艺术博物馆，主要访客入口在 151 Third Street。普通展厅、免费公共空间与馆内商店的入场规则和时间需分别核对；门票按年龄及本人优惠资格计算，特展、余票与所选日期的临时调整以官网为准。",
+      "address": "151 Third Street, San Francisco, CA 94103",
+      "officialUrl": "https://www.sfmoma.org/visit/",
+      "guideSlug": "",
+      "cost": "unknown",
+      "offerIds": [],
+      "path": "https://www.sfmoma.org/visit/",
+      "planning": {
+        "setting": "indoor",
+        "admissionUsd": null
+      }
+    },
+    {
       "id": "venue-exploratorium-daytime",
       "title": "Exploratorium · 日间科学探索馆",
       "region": "sf",
@@ -15957,6 +15978,49 @@
           "note": "仅 OMCA 展馆，不代表 Lake Merritt 湖区开放时间。普通票含特别展；首个周日免费。10/25 社区庆典有专门票种，团体与特别活动请另查预约条件。"
         }
       }
+    },
+    {
+      "id": "venue-ferry-building",
+      "title": "Ferry Building · 公共大厅与外部会合点",
+      "region": "sf",
+      "city": "San Francisco",
+      "category": "attraction",
+      "summary": "位于 Embarcadero 与 Market Street 尽头的 Ferry Building，可作为公共会合与出发地点。大厅、各商家、农夫市集和轮渡采用不同开放或发班安排；在建筑外会合时请约定具体入口。餐饮、购物、停车及乘车费用另计，路线到站后仍需留出馆外步行与找入口时间。",
+      "address": "One Ferry Building, San Francisco, CA 94111",
+      "officialUrl": "https://www.ferrybuildingmarketplace.com/visit/",
+      "location": {
+        "lat": 37.7954425,
+        "lng": -122.3936136,
+        "label": "Ferry Building · One Ferry Building",
+        "sourceUrl": "https://www.ferrybuildingmarketplace.com/visit/",
+        "precision": "venue"
+      },
+      "guideSlug": "",
+      "path": "https://www.ferrybuildingmarketplace.com/visit/",
+      "cost": "unknown",
+      "planning": {
+        "setting": "mixed",
+        "admissionUsd": null
+      },
+      "offerIds": []
+    },
+    {
+      "id": "shop-san-francisco-premium-outlets",
+      "title": "San Francisco Premium Outlets",
+      "city": "Livermore",
+      "region": "east-bay",
+      "category": "shop",
+      "address": "2774 Livermore Outlets Drive, Livermore, CA 94551",
+      "officialUrl": "https://www.premiumoutlets.com/outlet/san-francisco/about",
+      "guideSlug": "bay-area-outlets-malls-shopping-guide",
+      "path": "/guides/bay-area-outlets-malls-shopping-guide",
+      "summary": "位于东湾 Livermore 的户外奥特莱斯，不在旧金山市区。商场官网列出 BART 接 Wheels 14 路的公共交通方式；出发前需核对当天班次、营业时间和回程，购物与交通费用另计。",
+      "cost": "unknown",
+      "planning": {
+        "setting": "outdoor",
+        "admissionUsd": null
+      },
+      "offerIds": []
     },
     {
       "id": "shop-book-passage-ferry-building",

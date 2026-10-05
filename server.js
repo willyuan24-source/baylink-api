@@ -4564,7 +4564,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
           configuredModel: found.configuredModel, model: found.model },
         matchNote: locale === 'en' ? 'Public web sources were searched. Check the sources for current availability and conditions.' : locale === 'zh-Hant' ? '已查詢公開網頁來源；當日名額與適用條件仍以原文為準。' : '已查询公开网页来源；当日名额与适用条件仍以原文为准。' });
     } catch (error) {
-      const rejected = error.code === 'SEARCH_VERIFICATION_FAILED';
+      const rejected = ['SEARCH_VERIFICATION_FAILED', 'web_verification_failed'].includes(error.code);
       return res.json({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
         webConfiguredModel: safeModel(config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
         matchNote: rejected

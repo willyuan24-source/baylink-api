@@ -122,6 +122,15 @@ test('unsupported or JS-only pages require human review', async () => {
   await assert.rejects(fetchSource(source, { lookup, fetch: async () => ({ status: 200, headers: { 'content-type': 'application/pdf' }, body: 'PDF' }) }), /unsupported-content/);
 });
 
+test('large official page chrome does not hide visitor rules, while oversized responses stay bounded', async () => {
+  const rules = 'Kids eat free on Wednesdays, October 7–28, 2026. Children must be 12 or younger, present in the restaurant, and accompanied by an adult buying an eligible entree.';
+  const html = `<html><head><style>${'/* layout */'.repeat(80000)}</style></head><body><nav>Store navigation</nav><main><h1>Restaurant offer terms</h1><p>${rules}</p></main></body></html>`;
+  const result = await fetchSource(source, { lookup, fetch: async () => response(html) });
+  assert.ok(result.text.includes(rules)); assert.ok(result.text.length < 500);
+  assert.ok(!result.text.includes('layout')); assert.ok(!result.text.includes('Store navigation'));
+  await assert.rejects(fetchSource(source, { lookup, fetch: async () => response('x'.repeat(2 * 1024 * 1024 + 1)) }), /page-too-large/);
+});
+
 test('DNS lookups obey the timeout and a pinned public address is passed into the request', async () => {
   await assert.rejects(fetchSource(source, { lookup: () => new Promise(() => {}), timeoutMs: 20 }), /timeout/);
   let pinned;

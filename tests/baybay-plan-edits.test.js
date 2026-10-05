@@ -30,7 +30,7 @@ test('reverse-order Chinese and English ordinal instructions identify the same i
 });
 
 test('remove only deletes requested stop and cannot be turned into an extra visit by the model', () => {
-  for (const message of ['删除第二站', '第二個不要了', 'Remove stop 2', 'Skip the second place']) {
+  for (const message of ['删除第二站', '取消第二站', '第二個不要了', 'Remove stop 2', 'Skip the second place']) {
     const prepared = prepare(message);
     assert.equal(prepared.edit.kind, 'remove', message);
     assert.deepEqual(select(prepared.edit, ['f', 'e', 'd']).selectedIds, ['a', 'c']);
@@ -150,4 +150,114 @@ test('generic city, date or goal changes clear previous selections without an in
     assert.deepEqual(prepared.state.selectedCandidateIds, []);
     assert.equal(select(prepared.edit).explicitSelection, false);
   }
+});
+
+test('named cancellation keeps signed surviving stops in order and blocks invented replacements', () => {
+  for (const message of ['取消 Place b', '请去掉 Place b', '不要 Place b', 'Place b 不要了', 'Cancel Place b', 'Remove Place b']) {
+    const prepared = prepare(message);
+    assert.equal(prepared.edit.kind, 'remove', message);
+    assert.equal(prepared.edit.named, true, message);
+    assert.deepEqual(prepared.state.excludedCandidateIds, ['b'], message);
+    assert.deepEqual(select(prepared.edit, ['d', 'b', 'f']).selectedIds, ['a', 'c'], message);
+  }
+});
+
+test('only keeping named stops preserves their original order and cannot revive cancelled stops', () => {
+  for (const message of ['取消 Place b，只保留 Place c 和 Place a', 'Only keep Place c and Place a', '只去 Place a']) {
+    const prepared = prepare(message);
+    const expected = message === '只去 Place a' ? ['a'] : ['a', 'c'];
+    assert.deepEqual(select(prepared.edit, ['b', 'd', 'f']).selectedIds, expected, message);
+    assert.equal(select(prepared.edit, []).explicitSelection, true);
+  }
+});
+
+test('real removal prompt leaves an explicitly empty plan until its newly named museum is verified', () => {
+  const explorer = place('exploratorium', { title: 'Exploratorium · 日间科学探索馆' });
+  const prepared = prepare('临时没有车了，改成公共交通，全程总预算降到70美元。取消Exploratorium，只保留SFMOMA，不要补一个替代景点。', {
+    catalog: { places: [explorer] }, lastPlan: { selectedIds: [explorer.id], date: state.date }, state: { ...state, travelMode: 'transit', budget: 70 },
+  });
+  assert.deepEqual(prepared.state.excludedCandidateIds, [explorer.id]);
+  const unknown = place('web-sfmoma', { title: 'SFMOMA', origin: 'web', kind: 'unknown', verification: 'search-result' });
+  const result = select(prepared.edit, [explorer.id, 'web-sfmoma'], [explorer, unknown, ...rows]);
+  assert.deepEqual(result.selectedIds, []);
+  assert.equal(result.explicitSelection, true);
+  assert.equal(result.needsRevalidation, true);
+  assert.match(result.notice, /重新核实/);
+  const verified = { ...unknown, kind: 'place', verification: 'page-verified', verifiedFacts: { city: 'Fremont', kind: 'SFMOMA is a museum in Fremont.' } };
+  assert.deepEqual(select(prepared.edit, [explorer.id, 'd'], [explorer, verified, ...rows]).selectedIds, ['web-sfmoma']);
+});
+
+test('named signed web stops establish identity but must be reverified before being retained', () => {
+  const prepared = prepare('取消 Place b，只保留 Old Venue', { lastPlan: { selectedIds: ['b', 'web-old'], date: state.date,
+    selectedRefs: [{ id: 'web-old', title: 'Old Venue', city: 'Fremont', sourceUrl: 'https://example.org/old', previousKind: 'place' }] } });
+  const result = select(prepared.edit, ['d']);
+  assert.deepEqual(result.selectedIds, []);
+  assert.deepEqual(result.missingIds, ['web-old']);
+  assert.equal(result.needsRevalidation, true);
+});
+
+test('a new unknown museum is not silently dropped when the only-list also includes a catalog stop', () => {
+  const prepared = prepare('只保留 Place a 和 SFMOMA');
+  assert.deepEqual(prepared.edit.keepNames, ['place a', 'sfmoma']);
+  const waiting = select(prepared.edit, ['a']);
+  assert.deepEqual(waiting.selectedIds, ['a']);
+  assert.equal(waiting.needsRevalidation, true);
+  const sfmoma = place('sfmoma', { title: 'SFMOMA', origin: 'web', verification: 'page-verified', verifiedFacts: { city: 'Fremont', kind: 'SFMOMA is a museum in Fremont.' } });
+  assert.deepEqual(select(prepared.edit, ['d'], [...rows, sfmoma]).selectedIds, ['a', 'sfmoma']);
+});
+
+test('duplicate or ambiguous fresh web identities do not become multiple museum visits', () => {
+  const prepared = prepare('只保留 SFMOMA');
+  const web = place('web-one', { title: 'SFMOMA', origin: 'web', verification: 'page-verified', verifiedFacts: { city: 'Fremont', kind: 'SFMOMA is a museum in Fremont.' } });
+  const result = select(prepared.edit, ['web-one'], [...rows, web, { ...web, id: 'web-two' }]);
+  assert.deepEqual(result.selectedIds, []);
+  assert.equal(result.needsRevalidation, true);
+});
+
+test('named only-selection still revalidates budget, age and closed venues', () => {
+  const prepared = prepare('只保留 Place a 和 Place c', { state: { ...state, budget: 1, partySize: 2, childAges: [6] } });
+  const candidates = [place('a', { planning: { minAge: 18, admissionUsd: 0 } }), place('c', { status: 'closed' })];
+  const selected = select(prepared.edit, ['d'], candidates);
+  assert.deepEqual(selected.selectedIds, []);
+  assert.equal(selected.needsRevalidation, true);
+});
+
+test('a changed city does not revive the cancelled stop while validating an explicit new-only destination', () => {
+  const prepared = prepare('改去 Berkeley，取消 Place b，只去 Place d', { state: { ...state, city: 'Berkeley' } });
+  assert.equal(prepared.edit.kind, 'remove');
+  assert.deepEqual(prepared.edit.retainedIds, []);
+  assert.deepEqual(select(prepared.edit, ['b', 'e'], [...rows, place('d', { city: 'Berkeley' })]).selectedIds, ['d']);
+});
+
+test('negative cancellation and retaining child constraints do not delete destinations', () => {
+  for (const message of ['不要取消 Place b', '不要删除 Place b', '只保留孩子6岁、公共交通和150美元限制', '保留原来安排，检查 Place b 是否取消了', '如果取消 Place b 会怎么样？']) {
+    const prepared = prepare(message);
+    assert.equal(prepared.edit, null, message);
+    assert.deepEqual(prepared.state.selectedCandidateIds, ['a', 'b', 'c'], message);
+  }
+});
+
+test('a longer named venue is never mistaken for the similarly named old stop', () => {
+  const daytime = place('day', { title: 'Exploratorium · 日间科学探索馆' });
+  const night = place('night', { title: 'Exploratorium After Dark · 18岁以上夜场' });
+  const prepared = prepare('取消 Exploratorium After Dark', { catalog: { places: [daytime, night] }, lastPlan: { selectedIds: ['day', 'night'], date: state.date } });
+  assert.deepEqual(select(prepared.edit, ['day'], [daytime, night]).selectedIds, ['day']);
+  assert.deepEqual(prepared.state.excludedCandidateIds, ['night']);
+});
+
+test('assistant plan and save handoff cannot retain a named cancelled stop even if the model proposes it', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const { encodeTaskToken } = require('../lib/baybayState');
+  const secret = 'named-edit-test-state-secret-only';
+  const explorer = place('exploratorium', { title: 'Exploratorium · 日间科学探索馆' });
+  const previous = { ...state, selectedCandidateIds: [explorer.id] };
+  const token = encodeTaskToken({ state: previous, lastPlan: { selectedIds: [explorer.id], date: state.date } }, { secret, now: () => NOW });
+  const assistant = createBayBayAssistant({ config: { BAYBAY_STATE_SECRET: secret }, catalog: { places: [explorer, ...rows] }, guideCatalog: [], isTest: true, now: () => NOW,
+    ai: async () => ({ model: 'fixture', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '只保留的 SFMOMA 尚需核实。', candidateIds: ['exploratorium', 'd'] }) }] }] }) });
+  const result = await assistant.run({ message: '取消Exploratorium，只保留SFMOMA，不要补一个替代景点。', sessionToken: token, searchMode: 'site' });
+  assert.ok(result.assistantPlan);
+  assert.deepEqual(result.assistantPlan.stops, []);
+  assert.deepEqual(result.assistantPlan.handoff?.stops || [], []);
+  assert.ok(result.taskState.excludedCandidateIds.includes('exploratorium'));
+  assert.match(result.assistantPlan.unknowns.join('\n'), /重新核实/);
 });
