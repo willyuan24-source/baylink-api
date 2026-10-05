@@ -253,7 +253,7 @@ test('the complete multi-library question retains printing, films and separate p
   const { buildSiteEvidence } = require('../lib/baybayEvidence');
   const result = buildSiteEvidence({
     query: '我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。',
-    state: { goal: 'information', city: null, origin: 'Fremont' }, guideCatalog: require('../data/guide-catalog.json'), today: '2026-10-04',
+    state: { goal: 'information', city: null, origin: 'Fremont', region: 'east-bay' }, guideCatalog: require('../data/guide-catalog.json'), today: '2026-10-04',
   });
   const text = result.guides.map(guide => guide.text).join('\n');
   for (const expected of ['10 页黑白', '每天最多 25 页', 'SFPL 官方 Movies & TV 页面提供 Kanopy 入口', '15 岁', '16 岁', 'eCard', 'SF 居民']) assert.ok(text.includes(expected), expected);
@@ -262,6 +262,46 @@ test('the complete multi-library question retains printing, films and separate p
   assert.ok(result.guides.length <= 8);
   assert.ok(text.includes('每月 30 tickets'));
   assert.ok(text.includes('本次未找到 AC 卡适用的 Kanopy 官方入口'));
+});
+
+test('the audited school question and short email followup keep the retained South Bay guide scope', () => {
+  const guideCatalog = require('../data/guide-catalog.json');
+  for (const query of ['住 Sunnyvale 是不是就能去 Cupertino 的学校？孩子明年上一年级。', '那帮我写个很短的英文邮件，问一下该先找哪个学区，别放孩子的私人信息。']) {
+    const result = buildSiteEvidence({ query, state: { goal: 'information', city: null, region: 'south-bay' }, guideCatalog, today: '2026-10-05' });
+    assert.ok(result.guides.length, query);
+    assert.deepEqual([...new Set(result.guides.map(row => row.slug))], ['south-bay-school-district-enrollment-guide'], query);
+    assert.ok(result.guides.some(row => /SCCOE|Cupertino|Sunnyvale/.test(row.text)), query);
+    assert.ok(result.guides.every(row => !('_schoolRegions' in row)));
+    assert.ok(result.sources.every(row => row.url === '/guides/south-bay-school-district-enrollment-guide'));
+    assert.deepEqual(result.candidates, []);
+  }
+});
+
+test('explicit school comparisons retain every requested region instead of applying the old single-region scope', () => {
+  const guideCatalog = require('../data/guide-catalog.json');
+  for (const [query, wanted] of [
+    ['比较 Sunnyvale 和 San Rafael 的小学学区入学办理，地址查询各去哪里？', ['south-bay', 'north-bay']],
+    ['比較南灣和東灣的小學學區入學辦理，地址查詢各去哪裡？', ['south-bay', 'east-bay']],
+    ['Compare South Bay and Peninsula school districts and enrollment requirements.', ['south-bay', 'peninsula']],
+    ['那 Berkeley 的小学入学呢？', ['east-bay']],
+  ]) {
+    const result = buildSiteEvidence({ query, state: { goal: 'information', city: null, region: 'south-bay' }, guideCatalog, today: '2026-10-05' });
+    const slugs = [...new Set(result.guides.map(row => row.slug))];
+    assert.deepEqual(slugs.sort(), wanted.map(region => `${region}-school-district-enrollment-guide`).sort(), query);
+    assert.ok(result.guides.length <= 8);
+  }
+});
+
+test('regional school filtering preserves generally applicable enrollment guidance', () => {
+  const guideCatalog = [
+    guide('south-bay-school-enrollment-guide', 'South Bay school enrollment', 'School enrollment begins with a South Bay address lookup and the requested grade and school year.'),
+    guide('north-bay-school-enrollment-guide', 'North Bay school enrollment', 'School enrollment begins with a North Bay county lookup and a local district application.'),
+    guide('california-school-enrollment-guide', 'California school enrollment', 'General school enrollment preparation includes checking the requested grade, year and address with the district.'),
+  ];
+  const result = search('How do I prepare for school enrollment?', { guideCatalog, catalog: fixture(), state: { goal: 'information', city: null, region: 'south-bay' } });
+  assert.ok(result.guides.some(row => row.slug === 'california-school-enrollment-guide'));
+  assert.ok(result.guides.some(row => row.slug === 'south-bay-school-enrollment-guide'));
+  assert.ok(result.guides.every(row => row.slug !== 'north-bay-school-enrollment-guide'));
 });
 
 test('multi-subject comparisons preserve different provider facts without weakening city filters', () => {
