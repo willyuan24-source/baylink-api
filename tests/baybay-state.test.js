@@ -148,6 +148,105 @@ test('clock-before-departure phrasing and an explicit multi-visit return schedul
   assert.equal(resolve('博物馆10:00开门吗？').state.startTime, null);
 });
 
+test('the live Millbrae family feasibility question keeps its origin and exact cross-city visits without inventing coordinates', () => {
+  const actual = require('../data/planner-catalog.json');
+  const message = '2026年10月10日周六，两名成人带6岁孩子，09:30从Millbrae BART站出发，17:00前必须回到同一站。我们不开车，不打Uber，想去旧金山Exploratorium和奥克兰Oakland Museum of California，全家门票加公共交通总预算150美元。请判断跨城是否现实，再安排；若做不到请明确缩减，不要假设孩子全部免费或省略返程。';
+  const result = resolve(message, undefined, { catalog: actual });
+  assert.equal(result.clarification, undefined); assert.equal(result.state.goal, 'day-plan');
+  assert.equal(result.state.origin, 'Millbrae'); assert.equal(result.state.originCandidateId, null);
+  assert.equal(result.state.city, null); assert.equal(result.state.region, 'all');
+  assert.equal(result.state.startTime, '09:30'); assert.equal(result.state.finishBy, '17:00');
+  assert.equal(result.state.budget, 150); assert.equal(result.state.budgetScope, 'total');
+  assert.equal(result.state.partySize, 3); assert.deepEqual(result.state.childAges, [6]);
+  assert.equal(result.state.freeOnly, null); assert.equal(result.state.travelMode, 'transit');
+  assert.deepEqual(result.explicitCandidateIds, ['venue-exploratorium-daytime', 'venue-omca']);
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const previous = decodeTaskToken(encodeTaskToken({ state: result.state }, options), options);
+  const next = resolve('那就取消Oakland Museum of California，只去旧金山Exploratorium，其他条件保持不变。请保留孩子6岁、公共交通、150美元全家总预算和17:00回Millbrae BART站的限制；查不到当日返程时刻就明确说不能保证。', previous, { catalog: actual });
+  assert.equal(next.clarification, undefined); assert.equal(next.state.city, 'San Francisco');
+  assert.equal(next.state.goal, 'day-plan'); assert.equal(next.state.origin, 'Millbrae');
+  assert.equal(next.state.budget, 150); assert.deepEqual(next.state.childAges, [6]);
+  assert.equal(next.state.startTime, '09:30'); assert.equal(next.state.finishBy, '17:00');
+});
+
+test('cross-city feasibility does not waive alternative destinations, uncertain venues or invalid date and origin constraints', () => {
+  const actual = require('../data/planner-catalog.json');
+  for (const message of [
+    'Plan a day from Millbrae: visit Exploratorium and Oakland Museum of California. Is this cross-city plan realistic?',
+    '從Millbrae出發，想去Exploratorium和Oakland Museum of California，安排一天，請判斷跨城是否現實。',
+  ]) {
+    const result = resolve(message, undefined, { catalog: actual });
+    assert.equal(result.clarification, undefined, message); assert.equal(result.state.origin, 'Millbrae');
+    assert.equal(result.state.city, null); assert.equal(result.state.region, 'all');
+  }
+  for (const message of [
+    '从Millbrae出发，想去Exploratorium或Oakland Museum of California，判断跨城是否现实，再安排一天。',
+    '从Millbrae出发，想去旧金山和Oakland，判断跨城是否现实，再安排一天。',
+    '从Millbrae出发，想去Exploratorium和Oakland Museum of California，安排一天。',
+    '从Millbrae出发，也从Fremont出发，想去Exploratorium和Oakland Museum of California，判断跨城是否现实，再安排一天。',
+    '2026-02-30从Millbrae出发，想去Exploratorium和Oakland Museum of California，判断跨城是否现实，再安排一天。',
+  ]) assert.ok(resolve(message, undefined, { catalog: actual }).clarification, message);
+  const ambiguous = resolve('从Millbrae出发，想去Exploratorium或Oakland Museum of California，安排一天。', undefined, { catalog: actual });
+  assert.equal(ambiguous.state.origin, 'Millbrae'); assert.equal(ambiguous.state.originCandidateId, null);
+});
+
+test('the live Ferry Building departure remains an origin through a signed transport and budget correction', () => {
+  const actual = require('../data/planner-catalog.json');
+  const message = '2026年10月11日周日，我们两名成人，10:00从旧金山Ferry Building出发，先按开车考虑，18:00前回到出发点，全程总预算200美元。想去SFMOMA和Exploratorium，请安排轻松的一天，不要添加别的景点；核对当天开馆和门票，交通不确定就说明。';
+  const result = resolve(message, undefined, { catalog: actual });
+  assert.equal(result.clarification, undefined); assert.equal(result.state.originCandidateId, 'venue-ferry-building');
+  assert.equal(result.state.origin, actual.places.find(row => row.id === 'venue-ferry-building').location.label);
+  assert.deepEqual(result.explicitCandidateIds, ['venue-sfmoma', 'venue-exploratorium-daytime']);
+  assert.ok(!result.state.selectedCandidateIds.includes(result.state.originCandidateId));
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const previous = decodeTaskToken(encodeTaskToken({ state: result.state }, options), options);
+  const next = resolve('临时没有车了，改成公共交通，全程总预算降到70美元。取消Exploratorium，只保留SFMOMA，不要补一个替代景点。仍是两名成人、10月11日、10:00从Ferry Building出发、18:00前回去；请更新原安排并说明还有哪些费用或返程条件没有确认。', previous, { catalog: actual });
+  assert.equal(next.clarification, undefined); assert.equal(next.state.originCandidateId, 'venue-ferry-building');
+  assert.equal(next.state.origin, result.state.origin); assert.equal(next.state.city, 'San Francisco');
+  assert.equal(next.state.budget, 70); assert.equal(next.state.budgetScope, 'total'); assert.equal(next.state.travelMode, 'transit');
+  assert.equal(next.state.startTime, '10:00'); assert.equal(next.state.finishBy, '18:00');
+  assert.ok(!next.state.selectedCandidateIds.includes(next.state.originCandidateId));
+});
+
+test('a named departure never becomes a desired stop just because its catalog coordinates are missing or ambiguous', () => {
+  const actual = require('../data/planner-catalog.json');
+  const incomplete = { ...actual, places: actual.places.map(row => row.id === 'venue-ferry-building' ? { ...row, location: undefined } : row) };
+  const result = resolve('10:00从旧金山Ferry Building出发，想去SFMOMA和Exploratorium，请安排一天。', undefined, { catalog: incomplete });
+  assert.equal(result.state.originCandidateId, null); assert.equal(result.state.origin, 'San Francisco');
+  assert.deepEqual(result.explicitCandidateIds, ['venue-sfmoma', 'venue-exploratorium-daytime']);
+  const duplicate = { ...actual, places: [...actual.places, { ...actual.places.find(row => row.id === 'venue-ferry-building'), id: 'other-ferry-building' }] };
+  assert.equal(resolve('从Ferry Building出发，想去SFMOMA，请安排一天。', undefined, { catalog: duplicate }).state.originCandidateId, null);
+});
+
+test('the exact live family question reaches assistant reasoning while unverified cross-city travel stays unconfirmed', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const actual = require('../data/planner-catalog.json');
+  const message = '2026年10月10日周六，两名成人带6岁孩子，09:30从Millbrae BART站出发，17:00前必须回到同一站。我们不开车，不打Uber，想去旧金山Exploratorium和奥克兰Oakland Museum of California，全家门票加公共交通总预算150美元。请判断跨城是否现实，再安排；若做不到请明确缩减，不要假设孩子全部免费或省略返程。';
+  let calls = 0, context;
+  const assistant = createBayBayAssistant({
+    config: { JWT_SECRET: 'a-test-secret-longer-than-16' }, catalog: actual, guideCatalog: [], isTest: true,
+    now: () => Date.parse('2026-10-04T19:00:00Z'),
+    webSearch: async () => { throw new Error('This named-venue fixture must not make external searches'); },
+    sourceFetch: async () => { throw new Error('No source-page network in this fixture'); },
+    ai: async payload => {
+      calls++; context = JSON.parse(payload.input[0].content);
+      return { model: 'fixture-reasoner', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '两馆已经明确；跨城及返程没有核实，不能保证17:00返回，建议先核对后缩减安排。', candidateIds: ['venue-exploratorium-daytime', 'venue-omca'], followups: [] }) }] }] };
+    },
+  });
+  const result = await assistant.run({ message, locale: 'zh-Hans', searchMode: 'smart' });
+  assert.equal(calls, 1); assert.equal(result.degraded, false);
+  assert.equal(context.state.origin, 'Millbrae'); assert.equal(context.state.originCandidateId, null);
+  assert.deepEqual(context.state.selectedCandidateIds, ['venue-exploratorium-daytime', 'venue-omca']);
+  assert.ok(context.candidates.some(row => row.id === 'venue-exploratorium-daytime'));
+  assert.ok(context.candidates.some(row => row.id === 'venue-omca'));
+  assert.doesNotMatch(result.answer, /请先选择一个目的城市|scope_rejected/);
+  assert.match(result.answer, /不能保证17:00/);
+  assert.ok(result.assistantPlan); assert.notEqual(result.assistantPlan.status, 'ready');
+  assert.ok(new Set(result.assistantPlan.stops.map(stop => stop.city)).size < 2, 'without route evidence the plan must not assert a cross-city itinerary');
+  assert.equal(result.assistantPlan.returnTime ?? null, null);
+  assert.ok(result.assistantPlan.unknowns.length > 0);
+});
+
 test('a structured one-day request distinguishes origin from destination and keeps explicit party constraints', () => {
   const { state, clarification } = resolve('从 Fremont 出发，周六在 San Jose 安排一天。两大一小，孩子6岁，不开车，全家预算$100，上午10点出发，下午5点前回来。');
   assert.equal(clarification, undefined);

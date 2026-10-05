@@ -252,7 +252,7 @@ test('assistant plan and save handoff cannot retain a named cancelled stop even 
   const explorer = place('exploratorium', { title: 'Exploratorium · 日间科学探索馆' });
   const previous = { ...state, selectedCandidateIds: [explorer.id] };
   const token = encodeTaskToken({ state: previous, lastPlan: { selectedIds: [explorer.id], date: state.date } }, { secret, now: () => NOW });
-  const assistant = createBayBayAssistant({ config: { BAYBAY_STATE_SECRET: secret }, catalog: { places: [explorer, ...rows] }, guideCatalog: [], isTest: true, now: () => NOW,
+  const assistant = createBayBayAssistant({ config: { BAYBAY_STATE_SECRET: secret }, catalog: { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: [explorer, ...rows] }, guideCatalog: [], isTest: true, now: () => NOW,
     ai: async () => ({ model: 'fixture', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '只保留的 SFMOMA 尚需核实。', candidateIds: ['exploratorium', 'd'] }) }] }] }) });
   const result = await assistant.run({ message: '取消Exploratorium，只保留SFMOMA，不要补一个替代景点。', sessionToken: token, searchMode: 'site' });
   assert.ok(result.assistantPlan);
@@ -260,4 +260,80 @@ test('assistant plan and save handoff cannot retain a named cancelled stop even 
   assert.deepEqual(result.assistantPlan.handoff?.stops || [], []);
   assert.ok(result.taskState.excludedCandidateIds.includes('exploratorium'));
   assert.match(result.assistantPlan.unknowns.join('\n'), /重新核实/);
+});
+
+test('named cancellation works after a signed clarification with selected IDs but no previous plan', () => {
+  const previousState = { ...state, selectedCandidateIds: ['a', 'b', 'c'] };
+  const prepared = prepare('取消 Place b，只保留 Place a', { previousState, lastPlan: undefined });
+  assert.deepEqual(prepared.state.selectedCandidateIds, ['a']);
+  assert.deepEqual(prepared.state.excludedCandidateIds, ['b', 'c']);
+  const result = select(prepared.edit, ['b', 'd']);
+  assert.deepEqual(result.selectedIds, ['a']);
+  assert.equal(result.explicitSelection, true);
+  assert.equal(result.suppressAlternatives, true);
+});
+
+test('pending signed identities are revalidated and are never substituted with current-turn IDs', () => {
+  const prepared = prepare('取消 Place b，只保留 Place a', {
+    previousState: { ...state, selectedCandidateIds: ['a', 'b'] }, lastPlan: undefined,
+    state: { ...state, selectedCandidateIds: ['d'], childAges: [6] },
+  });
+  const result = select(prepared.edit, ['d'], [place('a', { planning: { admissionUsd: 0, minAge: 18 } }), ...rows.slice(1)]);
+  assert.deepEqual(result.selectedIds, []);
+  assert.equal(result.needsRevalidation, true);
+  assert.ok(result.invalidIds.includes('a'));
+  const unsigned = prepare('删除第二站', { lastPlan: undefined, previousState: {}, state: { ...state, selectedCandidateIds: ['a', 'b'] } });
+  assert.equal(unsigned.edit, null);
+});
+
+test('fresh only-selection forbids automatic alternatives without treating current IDs as signed history', () => {
+  const prepared = prepare('只去 Place a', { previousState: {}, lastPlan: undefined, state: { ...state, selectedCandidateIds: ['d'] } });
+  const result = select(prepared.edit, ['d', 'e']);
+  assert.deepEqual(result.selectedIds, ['a']);
+  assert.equal(result.suppressAlternatives, true);
+  assert.deepEqual(prepared.edit.previousIds, []);
+});
+
+test('named cancellation excludes signed requested stops that the displayed partial plan could not include', () => {
+  const previousState = { ...state, selectedCandidateIds: ['a', 'b', 'c'] };
+  const prepared = prepare('取消 Place b，只去 Place a', { previousState, lastPlan: { selectedIds: ['a'], date: state.date } });
+  assert.deepEqual(prepared.state.selectedCandidateIds, ['a']);
+  assert.deepEqual(prepared.state.excludedCandidateIds, ['b', 'c']);
+  const result = select(prepared.edit, ['b', 'c', 'd']);
+  assert.deepEqual(result.selectedIds, ['a']);
+  assert.equal(result.suppressAlternatives, true);
+  const removeOnly = prepare('取消 Place b', { previousState, lastPlan: { selectedIds: ['a'], date: state.date } });
+  assert.deepEqual(select(removeOnly.edit, ['c']).selectedIds, ['a']);
+  assert.deepEqual(removeOnly.state.excludedCandidateIds, ['b']);
+});
+
+test('numbered edits still address displayed plan order instead of omitted signed requests', () => {
+  const prepared = prepare('删除第二站', { previousState: { ...state, selectedCandidateIds: ['a', 'b', 'c'] }, lastPlan: { selectedIds: ['c', 'a'], date: state.date } });
+  assert.equal(prepared.edit.targetId, 'a');
+  assert.deepEqual(select(prepared.edit, ['d']).selectedIds, ['c']);
+});
+
+test('clarification-only family session cancels OMCA in state, visible plan and handoff without suggesting another museum', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const { encodeTaskToken, decodeTaskToken } = require('../lib/baybayState');
+  const secret = 'clarification-plan-test-state-secret';
+  const explorer = place('venue-exploratorium-daytime', { title: 'Exploratorium · 日间科学探索馆', city: 'San Francisco' });
+  const omca = place('venue-omca', { title: 'Oakland Museum of California · OMCA 展馆', city: 'Oakland' });
+  const sfmoma = place('venue-sfmoma', { title: 'SFMOMA', city: 'San Francisco' });
+  const previous = { ...state, city: null, region: 'sf', date: '2026-10-10', origin: null, startTime: '09:30', finishBy: '17:00',
+    partySize: 3, childAges: [6], travelMode: 'transit', budget: 150, selectedCandidateIds: [explorer.id, omca.id] };
+  const token = encodeTaskToken({ state: previous }, { secret, now: () => NOW });
+  assert.equal(decodeTaskToken(token, { secret, now: () => NOW }).lastPlan, null);
+  const assistant = createBayBayAssistant({ config: { BAYBAY_STATE_SECRET: secret }, catalog: { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: [explorer, omca, sfmoma] }, guideCatalog: [], isTest: true, now: () => NOW,
+    ai: async () => ({ model: 'fixture', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '只保留 Exploratorium；当日交通与费用仍待核实。', candidateIds: [omca.id, sfmoma.id] }) }] }] }) });
+  const result = await assistant.run({ message: '那就取消Oakland Museum of California，只去旧金山Exploratorium，其他条件保持不变。请保留孩子6岁、公共交通、150美元全家总预算和17:00回Millbrae BART站的限制；查不到当日返程时刻就明确说不能保证。', sessionToken: token, searchMode: 'site' });
+  assert.deepEqual(result.taskState.selectedCandidateIds, [explorer.id]);
+  assert.ok(result.taskState.excludedCandidateIds.includes(omca.id));
+  assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), [explorer.id]);
+  assert.deepEqual(result.assistantPlan.handoff.stops, [{ kind: 'place', id: explorer.id }]);
+  assert.deepEqual(result.assistantPlan.alternatives, []);
+  assert.equal(result.taskState.budget, 150);
+  assert.deepEqual(result.taskState.childAges, [6]);
+  assert.equal(result.taskState.startTime, '09:30');
+  assert.equal(result.taskState.finishBy, '17:00');
 });
