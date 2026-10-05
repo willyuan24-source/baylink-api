@@ -62,3 +62,12 @@ test('unpriced plans reach the model as pending costs in both initial context an
   assert.equal(result.assistantPlan.budget.knownTotalUsd, 0, 'internal arithmetic subtotal remains available to existing consumers');
   assert.ok(result.assistantPlan.budget.unknownItems.length);
 });
+
+test('omitted answer citations do not revive unrelated retrieved guide cards', async () => {
+  const service = createBayBayAssistant(settings({
+    guideCatalog: [{ slug: 'museum-and-new-shops', title: 'Museum and new shops', url: '/guides/museum-and-new-shops', keywords: ['museum'], content: 'Museum visits and new shops around San Francisco.', updatedAt: '2026-10-04' }],
+    ai: async () => final('Keep the requested museum only; current admission still needs verification.'),
+  }));
+  const result = await service.run({ message: 'San Francisco museum information', searchMode: 'site' });
+  assert.deepEqual(result.sources, []); assert.deepEqual(result.suggestedGuides, []);
+});
