@@ -116,7 +116,7 @@ test('a known branded venue uses its catalog city without replacing an explicit 
   const message = '我第一次来湾区，想去 San Francisco Premium Outlets。它是在旧金山市区吗？2026年10月4日周日，从旧金山 Powell Street BART 站出发，没有车是否现实？请核实商场和公交官网，告诉我实际城市、公交接驳方式和周末班次的大致频率。没有实时路线结果就不要编精确全程分钟数，也不用安排其他景点。';
   const result = resolve(message, undefined, { catalog: actual });
   assert.equal(result.clarification, undefined); assert.equal(result.state.city, 'Livermore');
-  assert.equal(result.state.origin, 'San Francisco'); assert.equal(result.state.originCandidateId, null);
+  assert.equal(result.state.origin, '旧金山 Powell Street BART 站'); assert.equal(result.state.originCandidateId, null);
   assert.equal(result.state.goal, 'shopping'); assert.deepEqual(result.state.selectedCandidateIds, []);
   const priced = resolve('San Francisco Premium Outlets 的停车收费是多少？', undefined, { catalog: actual });
   assert.equal(priced.state.city, 'Livermore'); assert.notEqual(priced.state.goal, 'day-plan');
@@ -153,7 +153,7 @@ test('the live Millbrae family feasibility question keeps its origin and exact c
   const message = '2026年10月10日周六，两名成人带6岁孩子，09:30从Millbrae BART站出发，17:00前必须回到同一站。我们不开车，不打Uber，想去旧金山Exploratorium和奥克兰Oakland Museum of California，全家门票加公共交通总预算150美元。请判断跨城是否现实，再安排；若做不到请明确缩减，不要假设孩子全部免费或省略返程。';
   const result = resolve(message, undefined, { catalog: actual });
   assert.equal(result.clarification, undefined); assert.equal(result.state.goal, 'day-plan');
-  assert.equal(result.state.origin, 'Millbrae'); assert.equal(result.state.originCandidateId, null);
+  assert.equal(result.state.origin, 'Millbrae BART站'); assert.equal(result.state.originCandidateId, null);
   assert.equal(result.state.city, null); assert.equal(result.state.region, 'all');
   assert.equal(result.state.startTime, '09:30'); assert.equal(result.state.finishBy, '17:00');
   assert.equal(result.state.budget, 150); assert.equal(result.state.budgetScope, 'total');
@@ -164,7 +164,7 @@ test('the live Millbrae family feasibility question keeps its origin and exact c
   const previous = decodeTaskToken(encodeTaskToken({ state: result.state }, options), options);
   const next = resolve('那就取消Oakland Museum of California，只去旧金山Exploratorium，其他条件保持不变。请保留孩子6岁、公共交通、150美元全家总预算和17:00回Millbrae BART站的限制；查不到当日返程时刻就明确说不能保证。', previous, { catalog: actual });
   assert.equal(next.clarification, undefined); assert.equal(next.state.city, 'San Francisco');
-  assert.equal(next.state.goal, 'day-plan'); assert.equal(next.state.origin, 'Millbrae');
+  assert.equal(next.state.goal, 'day-plan'); assert.equal(next.state.origin, 'Millbrae BART站');
   assert.equal(next.state.budget, 150); assert.deepEqual(next.state.childAges, [6]);
   assert.equal(next.state.startTime, '09:30'); assert.equal(next.state.finishBy, '17:00');
 });
@@ -235,7 +235,7 @@ test('the exact live family question reaches assistant reasoning while unverifie
   });
   const result = await assistant.run({ message, locale: 'zh-Hans', searchMode: 'smart' });
   assert.equal(calls, 1); assert.equal(result.degraded, false);
-  assert.equal(context.state.origin, 'Millbrae'); assert.equal(context.state.originCandidateId, null);
+  assert.equal(context.state.origin, 'Millbrae BART站'); assert.equal(context.state.originCandidateId, null);
   assert.deepEqual(context.state.selectedCandidateIds, ['venue-exploratorium-daytime', 'venue-omca']);
   assert.ok(context.candidates.some(row => row.id === 'venue-exploratorium-daytime'));
   assert.ok(context.candidates.some(row => row.id === 'venue-omca'));

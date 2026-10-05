@@ -1,0 +1,834 @@
+{
+  "audit": "offers-birthday",
+  "date": "2026-10-04",
+  "endpoint": "https://baylink-api.onrender.com/api/ai/guide-chat",
+  "limit": 3,
+  "contractNotes": [
+    "The server reads body.context.currentPath. The recorded requests actually sent top-level currentPath=/; the omitted context defaults to the same root path. Request records are preserved as sent.",
+    "All sent questions used zh-Hans. No English or birthday live response was observed.",
+    "guide-chat: 8 requests/IP/minute; web search: 5/IP/minute, 20/IP/day; no 429 was observed and no retry or bypass was used.",
+    "The original sequential runner was started before the parent reduced the cap. It did not space starts by 60 seconds; after two responses, the already-started third request was interrupted. It is not counted as a successful or failed model answer.",
+    "Session tokens stayed in process memory and are excluded from this file; receivedSessionToken is a boolean only."
+  ],
+  "cases": [
+    {
+      "id": "target-eos-misconception",
+      "startedAt": "2026-10-05T03:07:09.415Z",
+      "request": {
+        "message": "10月10日 Target 的 eos 化妆包是不是不买东西也能免费领？我在 Sunnyvale，湾区到底哪家参加，几点、几岁可以领？请按最新官方信息说。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "currentPath": "/"
+      },
+      "followupTo": null,
+      "httpStatus": 200,
+      "elapsedMs": 48489,
+      "receivedSessionToken": true,
+      "response": {
+        "ok": true,
+        "answer": "目前不能把“不买东西也能免费领”当作已确认信息。BAYLINK 10月4日更新的攻略记载：这是购买 eos 后赠送的绒毛拉链包，需年满16岁，送完为止；不是无消费门槛的赠品。[1]\n\n但这次读取 Target 官方活动页时，页面要求人工／交互访问，未能取得最新官方条款。因此下面只能作为出发前核对的线索，不能称为已按最新官网确认：\n\n1. 时间：2026年10月10日（周六）12:00–16:00；年龄：16岁及以上。[1]\n2. 攻略所列参与店包括：Sunnyvale — 298 W McKinley Ave；Cupertino — 20745 Stevens Creek Blvd；San Jose — 533 Coleman Ave；San Francisco — 2675 Geary Blvd。这不是已核实的完整湾区名单。[1]\n3. 攻略未列统一赠品数量或最低消费；不能据此认定买任意一件 eos 就一定能领到。[1]\n\n你在 Sunnyvale，可先向 McKinley 店确认：“10月10日是否参加 eos 拉链包赠品活动？须买哪些商品、几件或多少钱？是否要求16岁及以上？”确认后再出发，避免把它当作不消费也能领的活动。",
+        "sources": [
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "information",
+          "city": "Sunnyvale",
+          "region": "south-bay",
+          "date": "2026-10-10",
+          "origin": null,
+          "originCandidateId": null,
+          "travelMode": null,
+          "partySize": null,
+          "childAges": [],
+          "budget": null,
+          "budgetScope": null,
+          "freeOnly": null,
+          "setting": null,
+          "startTime": null,
+          "finishBy": null,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "evidence": [
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-e27bddd7c89817b1",
+            "title": "Target、Lowe’s 到餐饮 App：湾区赠品与优惠查找手册",
+            "url": "/guides/bay-area-retail-freebies-family-deals",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-61ed79cf31fdf1bb",
+            "title": "2026 年 9 月剩余湾区优惠：Target 样品盒、$1 冷萃与 25¢ 咖啡",
+            "url": "/guides/bay-area-freebies-deals-2026-09",
+            "kind": "guide",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f50dff238c7c7987",
+            "title": "TARGET · eos：Target eos 官方活动与购物赠品条件",
+            "url": "https://www.target.com/c/eos-fall-scents-demo-event/-/N-s0gmo",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3fe1fb5b9fdf5315",
+            "title": "TARGET · BABY REGISTRY：Target 官方 Baby Registry Welcome Kit 条件",
+            "url": "https://www.target.com/help/article/000062588",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-05922888a4c6240a",
+            "title": "TARGET · BOOK EVENT：Target 午夜书友活动官方说明",
+            "url": "https://www.target.com/c/midnight-release-event/-/N-2jgu5",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b2f8493b54c7c028",
+            "title": "TARGET · REGISTRY：Target 官方清单完成优惠条款",
+            "url": "https://www.target.com/help/article/000062273",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7d7a9c03efb9f178",
+            "title": "TARGET CIRCLE：Target 官方生日优惠与 30 天期限",
+            "url": "https://www.target.com/help/article/000071290",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7fbd08d2ede7ec0f",
+            "title": "TARGET CIRCLE：Target 官方新 Circle 会员限时优惠",
+            "url": "https://www.prnewswire.com/news-releases/target-circle-deal-days-returns-with-major-savings-on-stylish-fall-and-holiday-finds-302878903.html",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-12b270ccadc303e6",
+            "title": "TARGET：Beauty Studio 礼盒规则",
+            "url": "https://www.target.com/c/target-beauty-studio-event/-/N-140b1",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-446f44337e115d06",
+            "title": "LOWE’S REWARDS：Lowe’s 官方免费会员礼物入口",
+            "url": "https://www.lowes.com/l/savings/coupons",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-58bc1466d8aec1cf",
+            "title": "IKEA 美国官方餐饮优惠 · 10/7–11/11 汤品",
+            "url": "https://www.ikea.com/us/en/cat/ikea-food-restaurant-fb001",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0a390d58cdb333a2",
+            "title": "Home Depot 官方免费儿童工作坊与报名",
+            "url": "https://www.homedepot.com/c/kids-workshop",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-91b49502f1ca24e3",
+            "title": "CHICK-FIL-A：Chick-fil-A 官方各等级生日礼",
+            "url": "https://www.chick-fil-a.com/customer-support/chick-fil-a-one-membership-program/creating-and-managing-your-account/what-is-the-birthday-reward-for-each-membership-tier",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-5e85307643bc5dc0",
+            "title": "MICHAELS：Fabric Ghosts 官方场次",
+            "url": "https://www.michaels.com/class/kids-club-fabric-ghosts-716121777247387016-290096423091592",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-12863f948db665c2",
+            "title": "IKEA：免费咖啡或茶适用说明",
+            "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/f26bebdc-91f3-488c-927e-8e8631e9cc48.html",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-48cb67105a28ed82",
+            "title": "Target：9/26 Beauty 样品盒指定门店名单",
+            "url": "https://target.scene7.com/is/content/Target/GUEST_600267fa-a1ec-48f3-b679-3fcd3a8c52bd",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-473f9da4dd0836fd",
+            "title": "85°C：品牌门店目录",
+            "url": "https://85cbakerycafe.orderexperience.net/85cbakerycafe/locations",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fc13dd2666c635fb",
+            "title": "Starbucks：堂食杯与自带杯说明",
+            "url": "https://about.starbucks.com/a-better-cup-for-all",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aaa73e7f9618e1cd",
+            "title": "STARBUCKS：堂食续杯范围与例外",
+            "url": "https://about.starbucks.com/back-to-starbucks",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-11875860c884f865",
+            "title": "Peet’s：生日奖励 FAQ",
+            "url": "https://faq.peets.com/hc/en-us/articles/14985828428052-Will-I-receive-a-Birthday-Reward",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-9ecf3f9deb7c09b8",
+            "title": "Target Circle™ Deal Days",
+            "url": "https://www.target.com/l/target-circle-deal-days/-/N-7196o?afid=FB_BR&cpng=Other_Promotion_pub_GET&tcid=SMO",
+            "kind": "web",
+            "checkedAt": "2026-10-05T03:07:53.222Z",
+            "verification": "search-result"
+          },
+          {
+            "id": "s-c7dc8fb047f8602c",
+            "title": "Target Launches Target Beauty Studio, Its Destination for What's New, Now and Next in Beauty",
+            "url": "https://www.prnewswire.com/news-releases/target-launches-target-beauty-studio-its-destination-for-whats-new-now-and-next-in-beauty-302860452.html",
+            "kind": "web",
+            "checkedAt": "2026-10-05T03:07:53.222Z",
+            "verification": "search-result"
+          }
+        ],
+        "suggestedGuides": [
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "slug": "bay-area-freebies-deals-2026-10"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "search_web",
+              "status": "completed",
+              "label": "search_web"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_manual_required"
+            },
+            {
+              "tool": "search_web",
+              "status": "unavailable",
+              "label": "search_web",
+              "code": "research_deadline"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [
+            "additional_web_lookup_unavailable"
+          ],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 2,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 3,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 652
+            }
+          ],
+          "elapsedMs": 48310
+        },
+        "retrieval": {
+          "requestedMode": "smart",
+          "scope": "site+web",
+          "webStatus": "completed",
+          "requestedDate": "2026-10-10",
+          "city": "Sunnyvale",
+          "area": "San Francisco Bay Area, California, United States",
+          "checkedAt": "2026-10-05T03:07:53.222Z",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 1
+        }
+      },
+      "observationStatus": "completed_response_observed"
+    },
+    {
+      "id": "lowes-mrbeast-membership-time",
+      "startedAt": "2026-10-05T03:07:57.907Z",
+      "request": {
+        "message": "Lowe’s 10月24日 MrBeast 那两只 Swarms，普通人不用会员也能领吗？湾区是不是每家早上10点开始？请把确认和未确认的部分分开。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "currentPath": "/"
+      },
+      "followupTo": null,
+      "httpStatus": 200,
+      "elapsedMs": 30913,
+      "receivedSessionToken": true,
+      "response": {
+        "ok": true,
+        "answer": "已确认（站内记录层面）：2026 年 10 月 24 日的赠品规则写的是“到店前 100 名 MyLowe’s Rewards 会员可领两只限定 Swarms，送完为止”，因此不能按“不用会员也能领”理解。[1]\nMyLowe’s Rewards 可免费加入，无需申请信用卡，但注册不保证领到赠品。[1]\n未确认：没有证据支持“湾区每家都早上 10 点开始”；站内记录明确写着开始时间须问门店，也未逐店确认库存。[1]\n核验限制：本次未能读取官方活动页及完整条款，以上是站内对官方海报的摘要，不能当作已实时核验的官方最终规则。\n建议先准备免费会员账户，再直接问目标门店：“10 月 24 日是否参加、几点开始发、领取需出示什么会员凭证？”",
+        "sources": [
+          {
+            "title": "Target、Lowe’s 到餐饮 App：湾区赠品与优惠查找手册",
+            "url": "/guides/bay-area-retail-freebies-family-deals"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "information",
+          "city": null,
+          "region": null,
+          "date": "2026-10-24",
+          "origin": null,
+          "originCandidateId": null,
+          "travelMode": null,
+          "partySize": null,
+          "childAges": [],
+          "budget": null,
+          "budgetScope": null,
+          "freeOnly": null,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": null,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "evidence": [
+          {
+            "id": "s-e27bddd7c89817b1",
+            "title": "Target、Lowe’s 到餐饮 App：湾区赠品与优惠查找手册",
+            "url": "/guides/bay-area-retail-freebies-family-deals",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-87d695205cb19890",
+            "title": "十月去 Half Moon Bay：买南瓜、逛节庆和海岸散步怎么分开排",
+            "url": "/guides/half-moon-bay-october-pumpkin-coast-guide-2026",
+            "kind": "guide",
+            "checkedAt": "2026-09-15",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6ee8333c124398b5",
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-73bbc307760f84a9",
+            "title": "BAYLINK 安全使用指南：手机验证、资料审核、举报和屏蔽怎么用",
+            "url": "/guides/baylink-safety-guide",
+            "kind": "guide",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b03bf48cbceb19c0",
+            "title": "Sausalito Goblin Jamboree：儿童博物馆的万圣节探索",
+            "url": "https://bayareadiscoverymuseum.org/events/goblin-jamboree",
+            "kind": "event",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-d32e73a23b764ca8",
+            "title": "VIVAIA",
+            "url": "https://www.westfield.com/en/united-states/valleyfair/retailers/vivaia/85774",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f71166d5fdd16950",
+            "title": "Hiller 万圣节 Paint-A-Plane：给飞机添上节日颜色",
+            "url": "https://www.hiller.org/event/paint-a-plane/2026-10-24",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-16af8c862d8c3a99",
+            "title": "Napa Tulocay：万圣节历史步行导览",
+            "url": "https://donapa.com/event/heritage-halloween-tulocay-cemetery-tour",
+            "kind": "event",
+            "checkedAt": "2026-09-30",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a215cae55f97926b",
+            "title": "Cupertino Monster Mash：傍晚万圣节亲子场",
+            "url": "https://www.cupertino.gov/Parks-Recreation/Events/Monster-Mash/Monster-Mash-Event",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-91c75c0c370f85c7",
+            "title": "Disney On Ice：Find Your Hero 冰上表演",
+            "url": "https://www.sapcenter.com/events/detail/disney-on-ice-4",
+            "kind": "event",
+            "checkedAt": "2026-09-28",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-83a40c981943b2bb",
+            "title": "Lowe’s 官方 MrBeast Day 赠品海报",
+            "url": "https://www.lowes.com/l/creator/mrbeast",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-446f44337e115d06",
+            "title": "Lowe’s 官方免费会员礼物入口",
+            "url": "https://www.lowes.com/l/savings/coupons",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-58bc1466d8aec1cf",
+            "title": "IKEA 美国官方餐饮优惠 · 10/7–11/11 汤品",
+            "url": "https://www.ikea.com/us/en/cat/ikea-food-restaurant-fb001",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-82203848da57804c",
+            "title": "Lowe’s 官方 Builder Recognition 条款（至 2026 年底）",
+            "url": "https://www.lowes.com/pdf/diy-u_kids_workshops_terms.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cbd972ebfda3e329",
+            "title": "Lowe’s 官方未来工作坊日历与 Kids Club 条件",
+            "url": "https://www.lowes.com/diy-projects-and-ideas/workshops",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f42dd083d8b505b6",
+            "title": "Crumbl 官方会员等级与生日礼",
+            "url": "https://crumblcookies.com/rewards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1ef7ec26796be9eb",
+            "title": "Cold Stone 官方新会员礼与 FAQ",
+            "url": "https://www.coldstonecreamery.com/mycsc",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1a5793762ca49dc5",
+            "title": "Cinnabon 官方新会员欢迎券条款",
+            "url": "https://www.cinnabon.com/offers",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-e3ad77081f613083",
+            "title": "LOWE’S：消防飞机官方日期与预约",
+            "url": "https://www.lowes.com/events/register/firefighting-plane",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-4e6821c080c3d8d7",
+            "title": "Sonoma County Library：10/4 书展时段",
+            "url": "https://events.sonomalibrary.org/event/friends-library-book-sale-120269",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0ee468df0ed0b181",
+            "title": "Sonoma County Library：10/3 书展与儿童赠书",
+            "url": "https://events.sonomalibrary.org/event/friends-library-book-sale-120268",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-09dcbcae5a291e25",
+            "title": "ASIAN ART MUSEUM · SF：亚洲艺术博物馆 10/4 活动与票务规则",
+            "url": "https://calendar.asianart.org/event/sundays-at-the-asian-art-museum-october-4",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0f8495266fcf0d3a",
+            "title": "Half Moon Bay 南瓜节：2026 日期与交通",
+            "url": "https://www.hmbpumpkinfest.com/event-details/directions-map.html",
+            "kind": "web",
+            "checkedAt": "2026-09-15",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-dc1e4a77e9c49678",
+            "title": "Half Moon Bay 南瓜节：公共交通入口",
+            "url": "https://www.hmbpumpkinfest.com/event-details/public-transit.html",
+            "kind": "web",
+            "checkedAt": "2026-09-15",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cb1f7b780c30424c",
+            "title": "Half Moon Bay 南瓜节：海岸农场目录",
+            "url": "https://www.hmbpumpkinfest.com/experience/pumpkin-patches.html",
+            "kind": "web",
+            "checkedAt": "2026-09-15",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef09c3db733c7d26",
+            "title": "Presidio：Field Station",
+            "url": "https://presidio.gov/explore/attractions/field-station",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-735b2fcdc02f4bd8",
+            "title": "Presidio：免费接驳与乘客限制",
+            "url": "https://presidio.gov/visit/getting-to-and-around-the-park/presidio-go-shuttle",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef871207837e4453",
+            "title": "Randall Museum：时间与抵达路线",
+            "url": "https://randallmuseum.org/directions-hours",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3a5862ecaab8bf6f",
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-04962ecc6ab6a605",
+            "title": "SFMOMA：常规开放与儿童票",
+            "url": "https://www.sfmoma.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0eedc121e85db7aa",
+            "title": "SFMOMA：无障碍服务",
+            "url": "https://www.sfmoma.org/visit/accessibility",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-33a8b200318998f9",
+            "title": "FTC：在网络交易平台购物",
+            "url": "https://consumer.ftc.gov/articles/buying-online-marketplace",
+            "kind": "web",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-d87af371199fb50b",
+            "title": "FTC：识别租房广告诈骗",
+            "url": "https://consumer.ftc.gov/articles/rental-listing-scams",
+            "kind": "web",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-dabaeaadf619b474",
+            "title": "FTC：网上出售物品如何防骗",
+            "url": "https://consumer.ftc.gov/consumer-alerts/2022/07/selling-stuff-online-heres-how-avoid-scam",
+            "kind": "web",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          }
+        ],
+        "suggestedGuides": [
+          {
+            "title": "Target、Lowe’s 到餐饮 App：湾区赠品与优惠查找手册",
+            "url": "/guides/bay-area-retail-freebies-family-deals",
+            "slug": "bay-area-retail-freebies-family-deals"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_forbidden"
+            },
+            {
+              "tool": "search_web",
+              "status": "unavailable",
+              "label": "search_web",
+              "code": "web_no_cited_sources"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_forbidden"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 2,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 3,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 4,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 426
+            }
+          ],
+          "elapsedMs": 30821
+        },
+        "retrieval": {
+          "requestedMode": "smart",
+          "scope": "site",
+          "webStatus": "unavailable",
+          "requestedDate": "2026-10-24",
+          "city": null,
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 1
+        }
+      },
+      "observationStatus": "completed_response_observed"
+    },
+    {
+      "id": "october-freebies-generic",
+      "startedAt": "2026-10-05T03:08:28.822Z",
+      "request": {
+        "message": "2026年10月湾区有哪些真正不用消费就能拿到东西的福利？给我3个具体选择，写清日期、会员或年龄要求，不要把买赠混进来。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "currentPath": "/"
+      },
+      "observationStatus": "client_cancelled_result_unobserved",
+      "httpStatus": null,
+      "elapsedMs": null,
+      "note": "Request was sent before the parent cap reduction was processed; the local runner was terminated with Ctrl-C without a returned response. The server may have continued independently. No outcome is inferred and this request was not retried."
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "service": "baylink-api",
+    "commit": "98d400d4d8823b060d5cb25aaf8723a1ad4ee902"
+  },
+  "scope": "Two completed live offers cases; third request sent then client-cancelled without an observed response. Birthday, English and social-claim cases were not run.",
+  "counts": {
+    "requestsSent": 3,
+    "completedResponsesObserved": 2,
+    "clientCancelledUnobserved": 1,
+    "retries": 0,
+    "additionalLiveAfterCap": 0
+  },
+  "findings": [
+    {
+      "id": "state-event-time-contamination",
+      "severity": "P1",
+      "caseId": "lowes-mrbeast-membership-time",
+      "observed": {
+        "startTime": "10:00"
+      },
+      "expected": {
+        "startTime": null
+      },
+      "cause": "The clock extractor accepted 开始 after an event-time inquiry as a personal start constraint.",
+      "localFix": "lib/baybayState.js: clause-aware user-time guard shared by clock parsing and explicit field labels."
+    },
+    {
+      "id": "research-status-not-citation-proof",
+      "severity": "P2-observation",
+      "caseId": "target-eos-misconception",
+      "observed": {
+        "scope": "site+web",
+        "webStatus": "completed",
+        "externalCitations": 0
+      },
+      "note": "The answer correctly disclosed the official read failure. The aggregate retrieval label alone must not imply that current official activity terms were verified."
+    }
+  ],
+  "localVerification": {
+    "command": "node --test tests/baybay-state-audit-regressions.test.js tests/baybay-state.test.js tests/baybay-information-scope.test.js",
+    "passed": 70,
+    "failed": 0,
+    "newRegressionTests": 11,
+    "productionFixVerifiedLive": false,
+    "notes": "Includes the full two planning prompts captured by the parallel plans audit, signed state continuity, maxStops and returnToOrigin validation. Existing four station expectations were updated to preserve the exact station label; no coordinates or IDs were invented. The exact cross-library eligibility comparison now retains Fremont origin with no invented destination; actual visits and ordinary city alternatives keep their guards.",
+    "coordinatedInformationScopeTests": 4
+  }
+}

@@ -31,6 +31,48 @@ test('sequential real-engine rebuilds use opening waits and each actual stop end
   assert.equal(initial.stops[0].endTime, undefined, 'the original plan is not mutated');
 });
 
+test('one-way itinerary routes to the final destination and never requests a return to its origin', async () => {
+  const localState = { ...state, returnToOrigin: false }, candidates = [candidate('a'), candidate('b')], travelEstimates = [], calls = [];
+  const build = ids => buildItinerary({ state: localState, candidates, selectedIds: ids, travelEstimates, now: NOW });
+  const result = await enrichPlanRoutes(options({ state: localState, plan: build(['a', 'b']), makePlan: build,
+    route: async args => { calls.push(args); const value = estimate(args); travelEstimates.push(value); return value; },
+  }));
+  assert.deepEqual(calls, [{ fromId: 'origin', toId: 'a', time: '09:00' }, { fromId: 'a', toId: 'b', time: '11:00' }]);
+  assert.equal(result.returnTime, undefined);
+  assert.equal(result.checks.some(item => item.code === 'return_time'), false);
+  assert.equal(result.checks.find(item => item.code === 'finish_time').status, 'pass');
+  assert.ok(result.alternatives.every(other => !other.travelLegs.some(leg => leg.to === 'origin') && !other.checks.some(item => item.code === 'return_time')));
+});
+
+test('the complete live waterfront prompt ends at Pier 39 rather than returning to Ferry Building', async () => {
+  const { resolveTaskState } = require('../lib/baybayState');
+  const message = '请规划 2026 年 10 月 10 日的旧金山路线，严格按 Ferry Building → Exploratorium → Pier 39 的顺序，不加其他景点。2 位成人和 1 名 5 岁孩子，10:00 从 Ferry Building 出发，17:00 在 Pier 39 结束，只步行或公交，全家总预算 $120 包括门票、交通和午餐。请核对三处的营业安排、孩子票价与路线时长；预算不够或没有查到的内容请直接说明，不要当作免费或已确认。';
+  // Exact venue names reproduce intent parsing; source facts and routes below
+  // are deterministic fixtures, not claims about the actual October 10 visit.
+  const places = [['venue-ferry-building', 'Ferry Building'], ['venue-exploratorium-daytime', 'Exploratorium'], ['pier39', 'Pier 39']].map(([id, title]) => ({
+    ...candidate(id), title, city: 'San Francisco', region: 'sf',
+    planning: { admissionUsd: 0, reservation: 'none', allAges: true, schedule: { sourceUrl: 'https://example.org/fixture-hours', verifiedAt: '2026-10-04', dates: { '2026-10-10': [{ open: '10:00', close: '17:00' }] } } },
+  }));
+  const catalog = { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places };
+  const localState = resolveTaskState({ message, catalog, today: '2026-10-04' }).state;
+  assert.equal(localState.returnToOrigin, false);
+  assert.equal(localState.finishBy, '17:00');
+  assert.equal(localState.goal, 'day-plan');
+  assert.equal(localState.originCandidateId, 'venue-ferry-building');
+  const travelEstimates = [], calls = [], selectedIds = localState.selectedCandidateIds;
+  const build = ids => buildItinerary({ state: localState, candidates: places.filter(row => row.id !== localState.originCandidateId), selectedIds: ids, travelEstimates, now: NOW });
+  const result = await enrichPlanRoutes(options({ state: localState, plan: build(selectedIds), makePlan: build,
+    route: async args => { calls.push(args); const value = { ...estimate(args), date: localState.date }; travelEstimates.push(value); return value; },
+  }));
+  assert.deepEqual(calls.map(({ fromId, toId }) => [fromId, toId]), [['origin', 'venue-exploratorium-daytime'], ['venue-exploratorium-daytime', 'pier39']]);
+  assert.deepEqual(result.handoff.stops.map(stop => stop.id), ['venue-exploratorium-daytime', 'pier39']);
+  assert.equal(result.stops.at(-1).entityId, 'pier39');
+  assert.equal(result.returnTime, undefined);
+  assert.equal(result.checks.some(item => item.code === 'return_time'), false);
+  assert.equal(result.checks.find(item => item.code === 'finish_time').status, 'pass');
+  assert.doesNotMatch(result.checks.map(item => item.message).join(' '), /返回|回程/);
+});
+
 test('existing accepted legs consume no calls and selected stop order remains fixed', async () => {
   const candidates = [candidate('a'), candidate('b')], travelEstimates = [estimate({ fromId: 'origin', toId: 'b', time: '09:00' })], calls = [];
   const build = ids => buildItinerary({ state, candidates, selectedIds: ids, travelEstimates, now: NOW });

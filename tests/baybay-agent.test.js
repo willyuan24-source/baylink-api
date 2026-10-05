@@ -178,3 +178,84 @@ test('a signed follow-up replacing one stop preserves the other stops and reject
   const invalid = await assistant.run({ message: '换掉第六站', searchMode: 'site', sessionToken: second.assistantSessionToken });
   assert.equal(invalid.assistantPlan, undefined); assert.match(invalid.answer, /指定上一份行程/);
 });
+
+const planCatalog = { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: ['a', 'b', 'c', 'd'].map(id => ({ id, title: `Public Park ${id}`, city: 'Fremont', region: 'east-bay', officialUrl: `https://example.org/${id}`, cost: 'free' })).concat({ id: 'sj', title: 'San Jose Garden', city: 'San Jose', region: 'south-bay', officialUrl: 'https://example.org/sj', cost: 'free' }) };
+
+test('the final researched selection replaces the draft card, handoff and published task choices', async () => {
+  let round = 0;
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async () => round++ === 0
+    ? invoke('create_plan', { candidateIds: ['a', 'b', 'c'] })
+    : final({ answer: '建议保留前两站，移除第三站，具体时间还需核实。', candidateIds: ['a', 'b'] }) }));
+  const result = await assistant.run({ message: '2026-10-10 Fremont 安排一天', searchMode: 'site' });
+  assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), ['a', 'b']);
+  assert.deepEqual(result.assistantPlan.handoff.stops.map(stop => stop.id), ['a', 'b']);
+  assert.deepEqual(result.taskState.selectedCandidateIds, ['a', 'b']);
+});
+
+test('tightening a signed plan to two stops uses the final choice and preserves supplied conditions', async () => {
+  let round = 0;
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async payload => {
+    const data = JSON.parse(payload.input[0].content);
+    if (!/收紧/.test(data.message)) return final({ answer: '建议三个地点，时段仍需核实。', candidateIds: ['a', 'b', 'c'] });
+    if (!round++) return invoke('create_plan', { candidateIds: ['a', 'b', 'c'] });
+    return final({ answer: '这次建议两站，保留休息时间。', candidateIds: ['b', 'a'] });
+  } }));
+  const first = await assistant.run({ message: '2026-10-10 Fremont 安排一天，3人，全家总预算50美元，10:00出发，17:00前回到Fremont，只坐公交', searchMode: 'site' });
+  const second = await assistant.run({ message: '不想跑远，只在 Fremont 市内，别换到其他城市。还是刚才的家庭、日期、全家总预算和往返时间；把方案收紧成两站，保留孩子休息和午饭。', searchMode: 'site', sessionToken: first.assistantSessionToken });
+  assert.deepEqual(second.assistantPlan.stops.map(stop => stop.entityId), ['b', 'a']);
+  assert.deepEqual(second.taskState.selectedCandidateIds, ['b', 'a']);
+  assert.equal(second.assistantPlan.constraints.maxStops, 2);
+  assert.ok(second.assistantPlan.alternatives.every(other => other.stops.length <= 2));
+  for (const field of ['city', 'date', 'partySize', 'budget', 'budgetScope', 'travelMode', 'startTime', 'finishBy']) assert.equal(second.taskState[field], first.taskState[field], field);
+  const third = await assistant.run({ message: '这些地方孩子门票是多少？', searchMode: 'site', sessionToken: second.assistantSessionToken });
+  assert.equal(third.taskState.maxStops, 2);
+  assert.equal(third.assistantPlan.constraints.maxStops, 2);
+  assert.deepEqual(third.taskState.selectedCandidateIds, ['b', 'a']);
+  assert.deepEqual(third.assistantPlan.stops.map(stop => stop.entityId), ['b', 'a']);
+  assert.deepEqual(third.assistantPlan.handoff.stops.map(stop => stop.id), ['b', 'a']);
+});
+
+test('a limit caps an overlong final proposal but conflicts with three explicitly named destinations', async () => {
+  let modelCalls = 0;
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async () => { modelCalls++; return final({ answer: '开放和交通仍需核实。', candidateIds: ['a', 'b', 'c'] }); } }));
+  const auto = await assistant.run({ message: '2026-10-10 Fremont 安排一天，最多2站', searchMode: 'site' });
+  assert.equal(auto.assistantPlan.stops.length, 2);
+  const conflict = await assistant.run({ message: '2026-10-10 Fremont 安排一天，想去 Public Park a、Public Park b、Public Park c，最多2站', searchMode: 'site' });
+  assert.equal(Boolean(conflict.assistantPlan), false);
+  assert.match(conflict.answer, /指定的地点超过/);
+  assert.deepEqual(conflict.taskState.selectedCandidateIds, ['a', 'b', 'c']);
+  assert.equal(modelCalls, 1);
+});
+
+test('a final selection cannot override explicitly named destinations or erase a retained plan', async () => {
+  let first = true;
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async () => {
+    const candidateIds = first ? ['c'] : []; first = false;
+    return final({ answer: '具体开放时间仍需核实。', candidateIds });
+  } }));
+  const named = await assistant.run({ message: '2026-10-10 Fremont 安排一天，只去 Public Park a 和 Public Park b', searchMode: 'site' });
+  assert.deepEqual(named.assistantPlan.stops.map(stop => stop.entityId), ['a', 'b']);
+  const followup = await assistant.run({ message: '继续核实这份行程的门票', searchMode: 'site', sessionToken: named.assistantSessionToken });
+  assert.deepEqual(followup.assistantPlan.stops.map(stop => stop.entityId), ['a', 'b']);
+});
+
+test('published automatic selections clear on a replan and on a city change', async () => {
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async payload => {
+    const data = JSON.parse(payload.input[0].content);
+    return final({ answer: '新的建议仍需核实。', candidateIds: /San Jose/.test(data.message) ? ['sj'] : /重排/.test(data.message) ? ['c', 'd'] : ['a', 'b'] });
+  } }));
+  const first = await assistant.run({ message: '2026-10-10 Fremont 安排一天', searchMode: 'site' });
+  const replan = await assistant.run({ message: '请重排行程', searchMode: 'site', sessionToken: first.assistantSessionToken });
+  assert.deepEqual(replan.assistantPlan.stops.map(stop => stop.entityId), ['c', 'd']);
+  const moved = await assistant.run({ message: '改去 San Jose，还是安排一天', searchMode: 'site', sessionToken: replan.assistantSessionToken });
+  assert.deepEqual(moved.assistantPlan.stops.map(stop => stop.entityId), ['sj']);
+  assert.deepEqual(moved.taskState.selectedCandidateIds, ['sj']);
+});
+
+test('rejecting an unsupported plan assurance marks the response degraded', async () => {
+  const assistant = createBayBayAssistant(settings({ catalog: planCatalog, ai: async () => final({ answer: '保证能在17:00前回来。', candidateIds: ['a'] }) }));
+  const result = await assistant.run({ message: '2026-10-10 Fremont 安排一天', searchMode: 'site' });
+  assert.equal(result.degraded, true);
+  assert.ok(result.research.warnings.includes('unsupported_plan_assurance'));
+  assert.doesNotMatch(result.answer, /保证/);
+});

@@ -200,6 +200,41 @@ test('one alternative is complete, nonrecursive and uses an eligible different f
   assert.ok(plan.alternatives[0].checks.length);
 });
 
+test('a one-way day validates finishing at its last stop without a return leg or return warning', () => {
+  const routes = [route('origin', 'a', '09:00'), route('a', 'origin', '11:00', 50)];
+  const plan = build([place('a')], { returnToOrigin: false, finishBy: '11:10' }, { travelEstimates: routes });
+  assert.equal(plan.constraints.returnToOrigin, false);
+  assert.equal(plan.returnTime, undefined);
+  assert.equal(plan.travelLegs.some(leg => leg.to === 'origin'), false);
+  assert.equal(check(plan, 'return_time').length, 0);
+  assert.equal(check(plan, 'finish_time')[0].status, 'pass');
+  assert.match(check(plan, 'finish_time')[0].message, /11:00 结束/);
+  assert.doesNotMatch(plan.checks.map(item => item.message).join(' '), /返回|回程/);
+  assert.equal(check(build([place('a')], { returnToOrigin: true, finishBy: '11:10' }, { travelEstimates: routes }), 'return_time')[0].status, 'fail');
+});
+
+test('one-way final-stop overruns still fail and unknown finish times stay unknown', () => {
+  const late = build([event('late', { planning: { schedule: { sourceUrl: SOURCE, verifiedAt: '2026-10-04', sessions: [{ date: DATE, start: '16:00', end: '18:00' }] } } })], { returnToOrigin: false });
+  assert.equal(check(late, 'finish_time')[0].status, 'fail');
+  assert.match(check(late, 'finish_time')[0].message, /结束时间/);
+  assert.doesNotMatch(check(late, 'finish_time')[0].message, /返回|回程/);
+  const unknown = build([place('a')], { returnToOrigin: false });
+  assert.equal(check(unknown, 'finish_time')[0].status, 'unknown');
+  assert.equal(check(unknown, 'return_time').length, 0);
+  assert.equal(unknown.returnTime, undefined);
+});
+
+test('a requested stop limit bounds explicit and automatic plans, alternatives and handoff', () => {
+  const rows = ['a', 'b', 'c', 'd'].map(id => place(id));
+  for (const selectedIds of [undefined, ['a', 'b', 'c']]) {
+    const plan = build(rows, { maxStops: 2 }, { selectedIds });
+    assert.deepEqual(plan.stops.map(stop => stop.entityId), ['a', 'b']);
+    assert.equal(plan.constraints.maxStops, 2);
+    assert.deepEqual(plan.handoff.stops.map(stop => stop.id), ['a', 'b']);
+    assert.ok(plan.alternatives.every(other => other.stops.length <= 2));
+  }
+});
+
 test('without another destination, a shorter alternative reduces the number of stops', () => {
   const plan = build([place('a'), place('b')]);
   assert.deepEqual(plan.alternatives[0].stops.map(s => s.entityId), ['a']);

@@ -1,0 +1,2414 @@
+{
+  "audit": "BAYBAY itinerary/route live QA",
+  "requestedAuditDate": "2026-10-04",
+  "startedAt": "2026-10-05T03:08:47.495Z",
+  "requestBudget": 3,
+  "minimumDelayBetweenChatRequestsMs": 60000,
+  "notes": [
+    "Synthetic public prompts only; all session tokens remain in process memory and are removed from evidence.",
+    "Weather, future-unknown and additional combined-research cases deferred after coordinator reduced the initial budget to three requests."
+  ],
+  "cases": [
+    {
+      "id": "fremont-family-transit-50",
+      "request": {
+        "message": "请帮我安排 2026 年 10 月 10 日在 Fremont 的亲子一日行程：2 位成人加 1 名 5 岁孩子，只坐公交和步行，上午 10:00 从 Fremont BART 站出发，17:00 前回到同一站。全家总预算 $50，要包括门票、交通和午餐，不是每人 $50。请结合 BAYLINK 站内资料与场馆官方站外信息核实，安排休息；没有核实的营业、票价和交通时间请明确说不知道。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "usedContinuation": false,
+      "sessionTokenIssued": true,
+      "httpStatus": 200,
+      "latencyMs": 30288,
+      "response": {
+        "ok": true,
+        "answer": "按你的要求，预算是全家共 $50，含门票、公交和午餐；现有计划卡误按每人 $50 计算且堆了三站，不能作为已核实可执行的行程。\n建议缩为一个主目的地：Ardenwood Historic Farm 历史农场；BAYLINK 列有丰收节，但其 2026 年 10 月 10 日场次和票价尚未得到官方活动原文核实，只能暂选。[1][2]\n官方常规时间为周二至周日 10:00–16:00，历史季普通周六两成人加5岁孩子合计 $10，但特别活动另收费，不能把 $10 套用到丰收节，也不能据每周营业时间保证当天开放。[3]\n暂定节奏是10:00从 Fremont BART 站出发、抵达后慢逛，12:00–13:00午餐及休息、下午短时活动后返程，这些只是安排意向：公交线路、班次、步行耗时、三人车费及午餐价格都不知道，因此无法保证17:00前回站或总额不超过 $50。\n备选 Coyote Hills 在站内标为免费湿地公园，但当天开放和公交接驳仍未核实，省门票却不代表更容易到达；不建议再叠加餐厅与第二个公园。[4]\n下一步应先向农场确认10月10日活动及两成人、5岁儿童的实际票价，再核对 Fremont BART 往返公交和午餐成本，才能定稿。[3]",
+        "sources": [
+          {
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "/guides/bay-area-101-city-exploration-living-guide"
+          },
+          {
+            "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+            "url": "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+          },
+          {
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.ebparks.org/parks/ardenwood"
+          },
+          {
+            "title": "Coyote Hills 湿地与草坡",
+            "url": "https://www.ebparks.org/parks/coyote-hills"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "day-plan",
+          "city": "Fremont",
+          "region": "east-bay",
+          "date": "2026-10-10",
+          "origin": "Fremont",
+          "originCandidateId": null,
+          "travelMode": "transit",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 50,
+          "budgetScope": "person",
+          "freeOnly": null,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": "17:00",
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": [
+            "originCandidateId"
+          ]
+        },
+        "assistantPlan": {
+          "id": "baybay-f0fe0d7782181e89208e",
+          "date": "2026-10-10",
+          "title": "Fremont一日安排",
+          "status": "needs_verification",
+          "stops": [
+            {
+              "id": "event:fremont-ardenwood-harvest-2026",
+              "kind": "event",
+              "entityId": "fremont-ardenwood-harvest-2026",
+              "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-a12887c701bc398e"
+              ],
+              "sourceUrls": [
+                "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+              ],
+              "notes": [
+                "特别活动票$8–12；未满4岁免费；停车免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。"
+              ],
+              "venue": "Ardenwood Historic Farm · 34600 Ardenwood Boulevard",
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete"
+            },
+            {
+              "id": "place:opening-sucre-damour-fremont-celebration-2026",
+              "kind": "place",
+              "entityId": "opening-sucre-damour-fremont-celebration-2026",
+              "title": "Sucré d’Amour Café & Sushi",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-c25df55413b958af"
+              ],
+              "sourceUrls": [
+                "https://www.sucredamourca.com/"
+              ],
+              "notes": [
+                "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。"
+              ],
+              "path": "/openings/sucre-damour-fremont-celebration-2026",
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete"
+            },
+            {
+              "id": "place:coyote-hills",
+              "kind": "place",
+              "entityId": "coyote-hills",
+              "title": "Coyote Hills 湿地与草坡",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-79d4ce2656bddf10"
+              ],
+              "sourceUrls": [
+                "https://www.ebparks.org/parks/coyote-hills"
+              ],
+              "notes": [],
+              "path": "/guides/fremont-coyote-hills-short-walk-guide",
+              "guideSlug": "fremont-coyote-hills-short-walk-guide",
+              "location": {
+                "lat": 37.553623,
+                "lng": -122.076027,
+                "label": "Coyote Hills main entrance area",
+                "sourceUrl": "https://www.ebparks.org/parks/coyote-hills",
+                "precision": "area"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "admissionUsd": 0,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "recorded"
+            }
+          ],
+          "budget": {
+            "knownTotalUsd": 0,
+            "knownPerPersonUsd": 0,
+            "unknownItems": [
+              "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+              "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+              "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+              "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+            ],
+            "scope": "person",
+            "limitUsd": 50
+          },
+          "checks": [
+            {
+              "code": "date",
+              "status": "pass",
+              "message": "日期：2026-10-10（湾区时间）。"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Coyote Hills 湿地与草坡」的这段交通时间尚待查询。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "return_time",
+              "status": "unknown",
+              "message": "回程交通及返回时间尚未核实。"
+            },
+            {
+              "code": "budget",
+              "status": "unknown",
+              "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+            }
+          ],
+          "alternatives": [
+            {
+              "id": "baybay-9411364b7d9c3671fbfb",
+              "date": "2026-10-10",
+              "title": "备选安排",
+              "status": "needs_verification",
+              "stops": [
+                {
+                  "id": "event:fremont-ardenwood-harvest-2026",
+                  "kind": "event",
+                  "entityId": "fremont-ardenwood-harvest-2026",
+                  "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+                  "city": "Fremont",
+                  "date": "2026-10-10",
+                  "timeStatus": "unknown",
+                  "sourceIds": [
+                    "s-a12887c701bc398e"
+                  ],
+                  "sourceUrls": [
+                    "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+                  ],
+                  "notes": [
+                    "特别活动票$8–12；未满4岁免费；停车免费。",
+                    "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                    "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。"
+                  ],
+                  "venue": "Ardenwood Historic Farm · 34600 Ardenwood Boulevard",
+                  "external": false,
+                  "suggestedDurationMinutes": 60,
+                  "knownAdmissionTotalUsd": 0,
+                  "admissionStatus": "incomplete"
+                },
+                {
+                  "id": "place:opening-sucre-damour-fremont-celebration-2026",
+                  "kind": "place",
+                  "entityId": "opening-sucre-damour-fremont-celebration-2026",
+                  "title": "Sucré d’Amour Café & Sushi",
+                  "city": "Fremont",
+                  "date": "2026-10-10",
+                  "timeStatus": "unknown",
+                  "sourceIds": [
+                    "s-c25df55413b958af"
+                  ],
+                  "sourceUrls": [
+                    "https://www.sucredamourca.com/"
+                  ],
+                  "notes": [
+                    "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。"
+                  ],
+                  "path": "/openings/sucre-damour-fremont-celebration-2026",
+                  "external": false,
+                  "suggestedDurationMinutes": 60,
+                  "knownAdmissionTotalUsd": 0,
+                  "admissionStatus": "incomplete"
+                }
+              ],
+              "budget": {
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "unknownItems": [
+                  "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                  "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+                  "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+                  "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+                ],
+                "scope": "person",
+                "limitUsd": 50
+              },
+              "checks": [
+                {
+                  "code": "date",
+                  "status": "pass",
+                  "message": "日期：2026-10-10（湾区时间）。"
+                },
+                {
+                  "code": "travel_time",
+                  "status": "unknown",
+                  "message": "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "opening_hours",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "reservation",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "child_access",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "travel_time",
+                  "status": "unknown",
+                  "message": "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "opening_hours",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "reservation",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "child_access",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "return_time",
+                  "status": "unknown",
+                  "message": "回程交通及返回时间尚未核实。"
+                },
+                {
+                  "code": "budget",
+                  "status": "unknown",
+                  "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+                }
+              ],
+              "alternatives": [],
+              "unknowns": [
+                "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+                "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+                "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+                "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+                "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+                "回程交通及返回时间尚未核实。",
+                "费用仍有未知项，尚不能确认总安排符合预算。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+                "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+                "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+              ],
+              "notes": [],
+              "rejectedCandidates": [],
+              "constraints": {
+                "city": "Fremont",
+                "origin": "Fremont",
+                "startTime": "10:00",
+                "finishBy": "17:00",
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "travelMode": "transit",
+                "excludedCities": [],
+                "freeOnly": false
+              },
+              "travelLegs": [],
+              "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+              "handoff": {
+                "title": "备选安排",
+                "date": "2026-10-10",
+                "stops": [
+                  {
+                    "kind": "event",
+                    "id": "fremont-ardenwood-harvest-2026"
+                  },
+                  {
+                    "kind": "place",
+                    "id": "opening-sucre-damour-fremont-celebration-2026"
+                  }
+                ]
+              }
+            }
+          ],
+          "unknowns": [
+            "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+            "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+            "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+            "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+            "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+            "前往「Coyote Hills 湿地与草坡」的这段交通时间尚待查询。",
+            "「Coyote Hills 湿地与草坡」缺少可用于安排这一天的开放或场次时间。",
+            "「Coyote Hills 湿地与草坡」的预约要求或剩余名额仍待确认。",
+            "「Coyote Hills 湿地与草坡」的儿童参加及入场规则仍待确认。",
+            "回程交通及返回时间尚未核实。",
+            "费用仍有未知项，尚不能确认总安排符合预算。",
+            "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+            "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+            "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+            "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+          ],
+          "notes": [],
+          "rejectedCandidates": [],
+          "constraints": {
+            "city": "Fremont",
+            "origin": "Fremont",
+            "startTime": "10:00",
+            "finishBy": "17:00",
+            "partySize": 3,
+            "childAges": [
+              5
+            ],
+            "travelMode": "transit",
+            "excludedCities": [],
+            "freeOnly": false
+          },
+          "travelLegs": [],
+          "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+          "handoff": {
+            "title": "Fremont一日安排",
+            "date": "2026-10-10",
+            "stops": [
+              {
+                "kind": "event",
+                "id": "fremont-ardenwood-harvest-2026"
+              },
+              {
+                "kind": "place",
+                "id": "opening-sucre-damour-fremont-celebration-2026"
+              },
+              {
+                "kind": "place",
+                "id": "coyote-hills"
+              }
+            ]
+          }
+        },
+        "evidence": [
+          {
+            "id": "s-a12887c701bc398e",
+            "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+            "url": "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c25df55413b958af",
+            "title": "Sucré d’Amour Café & Sushi",
+            "url": "https://www.sucredamourca.com",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-79d4ce2656bddf10",
+            "title": "Coyote Hills 湿地与草坡",
+            "url": "https://www.ebparks.org/parks/coyote-hills",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ade27bdc69dd1811",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "/guides/bay-area-101-city-exploration-living-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-99c83d17f0ada120",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.ebparks.org/parks/ardenwood",
+            "kind": "web",
+            "checkedAt": "2026-10-05T03:09:19.927Z",
+            "verification": "page-read"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f20aede3b7b8d8f1",
+            "title": "湾区没有车怎么生活：BART、Caltrain、公交、接送和买菜怎么安排",
+            "url": "/guides/bay-area-without-car-guide",
+            "kind": "guide",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-4caa472d2cf57992",
+            "title": "湾区雨天带孩子去哪：OMCA 与 The Tech，两种半日备选",
+            "url": "/guides/rainy-day-museum-family-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abe19a987c77485b",
+            "title": "MARIN TRANSIT：Marin Transit 官方免票日",
+            "url": "https://marintransit.gov/fare-free-promotions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6205fc0b5b39bda7",
+            "title": "IKEA：IKEA Family 热饮福利",
+            "url": "https://www.ikea.com/us/en/ikea-family",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-82203848da57804c",
+            "title": "LOWE’S KIDS CLUB：Lowe’s 官方 Builder Recognition 条款（至 2026 年底）",
+            "url": "https://www.lowes.com/pdf/diy-u_kids_workshops_terms.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aa789846e47b3982",
+            "title": "LAKESHORE LEARNING：Lakeshore 官方 2026 免费儿童活动日历（PDF）",
+            "url": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0fcce397f4f54fa2",
+            "title": "RED ROBIN：Red Robin 6/1/2026 新规与儿童生日条件",
+            "url": "https://www.redrobin.com/royalty/terms",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7068690ed9aa2ca9",
+            "title": "SEPHORA：Sephora 官方 2026 生日礼与兑换条件",
+            "url": "https://www.sephora.com/beauty/birthday-gift",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1f41adeae3ee12df",
+            "title": "MICHAELS：Michaels 官方活动详情与 2026 场次",
+            "url": "https://www.michaels.com/class/witching-hours:-ghost-in-a-jar-65241635371400",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ebf25a45bc3d1584",
+            "title": "MICHAELS：Michaels 官方活动详情与 2026 场次",
+            "url": "https://www.michaels.com/class/witching-hours:-halloween-lanterns-434606771812744",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b627c833face2b8f",
+            "title": "MICHAELS：Michaels 官方活动详情与 2026 场次",
+            "url": "https://www.michaels.com/class/lil%E2%80%99-witching-hours:-halloween-fest-165030318324104",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-df9193f9f1369587",
+            "title": "BART：乘车与路线指南",
+            "url": "https://www.bart.gov/guide",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0d50e05b488b51bc",
+            "title": "SamTrans：半岛公交线路",
+            "url": "https://www.samtrans.com/routes",
+            "kind": "web",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fa3b9d945cf9d8f4",
+            "title": "VTA：南湾公交与轻轨线路",
+            "url": "https://www.vta.org/go/routes",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b9663505343431eb",
+            "title": "Caltrain：现行时刻表与临时调整",
+            "url": "https://www.caltrain.com/schedules/pdfs",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-5859cc67ffcf656d",
+            "title": "OMCA：FAQ 与联系入口",
+            "url": "https://museumca.org/faqs-contact-us",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ab55769b73ad168b",
+            "title": "OMCA：Visit",
+            "url": "https://museumca.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-18fc26e8ace0582c",
+            "title": "The Tech Interactive：互动展项",
+            "url": "https://www.thetech.org/explore/exhibits",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cacde740861ce580",
+            "title": "The Tech Interactive：参观前常见问题",
+            "url": "https://www.thetech.org/visit/frequently-asked-questions-before-your-visit",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-84b47faedea19423",
+            "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+            "url": "/guides/bay-area-commute-guide",
+            "kind": "guide",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1d1355da54027d67",
+            "title": "湾区常用 App 与网站攻略：出行、外卖、找房、省钱和本地生活",
+            "url": "/guides/bay-area-useful-apps-platforms-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0bb34152d8186ff2",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.fremont.gov/government/departments/parks-recreation/parks/central-park",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0487be5929f3fb91",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.google.com/maps/search/?api=1&query=Central%20Park%20Lake%20Elizabeth%20Fremont",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c41deda753120944",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.google.com/maps/search/?api=1&query=Ardenwood%20Historic%20Farm%20Fremont",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fd916e7f38645c3b",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.namiwalks.org/events/2163",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c2315d3d5a474286",
+            "title": "National Park Service: Active Alerts",
+            "url": "https://www.nps.gov/planyourvisit/alerts.htm?v=1",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6f1f7a5f26f783a4",
+            "title": "511: Travel information and FAQ",
+            "url": "https://511.org/about/faq",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2e6c06112876a822",
+            "title": "ABAG: How We Govern",
+            "url": "https://www.abag.ca.gov/about-abag/what-we-do/how-we-govern",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-99c848e0279074a4",
+            "title": "GARDENS OF GOLDEN GATE PARK：GGGP 官方免费资格与居住证明规则",
+            "url": "https://gggp.org/tickets",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0a390d58cdb333a2",
+            "title": "THE HOME DEPOT：Home Depot 官方免费儿童工作坊与报名",
+            "url": "https://www.homedepot.com/c/kids-workshop",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-355e75b3a7e29b31",
+            "title": "TODAY AT APPLE · BAY AREA：Apple 官方 · Kids 互动善意故事课程",
+            "url": "https://www.apple.com/today/event/kids-create-interactive-story-of-kindness",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-598dded60baaed20",
+            "title": "IKEA · BAY AREA：IKEA 美国官方条款 · 儿童床与床垫八折",
+            "url": "https://www.ikea.com/us/en/customer-service/terms-and-conditions-pub88f6a8d0",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b01c52362365ac60",
+            "title": "湾区常用 App 与网站攻略：出行、外卖、找房、省钱和本地生活",
+            "url": "https://www.bart.gov/guide/apps",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-907e93ae8841e3d1",
+            "title": "湾区常用 App 与网站攻略：出行、外卖、找房、省钱和本地生活",
+            "url": "https://www.bart.gov/guide/parking/payment",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          }
+        ],
+        "suggestedGuides": [],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "search_web",
+              "status": "unavailable",
+              "label": "search_web",
+              "code": "web_verification_failed"
+            },
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "search_site"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_forbidden"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_page_too_large"
+            },
+            {
+              "tool": "read_source",
+              "status": "completed",
+              "label": "read_source"
+            },
+            {
+              "tool": "create_plan",
+              "status": "completed",
+              "label": "create_plan"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 2,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 3,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "reasoning",
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 4,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 731
+            }
+          ],
+          "elapsedMs": 30186
+        },
+        "retrieval": {
+          "requestedMode": "smart",
+          "scope": "site+web",
+          "webStatus": "completed",
+          "requestedDate": "2026-10-10",
+          "city": "Fremont",
+          "area": "San Francisco Bay Area, California, United States",
+          "checkedAt": "2026-10-05T03:09:19.927Z",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 4
+        }
+      }
+    },
+    {
+      "id": "fremont-followup-retain-constraints",
+      "request": {
+        "message": "不想跑远，只在 Fremont 市内，别换到其他城市。还是刚才的家庭、日期、全家总预算和往返时间；把方案收紧成两站，保留孩子休息和午饭。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "context": {
+          "currentPath": "/"
+        },
+        "history": [
+          {
+            "role": "user",
+            "content": "请帮我安排 2026 年 10 月 10 日在 Fremont 的亲子一日行程：2 位成人加 1 名 5 岁孩子，只坐公交和步行，上午 10:00 从 Fremont BART 站出发，17:00 前回到同一站。全家总预算 $50，要包括门票、交通和午餐，不是每人 $50。请结合 BAYLINK 站内资料与场馆官方站外信息核实，安排休息；没有核实的营业、票价和交通时间请明确说不知道。"
+          },
+          {
+            "role": "assistant",
+            "content": "按你的要求，预算是全家共 $50，含门票、公交和午餐；现有计划卡误按每人 $50 计算且堆了三站，不能作为已核实可执行的行程。\n建议缩为一个主目的地：Ardenwood Historic Farm 历史农场；BAYLINK 列有丰收节，但其 2026 年 10 月 10 日场次和票价尚未得到官方活动原文核实，只能暂选。[1][2]\n官方常规时间为周二至周日 10:00–16:00，历史季普通周六两成人加5岁孩子合计 $10，但特别活动另收费，不能把 $10 套用到丰收节，也不能据每周营业时间保证当天开放。[3]\n暂定节奏是10:00从 Fremont BART 站出发、抵达后慢逛，12:00–13:00午餐及休息、下午短时活动后返程，这些只是安排意向：公交线路、班次、步行耗时、三人车费及午餐价格都不知道，因此无法保证17:00前回站或总额不超过 $50。\n备选 Coyote Hills 在站内标为免费湿地公园，但当天开放和公交接驳仍未核实，省门票却不代表更容易到达；不建议再叠加餐厅与第二个公园。[4]\n下一步应先向农场确认10月10日活动及两成人、5岁儿童的实际票价，再核对 Fremont BART 往返公交和午餐成本，才能定稿。[3]"
+          }
+        ]
+      },
+      "usedContinuation": true,
+      "sessionTokenIssued": true,
+      "httpStatus": 200,
+      "latencyMs": 28115,
+      "response": {
+        "ok": true,
+        "answer": "只保留 Fremont 市内两站的暂案：Ardenwood Historic Farm 历史农场＋Sucré d’Amour Café & Sushi 餐饮店；仍按2026年10月10日、2成人＋5岁孩子、仅公交和步行、10:00从 Fremont BART 出发并17:00前回同站、全家总预算$50处理。[1][2]\n第一站围绕农场慢逛，但站内丰收节记录尚未得到官方活动原文核实，不能把当天场次或特别活动票价当作已确认。[3]\n第二站仅暂作午餐候选，预留12:00–13:00午饭与坐下休息、下午再留一次孩子休息，不额外添加第三个景点；餐厅当天营业与三人餐费仍不知道。[2]\n删去 Coyote Hills：官方确认它位于 Fremont，但最近的 BART 站是 Union City，现有证据不能证明从你指定起点接驳方便，不能仅因同城就说不远。[4]\n当前计划卡主方案仍列三站，已有两站备选也只是待核实草案；两站之间及往返公交、步行耗时、三人车费、门票和午餐总价均未核实，因此不能承诺17:00前回站或全家花费不超过$50。",
+        "sources": [
+          {
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "/guides/bay-area-101-city-exploration-living-guide"
+          },
+          {
+            "title": "Sucré d’Amour Café & Sushi",
+            "url": "https://www.sucredamourca.com"
+          },
+          {
+            "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+            "url": "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+          },
+          {
+            "title": "Coyote Hills 湿地与草坡",
+            "url": "https://www.ebparks.org/parks/coyote-hills"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 2,
+          "goal": "day-plan",
+          "city": "Fremont",
+          "region": "east-bay",
+          "date": "2026-10-10",
+          "origin": "Fremont",
+          "originCandidateId": null,
+          "travelMode": "transit",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 50,
+          "budgetScope": "total",
+          "freeOnly": null,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": "17:00",
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [
+            "fremont-ardenwood-harvest-2026",
+            "opening-sucre-damour-fremont-celebration-2026",
+            "coyote-hills"
+          ],
+          "preferences": [],
+          "clearedFields": [
+            "originCandidateId"
+          ]
+        },
+        "assistantPlan": {
+          "id": "baybay-7e715dca2a9ae5a7a75b",
+          "date": "2026-10-10",
+          "title": "Fremont一日安排",
+          "status": "needs_verification",
+          "stops": [
+            {
+              "id": "event:fremont-ardenwood-harvest-2026",
+              "kind": "event",
+              "entityId": "fremont-ardenwood-harvest-2026",
+              "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-a12887c701bc398e"
+              ],
+              "sourceUrls": [
+                "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+              ],
+              "notes": [
+                "特别活动票$8–12；未满4岁免费；停车免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。"
+              ],
+              "venue": "Ardenwood Historic Farm · 34600 Ardenwood Boulevard",
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete"
+            },
+            {
+              "id": "place:opening-sucre-damour-fremont-celebration-2026",
+              "kind": "place",
+              "entityId": "opening-sucre-damour-fremont-celebration-2026",
+              "title": "Sucré d’Amour Café & Sushi",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-c25df55413b958af"
+              ],
+              "sourceUrls": [
+                "https://www.sucredamourca.com/"
+              ],
+              "notes": [
+                "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。"
+              ],
+              "path": "/openings/sucre-damour-fremont-celebration-2026",
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete"
+            },
+            {
+              "id": "place:coyote-hills",
+              "kind": "place",
+              "entityId": "coyote-hills",
+              "title": "Coyote Hills 湿地与草坡",
+              "city": "Fremont",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-79d4ce2656bddf10"
+              ],
+              "sourceUrls": [
+                "https://www.ebparks.org/parks/coyote-hills"
+              ],
+              "notes": [],
+              "path": "/guides/fremont-coyote-hills-short-walk-guide",
+              "guideSlug": "fremont-coyote-hills-short-walk-guide",
+              "location": {
+                "lat": 37.553623,
+                "lng": -122.076027,
+                "label": "Coyote Hills main entrance area",
+                "sourceUrl": "https://www.ebparks.org/parks/coyote-hills",
+                "precision": "area"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "admissionUsd": 0,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "recorded"
+            }
+          ],
+          "budget": {
+            "knownTotalUsd": 0,
+            "knownPerPersonUsd": 0,
+            "unknownItems": [
+              "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+              "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+              "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+              "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+            ],
+            "scope": "total",
+            "limitUsd": 50
+          },
+          "checks": [
+            {
+              "code": "date",
+              "status": "pass",
+              "message": "日期：2026-10-10（湾区时间）。"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+              "stopId": "event:fremont-ardenwood-harvest-2026"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Coyote Hills 湿地与草坡」的这段交通时间尚待查询。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Coyote Hills 湿地与草坡」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:coyote-hills"
+            },
+            {
+              "code": "return_time",
+              "status": "unknown",
+              "message": "回程交通及返回时间尚未核实。"
+            },
+            {
+              "code": "budget",
+              "status": "unknown",
+              "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+            }
+          ],
+          "alternatives": [
+            {
+              "id": "baybay-ac1691b150470ed8d193",
+              "date": "2026-10-10",
+              "title": "备选安排",
+              "status": "needs_verification",
+              "stops": [
+                {
+                  "id": "event:fremont-ardenwood-harvest-2026",
+                  "kind": "event",
+                  "entityId": "fremont-ardenwood-harvest-2026",
+                  "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+                  "city": "Fremont",
+                  "date": "2026-10-10",
+                  "timeStatus": "unknown",
+                  "sourceIds": [
+                    "s-a12887c701bc398e"
+                  ],
+                  "sourceUrls": [
+                    "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf"
+                  ],
+                  "notes": [
+                    "特别活动票$8–12；未满4岁免费；停车免费。",
+                    "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                    "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。"
+                  ],
+                  "venue": "Ardenwood Historic Farm · 34600 Ardenwood Boulevard",
+                  "external": false,
+                  "suggestedDurationMinutes": 60,
+                  "knownAdmissionTotalUsd": 0,
+                  "admissionStatus": "incomplete"
+                },
+                {
+                  "id": "place:opening-sucre-damour-fremont-celebration-2026",
+                  "kind": "place",
+                  "entityId": "opening-sucre-damour-fremont-celebration-2026",
+                  "title": "Sucré d’Amour Café & Sushi",
+                  "city": "Fremont",
+                  "date": "2026-10-10",
+                  "timeStatus": "unknown",
+                  "sourceIds": [
+                    "s-c25df55413b958af"
+                  ],
+                  "sourceUrls": [
+                    "https://www.sucredamourca.com/"
+                  ],
+                  "notes": [
+                    "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。"
+                  ],
+                  "path": "/openings/sucre-damour-fremont-celebration-2026",
+                  "external": false,
+                  "suggestedDurationMinutes": 60,
+                  "knownAdmissionTotalUsd": 0,
+                  "admissionStatus": "incomplete"
+                }
+              ],
+              "budget": {
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "unknownItems": [
+                  "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                  "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+                  "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+                  "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+                ],
+                "scope": "total",
+                "limitUsd": 50
+              },
+              "checks": [
+                {
+                  "code": "date",
+                  "status": "pass",
+                  "message": "日期：2026-10-10（湾区时间）。"
+                },
+                {
+                  "code": "travel_time",
+                  "status": "unknown",
+                  "message": "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "opening_hours",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "reservation",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "child_access",
+                  "status": "unknown",
+                  "message": "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+                  "stopId": "event:fremont-ardenwood-harvest-2026"
+                },
+                {
+                  "code": "travel_time",
+                  "status": "unknown",
+                  "message": "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "opening_hours",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "reservation",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "child_access",
+                  "status": "unknown",
+                  "message": "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+                  "stopId": "place:opening-sucre-damour-fremont-celebration-2026"
+                },
+                {
+                  "code": "return_time",
+                  "status": "unknown",
+                  "message": "回程交通及返回时间尚未核实。"
+                },
+                {
+                  "code": "budget",
+                  "status": "unknown",
+                  "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+                }
+              ],
+              "alternatives": [],
+              "unknowns": [
+                "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+                "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+                "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+                "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+                "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+                "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+                "回程交通及返回时间尚未核实。",
+                "费用仍有未知项，尚不能确认总安排符合预算。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+                "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+                "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+                "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+              ],
+              "notes": [],
+              "rejectedCandidates": [],
+              "constraints": {
+                "city": "Fremont",
+                "origin": "Fremont",
+                "startTime": "10:00",
+                "finishBy": "17:00",
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "travelMode": "transit",
+                "excludedCities": [],
+                "freeOnly": false
+              },
+              "travelLegs": [],
+              "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+              "handoff": {
+                "title": "备选安排",
+                "date": "2026-10-10",
+                "stops": [
+                  {
+                    "kind": "event",
+                    "id": "fremont-ardenwood-harvest-2026"
+                  },
+                  {
+                    "kind": "place",
+                    "id": "opening-sucre-damour-fremont-celebration-2026"
+                  }
+                ]
+              }
+            }
+          ],
+          "unknowns": [
+            "前往「Fremont Ardenwood 丰收节：收玉米、看农场」的这段交通时间尚待查询。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」缺少可用于安排这一天的开放或场次时间。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」的预约要求或剩余名额仍待确认。",
+            "「Fremont Ardenwood 丰收节：收玉米、看农场」的儿童参加及入场规则仍待确认。",
+            "前往「Sucré d’Amour Café & Sushi」的这段交通时间尚待查询。",
+            "「Sucré d’Amour Café & Sushi」缺少可用于安排这一天的开放或场次时间。",
+            "「Sucré d’Amour Café & Sushi」的预约要求或剩余名额仍待确认。",
+            "「Sucré d’Amour Café & Sushi」的儿童参加及入场规则仍待确认。",
+            "前往「Coyote Hills 湿地与草坡」的这段交通时间尚待查询。",
+            "「Coyote Hills 湿地与草坡」缺少可用于安排这一天的开放或场次时间。",
+            "「Coyote Hills 湿地与草坡」的预约要求或剩余名额仍待确认。",
+            "「Coyote Hills 湿地与草坡」的儿童参加及入场规则仍待确认。",
+            "回程交通及返回时间尚未核实。",
+            "费用仍有未知项，尚不能确认总安排符合预算。",
+            "Fremont Ardenwood 丰收节：收玉米、看农场: 入场费用或适用资格未确认，不能当作免费。",
+            "Fremont Ardenwood 丰收节：收玉米、看农场: 记录含附条件优惠，尚未核实全体人员是否适用。",
+            "Sucré d’Amour Café & Sushi: 入场费用或适用资格未确认，不能当作免费。",
+            "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+          ],
+          "notes": [],
+          "rejectedCandidates": [],
+          "constraints": {
+            "city": "Fremont",
+            "origin": "Fremont",
+            "startTime": "10:00",
+            "finishBy": "17:00",
+            "partySize": 3,
+            "childAges": [
+              5
+            ],
+            "travelMode": "transit",
+            "excludedCities": [],
+            "freeOnly": false
+          },
+          "travelLegs": [],
+          "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+          "handoff": {
+            "title": "Fremont一日安排",
+            "date": "2026-10-10",
+            "stops": [
+              {
+                "kind": "event",
+                "id": "fremont-ardenwood-harvest-2026"
+              },
+              {
+                "kind": "place",
+                "id": "opening-sucre-damour-fremont-celebration-2026"
+              },
+              {
+                "kind": "place",
+                "id": "coyote-hills"
+              }
+            ]
+          }
+        },
+        "evidence": [
+          {
+            "id": "s-a12887c701bc398e",
+            "title": "Fremont Ardenwood 丰收节：收玉米、看农场",
+            "url": "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c25df55413b958af",
+            "title": "Sucré d’Amour Café & Sushi",
+            "url": "https://www.sucredamourca.com",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-79d4ce2656bddf10",
+            "title": "Coyote Hills 湿地与草坡",
+            "url": "https://www.ebparks.org/parks/coyote-hills",
+            "kind": "place",
+            "checkedAt": "2026-10-05T03:10:43.730Z",
+            "verification": "page-read"
+          },
+          {
+            "id": "s-ade27bdc69dd1811",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "/guides/bay-area-101-city-exploration-living-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-9184830b2c35e9c9",
+            "title": "十月周末怎么排：从南湾老街到北湾海边，一周只选一个方向",
+            "url": "/guides/bay-area-october-weekend-planner-2026",
+            "kind": "guide",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-4caa472d2cf57992",
+            "title": "湾区雨天带孩子去哪：OMCA 与 The Tech，两种半日备选",
+            "url": "/guides/rainy-day-museum-family-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-84b47faedea19423",
+            "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+            "url": "/guides/bay-area-commute-guide",
+            "kind": "guide",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-31b5b30aa4dd027e",
+            "title": "Peninsula 生活指南：San Mateo、Millbrae、Burlingame 怎么选",
+            "url": "/guides/peninsula-living-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-27",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c50931e5ffba54ad",
+            "title": "湾区机场落地怎么回家：SFO、SJC、OAK 接送与公共交通准备清单",
+            "url": "/guides/bay-area-airport-arrival-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f20aede3b7b8d8f1",
+            "title": "湾区没有车怎么生活：BART、Caltrain、公交、接送和买菜怎么安排",
+            "url": "/guides/bay-area-without-car-guide",
+            "kind": "guide",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-423cd7968af50709",
+            "title": "Friends of China Camp：参观重点",
+            "url": "https://friendsofchinacamp.org/visit-the-park/highlights",
+            "kind": "web",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b2dd871fa49b3078",
+            "title": "Photosynthesis：温室外墙夜间灯光艺术",
+            "url": "https://gggp.org/visit/admissions-hours",
+            "kind": "web",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-97426e2627a24549",
+            "title": "SFPL：Discover & Go",
+            "url": "https://sfpl.org/discover-and-go",
+            "kind": "web",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-80960aaba49d18fe",
+            "title": "TheatreWorks 话剧《Dracula》",
+            "url": "https://theatreworks.org/mainstage/dracula",
+            "kind": "web",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bd064b62963b1a72",
+            "title": "EBRPD：Tilden Nature Area 最新公告",
+            "url": "https://www.ebparks.org/parks/tilden-nature-area",
+            "kind": "web",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-5859cc67ffcf656d",
+            "title": "OMCA：FAQ 与联系入口",
+            "url": "https://museumca.org/faqs-contact-us",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ab55769b73ad168b",
+            "title": "OMCA：Visit",
+            "url": "https://museumca.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-18fc26e8ace0582c",
+            "title": "The Tech Interactive：互动展项",
+            "url": "https://www.thetech.org/explore/exhibits",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cacde740861ce580",
+            "title": "The Tech Interactive：参观前常见问题",
+            "url": "https://www.thetech.org/visit/frequently-asked-questions-before-your-visit",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-df9193f9f1369587",
+            "title": "BART：乘车与路线指南",
+            "url": "https://www.bart.gov/guide",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b9663505343431eb",
+            "title": "Caltrain：现行时刻表与临时调整",
+            "url": "https://www.caltrain.com/schedules/pdfs",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fa3b9d945cf9d8f4",
+            "title": "VTA：南湾公交与轻轨线路",
+            "url": "https://www.vta.org/go/routes",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0d50e05b488b51bc",
+            "title": "SamTrans：半岛公交线路",
+            "url": "https://www.samtrans.com/routes",
+            "kind": "web",
+            "checkedAt": "2026-06-10",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abe19a987c77485b",
+            "title": "MARIN TRANSIT：Marin Transit 官方免票日",
+            "url": "https://marintransit.gov/fare-free-promotions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6205fc0b5b39bda7",
+            "title": "IKEA：IKEA Family 热饮福利",
+            "url": "https://www.ikea.com/us/en/ikea-family",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef09c3db733c7d26",
+            "title": "PRESIDIO FIELD STATION：Presidio 官方免费入场与家庭参观问答",
+            "url": "https://presidio.gov/explore/attractions/field-station",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8f6e2f7d8672dd8b",
+            "title": "Bank of America：十月日期与参与馆",
+            "url": "https://about.bankofamerica.com/en/making-an-impact/museums-on-us-partners",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cbd972ebfda3e329",
+            "title": "Lowe’s：工作坊日期与会员规则",
+            "url": "https://www.lowes.com/diy-projects-and-ideas/workshops",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-e3ad77081f613083",
+            "title": "LOWE’S：消防飞机官方日期与预约",
+            "url": "https://www.lowes.com/events/register/firefighting-plane",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0a390d58cdb333a2",
+            "title": "THE HOME DEPOT：Home Depot 官方免费儿童工作坊与报名",
+            "url": "https://www.homedepot.com/c/kids-workshop",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-355e75b3a7e29b31",
+            "title": "TODAY AT APPLE · BAY AREA：Apple 官方 · Kids 互动善意故事课程",
+            "url": "https://www.apple.com/today/event/kids-create-interactive-story-of-kindness",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-480038d9c39ec9db",
+            "title": "SJC：公共交通衔接",
+            "url": "https://www.flysanjose.com/public-transit",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-58c90b60a331ad4c",
+            "title": "BART：OAK 机场连接",
+            "url": "https://www.bart.gov/guide/airport/oak",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6b1e54bc6c2ebbae",
+            "title": "SFO：机场地面交通",
+            "url": "https://www.flysfo.com/passengers/ground-transportation",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-359936e352c55e3a",
+            "title": "VTA：60 路线路与服务提醒",
+            "url": "https://www.vta.org/go/routes/60",
+            "kind": "web",
+            "checkedAt": "2026-09-08",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2f3ee795936ea395",
+            "title": "十月搭 BART：Mission 电梯延期、West Oakland 停车减少，还有黄线施工",
+            "url": "/guides/bart-october-access-parking-update-2026",
+            "kind": "guide",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0bb34152d8186ff2",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.fremont.gov/government/departments/parks-recreation/parks/central-park",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0487be5929f3fb91",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.google.com/maps/search/?api=1&query=Central%20Park%20Lake%20Elizabeth%20Fremont",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-99c83d17f0ada120",
+            "title": "湾区 101 城探索与生活指南：每座城市都值得认识",
+            "url": "https://www.ebparks.org/parks/ardenwood",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          }
+        ],
+        "suggestedGuides": [],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [
+          "核实这两站当天营业、全家费用及 Fremont BART 往返公交。"
+        ],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "search_web",
+              "status": "unavailable",
+              "label": "search_web",
+              "code": "web_verification_failed"
+            },
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "search_site"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_page_too_large"
+            },
+            {
+              "tool": "read_source",
+              "status": "completed",
+              "label": "read_source"
+            },
+            {
+              "tool": "search_web",
+              "status": "completed",
+              "label": "search_web"
+            },
+            {
+              "tool": "create_plan",
+              "status": "completed",
+              "label": "create_plan"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 2,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 3,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 4,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 727
+            }
+          ],
+          "elapsedMs": 27991
+        },
+        "retrieval": {
+          "requestedMode": "smart",
+          "scope": "site+web",
+          "webStatus": "completed",
+          "requestedDate": "2026-10-10",
+          "city": "Fremont",
+          "area": "San Francisco Bay Area, California, United States",
+          "checkedAt": "2026-10-05T03:10:49.130Z",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 4
+        }
+      }
+    },
+    {
+      "id": "sf-named-waterfront-route",
+      "request": {
+        "message": "请规划 2026 年 10 月 10 日的旧金山路线，严格按 Ferry Building → Exploratorium → Pier 39 的顺序，不加其他景点。2 位成人和 1 名 5 岁孩子，10:00 从 Ferry Building 出发，17:00 在 Pier 39 结束，只步行或公交，全家总预算 $120 包括门票、交通和午餐。请核对三处的营业安排、孩子票价与路线时长；预算不够或没有查到的内容请直接说明，不要当作免费或已确认。",
+        "assistantVersion": 2,
+        "searchMode": "smart",
+        "locale": "zh-Hans",
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "usedContinuation": false,
+      "sessionTokenIssued": true,
+      "httpStatus": 200,
+      "latencyMs": 35997,
+      "response": {
+        "ok": true,
+        "answer": "目前只能给出待核实的路线框架：2026 年 10 月 10 日 10:00 从 Ferry Building 出发 → Exploratorium → Pier 39，17:00 在 Pier 39 结束，不加其他景点，但尚无已计算路线或完整可行计划。\nFerry Building 官网列建筑常规开放时间为 06:00–22:00、商家各有营业时间，这不是 10 月 10 日的专项确认，现有摘录也未核实入场收费条件。[1]\nExploratorium 的第三方页面列周六常规开放 10:00–17:00，但当天营业、余票和最晚入场尚未官方确认；站内票价快照为成人 $39.95、4–17 岁 $29.95，因此 5 岁孩子不是免费，两成人加孩子合计 $109.85，仍需核实实际结账价。[2][3]\nPier 39 站内攻略说明公共步行区及开放海狮观景处无需统一门票，餐饮、游乐等另收费，但未查到 10 月 10 日的营业安排，也未核实各收费项目的儿童票价。[4]\n按上述博物馆票价，全家 $120 只剩 $10.15 支付午餐和交通，未查到三人午餐报价、公交票价及儿童乘车规则，不能说预算够，也不能把未知费用当作免费。\n优先考虑两段全步行以避免公交支出，但 Ferry Building→Exploratorium、Exploratorium→Pier 39 的步行时长均未取得路线计算，公交时长也未知，因此不能承诺按时完成；下一步应先补齐当日官方营业、两段路线和午餐实价，再决定是否保留入馆。",
+        "sources": [
+          {
+            "title": "Ferry Building · 公共大厅与外部会合点",
+            "url": "https://www.ferrybuildingmarketplace.com/visit"
+          },
+          {
+            "title": "Being Human — Exploratorium | Musa Guide",
+            "url": "https://www.musa.guide/en/discover/san-francisco/exhibitions/exploratorium/being-human"
+          },
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "discover",
+          "city": "San Francisco",
+          "region": "sf",
+          "date": "2026-10-10",
+          "origin": "Ferry Building · One Ferry Building",
+          "originCandidateId": "venue-ferry-building",
+          "travelMode": "transit",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 120,
+          "budgetScope": "total",
+          "freeOnly": true,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": null,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "evidence": [
+          {
+            "id": "s-6ee8333c124398b5",
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a0933c81ece3d85a",
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3e4a941c966769d9",
+            "title": "Ferry Building · 公共大厅与外部会合点",
+            "url": "https://www.ferrybuildingmarketplace.com/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-05T03:12:11.581Z",
+            "verification": "page-read"
+          },
+          {
+            "id": "s-7649c85b78917a08",
+            "title": "Being Human — Exploratorium | Musa Guide",
+            "url": "https://www.musa.guide/en/discover/san-francisco/exhibitions/exploratorium/being-human",
+            "kind": "web",
+            "checkedAt": "2026-10-05T03:12:24.391Z",
+            "verification": "page-read"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bf846f1834279287",
+            "title": "第一次到旧金山的 72 小时：无车看海湾、街区与公园",
+            "url": "/guides/sf-first-72-hours-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-555bc7e1639f6616",
+            "title": "Ferry Plaza 农夫市集：海边逛一圈",
+            "url": "https://foodwise.org/markets/ferry-plaza-farmers-market",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-86413dd33ae34480",
+            "title": "金门大桥与 Fort Point",
+            "url": "https://www.goldengate.org/bridge/visiting-the-bridge/bikes-pedestrians",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-52e7173d873de0cc",
+            "title": "Dolores Park 与 Mission 壁画",
+            "url": "https://sfrecpark.org/892/Mission-Dolores-Park",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-79ba6723a6c33b08",
+            "title": "Presidio Tunnel Tops",
+            "url": "https://presidio.gov/explore/attractions/presidio-tunnel-tops",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2e9fb3c0011be9c5",
+            "title": "艺术宫与 Marina",
+            "url": "https://www.sftravel.com/article/guide-to-san-franciscos-palace-fine-arts",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3f7053b5d2ef86de",
+            "title": "SF Travel：唐人街街区信息",
+            "url": "https://www.sftravel.com/neighborhoods/visit-chinatown",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3a5862ecaab8bf6f",
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef871207837e4453",
+            "title": "Randall Museum：时间与抵达路线",
+            "url": "https://randallmuseum.org/directions-hours",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-735b2fcdc02f4bd8",
+            "title": "Presidio：免费接驳与乘客限制",
+            "url": "https://presidio.gov/visit/getting-to-and-around-the-park/presidio-go-shuttle",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-04962ecc6ab6a605",
+            "title": "SFMOMA：常规开放与儿童票",
+            "url": "https://www.sfmoma.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef09c3db733c7d26",
+            "title": "Presidio：Field Station",
+            "url": "https://presidio.gov/explore/attractions/field-station",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0eedc121e85db7aa",
+            "title": "SFMOMA：无障碍服务",
+            "url": "https://www.sfmoma.org/visit/accessibility",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3c6fc9f86c97ce5f",
+            "title": "SFMOMA · SAN FRANCISCO：SFMOMA 免费家庭日与成人名额",
+            "url": "https://www.sfmoma.org/free-days",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b6475d672346c1f8",
+            "title": "SFMTA · SAN FRANCISCO：SFMTA 官方 65+ 居民免费 Muni 申请规则",
+            "url": "https://www.sfmta.com/fares/free-muni-seniors-ages-65",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-029c9395be53aae3",
+            "title": "CALTRAIN · SF / PENINSULA / SOUTH BAY：Caltrain 官方现行青少年票价",
+            "url": "https://www.caltrain.com/fares",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2b20b518bc711004",
+            "title": "EXPLORATORIUM · SAN FRANCISCO：Exploratorium for All 当前价格与证件",
+            "url": "https://www.exploratorium.edu/visit/reduced-rates",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6205fc0b5b39bda7",
+            "title": "IKEA：IKEA Family 热饮福利",
+            "url": "https://www.ikea.com/us/en/ikea-family",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abe19a987c77485b",
+            "title": "MARIN TRANSIT：Marin Transit 官方免票日",
+            "url": "https://marintransit.gov/fare-free-promotions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aa789846e47b3982",
+            "title": "LAKESHORE LEARNING：Lakeshore 官方 2026 免费儿童活动日历（PDF）",
+            "url": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-09dcbcae5a291e25",
+            "title": "ASIAN ART MUSEUM · SF：亚洲艺术博物馆 10/4 活动与票务规则",
+            "url": "https://calendar.asianart.org/event/sundays-at-the-asian-art-museum-october-4",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1e27969add433cb2",
+            "title": "SAN FRANCISCO CITY GUIDES：City Guides 免费、预约与捐款规则",
+            "url": "https://www.sfcityguides.org/about-us/faqs",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-195b847d29d09073",
+            "title": "SAN FRANCISCO ZOO：SF Zoo 官方 2026 免费日日历",
+            "url": "https://www.sfzoo.org/calendar/sf-resident-free-day-5",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1310b8f9102426c6",
+            "title": "PIER 39：海狮与 K-Dock",
+            "url": "https://www.pier39.com/sealions",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bb1fd584c7312c0a",
+            "title": "PIER 39：常见问题",
+            "url": "https://www.pier39.com/frequently-asked-questions",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ce845f62c9e78c70",
+            "title": "NPS：海事公园参观与码头重建",
+            "url": "https://www.nps.gov/safr/planyourvisit/index.htm",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a8b8c806982e53e4",
+            "title": "SFMTA：F Market & Wharves",
+            "url": "https://www.sfmta.com/routes/f-market-wharves",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-dc13f26cbb289a26",
+            "title": "SF Rec & Parks：金门公园交通",
+            "url": "https://sfrecpark.org/1159/Getting-to-Golden-Gate-Park",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f505e86709b78177",
+            "title": "SFMTA：MuniMobile 当前票种",
+            "url": "https://www.sfmta.com/getting-around/muni/fares/munimobile",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7576adf94f35dde0",
+            "title": "California Academy of Sciences：参观准备",
+            "url": "https://www.calacademy.org/plan-your-visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8714aa1aebc52392",
+            "title": "NPS：恶魔岛参观基础信息",
+            "url": "https://www.nps.gov/alca/planyourvisit/basicinfo.htm",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-827ef486f26b8243",
+            "title": "SFMTA：Visitor Passport 覆盖范围",
+            "url": "https://www.sfmta.com/fares/1-day-visitor-passport",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-195dad0434aac441",
+            "title": "恶魔岛 Alcatraz 实用攻略：先认官方船票，再安排岛上半天",
+            "url": "/guides/sf-alcatraz-booking-day-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-84b47faedea19423",
+            "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+            "url": "/guides/bay-area-commute-guide",
+            "kind": "guide",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1d1355da54027d67",
+            "title": "湾区常用 App 与网站攻略：出行、外卖、找房、省钱和本地生活",
+            "url": "/guides/bay-area-useful-apps-platforms-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          }
+        ],
+        "suggestedGuides": [
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "slug": "sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide",
+            "slug": "sf-fishermans-wharf-pier39-guide"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "search_web",
+              "status": "unavailable",
+              "label": "search_web",
+              "code": "web_no_cited_sources"
+            },
+            {
+              "tool": "read_source",
+              "status": "completed",
+              "label": "read_source"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_forbidden"
+            },
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "search_site"
+            },
+            {
+              "tool": "search_web",
+              "status": "completed",
+              "label": "search_web"
+            },
+            {
+              "tool": "read_source",
+              "status": "completed",
+              "label": "read_source"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_tool_limit"
+            },
+            {
+              "tool": "read_source",
+              "status": "unavailable",
+              "label": "read_source",
+              "code": "source_tool_limit"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 2,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 3,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0
+            },
+            {
+              "round": 4,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 808
+            }
+          ],
+          "elapsedMs": 35841
+        },
+        "retrieval": {
+          "requestedMode": "smart",
+          "scope": "site+web",
+          "webStatus": "completed",
+          "requestedDate": "2026-10-10",
+          "city": "San Francisco",
+          "area": "San Francisco Bay Area, California, United States",
+          "checkedAt": "2026-10-05T03:12:24.391Z",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 4
+        }
+      }
+    }
+  ],
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "service": "baylink-api",
+      "commit": "98d400d4d8823b060d5cb25aaf8723a1ad4ee902"
+    }
+  },
+  "capabilities": {
+    "status": 200,
+    "body": {
+      "version": 2,
+      "enabled": true,
+      "tools": [
+        "site",
+        "web",
+        "sources",
+        "weather",
+        "plans"
+      ],
+      "taskMemory": true,
+      "routeEstimates": true,
+      "configuredModel": "gpt-6.1-sol",
+      "modelAccessVerified": false
+    }
+  },
+  "finishedAt": "2026-10-05T03:12:22.409Z"
+}

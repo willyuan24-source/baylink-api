@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { preparePlanEdit, resolvePlanSelection } = require('../lib/baybayPlanEdits');
+const { preparePlanEdit, resolvePlanSelection, requestedStopLimit } = require('../lib/baybayPlanEdits');
 
 const NOW = Date.parse('2026-10-04T16:00:00Z');
 const state = { goal: 'day-plan', date: '2026-10-05', city: 'Fremont', origin: 'Fremont', partySize: 2, budget: 100, budgetScope: 'total', selectedCandidateIds: [], excludedCandidateIds: [] };
@@ -10,6 +10,15 @@ const catalog = { events: [], places: rows };
 const lastPlan = { selectedIds: ['a', 'b', 'c'], date: state.date };
 const prepare = (message, options = {}) => preparePlanEdit({ message, state, previousState: state, lastPlan, catalog, ...options });
 const select = (edit, candidateIds, candidates = rows) => resolvePlanSelection({ edit, candidateIds, candidates, now: NOW });
+
+test('explicit stop counts parse as limits without confusing party size or indexed edits', () => {
+  for (const message of ['把方案收紧成两站', '最多 2 站', '不要超过2站', '只安排兩站', '两站以内', 'only two stops', 'at most 2 stops', 'reduce the itinerary to two stops', 'no more than two stops']) {
+    assert.equal(requestedStopLimit(message), 2, message);
+    assert.equal(prepare(message).edit, null, message);
+  }
+  for (const message of ['第二站太远', '2 位成人和 1 名孩子', '两站之间要多久', 'How far apart are the two stops?', '换掉第2站']) assert.equal(requestedStopLimit(message), null, message);
+  assert.equal(prepare('不要超过2站，删掉第一站').edit.index, 0);
+});
 
 test('replace second stop keeps first and third in original order despite model proposing an entirely new day', () => {
   const prepared = prepare('换掉第二站');
