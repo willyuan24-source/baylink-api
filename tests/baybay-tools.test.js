@@ -163,6 +163,34 @@ test('official guide reference links become readable source IDs with editorial d
   assert.equal(read, 'https://example.org/official-visit');
 });
 
+test('source reads expose real same-origin eligibility links as unread sources within the existing page budget', async () => {
+  const store = createEvidenceStore(), calls = [];
+  const source = store.addSource({ title: 'Museums on Us partners', url: 'https://about.bankofamerica.com/en/making-an-impact/museums-on-us-partners', verification: 'catalog' });
+  const links = [
+    ...Array.from({ length: 8 }, (_, i) => ({ title: `Visitor hours ${i}`, url: `https://about.bankofamerica.com/visit-${i}` })),
+    { title: 'Review Museums on Us eligibility terms', url: 'https://about.bankofamerica.com/en/making-an-impact/arts-and-culture' },
+    { title: 'Eligibility on an unrelated site', url: 'https://other.example.org/eligibility' },
+    { title: 'Eligibility internal', url: 'https://127.0.0.1/eligibility' },
+    { title: 'Eligibility private', url: 'https://10.0.0.1/eligibility' },
+    { title: 'Eligibility fake authority', url: 'https://about.bankofamerica.com.evil.example/eligibility' },
+    { title: 'Eligibility credential URL', url: 'https://user:secret@about.bankofamerica.com/eligibility' },
+    { title: 'Eligibility insecure URL', url: 'http://about.bankofamerica.com/eligibility' },
+    { title: 'Eligibility unsupported port', url: 'https://about.bankofamerica.com:444/eligibility' },
+    { title: 'Eligibility script', url: 'javascript:alert(1)' },
+    { title: 'Current page duplicate eligibility', url: `${source.url}#terms` },
+  ];
+  const { research } = setup({ store, sourceFetch: async row => { calls.push(row.url); return { text: 'Official museum visitor information with eligibility terms available at the linked source.', ...(row.id === source.id ? { links } : {}) }; } });
+  const read = await research.readSource(source.id);
+  assert.equal(calls.length, 1); assert.equal(read.relatedSources.length, 6);
+  assert.equal(read.relatedSources[0].url, 'https://about.bankofamerica.com/en/making-an-impact/arts-and-culture');
+  assert.ok(read.relatedSources.every(row => new URL(row.url).origin === 'https://about.bankofamerica.com'));
+  assert.ok(read.relatedSources.every(row => store.sources.get(row.id).verification === 'catalog' && !store.sources.get(row.id).text));
+  assert.deepEqual((await research.readSource(source.id)).relatedSources, read.relatedSources); assert.equal(calls.length, 1);
+  assert.equal((await research.readSource(read.relatedSources[0].id)).verification, 'page-read');
+  assert.equal((await research.readSource(read.relatedSources[1].id)).verification, 'page-read');
+  assert.match((await research.readSource(read.relatedSources[2].id)).error, /limit/i); assert.equal(calls.length, 3);
+});
+
 test('partial verification updates retain stronger prior facts without reviving stale planning prices', () => {
   const store = storeFor([candidate('a', { planning: { admissionUsd: 0, schedule: { old: true } } })]);
   store.addCandidate({ ...store.candidates.get('a'), planning: { admissionUsd: null, schedule: { old: true } }, cost: 'paid', costLabel: 'General admission $20', verification: 'page-verified', verifiedFacts: { city: 'Fremont', admission: 'General admission $20' } });

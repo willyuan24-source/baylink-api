@@ -82,6 +82,22 @@ test('long main content cannot truncate the only published footer hours', () => 
   assert.ok(!normalizeBody('<main>Article</main><footer><p>Hours of entertainment every day</p></footer>').includes('entertainment'));
 });
 
+test('public source reading discovers real same-origin eligibility links without following them', async () => {
+  const html = body('$5').replace('</main>', '<p><a href="/terms?lang=en&amp;version=2#eligibility">Eligibility and terms</a></p>'
+    + '<a href="/hours">Museum hours</a><a href="https://elsewhere.example/admission">Admission</a>'
+    + '<a href="https://127.0.0.1/hours">Hours</a><a href="http://museum.example/hours">Hours</a>'
+    + '<a href="https://user:pass@museum.example/tickets">Tickets</a><a href="javascript:alert(1)">Visit</a>'
+    + '<a href="/tickets.pdf">Tickets</a><a href="/about">About</a>'
+    + '<script><a href="/false-terms">Eligibility</a></script></main>');
+  let requests = 0;
+  const result = await fetchSource(source, { lookup, fetch: async () => { requests++; return response(html); } });
+  assert.equal(requests, 1);
+  assert.deepEqual(result.links, [
+    { title: 'Eligibility and terms', url: 'https://museum.example/terms?lang=en&version=2' },
+    { title: 'Museum hours', url: 'https://museum.example/hours' },
+  ]);
+});
+
 test('private IPs, mixed DNS answers, credentials, HTTP, ports and foreign redirects are blocked before requests', async () => {
   for (const address of ['127.0.0.1', '10.0.0.1', '169.254.169.254', '172.16.1.1', '192.168.1.1', '100.64.0.1', '::1', 'fc00::1', '::ffff:127.0.0.1', '2001:db8::1']) assert.equal(isPublicAddress(address), false, address);
   let calls = 0; const request = async () => { calls++; return response(body('$5')); };

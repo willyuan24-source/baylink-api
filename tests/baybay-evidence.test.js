@@ -19,6 +19,54 @@ test('paragraph retrieval matches a user need across languages and returns the s
   assert.ok(result.sources.some(source => source.evidenceId === result.guides[0].evidenceId));
 });
 
+test('guide references are ranked across the entire source list with direct paragraph links first', () => {
+  const article = guide('benefits', 'Bay Area museum benefits', 'San Francisco\n\nde Young visitor benefits depend on the program and ticket category. Check the museum rules at https://example.org/visit before using any pass.');
+  const bank = { title: 'Bank of America: Museums on Us eligibility', url: 'https://about.bankofamerica.com/en/making-an-impact/museums-on-us-partners' };
+  const other = { title: 'Redwood Books library borrowing eligibility', url: 'https://example.org/library-eligibility' };
+  article.sources = [...Array.from({ length: 24 }, (_, i) => ({ title: `Unrelated retailer ${i}`, url: `https://example.org/retailer-${i}` })), bank, other,
+    { title: 'Museum visitor rules', url: 'https://example.org/visit/' }, { title: 'Unsafe Bank of America eligibility', url: 'https://user:secret@example.org/private' }];
+  const guideCatalog = [article], catalog = fixture();
+  const first = search('de Young Bank of America benefits', { guideCatalog, catalog, state: { city: 'San Francisco', goal: 'information' } });
+  assert.equal(first.guides[0].sourceUrls[0].url, 'https://example.org/visit');
+  assert.equal(first.guides[0].sourceUrls[1].url, bank.url);
+  assert.ok(first.guides.every(row => row.sourceUrls.length <= 8 && !('_guideSources' in row)));
+  assert.equal(first.guides[0].sourceUrls.filter(source => /example.org\/visit\/?$/.test(source.url)).length, 1);
+  assert.ok(first.guides[0].sourceUrls.every(source => !source.url.includes('secret')));
+  first.guides[0].sourceUrls[1].title = 'mutated result';
+  const second = search('de Young Redwood Books library borrowing eligibility', { guideCatalog, catalog, state: { city: 'San Francisco', goal: 'information' } });
+  assert.equal(second.guides[0].sourceUrls[1].url, other.url);
+  const again = search('de Young Bank of America eligibility', { guideCatalog, catalog, state: { city: 'San Francisco', goal: 'information' } });
+  assert.equal(again.guides[0].sourceUrls[1].title, bank.title);
+});
+
+test('a general program reference survives while another city museum facts stay excluded', () => {
+  const article = guide('museum-benefits', 'Bay Area museum benefits', 'San Francisco\n\nde Young museum visitors should check the applicable benefit rules and ticket category before choosing a ticket.\n\nMountain View\n\nThe Computer History Museum provides Bank of America cardholder admission subject to its own venue rules.');
+  const bank = { title: 'Bank of America benefit program eligibility', url: 'https://about.bankofamerica.com/en/making-an-impact/museums-on-us-partners' };
+  article.sources = [{ title: 'Mountain View museum admission rules', url: 'https://computerhistory.org/plan-your-visit/discounts/' }, bank];
+  const result = search('de Young Bank of America museum benefit', { guideCatalog: [article], catalog: fixture(), state: { city: 'San Francisco', goal: 'information' } });
+  assert.ok(result.guides.length);
+  assert.ok(result.guides.every(row => !row.text.includes('Computer History Museum')));
+  assert.ok(result.guides.some(row => row.sourceUrls.some(source => source.url === bank.url)));
+  assert.ok(result.guides.every(row => row.sourceUrls.every(source => !source.url.includes('computerhistory.org'))));
+  assert.ok(result.guides.every(row => row.verification === 'site-record' && row.verifiedLive === false));
+  assert.deepEqual(result.candidates, []);
+});
+
+test('the actual de Young eligibility question retrieves the official bank reference at source index 111', () => {
+  const guideCatalog = require('../data/guide-catalog.json'), catalog = require('../data/planner-catalog.json');
+  const freebies = guideCatalog.find(row => row.slug === 'bay-area-freebies-deals-2026-10');
+  const bank = freebies.sources.find(source => source.url.includes('bankofamerica.com'));
+  assert.ok(freebies.sources.indexOf(bank) > 100);
+  const query = '我住Fremont，今天是2026年10月4日。我有一张 Bank of America 借记卡，同行成年朋友没有卡，今天去旧金山 de Young 能两个人都免费吗？这项优惠包括特别展吗？请核实官网，只回答优惠资格和适用日期，不安排路线。';
+  const result = search(query, { guideCatalog, catalog, state: { city: 'San Francisco', origin: 'Fremont', date: TODAY, goal: 'information', partySize: 2 } });
+  assert.ok(result.guides.some(row => row.sourceUrls.some(source => source.url === bank.url)));
+  assert.ok(result.guides.every(row => !row.text.includes('COMPUTER HISTORY MUSEUM') && !row.text.includes('Mountain View，1401')));
+  const { createEvidenceStore } = require('../lib/baybayTools');
+  const store = createEvidenceStore(result);
+  const source = [...store.sources.values()].find(row => row.url === bank.url);
+  assert.ok(source?.id); assert.equal(source.verification, 'catalog'); assert.equal(source.text, '');
+});
+
 test('city sections in a general utilities article do not leak other cities contact numbers', () => {
   const guideCatalog = [guide('utilities', '湾区各城市水电网办理', 'Oakland\n\nOakland water utilities contact is 510-555-0100. This utility serves the Oakland service area.\n\nSan Jose\n\nSan Jose water utilities contact is 408-555-0100. Confirm the exact service address with the utility.')];
   const result = search('水电开户', { guideCatalog, catalog: fixture() });
