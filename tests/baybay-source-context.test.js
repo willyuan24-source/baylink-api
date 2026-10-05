@@ -26,3 +26,27 @@ test('Chinese child-meal questions retain English age, purchase and date restric
   assert.ok(result.length <= 1800); assert.ok(result.includes(terms));
   assert.ok(result.split('\n\n').every(paragraph => content.split('\n').map(line => line.trim()).includes(paragraph)));
 });
+
+test('family admission questions retain adult prices with their table labels and child eligibility', () => {
+  const rules = 'Children age 12 and under receive free admission. Include all guests in the ticket order; special event tickets are not included.';
+  const lines = ['Museum visit', ...Array.from({ length: 16 }, (_, i) => `Membership offer ${i}: admission discounts require valid membership. ${'Consult member terms before visiting. '.repeat(4)}`),
+    'Admission', 'All-inclusive ticket', 'Adult 18-64', '$25', 'Senior 65+', '$22', 'Child 12 & Under', 'Free*', rules,
+    ...Array.from({ length: 8 }, (_, i) => `Child activity ${i}: museum play and crafts for children aged 6 and under. ${'Check the gallery schedule. '.repeat(3)}`)];
+  const content = lines.join('\n');
+  const excerpt = sourceContextText(content, '两名成人带6岁孩子，不开车，想去Oakland Museum of California，全家门票加公共交通总预算150美元。');
+  assert.ok(excerpt.length <= 1800);
+  assert.ok(excerpt.includes('Adult 18-64\n$25'));
+  assert.ok(excerpt.includes('Child 12 & Under\nFree*'));
+  assert.ok(excerpt.includes(rules));
+  assert.ok(excerpt.split(/\n+/).every(line => lines.map(source => source.trim()).includes(line)));
+});
+
+test('prices cannot survive compaction without their ticket tier or inherit a nonadjacent amount', () => {
+  const prefix = Array.from({ length: 20 }, (_, i) => `Admission information ${i}. ${'Read the whole eligibility rule. '.repeat(3)}`);
+  const adult = `Adult ${'limited eligibility '.repeat(4)}`;
+  const value = [...prefix, adult, '$25', 'Child 12 & Under', 'Ask the desk', '$8'].join('\n');
+  const result = sourceContextText(value, '成人门票多少钱？', 80);
+  assert.ok(result.length <= 80);
+  assert.ok(!result.includes('$25'));
+  assert.ok(!result.includes('Child 12 & Under\n$8'));
+});

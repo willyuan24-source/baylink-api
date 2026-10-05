@@ -337,3 +337,22 @@ test('clarification-only family session cancels OMCA in state, visible plan and 
   assert.equal(result.taskState.startTime, '09:30');
   assert.equal(result.taskState.finishBy, '17:00');
 });
+
+test('explicit named museums plus no-add instruction suppress automatic alternatives without disabling requested comparisons', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const sfmoma = place('venue-sfmoma', { title: 'SFMOMA · San Francisco Museum of Modern Art', city: 'San Francisco', region: 'sf' });
+  const explorer = place('venue-exploratorium-daytime', { title: 'Exploratorium · 日间科学探索馆', city: 'San Francisco', region: 'sf' });
+  const extra = place('fleet-week', { title: 'Fleet Week Viewing', city: 'San Francisco', region: 'sf' });
+  const assistant = createBayBayAssistant({ config: { BAYBAY_STATE_SECRET: 'no-extra-stops-fixture-secret' },
+    catalog: { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: [sfmoma, explorer, extra] }, guideCatalog: [], isTest: true, now: () => NOW,
+    ai: async () => ({ model: 'fixture', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '按两馆安排；当天票价和交通仍待核实。', candidateIds: [extra.id] }) }] }] }) });
+  const prompt = '2026年10月11日周日，我们两名成人，10:00从旧金山Ferry Building出发，先按开车考虑，18:00前回到出发点，全程总预算200美元。想去SFMOMA和Exploratorium，请安排轻松的一天，不要添加别的景点；核对当天开馆和门票，交通不确定就说明。';
+  for (const instruction of ['不要添加别的景点', '請不要再增加其他景點', 'Please do not add any other attractions', 'No extra stops']) {
+    const result = await assistant.run({ message: prompt.replace('不要添加别的景点', instruction), searchMode: 'site' });
+    assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), [sfmoma.id, explorer.id], instruction);
+    assert.deepEqual(result.assistantPlan.alternatives, [], instruction);
+    assert.deepEqual(result.assistantPlan.handoff.stops.map(stop => stop.id), [sfmoma.id, explorer.id], instruction);
+  }
+  const comparison = await assistant.run({ message: prompt.replace('不要添加别的景点', '如果时间不够，帮我比较缩减方案'), searchMode: 'site' });
+  assert.ok(comparison.assistantPlan.alternatives.length > 0);
+});

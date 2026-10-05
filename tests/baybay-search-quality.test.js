@@ -32,3 +32,14 @@ test('source failures expose only safe diagnostic codes and do not erase grounde
   assert.ok(result.research.steps.some(row => row.tool === 'read_source' && row.code === 'source_forbidden'), JSON.stringify(result.research));
   assert.equal(result.retrieval.webStatus, 'completed');
 });
+
+test('an answer grounded only in an official web page does not append unrelated uncited guide cards', async () => {
+  const service = createBayBayAssistant(settings({
+    guideCatalog: [{ slug: 'other-museum-deals', title: 'Museum offers and other outings', url: '/guides/other-museum-deals', keywords: ['museum', 'admission'], content: 'Museum admission offers and other attractions to visit in San Francisco.', updatedAt: '2026-10-04' }],
+    webSearch: async () => ({ answer: 'Official museum admission information.', sources: [{ title: 'Museum official admissions', url: 'https://museum.example.org/visit' }], candidates: [], checkedAt: '2026-10-04' }),
+    ai: async payload => { const context = JSON.parse(payload.input[0].content); const source = context.evidence.find(row => row.url === 'https://museum.example.org/visit'); assert.ok(source); return final(`Please check the selected museum's ticket rules. [[${source.id}]]`); },
+  }));
+  const result = await service.run({ message: 'San Francisco museum admission prices', searchMode: 'web' });
+  assert.deepEqual(result.sources.map(row => row.url), ['https://museum.example.org/visit']);
+  assert.deepEqual(result.suggestedGuides, []);
+});

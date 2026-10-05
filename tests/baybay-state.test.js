@@ -284,6 +284,26 @@ test('half-hour Chinese departure and return-to-start wording preserve explicit 
   assert.equal(resolve('安排一天，下午五点半前返回出发点').state.finishBy, '17:30');
 });
 
+test('the live verification-first Ferry request retains return-to-origin synonyms without becoming a day plan', () => {
+  const actual = require('../data/planner-catalog.json');
+  const message = '10月11日两名成人，10:00从Ferry Building出发，公共交通，只去SFMOMA，18:00前回原地，全程总预算70美元。先核对门票和当天交通；未核实的费用不要当0，也不要增加其他景点。';
+  for (const phrase of ['18:00前回原地', '18:00回原地', '18:00前回起点', '18:00前回出发点', '18:00前回起點', '18:00前回出發點']) {
+    const result = resolve(message.replace('18:00前回原地', phrase), undefined, { catalog: actual });
+    assert.equal(result.clarification, undefined, phrase); assert.notEqual(result.state.goal, 'day-plan', phrase);
+    assert.equal(result.state.finishBy, '18:00', phrase); assert.equal(result.state.startTime, '10:00');
+    assert.equal(result.state.originCandidateId, 'venue-ferry-building'); assert.equal(result.state.date, '2026-10-11');
+    assert.equal(result.state.budget, 70); assert.equal(result.state.budgetScope, 'total');
+    assert.equal(result.state.partySize, 2); assert.equal(result.state.travelMode, 'transit');
+  }
+  const information = resolve('先核实交通，不要安排行程，18:00前回原地。');
+  assert.equal(information.state.goal, 'information'); assert.equal(information.state.finishBy, '18:00');
+  const options = { secret: 'a-test-secret-longer-than-16' };
+  const previous = decodeTaskToken(encodeTaskToken({ state: information.state }, options), options);
+  assert.equal(resolve('再核对费用', previous).state.finishBy, '18:00');
+  assert.equal(resolve('不要18:00回原地，20:00前回原地。').state.finishBy, '20:00');
+  assert.equal(resolve('博物馆18:00关门吗？').state.finishBy, null);
+});
+
 test('English visit schedule and travel-time request supports explicit 12-hour and 24-hour clocks', () => {
   const result = resolve('Tomorrow from The Tech Interactive, leave at 9 am, visit King Library and San Jose Museum of Art, return to the starting point by 17:00. Please arrange the visits and calculate driving time.', undefined, { catalog: originCatalog });
   assert.equal(result.state.goal, 'day-plan');
