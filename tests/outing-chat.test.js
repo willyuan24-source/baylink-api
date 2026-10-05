@@ -53,6 +53,52 @@ test('bilingual names for one practice topic do not broaden the search to all ac
   }
 });
 
+test('the real information-to-group followup inherits user city and activity without inventing a date', () => {
+  const initial = '刚搬来 Fremont，想找人一起练练英语，口语不太好，也不知道哪天。';
+  const question = '我想看看平台上有没有这种小队，别太正式。';
+  assert.equal(read(initial), null);
+  const history = [{ role: 'user', content: initial }, { role: 'assistant', content: 'Fremont 有英语会话与 ESL 方向，具体场次尚未确认。也可考虑明天去 SF。' }];
+  const result = read(question, history, { secret: TOKEN_SECRET });
+  assert.deepEqual(result.outingSearch.filters, { sort: 'soonest', city: 'Fremont', q: 'English practice' });
+  assert.deepEqual(result.outingSearch.missing, ['date']);
+  assert.match(result.answer, /Fremont.*英语练习/); assert.match(result.answer, /不限日期/);
+  const ready = read('不限日期，有人一起练就行。', [], { secret: TOKEN_SECRET, continuationToken: result.outingSearch.continuationToken });
+  assert.equal(ready.outingSearch.state, 'ready');
+  assert.deepEqual(ready.outingSearch.filters, result.outingSearch.filters);
+
+  const changed = read('改到 Oakland 找咖啡小队，不限日期。', history);
+  assert.deepEqual(changed.outingSearch.filters, { sort: 'soonest', city: 'Oakland', q: '咖啡' });
+  assert.equal(changed.outingSearch.state, 'ready');
+  const newConversation = read(question);
+  assert.deepEqual(newConversation.outingSearch.filters, { sort: 'soonest' });
+  assert.deepEqual(newConversation.outingSearch.missing, ['city', 'date']);
+});
+
+test('information activity context works across languages and cannot cross a topic reset', () => {
+  for (const [initial, question, expectedTopic] of [
+    ['剛搬來 Fremont，想一起練練英語，口語不太好，也不知道哪天。', '平台有這種小隊嗎？', 'English practice'],
+    ['I just moved to Fremont and want to practice English, but I have not picked a day.', 'Can I find a group like that on this platform?', 'English practice'],
+    ['Fremont 想去散步放松一下，还没定哪天。', '我想看看平台上有没有这种小队。', '散步'],
+  ]) {
+    assert.equal(read(initial), null, initial);
+    const reply = read(question, pairs(initial));
+    assert.equal(reply.outingSearch.filters.city, 'Fremont', initial);
+    assert.equal(reply.outingSearch.filters.q, expectedTopic, initial);
+    assert.deepEqual(reply.outingSearch.missing, ['date'], initial);
+  }
+  for (const history of [
+    [{ role: 'user', content: '想了解本地活动' }, { role: 'assistant', content: 'Fremont 周六有 English practice 小队。' }],
+    pairs('Fremont 想练练英语', '帮我解释一下水电开户'),
+    pairs('周六从 Fremont 出发，想散步放松一下'),
+  ]) {
+    const reply = read('我想看看平台上有没有小队。', history);
+    assert.equal(reply.outingSearch.filters.city, undefined);
+    assert.deepEqual(reply.outingSearch.missing, ['city', 'date']);
+  }
+  const reset = read('换个话题，我想找小队。', pairs('Fremont 想练练英语'));
+  assert.deepEqual(reset.outingSearch.filters, { sort: 'soonest' });
+});
+
 test('unknown cities and dates ask one question; only explicit unrestricted preferences broaden search', () => {
   const first = read('我想找搭子一起去，请先问我城市和日期。');
   assert.deepEqual(first.outingSearch.missing, ['city', 'date']); assert.match(first.outingSearch.question, /城市/);
@@ -152,6 +198,29 @@ async function fixture(t, ai) {
   const protectedRequest = async token => (await fetch(`http://127.0.0.1:${application.server.address().port}/api/outings/me`, { headers: { Authorization: `Bearer ${token}` } })).status;
   return { request, models, setNow: value => { current = value; }, protectedRequest };
 }
+
+test('HTTP moves from ordinary information to group search using only this conversation user context', async t => {
+  let modelCalls = 0;
+  const { request } = await fixture(t, { guideChat: async () => { modelCalls++; return { answer: '可以先了解 Fremont 的英语会话或 ESL 方向；这里没有确认具体场次。' }; } });
+  const initial = '刚搬来 Fremont，想找人一起练练英语，口语不太好，也不知道哪天。';
+  const first = await request({ message: initial, assistantVersion: 2, searchMode: 'site' });
+  assert.equal(first.status, 200); assert.notEqual(first.data.responseMode, 'outing-search');
+  const initialModelCalls = modelCalls;
+  const history = [{ role: 'user', content: initial }, { role: 'assistant', content: first.data.answer }];
+  const message = '我想看看平台上有没有这种小队，别太正式。';
+  const second = await request({ message, history, assistantVersion: 2, searchMode: 'site' });
+  assert.equal(second.status, 200); assert.equal(second.data.responseMode, 'outing-search');
+  assert.deepEqual(second.data.outingSearch.filters, { sort: 'soonest', city: 'Fremont', q: 'English practice' });
+  assert.deepEqual(second.data.outingSearch.missing, ['date']); assert.equal(modelCalls, initialModelCalls);
+  const ready = await request({ message: '不限日期', outingSearchToken: second.data.outingSearch.continuationToken, searchMode: 'site' });
+  assert.equal(ready.data.outingSearch.state, 'ready');
+  assert.deepEqual(ready.data.outingSearch.filters, second.data.outingSearch.filters);
+  const reset = await request({ message: '重新开始，我想找小队。', history, searchMode: 'site' });
+  assert.deepEqual(reset.data.outingSearch.filters, { sort: 'soonest' });
+  const fresh = await request({ message, searchMode: 'site' });
+  assert.deepEqual(fresh.data.outingSearch.filters, { sort: 'soonest' });
+  assert.deepEqual(fresh.data.outingSearch.missing, ['city', 'date']);
+});
 
 test('no-key HTTP discovery is truthful, no-store, bounded and does not mutate outings or use model quota', async t => {
   const { request, models } = await fixture(t);
