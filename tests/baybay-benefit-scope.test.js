@@ -34,6 +34,52 @@ test('fresh service-specific official evidence supersedes a snapshot; an ambiguo
   assert.deepEqual(conflict.coverage.items[0].sourceIds, ['fresh']);
 });
 
+test('current AC printing snapshots own their eCard exclusion without inheriting museum-pass age rules', () => {
+  for (const locale of ['zh-Hans', 'en']) {
+    const catalog = require(locale === 'en' ? '../data/guide-catalog.en.json' : '../data/guide-catalog.json');
+    const guide = catalog.find(row => row.slug === 'bay-area-everyday-free-perks');
+    const text = guide.content.split('\n\n').find(row => row.startsWith('ALAMEDA COUNTY LIBRARY：'));
+    const scopes = [
+      { entity: 'AC Library', entityKey: 'acl', heading: text.split('\n')[0], text, sourceIds: ['print'] },
+      { entity: 'AC Library', entityKey: 'acl', heading: 'AC Library: Discover & Go', text: 'AC Library: Discover & Go\nDiscover & Go requires age 15 and older; eCard not eligible.', sourceIds: ['passes'] },
+    ];
+    const summary = locale === 'en'
+      ? 'AC Library physical cardholders receive 10 free black-and-white pages per day. eCard not eligible for the free allowance.'
+      : 'AC Library 实体卡用户每天可免费打印10页黑白文件，eCard不适用。';
+    const coverage = { status: 'complete', items: [{ id: 'printing', status: 'answered', summary, sourceIds: ['print'] }] };
+    const accepted = repairBenefitCoverage(coverage, scopes, locale);
+    assert.equal(accepted.changed, false, locale);
+    assert.deepEqual(accepted.coverage, coverage);
+    const invalid = { ...coverage, items: [{ ...coverage.items[0], summary: `${summary} AC Library printing requires age 15 and older.` }] };
+    const corrected = repairBenefitCoverage(invalid, scopes, locale);
+    assert.equal(corrected.changed, true, locale);
+    assert.equal(corrected.coverage.items[0].status, 'unknown');
+    assert.doesNotMatch(corrected.coverage.items[0].summary, /requires age 15 and older/);
+  }
+});
+
+test('the live Fremont online-card and free-printing question preserves correctly scoped eligibility', async () => {
+  let context;
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'printing-scope-fixture-only' }, guideCatalog: require('../data/guide-catalog.json'), isTest: true, now: () => NOW,
+    ai: async payload => {
+      context = JSON.parse(payload.input[0].content);
+      const source = context.evidence.find(row => row.url === '/guides/bay-area-everyday-free-perks');
+      assert.ok(source);
+      return final({ answer: `可以网上申请，但免费打印须有实体卡；只有 eCard 或无卡访客不享免费额度。[[${source.id}]]`, coverage: [
+        { id: 'printing', status: 'answered', summary: 'AC Library 实体卡用户每天可免费打印10页黑白文件，eCard不适用；超额黑白每页 $0.15，彩印每页 $0.35，不含复印。', sourceIds: [source.id] },
+        { id: 'card_eligibility', status: 'answered', summary: 'Fremont 居民可网上申请 eCard，设置 PIN 后使用 eLibrary，有效五年；免费打印须转实体卡，到馆出示姓名及当前加州地址证明。', sourceIds: [source.id] },
+      ] });
+    },
+  });
+  const response = await assistant.run({ message: '刚搬到 Fremont，图书馆卡网上办行不行？能顺便免费打印吗？', searchMode: 'site' });
+  assert.ok(context.sourceScopes.some(scope => /eCard 或无卡访客不享免费额度/.test(scope.text)));
+  assert.equal(response.degraded, false);
+  assert.ok(!response.research.warnings.includes('answer_benefit_scope_corrected'));
+  assert.equal(response.answerCoverage.items.find(item => item.id === 'printing').status, 'answered');
+  assert.match(response.answerCoverage.items.find(item => item.id === 'printing').summary, /实体卡.*eCard不适用/);
+  assert.ok(response.sources.some(source => source.url === '/guides/bay-area-everyday-free-perks'));
+});
+
 test('the actual bad library response is repaired from original scoped source paragraphs instead of spreading pass eligibility', async () => {
   let context;
   const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'scoped-benefit-test-key' }, guideCatalog: require('../data/guide-catalog.json'), isTest: true, now: () => NOW,
@@ -57,7 +103,10 @@ test('the actual bad library response is repaired from original scoped source pa
   assert.equal(response.answerCoverage.status, 'partial');
   const summaries = Object.fromEntries(response.answerCoverage.items.map(item => [item.id, item.summary]));
   assert.match(summaries.printing, /10 页|10页/); assert.match(summaries.printing, /25 页|25页/);
-  assert.doesNotMatch(summaries.printing, /16岁及以上才能打印|eCard不适用/);
+  assert.doesNotMatch(summaries.printing, /16岁及以上才能打印/);
+  // The updated AC printing source explicitly excludes eCards; only the
+  // unrelated SMCL museum-pass restriction needs correction here.
+  assert.match(summaries.printing, /Alameda County Library.*eCard不适用/);
   assert.match(summaries.kanopy, /加州居民可免费申请 SFPL 卡/);
   assert.match(summaries.kanopy, /未找到 AC 卡适用的 Kanopy 官方入口/);
   assert.doesNotMatch(summaries.kanopy, /SFPL需旧金山居民|图书证不包含Kanopy权益/);
