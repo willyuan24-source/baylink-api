@@ -230,7 +230,10 @@ test('the exact live family question reaches assistant reasoning while unverifie
     sourceFetch: async () => { throw new Error('No source-page network in this fixture'); },
     ai: async payload => {
       calls++; context = JSON.parse(payload.input[0].content);
-      return { model: 'fixture-reasoner', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: '两馆已经明确；跨城及返程没有核实，不能保证17:00返回，建议先核对后缩减安排。', candidateIds: ['venue-exploratorium-daytime', 'venue-omca'], followups: [] }) }] }] };
+      const named = ['venue-exploratorium-daytime', 'venue-omca'].map(id => context.candidates.find(row => row.id === id));
+      // Cite the catalog's venue identities, not an unverified transit claim.
+      const answer = `已收录你指定的两馆：${named.map(row => `${row.title} [[${row.sourceIds[0]}]]`).join('、')}。跨城及返程没有核实，不能保证17:00返回，建议先核对后缩减安排。`;
+      return { model: 'fixture-reasoner', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer, candidateIds: ['venue-exploratorium-daytime', 'venue-omca'], followups: [] }) }] }] };
     },
   });
   const result = await assistant.run({ message, locale: 'zh-Hans', searchMode: 'smart' });
@@ -241,6 +244,8 @@ test('the exact live family question reaches assistant reasoning while unverifie
   assert.ok(context.candidates.some(row => row.id === 'venue-omca'));
   assert.doesNotMatch(result.answer, /请先选择一个目的城市|scope_rejected/);
   assert.match(result.answer, /不能保证17:00/);
+  assert.equal(result.sources.length, 2);
+  assert.ok(result.sources.every(source => context.evidence.some(row => row.url === source.url)));
   assert.ok(result.assistantPlan); assert.notEqual(result.assistantPlan.status, 'ready');
   assert.ok(new Set(result.assistantPlan.stops.map(stop => stop.city)).size < 2, 'without route evidence the plan must not assert a cross-city itinerary');
   assert.equal(result.assistantPlan.returnTime ?? null, null);

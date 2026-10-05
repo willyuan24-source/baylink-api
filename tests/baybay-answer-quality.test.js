@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { requestChecklist, coverageFor, checklistAnswer, admissionConflict } = require('../lib/baybayAnswerQuality');
+const { requestChecklist, coverageFor, checklistAnswer, admissionConflict, sourcedPlanSummary, needsExtendedSynthesis } = require('../lib/baybayAnswerQuality');
 const { createStageTimer, boundedOperation } = require('../lib/baybayTiming');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
 
@@ -163,4 +163,98 @@ test('the real strict waterfront query replaces an unsupported free total with t
   assert.doesNotMatch(result.answer, /两位成人和孩子的门票合计是 \$0|全部免费/);
   assert.match(result.answer, /不是已确认的结账价或全程总价/);
   assert.ok(result.sources.length > 0);
+});
+
+test('the actual DMV and constrained family prompts retain their missed request subjects', () => {
+  const cases = require('../scripts/baybay-quality-cases.json').cases;
+  const dmv = cases.find(item => item.id === 'dmv-new-resident');
+  assert.deepEqual(requestChecklist(dmv.request.message).items.map(item => item.id), dmv.assertions.coverageIds);
+  const plan = requestChecklist(cases.find(item => item.id === 'strict-sf-family-plan').request.message);
+  assert.deepEqual(plan.items.map(item => item.id), ['hours', 'admission', 'transport', 'budget']);
+  assert.equal(plan.complex, true);
+  assert.equal(needsExtendedSynthesis({ complex: false }, { goal: 'day-plan', partySize: 3, childAges: [5], budget: 120 }), true);
+  assert.equal(needsExtendedSynthesis({ complex: false }, { goal: 'information', partySize: 3, childAges: [5], budget: 120 }), false);
+  for (const message of ['地址更新', '更新地址', '地址變更', 'address update']) assert.ok(requestChecklist(message).items.some(item => item.id === 'address_change'));
+});
+
+test('a live-shaped fallback with no plan citations is replaced by sourced card facts and stays degraded', async t => {
+  const question = require('../scripts/baybay-quality-cases.json').cases.find(item => item.id === 'strict-sf-family-plan').request.message;
+  const models = [], phases = [], timeouts = [], schedule = globalThis.setTimeout;
+  t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => { timeouts.push(delay); return schedule(callback, delay, ...args); });
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'missing-citation-secret', OPENAI_API_KEY: 'fixture-only' }, now: () => NOW,
+    Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
+    fetchImpl: async (_url, init) => {
+      const payload = JSON.parse(init.body); models.push(payload.model);
+      assert.deepEqual(payload.tools, []); // Existing named site plan needs synthesis, not repeated research.
+      assert.match(payload.instructions, /Research is complete/);
+      if (models.length === 1) throw new Error('AI request timed out');
+      return { ok: true, json: async () => ({ ...final({ answer: '2026年10月10日，Exploratorium开放时间是10:00至17:00，成人39.95美元，5岁孩子29.95美元，全家门票合计109.85美元。具体交通待确认。', candidateIds: ['venue-exploratorium-daytime', 'pier39'], coverage: [] }), model: 'gpt-4.1-mini' }) };
+    },
+  });
+  const result = await assistant.run({ message: question, searchMode: 'site', onProgress: event => phases.push(event) });
+  assert.deepEqual(models, ['gpt-6.1-sol', 'gpt-4.1-mini']);
+  assert.ok(timeouts.includes(28000)); assert.ok(timeouts.every(timeout => timeout <= 28000));
+  assert.equal(result.degraded, true); assert.ok(result.research.warnings.includes('answer_plan_citations_repaired'));
+  assert.equal(result.answerCoverage.status, 'partial');
+  assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), ['venue-exploratorium-daytime', 'pier39']);
+  assert.match(result.answer, /成人 2 × \$39\.95/); assert.match(result.answer, /5 岁儿童 1 × \$29\.95/);
+  assert.match(result.answer, /已知门票小计：\$109\.85/);
+  assert.match(result.answer, /10:00–17:00/); assert.match(result.answer, /所选日期是否照常开放仍待确认/);
+  assert.match(result.answer, /站内快照/); assert.match(result.answer, /不是已确认的结账价或全程总价/);
+  assert.doesNotMatch(result.answer, /2026年10月10日，Exploratorium开放时间是/);
+  assert.ok(result.sources.some(source => source.url === 'https://www.exploratorium.edu/visit'));
+  assert.ok(result.sources.some(source => /pier39\.com/.test(source.url)));
+  assert.ok(result.answerCoverage.items.flatMap(row => row.sourceIds).every(id => result.evidence.some(source => source.id === id)));
+  assert.ok(phases.some(event => event.phase === 'answer' && event.status === 'completed'));
+  assert.equal(result.retrieval.webStatus, 'not_requested');
+});
+
+test('a sourced plan answer is preserved while fake markers or unrelated guide citations cannot repair its claims', async () => {
+  for (const kind of ['valid', 'fake', 'unrelated']) {
+    const assistant = createBayBayAssistant(base({ guideCatalog: [libraryGuide], catalog: { version: 1, checkedAt: '2026-10-04', events: [], guides: [], places: [{ id: 'park', title: 'Fixture Park', city: 'Fremont', officialUrl: 'https://example.org/park', cost: 'unknown' }] },
+      ai: async payload => { const context = JSON.parse(payload.input[0].content); const ref = kind === 'valid' ? context.candidates.find(row => row.id === 'park').sourceIds[0] : kind === 'unrelated' ? context.evidence.find(row => row.kind === 'guide')?.id : 'made-up';
+        return final({ answer: `Fixture Park 的具体时段待确认。 [[${ref}]] [1]`, candidateIds: ['park'] }); },
+    }));
+    const result = await assistant.run({ message: '2026-10-10 Fremont 安排一天去 Fixture Park，顺便参考图书馆 Kanopy 打印资料', searchMode: 'site' });
+    assert.equal(result.degraded, kind !== 'valid', kind);
+    assert.equal(result.sources.length, 1, kind);
+    assert.equal(result.sources[0].url, 'https://example.org/park', kind);
+    if (kind !== 'valid') assert.ok(result.research.warnings.includes('answer_plan_citations_repaired'));
+  }
+});
+
+test('no-source plan records cannot invent a citation or expose unsourced dollar amounts', () => {
+  const summary = sourcedPlanSummary({ stops: [{ title: 'Unknown venue', sourceIds: ['fake'], admissionFacts: { knownTotalUsd: 99, sourceIds: ['fake'], breakdown: [{ category: 'adult', unitUsd: 99, quantity: 1 }] } }] }, new Map(), 'en');
+  assert.deepEqual(summary.sourceIds, []); assert.doesNotMatch(summary.answer, /\$99|\[\[|recorded subtotal/);
+  assert.match(summary.answer, /no sourced admission subtotal/);
+});
+
+test('official entry links reuse cited institutions before filling the cap with one institution', () => {
+  const sources = new Map(['ac-print', 'ac-card', 'ac-film', 'sf-card', 'sm-film'].map(id => [id, { id, title: id, url: `https://${id.startsWith('ac') ? 'aclibrary.org' : id.startsWith('sf') ? 'sfpl.org' : 'smcl.org'}/${id}` }]));
+  const coverage = coverageFor({ checklist: requestChecklist(libraryQuestion), sources, locale: 'en', draft: { coverage: [
+    { id: 'kanopy', status: 'unknown', summary: 'The film allowance still needs checking.', sourceIds: ['sm-film'] },
+    { id: 'official_entries', status: 'answered', summary: 'Official links.', sourceIds: ['ac-print', 'ac-card', 'ac-film', 'sf-card'] },
+  ] } });
+  assert.deepEqual(coverage.items.find(item => item.id === 'official_entries').sourceIds, ['ac-print', 'sf-card', 'sm-film', 'ac-card']);
+  assert.ok(coverage.items.every(item => item.sourceIds.length <= 4));
+});
+
+test('signed acknowledgements and save instructions are not replaced with old admission facts', async () => {
+  const query = require('../scripts/baybay-quality-cases.json').cases.find(item => item.id === 'strict-sf-family-plan').request.message;
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'interaction-followup-secret' }, isTest: true, now: () => NOW,
+    ai: async payload => {
+      const context = JSON.parse(payload.input[0].content);
+      const reference = context.candidates.find(candidate => candidate.id === 'venue-exploratorium-daytime').sourceIds[0];
+      return final({ answer: context.message === query ? `门票使用站内记录，所选日期仍待确认。 [[${reference}]]` : context.message === '谢谢' ? '不客气，祝你们出行顺利。' : '你可以先保留这段对话，之后继续查看这份安排。', candidateIds: [] });
+    },
+  });
+  const first = await assistant.run({ message: query, searchMode: 'site' });
+  for (const message of ['谢谢', '怎么保存这份安排', 'How can I save this itinerary?']) {
+    const response = await assistant.run({ message, searchMode: 'site', sessionToken: first.assistantSessionToken });
+    assert.deepEqual(response.assistantPlan.stops.map(stop => stop.entityId), ['venue-exploratorium-daytime', 'pier39']);
+    assert.equal(response.degraded, false, message); assert.doesNotMatch(response.answer, /门票小计|缺少行程来源引用/);
+    assert.ok(!response.research.warnings.includes('answer_plan_citations_repaired'));
+  }
+  const factual = await assistant.run({ message: '谢谢，另外5岁孩子的门票多少？', searchMode: 'site', sessionToken: first.assistantSessionToken });
+  assert.equal(factual.degraded, true); assert.ok(factual.research.warnings.includes('answer_plan_citations_repaired'));
 });

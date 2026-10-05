@@ -50,6 +50,33 @@ test('a known snapshot subtotal over the group limit fails even though fees rema
   assert.ok(plan.checks.some(check => check.code === 'budget' && check.status === 'fail'));
 });
 
+test('PIER 39 public access stays zero in evidence, main card and a retained follow-up without pricing optional experiences', () => {
+  const raw = catalog.places.find(row => row.id === 'pier39');
+  const evidence = buildSiteEvidence({ query: 'PIER 39 公共区和海狮', state: { ...state, selectedCandidateIds: ['pier39'] }, catalog, guideCatalog: guides, today });
+  const store = createEvidenceStore(evidence), candidate = store.candidates.get(raw.id);
+  assert.ok(candidate);
+  const facts = withAdmissionFacts(candidate, state, { today }).admissionFacts;
+  assert.equal(facts.knownTotalUsd, 0); assert.equal(facts.knownPerPersonUsd, 0);
+  assert.equal(facts.basis, 'catalog-snapshot'); assert.equal(facts.status, 'partial');
+  assert.equal(facts.sourceUrl, raw.officialUrl); assert.ok(facts.sourceIds.every(id => store.sources.has(id)));
+  assert.deepEqual(facts.breakdown.map(row => [row.category, row.quantity, row.unitUsd]), [['all-ages', 3, 0]]);
+  assert.match(facts.note, /Public pedestrian areas/); assert.match(facts.note, /Aquarium, cruises, rides, food/);
+  assert.match(facts.note, /excluded/);
+  for (const selectedState of [state, { ...state, partySize: 4, childAges: [5, 8], selectedCandidateIds: ['pier39'] }]) {
+    const plan = buildItinerary({ candidates: [candidate], selectedIds: ['pier39'], state: selectedState, now: NOW });
+    assert.equal(plan.stops[0].admissionUsd, 0);
+    assert.equal(plan.stops[0].admissionFacts.knownTotalUsd, 0);
+    assert.equal(plan.budget.knownTotalUsd, 0);
+    assert.doesNotMatch(plan.stops[0].admissionFacts.unknowns.join(' '), /不能当作免费|do not count it as free/);
+    assert.match(plan.budget.unknownItems.join(' '), /餐|交通/);
+  }
+  for (const changed of [{ ...raw, id: 'aquarium-pier39' }, { ...raw, officialUrl: 'https://www.pier39.com/attractions/' }]) {
+    assert.equal(withAdmissionFacts(changed, state, { today }).admissionFacts.knownTotalUsd, null);
+  }
+  const expired = withAdmissionFacts(candidate, { ...state, date: '2026-12-10' }, { today });
+  assert.equal(expired.admissionFacts.knownTotalUsd, null);
+});
+
 test('snapshot cannot survive a changed source, web identity, old date or old attached rule', () => {
   const attached = withAdmissionFacts(museum(), state, { today });
   for (const input of [{ ...museum(), officialUrl: 'https://example.org/other' }, { ...museum(), origin: 'web' }]) assert.equal(admissionFactsFor(input, state, { today }).facts.knownTotalUsd, null);

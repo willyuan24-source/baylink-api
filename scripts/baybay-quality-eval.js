@@ -37,6 +37,11 @@ function structuralChecks(item, status, body, previous) {
   const sources = Array.isArray(body?.sources) ? body.sources : [];
   const citations = [...String(body?.answer || '').matchAll(/\[(\d+)\]/g)].map(match => Number(match[1]));
   check('citation_indices_resolve', citations.every(index => index > 0 && index <= sources.length));
+  if (body?.assistantPlan?.stops?.length || item.assertions?.planIds?.length) {
+    const planRefs = new Set((body?.assistantPlan?.stops || []).flatMap(stop => [...(stop.sourceIds || []), ...(stop.admissionFacts?.sourceIds || [])]));
+    const planUrls = new Set((body?.evidence || []).filter(source => planRefs.has(source.id)).map(source => source.url));
+    check('factual_plan_has_citation', citations.some(index => index > 0 && planUrls.has(sources[index - 1]?.url)), 'A factual plan needs at least one visible citation to its own evidence; an empty citation list cannot pass.');
+  }
   const evidenceIds = new Set((body?.evidence || []).map(source => source.id));
   const coverage = body?.answerCoverage;
   check('coverage_contract', ['complete', 'partial', 'unassessed'].includes(coverage?.status) && Array.isArray(coverage?.items) && coverage.items.length <= 8);

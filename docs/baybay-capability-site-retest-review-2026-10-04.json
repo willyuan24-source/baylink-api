@@ -1,0 +1,66 @@
+{
+  "reviewedAt": "2026-10-04",
+  "frontendCommit": "5925b89f34f77b1fd7e7b11eab93b2c4081dee1b",
+  "apiCommit": "bf9a9b72d9d17a608af8ef10972d21b424db0884",
+  "summary": "第二轮仅站内复测发现并保留的问题记录；不是最终验收。",
+  "validation": "后端全量 865/865；前端相关 145/145；lint 0 errors（53 条既有 warnings）；生产构建及 752 页预渲染通过。前端 Vercel 部署成功，API 以健康接口版本核对。",
+  "limitations": [
+    "当日联网检索额度已用完，修复后的 Smart/Web 组合查询仍需另行复测。",
+    "BAYBAY 价格与完整原始条件只在同一标签页草稿中保留；保存或分享尚不持久化全部原始条件与报价。",
+    "未确认的门票适用日期、税费、交通餐饮或预约名额继续标为待确认。"
+  ],
+  "ui": [
+    {
+      "case": "printing",
+      "mode": "site",
+      "result": "12页黑白=10页免费+2×$0.15，合计$0.30；明确当天未使用额度。给实际上传/取件步骤，按站内快照说明。",
+      "viewport": "390×844 and 1280×900",
+      "horizontalOverflow": false,
+      "followups": "页数/剩余额度核算；格式/取件/收费核对",
+      "release": "API25c1a5a / frontend5925b89f"
+    }
+  ],
+  "cases": {
+    "library-comparison": {
+      "status": "pass_with_navigation_gaps",
+      "findings": [
+        "站内快照范围内，AC/SFPL/SMCL 的打印、办卡、Kanopy 和馆票资格分开，原先的资格混用已经消除。",
+        "AC Kanopy 没有找到入口明确标为未知；SMCL 30 tickets 不套用于 SFPL。",
+        "官方入口段四条限制仍遗漏 SMCL Kanopy 直达项，来源标题有一项沿用文章名；核心事实通过，导航不完整。",
+        "36.0 秒主模型完成；这是 site 模式，不能与上一轮 Smart 69.9 秒直接做延迟比较。"
+      ]
+    },
+    "strict-sf-family-plan": {
+      "status": "fail_pending_followup_fix",
+      "findings": [
+        "站点、精确起点、儿童年龄、预算、截止时间、不返程和 $109.85 小计在 plan/handoff 中正确。",
+        "备用模型正文无引用；原自动检查空集合误判通过，正在加强。",
+        "正文公共区免费与结构化 PIER 39 未知的范围表达矛盾，正在补同一来源事实。"
+      ]
+    },
+    "strict-sf-child-followup": {
+      "status": "pass_with_scope_gap",
+      "findings": [
+        "严格沿用两站顺序与全部行程条件，不添加地点。",
+        "儿童 $29.95，全家门票 $109.85，预算余额 $10.15；餐饮交通和未核实税费未计入。",
+        "主模型引用4条，前端实际解析后费用覆盖仍有效；PIER 39 公共区与可选项目的口径将随事实修复统一。"
+      ]
+    },
+    "english-birthday": {
+      "status": "pass",
+      "findings": [
+        "英文逐项区分提前7天加入并录入生日、至少一次赚星交易、Green/Gold/Reserve分别当天/7天/30天的领取窗口。",
+        "不保证仅注册就获奖励；明确本次为站内快照、部分现行资格和入账细则仍待核实。",
+        "26.2秒主模型完成，有2条来源；日期计算按2026-10-04起算，10/11及以后才满足7天日历间隔。"
+      ]
+    },
+    "dmv-new-resident": {
+      "status": "safe_but_incomplete",
+      "findings": [
+        "未发现期限或资格混淆，地址变更10天限定已有加州DMV记录，REAL ID两份住址材料不泛化到所有办理。",
+        "站内缺少新居民驾驶10天规则、车辆登记20天规则、车辆材料和专用官方入口，当前不能算完整办理答复。",
+        "地址更新独立覆盖项漏检，结构测试正确报失败；已安排检测与证据内容修复。"
+      ]
+    }
+  }
+}

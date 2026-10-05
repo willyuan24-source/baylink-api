@@ -89,3 +89,15 @@ test('site-only regression is explicitly labelled and cannot silently pass as th
   assert.ok(report.cases[0].automated.checks.some(check => check.id === 'chosen_search_scope' && check.status === 'pass'));
   assert.ok(report.cases[0].automated.checks.some(check => check.id === 'no_read_source' && check.status === 'pass'));
 });
+
+test('factual plans cannot pass with no citations or a citation unrelated to the plan', () => {
+  const plan = { stops: [{ id: 'museum', sourceIds: ['official'] }] };
+  const common = { assistantPlan: plan, evidence: [{ id: 'official', url: 'https://example.org/museum' }, { id: 'unrelated', url: 'https://example.org/other' }] };
+  for (const sourceUrl of [null, 'https://example.org/other', 'https://example.org/museum']) {
+    const checked = structuralChecks(item('plan'), 200, result({ ...common, answer: `Museum admission is recorded at $20.${sourceUrl ? ' [1]' : ''}`, sources: sourceUrl ? [{ title: 'Source', url: sourceUrl }] : [] }));
+    assert.equal(checked.checks.find(row => row.id === 'factual_plan_has_citation').status, sourceUrl === 'https://example.org/museum' ? 'pass' : 'fail');
+  }
+  const safelyDegraded = structuralChecks(item('plan'), 200, result({ ...common, degraded: true, answer: 'A sourced snapshot still has incomplete current-date verification. [1]', sources: [{ title: 'Museum', url: 'https://example.org/museum' }] }));
+  assert.equal(safelyDegraded.checks.find(row => row.id === 'factual_plan_has_citation').status, 'pass');
+  assert.equal(safelyDegraded.checks.find(row => row.id === 'not_degraded').status, 'fail');
+});

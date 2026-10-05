@@ -19,5 +19,21 @@
     "regularAdmission": true,
     "snapshotMaxAgeDays": 30,
     "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+  },
+  {
+    "candidateId": "pier39",
+    "officialUrl": "https://www.pier39.com/frequently-asked-questions/",
+    "sourceUrl": "https://www.pier39.com/frequently-asked-questions/",
+    "verifiedAt": "2026-10-04",
+    "verification": "catalog-snapshot",
+    "guideUrl": "/guides/sf-fishermans-wharf-pier39-guide",
+    "sourceQuote": "PIER 39 没有围起来收取统一门票，进入公共商业步行区、在开放观景处看 K-Dock 海狮不需要购买套票。",
+    "scope": "individual",
+    "allAgesUsd": 0,
+    "children": [],
+    "feesIncluded": true,
+    "regularAdmission": true,
+    "snapshotMaxAgeDays": 30,
+    "note": "Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date."
   }
 ]

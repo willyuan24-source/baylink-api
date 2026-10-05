@@ -71,3 +71,27 @@ test('explicit multi-topic retrieval takes precedence without dropping topic con
   assert.equal(retrieve('What else?', 'arts')[0]?.slug, 'arts');
   assert.equal(retrieve('What else?', null).length, 0);
 });
+
+test('the full new-resident DMV question reaches the initial model with distinct deadlines, documents and official entries', async () => {
+  const cases = [
+    ['zh-Hans', '假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。', ['最多 10 天', '20 天内登记', '已有加州 DMV 记录', '尚无加州 DL/ID', 'REG 343', 'REG 31', '不能把这理解成只要 10 天内提交申请']],
+    ['en', 'Assume I am an adult who just moved from another state to Fremont, with a valid out-of-state driver license and a personal vehicle registered in that state. Explain California driver license, vehicle registration and address change deadlines, required documents and official entry points separately. Give only sourced rules and identify uncertain eligibility or exceptions; do not mix these three deadlines.', ['at most 10 days', 'within 20 days', 'existing California record', 'without a California DL/ID', 'REG 343', 'REG 31', 'does not extend permission to drive']],
+  ];
+  for (const [locale, message, expected] of cases) {
+    let first;
+    const assistant = createBayBayAssistant({
+      config: { JWT_SECRET: 'dmv-retrieval-test-secret-only' }, catalog, guideCatalog, englishGuideCatalog: require('../data/guide-catalog.en.json'), isTest: true,
+      now: () => Date.parse('2026-10-04T19:00:00Z'),
+      ai: async payload => {
+        first ||= JSON.parse(payload.input[0].content);
+        return { status: 'completed', model: 'dmv-context-fixture', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer: 'Refer to the separately sourced rules.', candidateIds: [], followups: [] }) }] }] };
+      },
+      webSearch: async () => { throw new Error('This test must never call the network'); },
+    });
+    await assistant.run({ message, locale, searchMode: 'site' });
+    const text = [...first.evidence.map(row => row.text || ''), ...(first.sourceScopes || []).map(row => row.text)].join('\n');
+    for (const value of expected) assert.ok(text.includes(value), `${locale}: ${value}`);
+    const urls = first.evidence.map(row => row.url);
+    for (const url of ['https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=12505.', 'https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california', 'https://www.dmv.ca.gov/portal/online-change-of-address-coa-system']) assert.ok(urls.includes(url), `${locale}: ${url}`);
+  }
+});
