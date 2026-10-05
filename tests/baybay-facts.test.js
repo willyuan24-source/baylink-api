@@ -50,6 +50,33 @@ test('a known snapshot subtotal over the group limit fails even though fees rema
   assert.ok(plan.checks.some(check => check.code === 'budget' && check.status === 'fail'));
 });
 
+test('a fresh snapshot survives a future visit across evidence, cards and a PIER-only follow-up without confirming future prices', () => {
+  const currentDay = '2026-10-05', now = Date.parse(`${currentDay}T16:00:00Z`);
+  const future = { ...state, date: '2026-11-07', selectedCandidateIds: ['venue-exploratorium-daytime', 'pier39'] };
+  const evidence = buildSiteEvidence({ query: 'Exploratorium 和 PIER39 公共区', state: future, catalog, guideCatalog: guides, today: currentDay });
+  const store = createEvidenceStore(evidence);
+  const candidates = future.selectedCandidateIds.map(id => store.candidates.get(id));
+  assert.ok(candidates.every(Boolean));
+  const plan = buildItinerary({ candidates, selectedIds: future.selectedCandidateIds, state: future, now });
+  assert.deepEqual(plan.stops.map(stop => stop.entityId), future.selectedCandidateIds);
+  assert.deepEqual(plan.stops.map(stop => stop.admissionFacts.knownTotalUsd), [109.85, 0]);
+  assert.equal(plan.budget.knownTotalUsd, 109.85);
+  for (const stop of plan.stops) {
+    assert.equal(stop.admissionFacts.status, 'partial');
+    assert.equal(stop.admissionFacts.basis, 'catalog-snapshot');
+    assert.equal(stop.admissionFacts.applicability.dateStatus, 'regular-unconfirmed');
+    assert.ok(stop.admissionFacts.sourceIds.every(id => store.sources.has(id)));
+    assert.ok(stop.admissionFacts.unknowns.some(text => /所选日期|所選日期/.test(text)));
+  }
+  assert.match(plan.budget.unknownItems.join(' '), /餐|交通/);
+  const retained = buildItinerary({ candidates: [candidates[1]], selectedIds: ['pier39'], state: { ...future, selectedCandidateIds: ['pier39'] }, now });
+  assert.deepEqual(retained.handoff.stops.map(stop => stop.id), ['pier39']);
+  assert.equal(retained.stops[0].admissionFacts.knownTotalUsd, 0);
+  assert.equal(retained.budget.knownTotalUsd, 0);
+  assert.doesNotMatch(retained.stops[0].admissionFacts.unknowns.join(' '), /不能当作免费/);
+  assert.match(retained.budget.unknownItems.join(' '), /餐|交通/);
+});
+
 test('PIER 39 public access stays zero in evidence, main card and a retained follow-up without pricing optional experiences', () => {
   const raw = catalog.places.find(row => row.id === 'pier39');
   const evidence = buildSiteEvidence({ query: 'PIER 39 公共区和海狮', state: { ...state, selectedCandidateIds: ['pier39'] }, catalog, guideCatalog: guides, today });
@@ -73,17 +100,34 @@ test('PIER 39 public access stays zero in evidence, main card and a retained fol
   for (const changed of [{ ...raw, id: 'aquarium-pier39' }, { ...raw, officialUrl: 'https://www.pier39.com/attractions/' }]) {
     assert.equal(withAdmissionFacts(changed, state, { today }).admissionFacts.knownTotalUsd, null);
   }
-  const expired = withAdmissionFacts(candidate, { ...state, date: '2026-12-10' }, { today });
+  const expired = withAdmissionFacts(candidate, { ...state, date: '2026-12-10' }, { today: '2026-12-10' });
   assert.equal(expired.admissionFacts.knownTotalUsd, null);
 });
 
-test('snapshot cannot survive a changed source, web identity, old date or old attached rule', () => {
+test('snapshot cannot survive a changed source, web identity, historical visit or stale answer-date clock', () => {
   const attached = withAdmissionFacts(museum(), state, { today });
   for (const input of [{ ...museum(), officialUrl: 'https://example.org/other' }, { ...museum(), origin: 'web' }]) assert.equal(admissionFactsFor(input, state, { today }).facts.knownTotalUsd, null);
-  for (const date of ['2026-10-01', '2026-12-10']) for (const input of [museum(), attached]) {
-    const result = admissionFactsFor(input, { ...state, date }, { today });
+  for (const [date, currentDay] of [['2026-10-01', today], ['2026-12-10', '2026-12-10']]) for (const input of [museum(), attached]) {
+    const result = admissionFactsFor(input, { ...state, date }, { today: currentDay });
     assert.equal(result.facts.knownTotalUsd, null, `${date}: ${!!input.planning.admission}`);
   }
+});
+
+test('the thirty-day snapshot guard uses today and cannot be bypassed by an attached rule or an earlier visit', () => {
+  const attached = withAdmissionFacts(museum(), state, { today });
+  const future = { ...state, date: '2026-11-07' };
+  for (const input of [museum(), attached]) {
+    const lastFresh = admissionFactsFor(input, future, { today: '2026-11-01' }).facts;
+    assert.equal(lastFresh.knownTotalUsd, 109.85);
+    assert.equal(lastFresh.applicability.dateStatus, 'regular-unconfirmed');
+    assert.equal(admissionFactsFor(input, future, { today: '2026-11-02' }).facts.knownTotalUsd, null);
+    assert.equal(admissionFactsFor(input, state, { today: '2026-11-02' }).facts.knownTotalUsd, null, 'An old trip cannot revive an actually stale snapshot.');
+    assert.equal(admissionFactsFor(input, future).facts.knownTotalUsd, null, 'Missing current-date evidence fails closed.');
+  }
+  const stale = admissionFactsFor(attached, future, { today: '2026-11-02' }).facts;
+  assert.equal(stale.applicability.dateStatus, 'unconfirmed');
+  assert.match(stale.unknowns.join(' '), /快照需要重新核对/);
+  assert.doesNotMatch(stale.unknowns.join(' '), /不适用于所选日期/);
 });
 
 test('a casual visit question can retain all-ages free access before the party count is known', () => {
@@ -97,7 +141,7 @@ test('a casual visit question can retain all-ages free access before the party c
   assert.deepEqual(facts.breakdown, []);
   assert.equal(facts.applicability.dateStatus, 'regular-unconfirmed');
   assert.match(facts.unknowns.join(' '), /是否开放及适用/);
-  assert.equal(withAdmissionFacts(candidate, { ...incompleteParty, date: '2026-12-10' }, { today }).admissionFacts.knownTotalUsd, null);
+  assert.equal(withAdmissionFacts(candidate, { ...incompleteParty, date: '2026-12-10' }, { today: '2026-12-10' }).admissionFacts.knownTotalUsd, null);
   const paid = admissionFactsFor(row(sourced({ allAgesUsd: 20, regularAdmission: true })), incompleteParty).facts;
   assert.equal(paid.knownTotalUsd, null);
   assert.equal(paid.knownPerPersonUsd, 20);
