@@ -45,15 +45,18 @@ test('published Fremont departure request respects Chinese language without inve
 });
 
 test('live Fremont five-year-old regression returns Nemo alone and cannot be broadened by AI', async () => {
+  // Preserve the date of this historical production regression. Advancing the
+  // catalog verification date must not turn it into a past-date validation test.
+  const historicalRequest = (body, ai) => recommend({ body, catalog: checkedCatalog(), now: () => Date.parse('2026-10-02T19:00:00Z'), isTest: true, ai });
   const body = { message: '10月2日在Fremont带五岁孩子，门票预算30美元', filters: { region: 'all', setting: 'any', travelMode: 'any' } };
   for (const ai of [undefined, async () => ({ filters: { region: 'east-bay', city: 'Oakland', childAge: null }, rankedEventIds: ['oakland-civic-ai-design-sprint-2026', 'fremont-finding-nemo-outdoor-movie-2026'] })]) {
-    const response = await recommend({ body, catalog: checkedCatalog(), now: () => Date.parse(`${catalog.checkedAt}T19:00:00Z`), isTest: true, ai });
+    const response = await historicalRequest(body, ai);
     assert.equal(response.filters.city, 'Fremont');
     assert.equal(response.filters.childAge, 5);
     assert.deepEqual(response.suggestions.map(row => row.eventId), ['fremont-finding-nemo-outdoor-movie-2026']);
     assert.ok(response.notices.some(note => note.includes('只有 1 项')));
   }
-  const eastBay = await request({ message: '10月2日在东湾带五岁孩子' });
+  const eastBay = await historicalRequest({ message: '10月2日在东湾带五岁孩子' });
   assert.ok(eastBay.suggestions.some(row => row.eventId === 'fremont-finding-nemo-outdoor-movie-2026'));
   for (const suggestion of eastBay.suggestions) {
     const event = catalog.events.find(row => row.id === suggestion.eventId);
@@ -62,9 +65,9 @@ test('live Fremont five-year-old regression returns Nemo alone and cannot be bro
     assert.ok(!event.planning?.minAge || event.planning.minAge <= 5);
     assert.ok(!event.planning?.maxAge || event.planning.maxAge >= 5);
   }
-  const oakland = await request({ message: '10月2日在Oakland带五岁孩子' });
+  const oakland = await historicalRequest({ message: '10月2日在Oakland带五岁孩子' });
   assert.deepEqual(oakland.suggestions, []);
-  const adult = await request({ message: '10月2日在Oakland参加AI技术活动' });
+  const adult = await historicalRequest({ message: '10月2日在Oakland参加AI技术活动' });
   assert.ok(adult.suggestions.some(row => row.eventId === 'oakland-civic-ai-design-sprint-2026'));
 });
 

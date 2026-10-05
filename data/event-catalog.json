@@ -817,6 +817,20 @@
     ]
   },
   {
+    "id": "november-north-fairfax-bilingual-storytime-2026",
+    "title": "Fairfax 幼儿西英双语故事会",
+    "startDate": "2026-10-06",
+    "endDate": "2026-11-10",
+    "occurrenceDates": [
+      "2026-10-06",
+      "2026-10-13",
+      "2026-10-20",
+      "2026-10-27",
+      "2026-11-03",
+      "2026-11-10"
+    ]
+  },
+  {
     "id": "san-leandro-library-game-night-2026",
     "title": "San Leandro 图书馆免费桌游夜",
     "startDate": "2026-10-06",
@@ -1167,6 +1181,65 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "november-north-art-trails-2026",
+    "title": "Sonoma County Art Trails 开放工作室",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-18",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-17",
+      "2026-10-18"
+    ]
+  },
+  {
+    "id": "november-north-bale-old-mill-days-2026",
+    "title": "Bale Grist Mill Old Mill Days 收获历史体验",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-11",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-11"
+    ]
+  },
+  {
+    "id": "november-north-healdsburg-market-2026",
+    "title": "Healdsburg 周六农夫市集：新棚亭地址",
+    "startDate": "2026-10-10",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "november-north-sonoma-harvest-market-2026",
+    "title": "Sonoma Garden Park 丰收市集",
+    "startDate": "2026-10-10",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-10-10",
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "oct2026-foodwise-flour-craft-demo",
+    "title": "Flour Craft 季节烘焙演示",
+    "startDate": "2026-10-10",
+    "endDate": "2026-10-10",
+    "occurrenceDates": [
+      "2026-10-10"
+    ]
+  },
+  {
     "id": "palo-alto-rocks-2026",
     "title": "Palo Alto Rocks：公园免费音乐与社区下午",
     "startDate": "2026-10-10",
@@ -1282,6 +1355,15 @@
   {
     "id": "east-bay-gabriel-fluffy-iglesias-the-1976-tour-2026",
     "title": "Gabriel Fluffy Iglesias 脱口秀",
+    "startDate": "2026-10-11",
+    "endDate": "2026-10-11",
+    "occurrenceDates": [
+      "2026-10-11"
+    ]
+  },
+  {
+    "id": "oct2026-red-oak-fleet-breakfast",
+    "title": "Red Oak Victory 船上煎饼早餐",
     "startDate": "2026-10-11",
     "endDate": "2026-10-11",
     "occurrenceDates": [
@@ -1422,6 +1504,15 @@
     "title": "Oakland Autumn Lights：湖畔花园灯光夜",
     "startDate": "2026-10-15",
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "oct2026-red-oak-movie",
+    "title": "Red Oak Victory 船上电影：Drums Along the Mohawk",
+    "startDate": "2026-10-15",
+    "endDate": "2026-10-15",
+    "occurrenceDates": [
+      "2026-10-15"
+    ]
   },
   {
     "id": "sf-exploratorium-after-dark-15-oct2026",
@@ -1649,8 +1740,29 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "november-north-eames-exhibition-2026",
+    "title": "The MAC：Eames & Eames 现代设计展",
+    "startDate": "2026-10-17",
+    "endDate": "2026-11-15"
+  },
+  {
+    "id": "numu-community-ignition-oct17-2026",
+    "title": "NUMU Community Ignition 展览开幕招待会",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17"
+  },
+  {
     "id": "oakland-vintage-fashion-faire-2026",
     "title": "Vintage Fashion Faire：Bridge Yard 复古服饰市集",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
+    "id": "oct2026-martinez-history-open-house",
+    "title": "Contra Costa 历史中心档案开放日",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17",
     "occurrenceDates": [
@@ -2463,6 +2575,15 @@
     "endDate": "2026-10-29"
   },
   {
+    "id": "oct2026-mission-dia-muertos-market",
+    "title": "Mission 市集：亡灵节与万圣节下午",
+    "startDate": "2026-10-29",
+    "endDate": "2026-10-29",
+    "occurrenceDates": [
+      "2026-10-29"
+    ]
+  },
+  {
     "id": "r2-yountville-haunts-2026",
     "title": "Yountville 第三届 Napa Valley Haunts",
     "startDate": "2026-10-29",
@@ -2597,6 +2718,15 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "oct2026-foodwise-fall-fruit",
+    "title": "Ferry Plaza 秋果品尝与墨西哥烘焙演示",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "palo-alto-cal-ave-halloween-live-2026",
     "title": "Palo Alto Cal Ave：万圣节街区音乐日",
     "startDate": "2026-10-31",
@@ -2639,10 +2769,64 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "nov2026-big-break-nature-walk",
+    "title": "Big Break 湿地散步：11月四个场次",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-14",
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "nov2026-black-diamond-trails-challenge",
+    "title": "Black Diamond 山径挑战：5.2英里爬升路线",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
+  },
+  {
+    "id": "nov2026-brushy-peak-heritage-hike",
+    "title": "Brushy Peak：原住民历史与山地徒步",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
+  },
+  {
+    "id": "nov2026-fruitvale-dia-muertos",
+    "title": "Fruitvale 亡灵节：社区祭坛与街头庆典",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
+  },
+  {
     "id": "roundup-suisun-dia-muertos-2026",
     "title": "Suisun City 亡灵节文化晚会",
     "startDate": "2026-11-01",
     "endDate": "2026-11-01"
+  },
+  {
+    "id": "midpen-hiking-highlights-nov2-2026",
+    "title": "林地看古树与砂岩：El Corte de Madera 导览",
+    "startDate": "2026-11-02",
+    "endDate": "2026-11-02"
+  },
+  {
+    "id": "nov2026-hayward-monday-birding",
+    "title": "Hayward 周一观鸟：West Winton 入口",
+    "startDate": "2026-11-02",
+    "endDate": "2026-11-02",
+    "occurrenceDates": [
+      "2026-11-02"
+    ]
   },
   {
     "id": "sj-sharks-flames-nov2-2026",
@@ -2655,6 +2839,12 @@
     "title": "XG WORLD TOUR: THE CORE Oakland 站",
     "startDate": "2026-11-03",
     "endDate": "2026-11-03"
+  },
+  {
+    "id": "san-mateo-downtown-market-nov5-2026",
+    "title": "San Mateo 周四傍晚农贸市场",
+    "startDate": "2026-11-05",
+    "endDate": "2026-11-05"
   },
   {
     "id": "sf-warriors-heat-november-2026",
@@ -2675,6 +2865,21 @@
     "endDate": "2026-11-06"
   },
   {
+    "id": "nov2026-presidio-dia-muertos-diwali",
+    "title": "Presidio：亡灵节与排灯节文化庆典",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
+    "id": "november-north-sugarloaf-public-star-party-2026",
+    "title": "Sugarloaf 公众观星夜",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07"
+  },
+  {
     "id": "roundup-windsor-fall-swap-2026",
     "title": "Windsor 秋季装饰与衣物交换",
     "startDate": "2026-11-07",
@@ -2685,6 +2890,39 @@
     "title": "SJSU 对 Northern Illinois：家庭周末主场",
     "startDate": "2026-11-07",
     "endDate": "2026-11-07"
+  },
+  {
+    "id": "ssf-senior-holiday-boutique-nov7-2026",
+    "title": "South San Francisco 节日手作市集",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07"
+  },
+  {
+    "id": "midpen-sentinel-sky-nov8-2026",
+    "title": "Mount Umunhum 冷战历史：Sentinel in the Sky",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "mountain-view-market-hope-st-nov8-2026",
+    "title": "Mountain View 农贸市场：11 月 8 日改到 Hope Street",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "nov2026-botanical-one-day-choir",
+    "title": "植物园 One Day Choir：一起学唱一首歌",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
+  },
+  {
+    "id": "november-north-sugarloaf-nature-talk-2026",
+    "title": "Sugarloaf 自然桌边讲解：颜色、图案与信号",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08"
   },
   {
     "id": "santa-clara-49ers-raiders-nov-2026",
@@ -2699,16 +2937,115 @@
     "endDate": "2026-11-08"
   },
   {
+    "id": "nov2026-martinez-monday-birding",
+    "title": "Martinez 滨水周一观鸟",
+    "startDate": "2026-11-09",
+    "endDate": "2026-11-09",
+    "occurrenceDates": [
+      "2026-11-09"
+    ]
+  },
+  {
     "id": "roundup-schulz-pearls-jubilee-2026",
     "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
     "startDate": "2026-11-10",
     "endDate": "2026-11-10"
   },
   {
+    "id": "nov2026-mission-market-season-final",
+    "title": "Mission Community Market：2026收季最后一天",
+    "startDate": "2026-11-12",
+    "endDate": "2026-11-12",
+    "occurrenceDates": [
+      "2026-11-12"
+    ]
+  },
+  {
+    "id": "hiller-starlight-nights-nov13-2026",
+    "title": "Hiller Starlight Nights：晚间航空馆与星空",
+    "startDate": "2026-11-13",
+    "endDate": "2026-11-13"
+  },
+  {
+    "id": "november-north-sips-stars-2026",
+    "title": "Sips and Stars：21岁以上酒与星空之夜",
+    "startDate": "2026-11-13",
+    "endDate": "2026-11-13"
+  },
+  {
     "id": "oakland-jo-koy-november-2026",
     "title": "Jo Koy: Koy Meets World 喜剧专场",
     "startDate": "2026-11-13",
     "endDate": "2026-11-13"
+  },
+  {
+    "id": "san-jose-matilda-nov2026",
+    "title": "CMT San Jose《Matilda》音乐剧",
+    "startDate": "2026-11-13",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+    ]
+  },
+  {
+    "id": "filoli-holidays-from-nov14-2026",
+    "title": "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
+    "startDate": "2026-11-14",
+    "endDate": "2027-01-10",
+    "occurrenceDates": [
+      "2026-11-14",
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "nov2026-coyote-hills-kids-birding",
+    "title": "Coyote Hills 儿童识鸟游戏",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "nov2026-red-oak-fall-swing",
+    "title": "Red Oak Victory 秋日摇摆舞会",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "san-carlos-gifts-kitchen-nov14-2026",
+    "title": "San Carlos 食物保存实作：Gifts from the Kitchen",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14"
+  },
+  {
+    "id": "nov2026-hayward-bay-bird-morning",
+    "title": "Hayward 海湾晨间观鸟：6岁起报名",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "november-north-jack-london-author-2026",
+    "title": "Jack London 公园作家下午会：The Second Mrs. London",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15"
+  },
+  {
+    "id": "ravenswood-tidal-marsh-nov15-2026",
+    "title": "Ravenswood 潮汐湿地慢走与观鸟",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15"
   },
   {
     "id": "san-ramon-lip-balm-workshop-november-2026",

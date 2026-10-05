@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-02",
+  "checkedAt": "2026-10-05",
   "events": [
     {
       "id": "r2-santarosa-ross-street-sundays-2026",
@@ -3767,6 +3767,83 @@
       }
     },
     {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-fairfax-bilingual-storytime-2026",
+      "title": "Fairfax 幼儿西英双语故事会",
+      "startDate": "2026-10-06",
+      "endDate": "2026-11-10",
+      "occurrenceDates": [
+        "2026-10-06",
+        "2026-10-13",
+        "2026-10-20",
+        "2026-10-27",
+        "2026-11-03",
+        "2026-11-10"
+      ],
+      "dateLabel": "10/6–11/10 每周二 · 10:15场；日历时段至11:45",
+      "city": "Fairfax",
+      "venue": "Fairfax Library, 2097 Sir Francis Drake Boulevard",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；适合0–5岁及陪同者",
+      "summary": "通过西英双语故事、音乐与身体活动陪幼儿学习；官方要求每次只参加一场。",
+      "plan": [
+        "本卡采用10:15系列；另有9:30场，选其中一场，出发前核对当天页面。",
+        "日历列10:15–11:45，不代表整段都是连续讲故事；幼儿由照顾者陪同。",
+        "编辑建议：按孩子午睡时间选场，故事会后可先在分馆选书，不必紧接长途出游。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://marinlibrary.bibliocommons.com/v2/events?series=6a33170c2ea730c17ab7baeb",
+      "sourceLabel": "Marin County Free Library 官方系列日历",
+      "imageKey": "community-library-card",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "minAge": 0,
+        "maxAge": 5,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/v2/events?series=6a33170c2ea730c17ab7baeb",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-06",
+          "validThrough": "2026-11-10",
+          "note": "图书馆活动免费；适合0–5岁及陪同者。10:15开场，单场结束时间待确认；日历11:45不是任意到场截止时间。",
+          "sessions": [
+            {
+              "date": "2026-10-06",
+              "start": "10:15"
+            },
+            {
+              "date": "2026-10-13",
+              "start": "10:15"
+            },
+            {
+              "date": "2026-10-20",
+              "start": "10:15"
+            },
+            {
+              "date": "2026-10-27",
+              "start": "10:15"
+            },
+            {
+              "date": "2026-11-03",
+              "start": "10:15"
+            },
+            {
+              "date": "2026-11-10",
+              "start": "10:15"
+            }
+          ]
+        },
+        "programTimeUnconfirmed": true
+      }
+    },
+    {
       "id": "san-leandro-library-game-night-2026",
       "title": "San Leandro 图书馆免费桌游夜",
       "startDate": "2026-10-06",
@@ -5564,6 +5641,369 @@
       }
     },
     {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-art-trails-2026",
+      "title": "Sonoma County Art Trails 开放工作室",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-18",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-17",
+        "2026-10-18"
+      ],
+      "dateLabel": "10/10、11、17、18 · 每日10:00–17:00",
+      "city": "Sonoma County",
+      "venue": "全县参与艺术家工作室；具体地址见2026官方地图",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "开放工作室参观免费；购买作品另计",
+      "summary": "160位入选艺术家的工作空间对公众开放，可自选一小片区域看绘画、陶艺与手作。",
+      "plan": [
+        "先在2026地图选2–3个邻近工作室，不把全县名单当作 Sebastopol 单一会场。",
+        "只在四个确认日期参观；无障碍条件和个别工作室安排分别核对。",
+        "编辑建议：先选最感兴趣的绘画、陶艺或木作，再看距离，减少跨县来回开车。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "本地居民"
+      ],
+      "officialUrl": "https://www.sonomacountyarttrails.org/",
+      "sourceLabel": "Sonoma County Art Trails 主办方",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": 0,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.sonomacountyarttrails.org/resource",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-18",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-11": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-17": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-18": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "开放工作室参观免费；购买作品另计"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-bale-old-mill-days-2026",
+      "title": "Bale Grist Mill Old Mill Days 收获历史体验",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-11"
+      ],
+      "dateLabel": "10/10、10/11 · 10:00–14:00",
+      "city": "St. Helena",
+      "venue": "Bale Grist Mill, 3369 St Helena Highway",
+      "category": "family",
+      "cost": "paid",
+      "costLabel": "一般入场$5/人；幼儿减免年龄边界请向主办方确认",
+      "summary": "收获季的历史体验把水力磨坊示范、旧式农务、纺织与音乐结合，让孩子认识葡萄种植之外的 Napa 农业。",
+      "plan": [
+        "活动在 St. Helena 城外磨坊；选一天10:00–14:00参加，不沿用普通周末闭馆时刻。",
+        "官方同页分别写未满2岁及2岁及以下免费，2岁儿童是否免票须先确认。",
+        "编辑建议：穿适合动手体验的衣物，留出洗手和孩子休息的时间。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://napaoutdoors.org/events/",
+      "sourceLabel": "Napa County Regional Park and Open Space District 官方排程",
+      "imageKey": "family-workshop",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://napaoutdoors.org/events/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-11",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ],
+            "2026-10-11": [
+              {
+                "open": "10:00",
+                "close": "14:00"
+              }
+            ]
+          },
+          "note": "一般入场$5/人；幼儿减免年龄边界请向主办方确认"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-healdsburg-market-2026",
+      "title": "Healdsburg 周六农夫市集：新棚亭地址",
+      "startDate": "2026-10-10",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14"
+      ],
+      "dateLabel": "10/10–11/14 每周六 · 8:30–12:00",
+      "city": "Healdsburg",
+      "venue": "Foley Family Community Pavilion, 3 North Street",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "农产与餐饮按摊位收费；官网未单列入场费",
+      "summary": "2026周六市集已迁入 Foley Family Community Pavilion，适合买菜、选本地食品并短逛市中心。",
+      "plan": [
+        "导航到3 North Street，不沿用旧停车场地址。",
+        "本期列到11/14；官方周六季节至12/19，周二季节已结束。",
+        "编辑建议：带购物袋，易腐食品采购后安排保冷，再继续逛市中心。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://healdsburgfarmersmarket.org/",
+      "sourceLabel": "Healdsburg Farmers’ Market 官方排程",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://healdsburgfarmersmarket.org/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-11-14",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ],
+            "2026-10-17": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ],
+            "2026-10-24": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ],
+            "2026-10-31": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ],
+            "2026-11-07": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ],
+            "2026-11-14": [
+              {
+                "open": "08:30",
+                "close": "12:00"
+              }
+            ]
+          },
+          "note": "农产与餐饮按摊位收费；官网未单列入场费"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-sonoma-harvest-market-2026",
+      "title": "Sonoma Garden Park 丰收市集",
+      "startDate": "2026-10-10",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-10-10",
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14"
+      ],
+      "dateLabel": "10/10–11/14 每周六 · 9:00–13:00",
+      "city": "Sonoma",
+      "venue": "Sonoma Garden Park, 19996 7th Street East",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "蔬果、鸡蛋与其他商品按摊位购买；未列单独入场费",
+      "summary": "在花园旁买当季蔬果、花束与本地食物；本期保留官方2026周六季节中的六个日期。",
+      "plan": [
+        "自带购物袋，商品供应随采收而变，不保证每周都有同样品项。",
+        "市集在7th Street East的花园，不是 Sonoma Plaza 广场。",
+        "官方说明可使用信用卡及 Apple Pay；仍以当日摊位可用方式结账。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "本地居民"
+      ],
+      "officialUrl": "https://sugarloafpark.org/event/saturday-harvest-markets-at-sonoma-garden-park-75/",
+      "sourceLabel": "Sonoma Ecology Center / Sugarloaf 官方市集页",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://sugarloafpark.org/event/saturday-harvest-markets-at-sonoma-garden-park-75/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-11-14",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ],
+            "2026-10-17": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ],
+            "2026-10-24": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ],
+            "2026-10-31": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ],
+            "2026-11-07": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ],
+            "2026-11-14": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ]
+          },
+          "note": "蔬果、鸡蛋与其他商品按摊位购买；未列单独入场费"
+        }
+      }
+    },
+    {
+      "id": "oct2026-foodwise-flour-craft-demo",
+      "title": "Flour Craft 季节烘焙演示",
+      "kind": "event",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-10",
+      "occurrenceDates": [
+        "2026-10-10"
+      ],
+      "dateLabel": "10月10日 11:00–11:45",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Foodwise Classroom · green tent in front of 1 Ferry Building",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "演示免费；购书和市集购物另付",
+      "summary": "Heather Hardcastle 在渡轮大厦前分享烘焙与季节食材，演示后有食谱书签售。品尝属于演示安排，不代表提供免费正餐。",
+      "plan": [
+        "找渡轮大厦正前方绿色 Classroom 帐篷。",
+        "官网未列必需报名；出发前复查更新。",
+        "购书与逛摊位另留预算和时间。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://foodwise.org/events/heather-hardcastle-the-flour-craft-bakery-cafe-cookbook/",
+      "sourceLabel": "Foodwise",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "ferry-market",
+      "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/events/heather-hardcastle-the-flour-craft-bakery-cafe-cookbook/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-10",
+          "validThrough": "2026-10-10",
+          "dates": {
+            "2026-10-10": [
+              {
+                "open": "11:00",
+                "close": "11:45"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-10-10",
+              "start": "11:00",
+              "end": "11:45"
+            }
+          ],
+          "note": "固定11:00演示；免费演示不含购书或购物。"
+        }
+      }
+    },
+    {
       "id": "palo-alto-rocks-2026",
       "title": "Palo Alto Rocks：公园免费音乐与社区下午",
       "startDate": "2026-10-10",
@@ -6151,6 +6591,56 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "oct2026-red-oak-fleet-breakfast",
+      "title": "Red Oak Victory 船上煎饼早餐",
+      "kind": "event",
+      "startDate": "2026-10-11",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-11"
+      ],
+      "dateLabel": "10月11日 9:00–12:30入场；供餐至13:00",
+      "region": "east-bay",
+      "city": "Richmond",
+      "venue": "SS Red Oak Victory · Point Richmond",
+      "category": "food",
+      "cost": "paid",
+      "costLabel": "成人$20+$3.18手续费；8岁及以下$5+$2.18手续费",
+      "summary": "在历史船舶上吃早餐、听现场音乐，作为 Fleet Week 周末选择。主办方鼓励提前买票；空中表演依天气和实际安排，不能保证在此清楚看到全部飞行。",
+      "plan": [
+        "12:30停止新入场，不要按13:00才到。",
+        "语音或讲解导览只包含在对应票档，另查购票选项。",
+        "葡萄酒品尝/销售限21岁以上、另付；通行需求先查船上楼梯。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://redoakvictory.us/events/",
+      "sourceLabel": "SS Red Oak Victory",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "everyday",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://redoakvictory.us/events/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-11",
+          "validThrough": "2026-10-11",
+          "dates": {
+            "2026-10-11": [
+              {
+                "open": "09:00",
+                "close": "12:30"
+              }
+            ]
+          },
+          "note": "9:00–12:30是新入场窗口，供餐至13:00。成人$20+$3.18费，8岁及以下$5+$2.18费；不可用统一人均价。"
+        }
       }
     },
     {
@@ -6834,6 +7324,57 @@
       "relatedGuideSlug": "oakland-lake-merritt-omca-half-day",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "oct2026-red-oak-movie",
+      "title": "Red Oak Victory 船上电影：Drums Along the Mohawk",
+      "kind": "event",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-15",
+      "occurrenceDates": [
+        "2026-10-15"
+      ],
+      "dateLabel": "10月15日 18:00–22:00；18:00开门",
+      "region": "east-bay",
+      "city": "Richmond",
+      "venue": "SS Red Oak Victory · Point Richmond",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "无需票或预约；建议捐$10，零食饮品另付",
+      "summary": "10月场放映1939年作品 Drums Along the Mohawk。主办方明确写不要订票、直接到场；18:00是开门时间，未单列正式开映时刻。",
+      "plan": [
+        "按现场入场说明参加，不必点页面通用售票按钮。",
+        "捐款是建议金额；零食饮品另售。",
+        "夜间上船先查阶梯和停车到船舶的路线。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://redoakvictory.us/events/",
+      "sourceLabel": "SS Red Oak Victory",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "cinema-night",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://redoakvictory.us/events/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-15",
+          "validThrough": "2026-10-15",
+          "dates": {
+            "2026-10-15": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18:00开门，正式开映时刻未公布；无需票或预约，建议捐$10，餐饮另付。"
+        },
+        "programTimeUnconfirmed": true
       }
     },
     {
@@ -7917,6 +8458,276 @@
       }
     },
     {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-eames-exhibition-2026",
+      "title": "The MAC：Eames & Eames 现代设计展",
+      "startDate": "2026-10-17",
+      "endDate": "2026-11-15",
+      "dateLabel": "本期10/17–11/15 · 每日10:00–17:00；完整展期至2027/4/18",
+      "city": "St. Helena",
+      "venue": "The MAC, 607 St Helena Highway",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "普通成人$25；6–17岁$15；5岁及以下免费，特别活动另核",
+      "summary": "以 Charles 与 Ray Eames 为主题认识现代设计，适合把酒乡行程加入室内文化停留。",
+      "plan": [
+        "导航到 St. Helena 的 The MAC，不是 Yountville 的55 Presidents Circle。",
+        "本期只列至11/15，展览本身仍延续；10/18开幕庆典的票务另核，普通票不作特别活动保证。",
+        "成人与儿童票价不同，先按同行年龄选票，不把成人票价直接乘所有人数。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://napavalleymuseum.org/blogs/upcoming-exhibitions/eames-eames",
+      "sourceLabel": "Napa Valley Museum 官方展览及参观页",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://napavalleymuseum.org/pages/plan-your-visit-to-napa-valley-museum-of-art-and-culture",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-11-15",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-18": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-19": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-20": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-21": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-22": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-23": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-24": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-25": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-26": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-27": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-28": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-29": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-30": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-10-31": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-01": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-02": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-03": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-04": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-05": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-06": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-07": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-08": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-09": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-10": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-11": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-12": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-13": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-14": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ],
+            "2026-11-15": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "普通成人$25；6–17岁$15；5岁及以下免费，特别活动另核"
+        }
+      }
+    },
+    {
+      "id": "numu-community-ignition-oct17-2026",
+      "city": "Los Gatos",
+      "region": "south-bay",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "category": "culture",
+      "cost": "free",
+      "imageKey": "culture-visit",
+      "officialUrl": "https://www.numulosgatos.org/events/community-ignition",
+      "sourceLabel": "NUMU — New Museum Los Gatos",
+      "verifiedAt": "2026-10-05",
+      "title": "NUMU Community Ignition 展览开幕招待会",
+      "dateLabel": "10/17 周六 · 12:00–16:00",
+      "venue": "NUMU，106 East Main Street",
+      "costLabel": "免费，须提前登记",
+      "summary": "这场开幕活动关注残障艺术社群中的协作、支持与创作，设现场艺术示范及参与活动。免费资格对应 10 月 17 日招待会，不能扩展成整个展期每天免费。",
+      "plan": [
+        "从官方活动页进入报名，确认名额；当天博物馆直到中午才开放。",
+        "未满 13 岁须成人陪同，特别无障碍需求可提前联系博物馆。",
+        "普通展览从 10 月 16 日持续至 2027 年 3 月 21 日，另按开放日及门票规则参观。"
+      ],
+      "audience": [
+        "艺术与社区文化爱好者",
+        "关注无障碍创作的人"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.numulosgatos.org/events/community-ignition",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "12:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "免费预约招待会窗口，不是整个展期免费。未满 13 岁须成人陪同是陪同要求，不是最低入场年龄；当天博物馆 12:00 才开放。"
+        }
+      }
+    },
+    {
       "id": "oakland-vintage-fashion-faire-2026",
       "title": "Vintage Fashion Faire：Bridge Yard 复古服饰市集",
       "startDate": "2026-10-17",
@@ -7948,6 +8759,56 @@
       "imageKey": "weekend",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "oct2026-martinez-history-open-house",
+      "title": "Contra Costa 历史中心档案开放日",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "dateLabel": "10月17日 10:30–14:30；非会员导览11:30起",
+      "region": "east-bay",
+      "city": "Martinez",
+      "venue": "Contra Costa County History Center · 724 Escobar Street",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；须提前RSVP",
+      "summary": "档案月期间认识本地档案与展示。10:30首轮留给会员，非会员导览11:30开始，每轮约60分钟。",
+      "plan": [
+        "在官网登记，选择会员或非会员对应时段。",
+        "到724 Escobar Street，不是 Martinez 其他历史建筑。",
+        "官网列饮品和简单点心，不按免费午餐安排。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.cocohistory.org/event/open-house-at-the-history-center-in-celebration-of-american-archives-month-2",
+      "sourceLabel": "Contra Costa County Historical Society",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "culture-visit",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.cocohistory.org/event/open-house-at-the-history-center-in-celebration-of-american-archives-month-2",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "dates": {
+            "2026-10-17": [
+              {
+                "open": "11:30",
+                "close": "14:30"
+              }
+            ]
+          },
+          "note": "10:30仅会员；普通公众11:30起。每轮约60分钟，必须预选RSVP时段。此窗口不保证任意时刻有导览。"
+        }
       }
     },
     {
@@ -11928,6 +12789,57 @@
       }
     },
     {
+      "id": "oct2026-mission-dia-muertos-market",
+      "title": "Mission 市集：亡灵节与万圣节下午",
+      "kind": "event",
+      "startDate": "2026-10-29",
+      "endDate": "2026-10-29",
+      "occurrenceDates": [
+        "2026-10-29"
+      ],
+      "dateLabel": "10月29日 15:00–19:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Mission Community Market · 22nd Street between Mission and Valencia",
+      "category": "food",
+      "cost": "mixed",
+      "costLabel": "免费社区活动；摊位餐饮与购物另付",
+      "summary": "放学后参加手作、服装活动与季节食材体验；DJ Lamont 的音乐时段为17:00–19:00。传统面包、mole 等摊位食品需另购。",
+      "plan": [
+        "按官方正文到22nd Street 的 Mission 与 Valencia 之间。",
+        "橙色 Seasonal Spotlight 帐篷提供当季试吃、食谱与技巧。",
+        "官网未列必需预约；天气和节目变动出发前再查。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://foodwise.org/events/dia-de-los-muertos-and-halloween-at-mission-community-market/",
+      "sourceLabel": "Foodwise",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/events/dia-de-los-muertos-and-halloween-at-mission-community-market/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-29",
+          "validThrough": "2026-10-29",
+          "dates": {
+            "2026-10-29": [
+              {
+                "open": "15:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "活动窗口；餐饮购物另付，17:00–19:00音乐。"
+        }
+      }
+    },
+    {
       "id": "r2-yountville-haunts-2026",
       "title": "Yountville 第三届 Napa Valley Haunts",
       "startDate": "2026-10-29",
@@ -12602,6 +13514,57 @@
       }
     },
     {
+      "id": "oct2026-foodwise-fall-fruit",
+      "title": "Ferry Plaza 秋果品尝与墨西哥烘焙演示",
+      "kind": "event",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "occurrenceDates": [
+        "2026-10-31"
+      ],
+      "dateLabel": "10月31日 11:00–13:00；演示11:00–11:45",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Ferry Plaza Farmers Market · in front of 1 Ferry Building",
+      "category": "food",
+      "cost": "mixed",
+      "costLabel": "活动与试吃免费；市场购物另付",
+      "summary": "橙色帐篷可品尝秋果、取食谱、投票选喜欢的品种；同日11:00绿色 Classroom 帐篷有 Tutuli 的 Sofía Jiménez 烘焙演示。",
+      "plan": [
+        "果品活动至13:00；烘焙演示11:45结束，两个帐篷分别找。",
+        "免费的是列明活动与试吃，不是所有摊位食品。",
+        "想看完整演示，先按11:00到绿色帐篷，再去秋果活动。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://foodwise.org/events/fall-fruit-celebration/",
+      "sourceLabel": "Foodwise",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "ferry-market",
+      "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/events/fall-fruit-celebration/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-10-31",
+          "validThrough": "2026-10-31",
+          "dates": {
+            "2026-10-31": [
+              {
+                "open": "11:00",
+                "close": "13:00"
+              }
+            ]
+          },
+          "note": "秋果活动窗口；另一绿色帐篷11:00–11:45演示，商品另付。"
+        }
+      }
+    },
+    {
       "id": "palo-alto-cal-ave-halloween-live-2026",
       "title": "Palo Alto Cal Ave：万圣节街区音乐日",
       "startDate": "2026-10-31",
@@ -12827,6 +13790,269 @@
       }
     },
     {
+      "id": "nov2026-big-break-nature-walk",
+      "title": "Big Break 湿地散步：11月四个场次",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-15",
+      "occurrenceDates": [
+        "2026-11-01",
+        "2026-11-08",
+        "2026-11-14",
+        "2026-11-15"
+      ],
+      "dateLabel": "11月1、8、14、15日 14:00–15:00",
+      "region": "east-bay",
+      "city": "Oakley",
+      "venue": "Big Break Visitor Center · 69 Big Break Road",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "活动和停车免费；无需报名",
+      "summary": "跟随自然教育员认识 Delta 湿地。5岁起，儿童须有成人参与；路线约0.5–2英里，以铺装、较平缓路段为主。",
+      "plan": [
+        "14:00在游客中心集合；穿步行鞋、带水。",
+        "四天是独立场次，不是11月每天开办。",
+        "查看公园水质和路径公告；自然散步不等于允许下水。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/big-break-nature-walk-29",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 5,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/big-break-nature-walk-29",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-11-15",
+          "dates": {
+            "2026-11-01": [
+              {
+                "open": "14:00",
+                "close": "15:00"
+              }
+            ],
+            "2026-11-08": [
+              {
+                "open": "14:00",
+                "close": "15:00"
+              }
+            ],
+            "2026-11-14": [
+              {
+                "open": "14:00",
+                "close": "15:00"
+              }
+            ],
+            "2026-11-15": [
+              {
+                "open": "14:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-01",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-08",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "14:00",
+              "end": "15:00"
+            }
+          ],
+          "note": "5岁起且成人参与；0.5–2英里。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-black-diamond-trails-challenge",
+      "title": "Black Diamond 山径挑战：5.2英里爬升路线",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "occurrenceDates": [
+        "2026-11-01"
+      ],
+      "dateLabel": "11月1日 9:00–13:00",
+      "region": "east-bay",
+      "city": "Antioch",
+      "venue": "Black Diamond Mines · Upper Parking Lot, Somersville Road",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "活动免费；岗亭有人值守时停车$5；须报名",
+      "summary": "12岁起的环线，爬升约1,300英尺，含陡坡和不平整土路。适合能完成中长距离山路的人，不按轻松亲子散步推荐。",
+      "plan": [
+        "报名窗口：10月6日9:00至10月28日16:00，余位另查。",
+        "在 Somersville Road 尽头上停车场集合，岗亭往内约1英里。",
+        "带午餐、零食和饮水，穿防滑鞋；大雨等变化以主办方通知为准。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/black-diamond-trails-challenge-hike",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "weekend",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 12,
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/black-diamond-trails-challenge-hike",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-11-01",
+          "dates": {
+            "2026-11-01": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-01",
+              "start": "09:00",
+              "end": "13:00"
+            }
+          ],
+          "note": "5.2英里、1,300英尺爬升；活动免费，停车另付；报名10月6日9:00–10月28日16:00。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-brushy-peak-heritage-hike",
+      "title": "Brushy Peak：原住民历史与山地徒步",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "occurrenceDates": [
+        "2026-11-01"
+      ],
+      "dateLabel": "11月1日 9:00–13:00",
+      "region": "east-bay",
+      "city": "Livermore",
+      "venue": "Brushy Peak · Laughlin Ranch Staging Area (near Livermore)",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "活动免费；须提前报名",
+      "summary": "在 Livermore 以北的保护地走约4.5英里环线，认识原住民历史与自然。7岁起并须成人参与；爬升501–1,000英尺、有陡坡。",
+      "plan": [
+        "报名窗口：10月6日9:00至10月28日16:00，余位另查。",
+        "集合点是 Laughlin Ranch Staging Area，按官网地图确认入口。",
+        "穿徒步鞋、带饮水，可带登山杖；不按幼童平路活动安排。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/native-american-heritage-month-brushy-peak-hike-1",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "weekend",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 7,
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/native-american-heritage-month-brushy-peak-hike-1",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-11-01",
+          "dates": {
+            "2026-11-01": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-01",
+              "start": "09:00",
+              "end": "13:00"
+            }
+          ],
+          "note": "成人参与；4.5英里、501–1,000英尺爬升；报名10月6日9:00–10月28日16:00。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-fruitvale-dia-muertos",
+      "title": "Fruitvale 亡灵节：社区祭坛与街头庆典",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "occurrenceDates": [
+        "2026-11-01"
+      ],
+      "dateLabel": "11月1日 10:00–17:00",
+      "region": "east-bay",
+      "city": "Oakland",
+      "venue": "Fruitvale Village",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "免费入场；餐饮、购物及个别游乐项目另查价格",
+      "summary": "Oakland 官方旅游活动页确认2026年场次，包括社区祭坛、音乐、手工艺摊位与家庭活动。参观时尊重祭坛和纪念传统。",
+      "plan": [
+        "地点为 Fruitvale Village；按当天交通与封街信息安排。",
+        "免费入场不表示所有食品、商品或游乐设备免费。",
+        "具体舞台时刻表另查主办方。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.visitoakland.com/events/annual-events/dia-de-los-muertos-festival/",
+      "sourceLabel": "Visit Oakland",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.visitoakland.com/events/annual-events/dia-de-los-muertos-festival/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-11-01",
+          "dates": {
+            "2026-11-01": [
+              {
+                "open": "10:00",
+                "close": "17:00"
+              }
+            ]
+          },
+          "note": "免费入场，食品、购物和个别游乐价格未核实。"
+        }
+      }
+    },
+    {
       "id": "roundup-suisun-dia-muertos-2026",
       "title": "Suisun City 亡灵节文化晚会",
       "kind": "event",
@@ -12855,6 +14081,121 @@
       "imageKey": "culture-visit",
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "midpen-hiking-highlights-nov2-2026",
+      "city": "Woodside",
+      "region": "peninsula",
+      "startDate": "2026-11-02",
+      "endDate": "2026-11-02",
+      "category": "outdoors",
+      "cost": "free",
+      "imageKey": "weekend",
+      "officialUrl": "https://www.openspace.org/events/guided-activities/hiking-highlights",
+      "sourceLabel": "Midpeninsula Regional Open Space District",
+      "verifiedAt": "2026-10-05",
+      "title": "林地看古树与砂岩：El Corte de Madera 导览",
+      "dateLabel": "11/2 周一 · 10:00–13:30",
+      "venue": "El Corte de Madera Creek Preserve；集合：Skyline Blvd 的 Skeggs Point 停车区（Woodside 附近山区）",
+      "costLabel": "免费导览；须签参加声明",
+      "summary": "中等节奏、约 4 英里环线，官方路线涵盖 Methuselah 古红杉、Resolution 飞机纪念点及 tafoni 砂岩。适合能连续步行数小时的人，不按平地亲子短步道宣传。",
+      "plan": [
+        "导航 Skeggs Point，而不是保护区任何一个停车场；从 Skyline 北侧驶来不能左转进入该停车区。",
+        "提前到集合点签署参加声明；官网如新增预约要求须按其办理，出发前再查取消与封路公告。",
+        "自备饮水、分层衣物和合适步行鞋；大雨可能取消，不把预定结束时间当作精确返程保证。",
+        "这不是带狗活动；Midpen 导览仅在明确标注时允许狗参加。"
+      ],
+      "audience": [
+        "能走四英里的徒步者",
+        "自然与地方历史爱好者"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.openspace.org/events/guided-activities/hiking-highlights",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-02",
+          "validThrough": "2026-11-02",
+          "dates": {
+            "2026-11-02": [
+              {
+                "open": "10:00",
+                "close": "13:30"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-02",
+              "start": "10:00",
+              "end": "13:30"
+            }
+          ],
+          "note": "固定导览，需按 10:00 开始参加约四英里山林环线；不是窗口内任意到达的散步。集合 Skeggs Point，须签声明；主办方未列最低年龄，不据此保证幼童或行动不便者适合。大雨可能取消，结束为预计时刻。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-hayward-monday-birding",
+      "title": "Hayward 周一观鸟：West Winton 入口",
+      "kind": "event",
+      "startDate": "2026-11-02",
+      "endDate": "2026-11-02",
+      "occurrenceDates": [
+        "2026-11-02"
+      ],
+      "dateLabel": "11月2日 9:00–12:00",
+      "region": "east-bay",
+      "city": "Hayward",
+      "venue": "Hayward Regional Shoreline · West Winton Avenue Staging Area",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费；无需报名",
+      "summary": "观察海岸秋冬鸟类，官方路线范围2–5英里，以碎石路为主。这场从 West Winton Avenue 集合，与11月15日的 Grant Avenue 晨间场次入口不同。",
+      "plan": [
+        "9:00集合，带望远镜、饮水和防风外套。",
+        "官网列全年龄，但距离不等于适合每位幼童。",
+        "出发前检查公园公告和天气。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/monday-birding-hayward-regional-shoreline",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 0,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/monday-birding-hayward-regional-shoreline",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-02",
+          "validThrough": "2026-11-02",
+          "dates": {
+            "2026-11-02": [
+              {
+                "open": "09:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-02",
+              "start": "09:00",
+              "end": "12:00"
+            }
+          ],
+          "note": "全年龄；2–5英里，不代表幼童适合全程。West Winton 入口。"
+        }
       }
     },
     {
@@ -12917,6 +14258,54 @@
       "imageKey": "roundup-oakland-arena",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-mateo-downtown-market-nov5-2026",
+      "city": "San Mateo",
+      "region": "peninsula",
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-05",
+      "category": "food",
+      "cost": "mixed",
+      "imageKey": "everyday",
+      "officialUrl": "https://dsma.org/event/downtown-san-mateo-farmers-market/2026-11-05/",
+      "sourceLabel": "Downtown San Mateo Association / West Coast Farmers Market Association",
+      "verifiedAt": "2026-10-05",
+      "title": "San Mateo 周四傍晚农贸市场",
+      "dateLabel": "11/5 周四 · 15:00–19:00",
+      "venue": "原 Draeger’s 停车场，222 East 4th Avenue",
+      "costLabel": "蔬果与餐车食物自费；官网未列入场售票",
+      "summary": "市中心协会日历明确列出 2026 年 11 月 5 日场次，包含蔬果与少量餐车，适合下班后采购。目的地是原超市停车场，不是 College of San Mateo 的周六市场。",
+      "plan": [
+        "先查当日主办方更新，带购物袋并按需要购买；天气、摊位及品项可能调整。",
+        "停车依现场标志付费或限时；不要因活动在停车场就假定可以停在摊位区。",
+        "有食物过敏或饮食要求时，直接向摊商核对配料。"
+      ],
+      "audience": [
+        "下班后买菜的人",
+        "想认识本地食物的人"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://dsma.org/event/downtown-san-mateo-farmers-market/2026-11-05/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-05",
+          "validThrough": "2026-11-05",
+          "dates": {
+            "2026-11-05": [
+              {
+                "open": "15:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "这是农贸市场营业窗口，可自行选择停留时长。食品及餐车自费；官方未列入场售票，但未将缺少票价信息转换成结构化免费承诺。"
+        }
       }
     },
     {
@@ -13013,6 +14402,105 @@
       }
     },
     {
+      "id": "nov2026-presidio-dia-muertos-diwali",
+      "title": "Presidio：亡灵节与排灯节文化庆典",
+      "kind": "event",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "occurrenceDates": [
+        "2026-11-07"
+      ],
+      "dateLabel": "11月7日 12:00–15:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Presidio Tunnel Tops · 210 Lincoln Boulevard",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "活动免费；停车另付",
+      "summary": "在 Tunnel Tops 通过故事、演出、文化仪式与手作认识两个节庆，官网标明全年龄。餐饮和停车按各自收费，不是全园消费免费。",
+      "plan": [
+        "官网提供 Register 登记入口，先查看参与与到达安排。",
+        "按12:00–15:00节目时段安排，不把公园开放时间当活动时间。",
+        "出发前确认天气、交通和停车规则。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://presidio.gov/explore/events/dia-de-los-muertos-and-diwali-festival",
+      "sourceLabel": "Presidio Trust",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "presidio",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 0,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://presidio.gov/explore/events/dia-de-los-muertos-and-diwali-festival",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-07",
+          "validThrough": "2026-11-07",
+          "dates": {
+            "2026-11-07": [
+              {
+                "open": "12:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "note": "全年龄活动免费，停车和餐饮另付；官网有Register入口但未明确是否必须。"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-sugarloaf-public-star-party-2026",
+      "title": "Sugarloaf 公众观星夜",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "dateLabel": "11/7 · 19:00–22:00",
+      "city": "Kenwood",
+      "venue": "Robert Ferguson Observatory, 2603 Adobe Canyon Road",
+      "category": "outdoors",
+      "cost": "paid",
+      "costLabel": "成人$15；62岁以上/学生$10；6–12岁$5；5岁及以下免费；另加$10/车停车",
+      "summary": "在天文台听讲解并通过望远镜观察夜空，适合愿意晚归的家庭和天文爱好者。",
+      "plan": [
+        "先从主办方链接购票，停车费与活动票分开计算。",
+        "山中夜间会冷，带保暖衣物；可见天体受天气影响，不能保证特定观测结果。",
+        "5岁及以下活动票免费，但家庭自驾仍须计入每车停车费。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "自然爱好者"
+      ],
+      "officialUrl": "https://sugarloafpark.org/event/public-star-party-46/",
+      "sourceLabel": "Sugarloaf / Robert Ferguson Observatory 官方活动页",
+      "imageKey": "november-stargazing",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://sugarloafpark.org/event/public-star-party-46/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-07",
+          "validThrough": "2026-11-07",
+          "note": "成人$15；62岁以上/学生$10；6–12岁$5；5岁及以下免费；另加$10/车停车",
+          "sessions": [
+            {
+              "date": "2026-11-07",
+              "start": "19:00",
+              "end": "22:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "roundup-windsor-fall-swap-2026",
       "title": "Windsor 秋季装饰与衣物交换",
       "kind": "event",
@@ -13071,6 +14559,263 @@
       "imageKey": "sanjose-city",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "ssf-senior-holiday-boutique-nov7-2026",
+      "city": "South San Francisco",
+      "region": "peninsula",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "category": "culture",
+      "cost": "mixed",
+      "imageKey": "autumn-neighbors",
+      "officialUrl": "https://www.ssfca.gov/Departments/Parks-Recreation/Events/Senior-Holiday-Boutique-Makers-Faire",
+      "sourceLabel": "City of South San Francisco",
+      "verifiedAt": "2026-10-05",
+      "title": "South San Francisco 节日手作市集",
+      "dateLabel": "11/7 周六 · 10:00–16:00",
+      "venue": "Library | Parks and Recreation Center 宴会及社交厅，901 Civic Campus Way",
+      "costLabel": "入场免费；摊位商品另购",
+      "summary": "由市府 Senior Services 团队举办，展示珠宝、陶艺及节日手作。官方欢迎公众入场，并列有免费饮料与拐杖糖；商品购物仍需付费，不能把市集当成免费礼品派发。",
+      "plan": [
+        "前往 901 Civic Campus Way 的室内活动厅，不是 Orange Memorial Park。",
+        "活动页未列普通访客预约要求；团体或无障碍问题可先向 Senior Services 询问。",
+        "先定购物预算，商品、库存与付款方式向各摊位确认。"
+      ],
+      "audience": [
+        "想买本地手作的人",
+        "安排室内社区活动的家庭"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "indoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.ssfca.gov/Departments/Parks-Recreation/Events/Senior-Holiday-Boutique-Makers-Faire",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-07",
+          "validThrough": "2026-11-07",
+          "dates": {
+            "2026-11-07": [
+              {
+                "open": "10:00",
+                "close": "16:00"
+              }
+            ]
+          },
+          "note": "这是市集开放窗口，普通入场免费，商品自费。主办方为 Senior Services，但官方欢迎公众参加，没有将访客限制为长者；不推断最低年龄，也未见普通访客强制预约。"
+        }
+      }
+    },
+    {
+      "id": "midpen-sentinel-sky-nov8-2026",
+      "city": "Los Gatos",
+      "region": "south-bay",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "category": "outdoors",
+      "cost": "free",
+      "imageKey": "weekend",
+      "officialUrl": "https://www.openspace.org/events/guided-activities/sentinel-sky-20",
+      "sourceLabel": "Midpeninsula Regional Open Space District",
+      "verifiedAt": "2026-10-05",
+      "title": "Mount Umunhum 冷战历史：Sentinel in the Sky",
+      "dateLabel": "11/8 周日 · 13:00–15:00",
+      "venue": "Sierra Azul Preserve；Mount Umunhum 山顶停车区（Los Gatos 附近山区）",
+      "costLabel": "免费导览；路线含 159 级台阶",
+      "summary": "跟随导览了解 Almaden Air Force Station 的生活与历史。全程约四分之一英里但须上下 159 级台阶，距离短不等于无障碍；集合点已在山顶，开车上山时间另算。",
+      "plan": [
+        "按官网导航至山顶停车场，不要停在 Bald Mountain 后把上山徒步时间漏掉。",
+        "提前到集合点签署参加声明；官网如新增预约要求须按其办理，出发前再查取消与封路公告。",
+        "自备饮水、分层衣物和合适步行鞋；大雨可能取消，不把预定结束时间当作精确返程保证。",
+        "这不是带狗活动；Midpen 导览仅在明确标注时允许狗参加。"
+      ],
+      "audience": [
+        "能上下台阶的历史爱好者",
+        "想了解南湾山地的人"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.openspace.org/events/guided-activities/sentinel-sky-20",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-08",
+          "validThrough": "2026-11-08",
+          "dates": {
+            "2026-11-08": [
+              {
+                "open": "13:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-08",
+              "start": "13:00",
+              "end": "15:00"
+            }
+          ],
+          "note": "固定 13:00 山顶集合导览，四分之一英里包含上下 159 级台阶。上山交通不包含在两小时导览内；年龄门槛未公布，不可由短距离推断无障碍。须签声明，恶劣天气可能取消。"
+        }
+      }
+    },
+    {
+      "id": "mountain-view-market-hope-st-nov8-2026",
+      "city": "Mountain View",
+      "region": "south-bay",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "category": "food",
+      "cost": "mixed",
+      "imageKey": "everyday",
+      "officialUrl": "https://www.cafarmersmkts.com/events/market-relocates-on-sunday-49er-home-game-days-tm2t8-xawdk-sbaac-fg7pa-pxrm7-7sdda-p9s6x-6h96r-frzld",
+      "sourceLabel": "California Farmers’ Markets Association",
+      "verifiedAt": "2026-10-05",
+      "title": "Mountain View 农贸市场：11 月 8 日改到 Hope Street",
+      "dateLabel": "11/8 周日 · 9:00–13:00",
+      "venue": "Hope Street 4 号及 8 号停车场，190 Hope Street",
+      "costLabel": "食品自费；本条是换址通知，不是消费优惠",
+      "summary": "49ers 周日主场赛当天，市场将从 Caltrain 停车场移至 Hope Street。官方已明确列出 11 月 8 日及 9:00–13:00 时段；喜欢固定周日买菜的人应更新导航，别在旧地点等摊位。",
+      "plan": [
+        "导航 190 Hope Street，市场位于 West Evelyn Avenue 与 Villa Avenue 之间。",
+        "当天不能把市场摊位所在的 4、8 号场当普通可用停车位；另查周边市营停车。",
+        "普通营业周日与换址日分开核对，餐饮、商品及交通费按实际支付。"
+      ],
+      "audience": [
+        "Mountain View 周日买菜居民",
+        "坐 Caltrain 逛市集的人"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.cafarmersmkts.com/events/market-relocates-on-sunday-49er-home-game-days-tm2t8-xawdk-sbaac-fg7pa-pxrm7-7sdda-p9s6x-6h96r-frzld",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-08",
+          "validThrough": "2026-11-08",
+          "dates": {
+            "2026-11-08": [
+              {
+                "open": "09:00",
+                "close": "13:00"
+              }
+            ]
+          },
+          "note": "仅为 11 月 8 日换址后营业窗口；地点是 190 Hope Street，而非通常的 Caltrain 停车场。购买食品与交通另计，不能根据搬迁公告推断免费商品或停车。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-botanical-one-day-choir",
+      "title": "植物园 One Day Choir：一起学唱一首歌",
+      "kind": "event",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "occurrenceDates": [
+        "2026-11-08"
+      ],
+      "dateLabel": "11月8日 12:00–15:00；11:30起签到",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "San Francisco Botanical Garden · Redwood Grove",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "官网列Free–$75；须RSVP，票档以报名页为准",
+      "summary": "The Marmalade Project 邀请不同经验的歌唱爱好者在红杉林地一起学歌，由 Shams Ahmed 带领。大雨取消；园区免门票资格不能直接当作本项目免费票。",
+      "plan": [
+        "先RSVP，确认票价、资格和余位。",
+        "11:30起签到、12:00开始，另留园门到林地步行时间。",
+        "官网说明会摄影录像；有顾虑先联系主办方。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://gggp.org/event/one-day-choir-by-the-marmalade-project-2/",
+      "sourceLabel": "Gardens of Golden Gate Park",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "garden-walk",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://gggp.org/event/one-day-choir-by-the-marmalade-project-2/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-08",
+          "validThrough": "2026-11-08",
+          "dates": {
+            "2026-11-08": [
+              {
+                "open": "12:00",
+                "close": "15:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-08",
+              "start": "12:00",
+              "end": "15:00"
+            }
+          ],
+          "note": "11:30签到，大雨取消。官网Free–$75的票档资格须在RSVP页确认；园区免门票不等于项目免费。"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-sugarloaf-nature-talk-2026",
+      "title": "Sugarloaf 自然桌边讲解：颜色、图案与信号",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "dateLabel": "11/8 · 12:30–15:30，时段内可随到随听",
+      "city": "Kenwood",
+      "venue": "Sugarloaf Visitor Center, 2605 Adobe Canyon Road",
+      "category": "outdoors",
+      "cost": "mixed",
+      "costLabel": "讲解免费且无需预约；公园停车另收费",
+      "summary": "在游客中心外了解动物如何用颜色和图案传递信号，适合把短讲解与公园停留搭配。",
+      "plan": [
+        "活动是游客中心外的桌边讲解，不是三小时必须全程跟队的徒步。",
+        "无需为听讲解预约，但停车与公园开放仍按当日规则。",
+        "编辑建议：带孩子先想一个关于动物颜色的问题，抵达后向自然讲解员提问。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "自然爱好者"
+      ],
+      "officialUrl": "https://sugarloafpark.org/event/tabletop-nature-talk-colors-patterns-signals/",
+      "sourceLabel": "Sugarloaf Ridge State Park 官方自然活动页",
+      "imageKey": "garden-walk",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://sugarloafpark.org/event/tabletop-nature-talk-colors-patterns-signals/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-08",
+          "validThrough": "2026-11-08",
+          "dates": {
+            "2026-11-08": [
+              {
+                "open": "12:30",
+                "close": "15:30"
+              }
+            ]
+          },
+          "note": "讲解免费且无需预约；公园停车另收费"
+        }
       }
     },
     {
@@ -13136,6 +14881,65 @@
       }
     },
     {
+      "id": "nov2026-martinez-monday-birding",
+      "title": "Martinez 滨水周一观鸟",
+      "kind": "event",
+      "startDate": "2026-11-09",
+      "endDate": "2026-11-09",
+      "occurrenceDates": [
+        "2026-11-09"
+      ],
+      "dateLabel": "11月9日 9:00–12:00",
+      "region": "east-bay",
+      "city": "Martinez",
+      "venue": "Radke Martinez Regional Shoreline · N. Court Street parking lot near Marina",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费；无需报名",
+      "summary": "在码头附近海岸观察秋冬鸟类。官网列全年龄，路线约2–5英里，碎石路、0–500英尺高差，带孩子先衡量体力。",
+      "plan": [
+        "在 N. Court Street 尽头、靠近 Marina 的停车场集合。",
+        "带望远镜、饮水和防风外套。",
+        "本条仅确认11月9日，其他周一活动去各自地点。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/monday-birding-radke-martinez-shoreline",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 0,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/monday-birding-radke-martinez-shoreline",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-09",
+          "validThrough": "2026-11-09",
+          "dates": {
+            "2026-11-09": [
+              {
+                "open": "09:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-09",
+              "start": "09:00",
+              "end": "12:00"
+            }
+          ],
+          "note": "全年龄；2–5英里。N. Court Street 尽头停车场集合。"
+        }
+      }
+    },
+    {
       "id": "roundup-schulz-pearls-jubilee-2026",
       "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
       "kind": "event",
@@ -13163,6 +14967,153 @@
       "imageKey": "culture-visit",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "nov2026-mission-market-season-final",
+      "title": "Mission Community Market：2026收季最后一天",
+      "kind": "event",
+      "startDate": "2026-11-12",
+      "endDate": "2026-11-12",
+      "occurrenceDates": [
+        "2026-11-12"
+      ],
+      "dateLabel": "11月12日 15:00–19:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Mission Community Market · 22nd Street between Mission and Valencia",
+      "category": "food",
+      "cost": "mixed",
+      "costLabel": "逛市集；食材、餐饮和商品按摊位付费",
+      "summary": "Foodwise 明确11月12日是2026年最后一场，之后休季、计划2027年3月回归。适合补买季节食材，不额外承诺尚未公布的免费餐食或表演。",
+      "plan": [
+        "按市场访客说明到22nd Street，Mission 与 Valencia 之间。",
+        "页脚仍列84 Bartlett；具体街段以当前访客说明和现场指示为准。",
+        "这不是11月每天开市；本条仅确认11月12日收季场次。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://foodwise.org/events/mission-community-market-last-day-of-the-season/",
+      "sourceLabel": "Foodwise",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://foodwise.org/events/mission-community-market-last-day-of-the-season/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-12",
+          "validThrough": "2026-11-12",
+          "dates": {
+            "2026-11-12": [
+              {
+                "open": "15:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "市场窗口，所有食材与商品按摊位付费。2026最后一场。"
+        }
+      }
+    },
+    {
+      "id": "hiller-starlight-nights-nov13-2026",
+      "city": "San Carlos",
+      "region": "peninsula",
+      "startDate": "2026-11-13",
+      "endDate": "2026-11-13",
+      "category": "family",
+      "cost": "paid",
+      "imageKey": "expanded-peninsula-hiller",
+      "officialUrl": "https://www.hiller.org/event/starlight-nights/2026-11-13/",
+      "sourceLabel": "Hiller Aviation Museum",
+      "verifiedAt": "2026-10-05",
+      "title": "Hiller Starlight Nights：晚间航空馆与星空",
+      "dateLabel": "11/13 周五 · 17:00 起，博物馆至 19:00",
+      "venue": "Hiller Aviation Museum，601 Skyway Road",
+      "costLabel": "含于普通博物馆门票；会员凭会员资格入场",
+      "summary": "博物馆与礼品店延长开放，馆内安排 Starlab 星空演示，天气允许时在室外用望远镜观测月球和行星。普通入馆政策适用，不是面向所有人的免费晚场；无法保证晴天或指定天体可见。",
+      "plan": [
+        "通过馆方链接购普通入馆票或携带会员凭证，出发前确认晚场是否有更新。",
+        "户外观测带外套；如果阴雨，将室内星空展示与展厅作为主要内容。",
+        "场馆照片仅代表航空馆，不是当天夜空、演示内容或现场照片。"
+      ],
+      "audience": [
+        "对航空与星空好奇的家庭",
+        "周五下班后出门的人"
+      ],
+      "relatedGuideSlug": "san-carlos-hiller-aviation-half-day-guide",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.hiller.org/event/starlight-nights/2026-11-13/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-13",
+          "validThrough": "2026-11-13",
+          "dates": {
+            "2026-11-13": [
+              {
+                "open": "17:00",
+                "close": "19:00"
+              }
+            ]
+          },
+          "note": "晚场从 17:00 开始，博物馆及商店至 19:00；包含在普通入馆票内，会员凭资格免费。户外观星取决于天气，未公布每轮 Starlab 演示时间；不填人人统一票价或保证天气。"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-sips-stars-2026",
+      "title": "Sips and Stars：21岁以上酒与星空之夜",
+      "startDate": "2026-11-13",
+      "endDate": "2026-11-13",
+      "dateLabel": "11/13 · 17:00–19:00",
+      "city": "Kenwood",
+      "venue": "Robert Ferguson Observatory, Sugarloaf Ridge State Park",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "仅21岁以上；需登记，票价及停车费到票务页核对；含2张饮品券",
+      "summary": "Landmark Vineyards 品鉴与天文学讲解结合的晚间活动，名额有限，不能作为儿童观星场推荐。",
+      "plan": [
+        "通过天文台票务链接检查余票、价格与年龄凭证要求。",
+        "饮酒者另安排驾驶或接送，望远镜观测取决于天气。",
+        "登记包含两张饮品券，不应理解为无限畅饮或所有餐饮都包含。"
+      ],
+      "audience": [
+        "21岁以上成人"
+      ],
+      "officialUrl": "https://sugarloafpark.org/event/sips-and-stars-4/",
+      "sourceLabel": "Sugarloaf / Robert Ferguson Observatory 官方活动页",
+      "imageKey": "november-stargazing",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "minAge": 21,
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://sugarloafpark.org/event/sips-and-stars-4/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-13",
+          "validThrough": "2026-11-13",
+          "note": "仅21岁以上；需登记，票价及停车费到票务页核对；含2张饮品券",
+          "sessions": [
+            {
+              "date": "2026-11-13",
+              "start": "17:00",
+              "end": "19:00"
+            }
+          ]
+        }
       }
     },
     {
@@ -13194,6 +15145,488 @@
       "imageKey": "roundup-oakland-arena",
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "san-jose-matilda-nov2026",
+      "city": "San Jose",
+      "region": "south-bay",
+      "startDate": "2026-11-13",
+      "endDate": "2026-11-22",
+      "category": "culture",
+      "cost": "paid",
+      "imageKey": "november-theater",
+      "officialUrl": "https://sanjosetheaters.org/event/matilda-the-musical/",
+      "sourceLabel": "San Jose Theaters / CMT San Jose",
+      "verifiedAt": "2026-10-05",
+      "kind": "performance",
+      "occurrenceDates": [
+        "2026-11-13",
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-20",
+        "2026-11-21",
+        "2026-11-22"
+      ],
+      "title": "CMT San Jose《Matilda》音乐剧",
+      "dateLabel": "11/13–15、11/20–22 · 按场次选票",
+      "venue": "Montgomery Theater，271 South Market Street",
+      "costLabel": "付费；10/16 开售，金额以正式售票页为准",
+      "summary": "CMT Rising Stars 以 Roald Dahl 的故事改编音乐剧，描写 Matilda 用想象力与勇气改变生活。官网列明六个演出日，并非 11 月 13–22 日天天演出；10 月 5 日核验时尚未到官方开售日期。",
+      "plan": [
+        "11/13 19:00；11/14 14:00、19:00；11/15 13:00、18:00。11/20–22 另有场次，购票时逐场确认。",
+        "从剧场官方 Buy Tickets 进入，不把开售预告理解成余票或特价保证。",
+        "年龄适宜度、儿童购票和无障碍座位先问票房；附近餐饮与停车另计。"
+      ],
+      "audience": [
+        "喜欢家庭题材音乐剧的人",
+        "关注青少年舞台表演的人"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "required",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://sanjosetheaters.org/event/matilda-the-musical/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-13",
+          "validThrough": "2026-11-22",
+          "sessions": [
+            {
+              "date": "2026-11-13",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "14:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "13:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "18:00"
+            },
+            {
+              "date": "2026-11-20",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "14:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "19:00"
+            },
+            {
+              "date": "2026-11-22",
+              "start": "13:00"
+            }
+          ],
+          "note": "官方确认开演时刻但没有公布每场结束时间，因此只列 sessions.start，不编造结束时间或把全天日历占位当营业窗口。10 月 16 日开售；票价、适龄建议和儿童规则待正式售票页确认。"
+        }
+      }
+    },
+    {
+      "id": "filoli-holidays-from-nov14-2026",
+      "city": "Woodside",
+      "region": "peninsula",
+      "startDate": "2026-11-14",
+      "endDate": "2027-01-10",
+      "category": "family",
+      "cost": "paid",
+      "imageKey": "region-filoli-house",
+      "officialUrl": "https://filoli.org/holidays",
+      "sourceLabel": "Filoli Historic House & Garden",
+      "verifiedAt": "2026-10-05",
+      "title": "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
+      "dateLabel": "本轮收录 11/14、11/15 · 后续节日季场次查官方票务",
+      "venue": "Filoli Historic House & Garden，86 Cañada Road",
+      "costLabel": "付费；按日期、时段及票种计价，会员规则另查",
+      "summary": "官网确认节日季为 2026 年 11 月 14 日至 2027 年 1 月 10 日；本轮仅收录 11 月 14、15 日，后续场次与闭馆例外须查官方票务。日间可看装饰宅邸、花园和 Thistlewyck Village；晚间为 Holiday Lights，普通日间票不能直接当夜间票，村落项目到 1 月 3 日。",
+      "plan": [
+        "日间 10:00–15:30，最晚入场 13:30；晚间 16:00–22:00，最晚入场 20:00，按已购票入场时段到达。",
+        "先确认余票、年龄票档及退款改期条款；官方写明票不退款，改期另收费。",
+        "此图仅展示 Filoli 建筑，不代表 2026 灯饰布置；餐饮、礼物及附加体验按各产品另算。"
+      ],
+      "audience": [
+        "想提前订节日行程的家庭",
+        "喜欢花园与夜间灯饰的人"
+      ],
+      "occurrenceDates": [
+        "2026-11-14",
+        "2026-11-15"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://filoli.org/holidays",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-14",
+          "validThrough": "2027-01-10",
+          "dates": {
+            "2026-11-14": [
+              {
+                "open": "10:00",
+                "close": "15:30",
+                "lastEntry": "13:30"
+              },
+              {
+                "open": "16:00",
+                "close": "22:00",
+                "lastEntry": "20:00"
+              }
+            ],
+            "2026-11-15": [
+              {
+                "open": "10:00",
+                "close": "15:30",
+                "lastEntry": "13:30"
+              },
+              {
+                "open": "16:00",
+                "close": "22:00",
+                "lastEntry": "20:00"
+              }
+            ]
+          },
+          "note": "此处仅列本轮覆盖到 11 月 15 日的两个开放日；整个官方季节到 2027 年 1 月 10 日，其他日期须查余票。日间与夜间是不同票种、按选定入场时段预约，不能在两个窗口间沿用同一张普通票。夜间末次入场 20:00，日间 13:30；金额与儿童票档未固定。特定会员免预约资格须另证实。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-coyote-hills-kids-birding",
+      "title": "Coyote Hills 儿童识鸟游戏",
+      "kind": "event",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-11-14"
+      ],
+      "dateLabel": "11月14日 11:00–12:00",
+      "region": "east-bay",
+      "city": "Fremont",
+      "venue": "Coyote Hills Visitor Center · 8000 Patterson Ranch Road",
+      "category": "family",
+      "cost": "mixed",
+      "costLabel": "活动免费、无需报名；普通车辆停车$5",
+      "summary": "用游戏和观察认识鸟类，活动正文要求5岁起并由家长参与。可先参加一小时节目，再按孩子体力决定是否继续走公园。",
+      "plan": [
+        "在游客中心集合，另留停车步行时间。",
+        "穿户外鞋、带水和适合天气的衣物。",
+        "停车费与免费活动分开计算。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/birding-basics-kids",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "expanded-coyote-hills",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 5,
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/birding-basics-kids",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "dates": {
+            "2026-11-14": [
+              {
+                "open": "11:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-14",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ],
+          "note": "正文要求5岁起并由家长参与；活动免费，普通车停车$5。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-red-oak-fall-swing",
+      "title": "Red Oak Victory 秋日摇摆舞会",
+      "kind": "event",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-11-14"
+      ],
+      "dateLabel": "11月14日 18:00–22:00；19:00起乐队演出",
+      "region": "east-bay",
+      "city": "Richmond",
+      "venue": "SS Red Oak Victory · Point Richmond",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "至11月7日成人$25、12岁及以下$10；之后$30/$15，手续费另查",
+      "summary": "Alpha Rhythm Kings 在船上演出，可以跳舞或坐着听。票含船舶入场和自助参观，餐饮另售，含酒精饮品限21岁以上。",
+      "plan": [
+        "18:00开门；演出19:00、20:10、21:20开始，22:00离船。",
+        "11月7日后涨价；现场票仅在未售罄时供应。",
+        "历史船舶有阶梯，通行需求先询问场馆。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://redoakvictory.us/events/",
+      "sourceLabel": "SS Red Oak Victory",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "mixed",
+        "reservation": "optional",
+        "schedule": {
+          "sourceUrl": "https://redoakvictory.us/events/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "dates": {
+            "2026-11-14": [
+              {
+                "open": "18:00",
+                "close": "22:00"
+              }
+            ]
+          },
+          "note": "18:00开门，19:00首轮，22:00离船。年龄票档及11月7日预售截止有差异，不填统一人均价。"
+        }
+      }
+    },
+    {
+      "id": "san-carlos-gifts-kitchen-nov14-2026",
+      "city": "San Carlos",
+      "region": "peninsula",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "category": "food",
+      "cost": "paid",
+      "imageKey": "neighborhood-table",
+      "officialUrl": "https://ucanr.edu/site/master-food-preservers-san-mateo-san-francisco-counties/event/gifts-kitchen",
+      "sourceLabel": "UC Agriculture and Natural Resources — Master Food Preservers",
+      "verifiedAt": "2026-10-05",
+      "title": "San Carlos 食物保存实作：Gifts from the Kitchen",
+      "dateLabel": "11/14 周六 · 9:00–12:00",
+      "venue": "Church of the Epiphany，1839 Arroyo Avenue",
+      "costLabel": "9/30 后报名费每人 $115；须预约，名额有限",
+      "summary": "UC Master Food Preservers 志愿者带领制作可送人的食物，讲解安全保存技巧、经验证的配方及常见问题。官方另一个页面仍显示 $95 早鸟标题，但正文明确 9 月 30 日后为 $115；结账前按报名页确认。",
+      "plan": [
+        "通过 UC 官方页面的 Register here 进入报名；不要把页面中 11 月 7 日的附加报名标记当上课日期。",
+        "先向主办方核对年龄、食物过敏、无障碍及取消规则，报名成功后再安排出行。",
+        "这是一场收费实作课，不是免费食品领取或节日餐会。"
+      ],
+      "audience": [
+        "想学习食物保存的成人",
+        "想制作食物礼物的人"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "planning": {
+        "admissionUsd": 115,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://ucanr.edu/site/master-food-preservers-san-mateo-san-francisco-counties/event/gifts-kitchen",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "dates": {
+            "2026-11-14": [
+              {
+                "open": "09:00",
+                "close": "12:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-14",
+              "start": "09:00",
+              "end": "12:00"
+            }
+          ],
+          "note": "固定 9:00–12:00 实作课，须报名。每人 115 美元是 9 月 30 日后费用，不沿用 95 美元早鸟标题；年龄适宜度及过敏条件须联系主办方，未公布数字门槛。"
+        }
+      }
+    },
+    {
+      "id": "nov2026-hayward-bay-bird-morning",
+      "title": "Hayward 海湾晨间观鸟：6岁起报名",
+      "kind": "event",
+      "startDate": "2026-11-15",
+      "endDate": "2026-11-15",
+      "occurrenceDates": [
+        "2026-11-15"
+      ],
+      "dateLabel": "11月15日 8:00–10:00",
+      "region": "east-bay",
+      "city": "Hayward",
+      "venue": "Hayward Regional Shoreline · Grant Avenue entrance",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费；须报名，余位以官网为准",
+      "summary": "欢迎初学者，可借双筒望远镜。6岁起，从 Grant Avenue 入口出发；大雨取消，晨间注意保暖。",
+      "plan": [
+        "报名从10月6日9:00开放，至11月14日16:00结束。",
+        "不要导航到11月2日场次使用的 West Winton 入口。",
+        "先查看确认邮件、天气和公园公告。"
+      ],
+      "audience": [
+        "湾区居民与访客"
+      ],
+      "officialUrl": "https://www.ebparks.org/events/bay-bird-mornings-hayward-0",
+      "sourceLabel": "East Bay Regional Park District",
+      "verifiedAt": "2026-10-05",
+      "imageKey": "november-community",
+      "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "minAge": 6,
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://www.ebparks.org/events/bay-bird-mornings-hayward-0",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-15",
+          "validThrough": "2026-11-15",
+          "dates": {
+            "2026-11-15": [
+              {
+                "open": "08:00",
+                "close": "10:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-15",
+              "start": "08:00",
+              "end": "10:00"
+            }
+          ],
+          "note": "Grant Avenue 入口，大雨取消；报名10月6日9:00–11月14日16:00。"
+        }
+      }
+    },
+    {
+      "kind": "event",
+      "region": "north-bay",
+      "verifiedAt": "2026-10-05",
+      "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "id": "november-north-jack-london-author-2026",
+      "title": "Jack London 公园作家下午会：The Second Mrs. London",
+      "startDate": "2026-11-15",
+      "endDate": "2026-11-15",
+      "dateLabel": "11/15 · 14:00–15:30",
+      "city": "Glen Ellen",
+      "venue": "House of Happy Walls Museum, 2400 London Ranch Road",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "讲座不另收费；公园入场$15/车，座位有限须预约",
+      "summary": "作家 Marlo Faulkner 介绍 The Second Mrs. London，并安排讨论与签书；场地在博物馆二楼。",
+      "plan": [
+        "先预约座位，再把车辆入园费计入预算。",
+        "官方注明二楼仅楼梯可达；需要无台阶通行者提前联系公园确认替代安排。",
+        "编辑建议：为停车后到博物馆留出时间，别把14:00当作抵达公园大门的时间。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "本地居民"
+      ],
+      "officialUrl": "https://jacklondonpark.com/events/the-second-mrs-london-2026/",
+      "sourceLabel": "Jack London Park Partners 官方活动页",
+      "imageKey": "community-library-card",
+      "planning": {
+        "admissionUsd": null,
+        "setting": "indoor",
+        "reservation": "required",
+        "schedule": {
+          "sourceUrl": "https://jacklondonpark.com/events/the-second-mrs-london-2026/",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-15",
+          "validThrough": "2026-11-15",
+          "note": "讲座不另收费；公园入场$15/车，座位有限须预约",
+          "sessions": [
+            {
+              "date": "2026-11-15",
+              "start": "14:00",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ravenswood-tidal-marsh-nov15-2026",
+      "city": "East Palo Alto",
+      "region": "peninsula",
+      "startDate": "2026-11-15",
+      "endDate": "2026-11-15",
+      "category": "outdoors",
+      "cost": "free",
+      "imageKey": "weekend",
+      "officialUrl": "https://www.openspace.org/events/guided-activities/tidal-marsh-appreciation",
+      "sourceLabel": "Midpeninsula Regional Open Space District",
+      "verifiedAt": "2026-10-05",
+      "title": "Ravenswood 潮汐湿地慢走与观鸟",
+      "dateLabel": "11/15 周日 · 9:30–12:00",
+      "venue": "Ravenswood Preserve；East Palo Alto Bay Road 尽头停车区",
+      "costLabel": "免费；约 3 英里家庭友好导览",
+      "summary": "官方安排沿 Bay Trail 以轻松节奏认识盐沼植物、鸟类与湿地环境。虽然适合家庭，仍是约三英里、两个半小时的活动；带孩子先按实际步行能力决定，不承诺一定看到某种鸟。",
+      "plan": [
+        "使用 Bay Road 尽头的 Ravenswood 集合点，不要导航到保护区北侧的另一个区段。",
+        "提前到集合点签署参加声明；官网如新增预约要求须按其办理，出发前再查取消与封路公告。",
+        "自备饮水、分层衣物和合适步行鞋；大雨可能取消，不把预定结束时间当作精确返程保证。",
+        "保护区没有洗手间，出发前先安排；带望远镜并留在步道上。"
+      ],
+      "audience": [
+        "能完成三英里步行的家庭",
+        "观鸟入门者"
+      ],
+      "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "planning": {
+        "admissionUsd": 0,
+        "setting": "outdoor",
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://www.openspace.org/events/guided-activities/tidal-marsh-appreciation",
+          "verifiedAt": "2026-10-05",
+          "validFrom": "2026-11-15",
+          "validThrough": "2026-11-15",
+          "dates": {
+            "2026-11-15": [
+              {
+                "open": "09:30",
+                "close": "12:00"
+              }
+            ]
+          },
+          "sessions": [
+            {
+              "date": "2026-11-15",
+              "start": "09:30",
+              "end": "12:00"
+            }
+          ],
+          "note": "固定 9:30 集合的约三英里导览，官方称家庭友好但未设年龄数字门槛。保护区没有洗手间；须签参加声明，先核对当天天气与取消信息。不要把 9:30–12:00 当任意随到窗口。"
+        }
       }
     },
     {
@@ -16861,6 +19294,38 @@
     {
       "slug": "bay-area-101-city-exploration-living-guide",
       "title": "湾区 101 城探索与生活指南：每座城市都值得认识"
+    },
+    {
+      "slug": "bay-area-freebies-deals-2026-11",
+      "title": "秋季湾区优惠：十月到十一月中旬，哪些值得领"
+    },
+    {
+      "slug": "bay-area-november-first-half-planner-2026",
+      "title": "十一月上半月怎么玩：先定区域，再挑活动与免费日"
+    },
+    {
+      "slug": "bay-area-november-resident-dates-2026",
+      "title": "十一月居民日历：调时、投票与假日通勤"
+    },
+    {
+      "slug": "north-bay-markets-nature-culture-through-november-15-2026",
+      "title": "北湾秋日怎么选：市集、自然与文化，看到11月15日"
+    },
+    {
+      "slug": "peninsula-south-bay-november-nature-walks-2026",
+      "title": "半岛与南湾十一月户外：湿地、红杉和山顶历史，按体力选一条"
+    },
+    {
+      "slug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "title": "半岛与南湾秋季买菜：先查市场有没有换址或停开"
+    },
+    {
+      "slug": "east-bay-november-nature-programs-2026",
+      "title": "东湾11月自然活动：先选体力，再选日期"
+    },
+    {
+      "slug": "san-francisco-autumn-food-markets-2026",
+      "title": "旧金山秋季市集：免费体验、买菜和收季日期"
     },
     {
       "slug": "bay-area-useful-apps-platforms-guide",

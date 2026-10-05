@@ -1,0 +1,582 @@
+{
+  "version": 1,
+  "title": "BAYBAY November refresh: natural-language acceptance candidates",
+  "validUntil": "2026-10-10",
+  "privacy": "Synthetic household situations only. No real names, street addresses, account identifiers or child records. Read-only information and unsent message drafts; no contacting, posting, booking, payment or saving.",
+  "design": {
+    "status": "prepared_not_executed",
+    "preparedAt": "2026-10-05",
+    "scope": "20 site-only requests. Real response quality is unverified until a controlled deployed run and per-answer content review. This does not verify live external sources, availability, weather or routes.",
+    "execution": "Default runner dry-run sends zero network requests. Root alone authorizes deployed runs after synchronized catalogs and exact healthy SHA. Keep follows chains and stop on any quota/429 without retry. Actual server guide-chat limit is8requests per60seconds perIP; this all-site evaluation uses a conservative12-second minimum request-start spacing and sequential responses, with UI requests coordinated separately. Do not alter server limits or relabel site-only as Web verification.",
+    "coverage": "101-city completeness is a separate offline catalog check. Conversational questions sample small-city boundaries and north/central/south/east use cases; they are not exhaustive101-city acceptance.",
+    "assertionPolicy": "Automated checks cover response contracts, state, citation resolution and explicit plan IDs; factual suitability and restrictions require AI-assisted per-answer reading, not a claim of recruited-human research.",
+    "deferredSmartWebCases": [
+      "muir-nov11-eligibility",
+      "lowes-november-parent",
+      "school-city-is-not-district"
+    ],
+    "deferredNote": "If live external research is separately authorized and quota available, run selected Smart/Web variants as a separately labeled evaluation; preserve site-only evidence."
+  },
+  "cases": [
+    {
+      "id": "november-family-loose",
+      "request": {
+        "message": "11月7号那个周末想带5岁娃去旧金山晃晃，有什么不买东西也能参加的？别给我十月份过期的。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "outing-search"
+        ]
+      },
+      "manualReview": [
+        "先回答11/7–8附近已公布的实际项目或说明证据缺口；不把10月赠品、11/1免费日或11/14活动当成该周末。",
+        "不购物不等于免停车或交通；免费资格、预约与年龄条件不得删掉。",
+        "若没有合适项目，可以给明确标为常设景点的备选或问一句关键条件，不能编造临时活动。"
+      ]
+    },
+    {
+      "id": "november-family-negative-followup",
+      "follows": "november-family-loose",
+      "request": {
+        "message": "别给晚上的，也不要必须先买东西的。白天挑两三个就好，不用排整天行程。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "outing-search"
+        ]
+      },
+      "manualReview": [
+        "承接旧金山、11/7周末、5岁，排除晚间及消费门槛；两三个是推荐数量，不是默认建立日程。",
+        "候选不足就如实给少量；不要用不匹配日期或城市凑够三个。"
+      ]
+    },
+    {
+      "id": "lowes-november-parent",
+      "request": {
+        "message": "朋友说Lowe’s十一月有免费小火车，5岁能做吗？我是不是11月14号直接去就行？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "识别Holiday Engine 11/14，区分活动日与10/10开放报名日；建议4–11岁、家长陪同。",
+        "免费会员、儿童Kids Profile、选店提前预约及材料/名额限制要讲清；不保证直接到店可领。"
+      ]
+    },
+    {
+      "id": "target-correction-followup",
+      "follows": "lowes-november-parent",
+      "request": {
+        "message": "那Target那个毛绒包呢？我不买东西能拿吗？别把Lowe’s规则套过去。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "明确切换Target eos毛绒拉链包：需购买eos、16岁以上、10/10 12–16、参与店且送完即止。",
+        "不套用Lowe会员/儿童档案；不把十月活动推定到11/14，更不能编造尚未公布的十一月续场。"
+      ]
+    },
+    {
+      "id": "muir-nov11-eligibility",
+      "request": {
+        "message": "11月11日木头公园是不是谁都免费？我爸妈从国内来旅游，我们还要订停车吗？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "木头公园身份模糊，可先确认是否Muir Woods并在此假设下回答，不把昵称当精确确认。",
+        "2026该入口免费日仅美国公民及居民适用；不能把来美旅游自动视作居民。停车/接驳仍需预约并收费。",
+        "不下个体移民身份结论；资格以官方凭证要求核对，不收集护照资料。"
+      ]
+    },
+    {
+      "id": "chm-one-bank-card",
+      "request": {
+        "message": "11月8号去电脑历史博物馆，只有我有美银卡，老婆和孩子也能跟着免费吗？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "CHM Museums on Us只有合资格持卡本人一张普通票，需卡和本人照片证件；不将一家人都算免费。",
+        "同伴、特展/特别活动与儿童本身可能存在的另项政策分开，未知年龄先问或说明。",
+        "11/7–8是按当前首个完整周末规则换算，卡片快照不是实时余票承诺。"
+      ]
+    },
+    {
+      "id": "north-outdoors-child",
+      "request": {
+        "message": "11月7、8号在北湾，带5岁孩子想看看自然，别推酒庄。Sugarloaf那边有合适的吗？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "可对照11/7公众观星夜与11/8自然桌边讲解，区别夜间/白天，条件与费用分别说。",
+        "11/7五岁及以下活动票免费仍另付每车10美元停车；11/8节目免费停车另收。",
+        "不能推荐11/13仅21+的酒与星空给带儿童家庭；阴天与实际观测结果未知。"
+      ]
+    },
+    {
+      "id": "north-night-date-followup",
+      "follows": "north-outdoors-child",
+      "request": {
+        "message": "我们改成13号晚上了，孩子也去，就去那个Sips and Stars吧？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "保留5岁同行而更新时间；必须明确11/13 Sips and Stars仅21+，儿童不符合。",
+        "可给核对其他日期/其他活动的下一步，但不得擅自换一个未核实的儿童观星活动，也不为当前选项生成计划。"
+      ]
+    },
+    {
+      "id": "small-city-boundary",
+      "request": {
+        "message": "Belvedere跟Tiburon有啥值得看的？各给点，不要把附近地方都说成在城里。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "区分两城本地地点，如China Cabin、Belvedere Community Park与Tiburon博物馆、Blackie’s Pasture。",
+        "Angel Island需渡轮且不是Belvedere市内；不把Tiburon码头当成步行登岛。",
+        "这是101城中的小城样本，不足以证明全部101城问答都通过；完整城市覆盖另作离线目录检查。"
+      ]
+    },
+    {
+      "id": "solano-river-no-swimming",
+      "request": {
+        "message": "Dixon和Rio Vista哪儿适合带娃在水边转转？不想钓鱼，也别给我已经结束的节。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "Lambtown与Bass Derby已10/4结束，不能当下周活动推荐。",
+        "Rio Vista Sandy Beach禁止游泳且有工程/船坡限制；Jepson Prairie在Dixon外，秋季不是春季池塘花期。",
+        "只按已核验访问方式推荐，不保证水量、天气或所有路径可推婴儿车。"
+      ]
+    },
+    {
+      "id": "napa-english-campus",
+      "request": {
+        "message": "We will be near Yountville on November 8. Is the Eames exhibition at the museum there? We want art, not wine tasting.",
+        "searchMode": "site",
+        "locale": "en"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "Reply in English and explain the campus distinction: Eames & Eames is at The MAC,607 St Helena Highway inSt. Helena, not NVMY55PresidentsCircleYountville. ",
+        "Use published exhibition dates and ordinary admission; do not claim a live booking or turn the request into winery recommendations.",
+        "Distance and transport stay unverified unless backed by actual tools; no invented travel time."
+      ]
+    },
+    {
+      "id": "printing-card-twelve",
+      "request": {
+        "message": "我有AC Library实体卡，今天还没打印过。Fremont那边打12页黑白，多少钱？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "在合资格正式卡与当天额度未用前提下，10页免费+2页×0.15美元=0.30美元。",
+        "区分打印与复印；免费额度不覆盖guest无卡打印，不混入SMCL25页。",
+        "给具体官方打印入口；核验日期是资料快照，不能说刚读取了网页。"
+      ]
+    },
+    {
+      "id": "printing-to-copy-followup",
+      "follows": "printing-card-twelve",
+      "request": {
+        "message": "等等，我是拿纸过去复印12张，不是从手机打印，还是三毛吗？",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "识别纠正为复印，免费打印额度不适用于photocopies；不要继续答0.30美元。",
+        "若所用证据明确当前黑白复印单价，可按12张计算；否则准确说明须核对复印价，不猜新金额。",
+        "保留AC Library/Fremont，不转去其他图书馆规则。"
+      ]
+    },
+    {
+      "id": "rent-risk-no-search",
+      "request": {
+        "message": "刚搬到Fremont，看房都没看，房东说先转押金才给地址。正常吗？我暂时不找新房源。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai"
+        ]
+      },
+      "manualReview": [
+        "先回应先付款再给地址的风险与核实下一步，不因出现找房关键词去搜索房源。",
+        "区分风险信号与已经确定违法/诈骗；不要要求上传身份证、银行资料或完整私人地址。",
+        "不要生成出游计划或无关生活推荐。"
+      ]
+    },
+    {
+      "id": "rent-bilingual-draft-followup",
+      "follows": "rent-risk-no-search",
+      "request": {
+        "message": "帮我写两三句中英双语回他，礼貌一点：想先看房和确认身份，再谈押金。别替我发。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai"
+        ]
+      },
+      "manualReview": [
+        "输出可复制的中英短消息，保留先看房、确认身份、再谈押金，语气礼貌。",
+        "只写草稿，不声称已发送或联系，不强行附出游/会员App追问。"
+      ]
+    },
+    {
+      "id": "plumber-no-invented-provider",
+      "request": {
+        "message": "Sunnyvale漏水，想今天找人修，总共最多150。站里有能联系的吗？没有就直说，别给我编电话或报价。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "search"
+        ]
+      },
+      "manualReview": [
+        "只列实际可见公开站内服务帖；没有则明确暂无符合信息，不能编师傅、电话、执照、可上门时间或保证总价。",
+        "可以建议整理需求和索取书面报价，但不能代预约、付款或发布；不带入出游计划。",
+        "150是总预算，不是确认市场价或服务承诺。"
+      ]
+    },
+    {
+      "id": "school-city-is-not-district",
+      "request": {
+        "message": "我们住Sunnyvale，朋友说能去Cupertino学校，孩子明年一年级。是不是填个表就行？先别问我完整地址。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant",
+          "ai"
+        ]
+      },
+      "manualReview": [
+        "市界与学区/校区边界不同，不保证Sunnyvale居民可进Cupertino学校。",
+        "给官方边界查询、入学资料及年级/学年核对顺序；不需要用户在聊天贴完整住址或儿童身份资料。",
+        "未查具体地址不指定学校或保证名额，不掺无关北湾学校。"
+      ]
+    },
+    {
+      "id": "holiday-transit-not-sunday",
+      "request": {
+        "message": "11月11号算假日，Caltrain是不是按周日跑？带5岁娃从半岛出发，先告诉我班表和票怎么查，别安排景点。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": true,
+        "responseModes": [
+          "assistant"
+        ]
+      },
+      "manualReview": [
+        "2026 Veterans Day官方列工作日时刻表，不把法定假日自动等同周日服务。",
+        "青少年5–18岁当前单程1美元/日票2美元的票种与购票方法单独说明，不用成人银行卡自动推定儿童优惠。",
+        "具体车站、首末班与实时延误未核对；链接到官方表，不虚构精确发车班次。"
+      ]
+    },
+    {
+      "id": "sf-family-budget-two-stops",
+      "request": {
+        "message": "11月7日两个大人带5岁娃，上午10点从旧金山Ferry Building出发，先Exploratorium再Pier39。坐公交，下午3点必须结束，不回原点，最多这两站，总预算120美元。帮我排得松一点。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": false,
+        "responseModes": [
+          "assistant"
+        ],
+        "state": {
+          "date": "2026-11-07",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 120,
+          "budgetScope": "total",
+          "travelMode": "transit",
+          "finishBy": "15:00",
+          "returnToOrigin": false,
+          "maxStops": 2
+        },
+        "planIds": [
+          "venue-exploratorium-daytime",
+          "pier39"
+        ]
+      },
+      "manualReview": [
+        "计划与handoff只含Exploratorium→PIER39，按原顺序；3人含5岁、11/7、公交、10点起、15点截止、总预算120、不返起点全部保留。",
+        "Exploratorium已知快照门票小计109.85、PIER39公共区0，与正文及计划费用一致；不是当日实时结账总价。",
+        "餐饮、交通、当日附加费、实际公共交通路程及截止可行性仍待确认，不把默认交通预留称已核实公交路线。"
+      ]
+    },
+    {
+      "id": "sf-drop-first-stop-followup",
+      "follows": "sf-family-budget-two-stops",
+      "request": {
+        "message": "第一站先不去了，就看海狮吧，不回原点，其他条件不变。",
+        "searchMode": "site",
+        "locale": "zh-Hans"
+      },
+      "assertions": {
+        "webStatus": "not_requested",
+        "forbiddenTools": [
+          "search_web",
+          "read_source",
+          "get_route",
+          "get_weather"
+        ],
+        "noPlan": false,
+        "responseModes": [
+          "assistant"
+        ],
+        "state": {
+          "date": "2026-11-07",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 120,
+          "budgetScope": "total",
+          "travelMode": "transit",
+          "finishBy": "15:00",
+          "returnToOrigin": false,
+          "maxStops": 2
+        },
+        "planIds": [
+          "pier39"
+        ]
+      },
+      "manualReview": [
+        "从同一计划删除Exploratorium，仅保留PIER39公共区，不能把第一站重加作备选或误删海狮。",
+        "日期、3人含5岁、公交、FerryBuilding起点、10点开始、15点截止、总预算120、最多2与不返起点保留。",
+        "费用不能继续带已删场馆的109.85；PIER39公共区0不等于整天交通餐饮免费。"
+      ]
+    }
+  ]
+}

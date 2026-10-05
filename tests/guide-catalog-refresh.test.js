@@ -39,11 +39,12 @@ test('all nine September refresh benefits are reachable by brand with their cond
   ];
   for (const [query, title, condition, source] of cases) {
     const selected = selectConversationGuides(published, query, 'other', '/', [], '2026-09-29');
-    const guide = selected.find(item => item.slug === 'bay-area-freebies-deals-2026-10');
-    assert.ok(guide, `Missing refreshed benefits guide for ${query}`);
-    const excerpt = guideSourceExcerpt(guide, query);
-    assert.ok(excerpt.length <= 9000, query);
-    for (const expected of [title, condition, source]) assert.ok(excerpt.includes(expected), `${query}: missing ${expected}`);
+    const excerpts = selected.map(guide => guideSourceExcerpt(guide, query));
+    assert.ok(excerpts.every(excerpt => excerpt.length <= 9000), query);
+    // A newer published edition may carry the same offer. Its price, eligibility
+    // and official source must still survive together in the actual model context.
+    assert.ok(excerpts.some(excerpt => [title, condition, source].every(expected => excerpt.includes(expected))),
+      `${query}: no selected excerpt preserves the benefit, condition and source together`);
   }
 });
 
