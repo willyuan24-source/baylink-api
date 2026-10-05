@@ -1,0 +1,166 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { requestChecklist, coverageFor, checklistAnswer, admissionConflict } = require('../lib/baybayAnswerQuality');
+const { createStageTimer, boundedOperation } = require('../lib/baybayTiming');
+const { createBayBayAssistant } = require('../lib/baybayAgent');
+
+const NOW = Date.parse('2026-10-04T19:00:00Z');
+const libraryQuestion = '我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。';
+const final = value => ({ status: 'completed', model: 'fixture', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ candidateIds: [], followups: [], ...value }) }] }] });
+const calls = rows => ({ status: 'completed', output: rows.map(([name, args], index) => ({ type: 'function_call', name, call_id: `call-${index}`, arguments: JSON.stringify(args) })) });
+const base = extra => ({ config: { JWT_SECRET: 'quality-fixture-signing-key' }, isTest: true, now: () => NOW, catalog: { version: 1, checkedAt: '2026-10-04', places: [], events: [], guides: [] }, ...extra });
+const libraryGuide = { slug: 'library-fixture', title: '图书馆服务资格比较', summary: 'Library service eligibility', keywords: ['Kanopy', '图书馆', '打印'], content: '打印服务\n\n站内记录区分打印、Kanopy 和借博物馆门票。不同发卡馆的居住地、年龄、eCard 与正式卡规则各自适用，不能把一张卡的借阅权限用于另一馆。此测试站内段落不代表实时官方核验。', updatedAt: '2026-10-04' };
+
+test('the audited library prompt preserves each requested subject without inventing eligibility', () => {
+  const checklist = requestChecklist(libraryQuestion, 'zh-Hans');
+  assert.equal(checklist.complex, true);
+  assert.deepEqual(checklist.items.map(item => item.id), ['printing', 'kanopy', 'museum_passes', 'card_eligibility', 'official_entries']);
+  assert.ok(requestChecklist(libraryQuestion, 'en').items.every(item => !/[\u3400-\u9fff]/.test(item.label)));
+  const coverage = coverageFor({ checklist, draft: { coverage: [{ id: 'kanopy', status: 'answered', summary: 'Everyone is eligible.', sourceIds: ['invented'] }] }, sources: new Map(), locale: 'en' });
+  assert.equal(coverage.status, 'partial');
+  assert.ok(coverage.items.every(item => item.status === 'unknown'));
+  assert.doesNotMatch(JSON.stringify(coverage), /Everyone is eligible|invented/);
+  const answer = checklistAnswer('Recorded rules differ.', coverage, checklist);
+  assert.match(answer, /Kanopy/); assert.match(answer, /打印/);
+  assert.equal(requestChecklist('Hello, tell me a joke.', 'en').assessmentScope, 'unassessed');
+});
+
+test('three source reads end research with a substantive cited answer for every library topic', async t => {
+  const start = Date.now(); let elapsed = 0, rounds = 0, reads = 0;
+  t.mock.method(Date, 'now', () => start + elapsed);
+  const events = [], payloads = [];
+  const urls = ['https://www.sfpl.org/kanopy', 'https://smcl.org/printing', 'https://aclibrary.org/passes'];
+  const facts = [
+    'Kanopy fixture: use the participating library account, not any Bay Area library card. Its current film allowance requires checking.',
+    'Printing fixture: a separate participating library account is required. The catalog printing allowance is a snapshot, not a current entitlement.',
+    'Museum passes fixture: residence, age and physical card eligibility apply separately at the issuing library. An eCard alone does not establish eligibility.',
+  ];
+  const assistant = createBayBayAssistant(base({ guideCatalog: [libraryGuide],
+    webSearch: async () => { elapsed += 30; return { answer: 'Three official source leads.', sources: urls.map((url, i) => ({ title: `Library official ${i}`, url })), candidates: [] }; },
+    sourceFetch: async source => { reads++; elapsed += 12; return { text: facts[urls.indexOf(source.url)] }; },
+    ai: async payload => {
+      payloads.push(payload); elapsed += 20;
+      const context = JSON.parse(payload.input[0].content);
+      if (++rounds === 1) {
+        const refs = urls.map(url => context.evidence.find(source => source.url === url).id);
+        return calls([...refs.map(sourceId => ['read_source', { sourceId }]), ['read_source', { sourceId: refs[0] }]]);
+      }
+      assert.deepEqual(payload.tools, []);
+      assert.match(payload.instructions, /Return the final JSON now/);
+      assert.doesNotMatch(payload.instructions, /Keep the answer within six|Keep answer under 1400/);
+      assert.equal(context.researchBudget.readsRemaining, 0);
+      for (const fact of facts) assert.ok(context.evidence.some(source => source.text === fact));
+      const summaryByTopic = {
+        printing: '打印：站内额度是收录快照；须按该发卡馆的账户要求领取。',
+        kanopy: 'Kanopy：需使用参与馆的账户，不能用任意湾区卡；当前观看额度尚需核对。',
+        museum_passes: '馆票：发卡馆有单独的居住地和年龄条件；eCard 不足以证明资格。',
+        card_eligibility: '各馆的居住地、年龄和正式卡要求分开判断，不能互相套用。',
+        official_entries: '所列三个官方入口分别对应影片、打印和馆票规则。',
+      };
+      return final({ answer: '这些服务的发卡馆条件不同，先按现有卡与另办卡区分。', coverage: context.requestChecklist.map((item, index) => ({ id: item.id, status: index === 1 ? 'unknown' : 'answered', summary: summaryByTopic[item.id], sourceIds: [context.evidence.find(source => source.url === urls[index % 3]).id] })) });
+    },
+  }));
+  const result = await assistant.run({ message: libraryQuestion, searchMode: 'smart', onProgress: event => events.push(event) });
+  assert.equal(rounds, 2); assert.equal(reads, 3); assert.equal(result.degraded, false);
+  assert.equal(result.answerCoverage.status, 'partial');
+  assert.match(result.answer, /打印：站内额度/); assert.match(result.answer, /Kanopy：需使用/); assert.match(result.answer, /eCard 不足以/);
+  assert.ok(result.answerCoverage.items.every(item => item.sourceIds.every(id => result.evidence.some(source => source.id === id))));
+  assert.equal(result.research.timings.searchMs, 30); assert.equal(result.research.timings.readMs, 36);
+  assert.equal(result.research.timings.modelMs, 20); assert.equal(result.research.timings.finalMs, 20);
+  assert.equal(result.research.timings.totalMs, 106);
+  assert.ok(events.some(event => event.phase === 'sources' && event.status === 'completed'));
+  assert.ok(events.some(event => event.phase === 'answer' && event.status === 'running'));
+  assert.ok(events.every(event => Object.keys(event).sort().join(',') === 'phase,status'));
+  assert.doesNotMatch(JSON.stringify(result.research.timings), /Fremont|Library|https|signing/);
+});
+
+test('simple site eligibility starts final synthesis directly, still uses model evidence and tolerates broken progress listeners', async () => {
+  let rounds = 0;
+  const guide = { ...libraryGuide, content: 'Kanopy 使用条件\n\n这是一份记录账户资格与影片观看条件的站内资料。当前已收录的是特定参与图书馆的卡种限制，并不表示所有图书证均可使用；个人持卡资格和观看额度需要按自己的发卡馆核对。' };
+  const assistant = createBayBayAssistant(base({ guideCatalog: [guide], ai: async payload => {
+    rounds++; assert.deepEqual(payload.tools, []);
+    const context = JSON.parse(payload.input[0].content);
+    assert.ok(context.evidence.some(source => source.text.includes('并不表示所有图书证均可使用')));
+    return final({ answer: '这份站内资料不能证明你的个人使用资格，请先说明发卡馆。', coverage: [{ id: 'kanopy', status: 'needs_user_input', summary: '请说明图书证的发卡馆，才能判断此卡能否使用。', sourceIds: [] }] });
+  } }));
+  const result = await assistant.run({ message: '我可以用 Kanopy 吗？', searchMode: 'site', onProgress: () => { throw new Error('UI disappeared'); } });
+  assert.equal(rounds, 1); assert.equal(result.degraded, false);
+  assert.equal(result.answerCoverage.items[0].status, 'needs_user_input');
+  assert.equal(result.retrieval.webStatus, 'not_requested');
+});
+
+test('failed research still receives a reserved tool-free final synthesis attempt', async () => {
+  let rounds = 0;
+  const assistant = createBayBayAssistant(base({ guideCatalog: [libraryGuide], ai: async payload => {
+    if (++rounds === 1) throw new Error('Research model timeout');
+    assert.deepEqual(payload.tools, []);
+    assert.match(payload.instructions, /Research is complete/);
+    return final({ answer: '现有站内记录能够区分服务，但最新额度尚未核对。', coverage: [] });
+  } }));
+  const result = await assistant.run({ message: libraryQuestion, searchMode: 'site' });
+  assert.equal(rounds, 2); assert.equal(result.degraded, false);
+  assert.ok(result.research.warnings.includes('final_synthesis_recovered'));
+  assert.equal(result.research.modelResponses[0].status, 'failed');
+  assert.equal(result.answerCoverage.items.length, 5);
+});
+
+test('quota errors fail closed before any model call and remain observable without identifiers', async () => {
+  let models = 0;
+  const assistant = createBayBayAssistant(base({ Quota: { updateOne: async () => { throw new Error('private database endpoint'); } }, ai: async () => { models++; return final({ answer: 'No.' }); } }));
+  const result = await assistant.run({ message: '图书馆资料', searchMode: 'site' });
+  assert.equal(models, 0); assert.equal(result.degraded, true);
+  assert.ok(result.research.warnings.includes('quota_unavailable'));
+  assert.ok(Number.isFinite(result.research.timings.quotaMs));
+  assert.doesNotMatch(JSON.stringify(result.research), /private database endpoint/);
+});
+
+test('timings are exclusive aggregated stages and bounded operations terminate a stalled dependency', async t => {
+  const began = Date.now(); let elapsed = 0;
+  t.mock.method(Date, 'now', () => began + elapsed);
+  const timer = createStageTimer(began);
+  timer.sync('stateMs', () => { elapsed += 7; });
+  await timer.measure('quotaMs', async () => { elapsed += 9; });
+  elapsed += 4;
+  const result = timer.snapshot();
+  assert.equal(result.stateMs, 7); assert.equal(result.quotaMs, 9); assert.equal(result.otherMs, 4); assert.equal(result.totalMs, 20);
+  assert.ok(Object.values(result).every(value => Number.isFinite(value) && value >= 0));
+  await assert.rejects(boundedOperation(() => new Promise(() => {}), 5, 'fixture_timeout'), { code: 'fixture_timeout' });
+});
+
+test('an answered status cannot hide an explicitly unresolved summary, while known facts stay visible', () => {
+  const checklist = requestChecklist(libraryQuestion);
+  const sources = new Map([['source', { id: 'source' }]]);
+  for (const summary of ['此项尚未确认。', '门票尚未核实。', 'This item is unconfirmed.', 'The current amount still needs verification.']) {
+    const coverage = coverageFor({ checklist, sources, locale: 'zh-Hans', draft: { coverage: checklist.items.map(item => ({ id: item.id, status: 'answered', summary, sourceIds: ['source'] })) } });
+    assert.equal(coverage.status, 'partial', summary);
+    assert.ok(coverage.items.every(item => item.status === 'unknown'));
+  }
+  const mixed = '已知此馆要求正式卡；当前库存尚未确认。';
+  const result = coverageFor({ checklist, sources, draft: { coverage: [{ id: 'museum_passes', status: 'answered', summary: mixed, sourceIds: ['source'] }] } });
+  assert.equal(result.items.find(item => item.id === 'museum_passes').summary, mixed);
+  assert.deepEqual(result.items.find(item => item.id === 'museum_passes').sourceIds, ['source']);
+});
+
+test('only a conflicting collective total is rejected, not a free venue or child-only/per-person/conditional claim', () => {
+  const plan = { budget: { knownTotalUsd: 109.85 }, stops: [
+    { title: 'Exploratorium · 日间科学探索馆', admissionFacts: { knownTotalUsd: 109.85 } },
+    { title: '渔人码头与 PIER 39', admissionFacts: { knownTotalUsd: 0 } },
+  ] };
+  for (const sentence of ['Exploratorium 两位成人和孩子的门票合计是 $0，全部免费。', '全家门票合计 $80。', 'Family admission total: $0.', '全程费用合计 $100。']) assert.ok(admissionConflict(sentence, plan), sentence);
+  for (const sentence of ['Pier 39 门票合计 $0，全部免费。', 'Exploratorium 每位成人门票合计 $39.95。', '儿童门票合计 $0。', '两位成人门票合计 $79.90。', '如果符合图书馆票条件，全家门票合计 $0。', '全家门票合计不是 $0。', '全家门票合计 $109.85。', 'Pier 39 is free; family admission total is $109.85.']) assert.equal(admissionConflict(sentence, plan), null, sentence);
+});
+
+test('the real strict waterfront query replaces an unsupported free total with the same structured cost as its plan', async () => {
+  const message = '请规划 2026 年 10 月 10 日的旧金山路线，严格按 Ferry Building → Exploratorium → Pier 39 的顺序，不加其他景点。2 位成人和 1 名 5 岁孩子，10:00 从 Ferry Building 出发，17:00 在 Pier 39 结束，只步行或公交，全家总预算 $120 包括门票、交通和午餐。请核对三处的营业安排、孩子票价与路线时长；预算不够或没有查到的内容请直接说明，不要当作免费或已确认。';
+  const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'quality-cost-conflict-secret' }, isTest: true, now: () => NOW,
+    ai: async payload => { const context = JSON.parse(payload.input[0].content); const sourceId = context.candidates.find(candidate => candidate.id === 'venue-exploratorium-daytime').sourceIds[0];
+      return final({ answer: `Exploratorium 两位成人和孩子的门票合计是 $0，全部免费。 [[${sourceId}]]`, candidateIds: ['venue-exploratorium-daytime', 'pier39'] }); },
+  });
+  const result = await assistant.run({ message, searchMode: 'site' });
+  assert.equal(result.assistantPlan.budget.knownTotalUsd, 109.85);
+  assert.equal(result.degraded, true); assert.ok(result.research.warnings.includes('answer_admission_conflict'));
+  assert.match(result.answer, /门票小计：\$109\.85/);
+  assert.doesNotMatch(result.answer, /两位成人和孩子的门票合计是 \$0|全部免费/);
+  assert.match(result.answer, /不是已确认的结账价或全程总价/);
+  assert.ok(result.sources.length > 0);
+});

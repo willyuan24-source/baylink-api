@@ -1,0 +1,23 @@
+[
+  {
+    "candidateId": "venue-exploratorium-daytime",
+    "officialUrl": "https://www.exploratorium.edu/visit",
+    "sourceUrl": "https://www.exploratorium.edu/visit",
+    "verifiedAt": "2026-10-02",
+    "verification": "catalog-snapshot",
+    "guideUrl": "/guides/sf-family-rain-fog-car-free-october-2026",
+    "sourceQuote": "官网日间普通票为成人 18–64 岁 $39.95、4–17 岁 $29.95、3 岁及以下免费；两位普通成人加一位 4–17 岁儿童的门票合计 $109.85，餐饮、交通和加购项目另算。",
+    "scope": "individual",
+    "adultUsd": 39.95,
+    "adultMinAge": 18,
+    "adultMaxAge": 64,
+    "children": [
+      { "minAge": 0, "maxAge": 3, "usd": 0 },
+      { "minAge": 4, "maxAge": 17, "usd": 29.95 }
+    ],
+    "feesIncluded": false,
+    "regularAdmission": true,
+    "snapshotMaxAgeDays": 30,
+    "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+  }
+]

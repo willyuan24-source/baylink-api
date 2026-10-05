@@ -37,6 +37,7 @@ const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
+const { createBayBayProgressStream } = require('./lib/baybayProgress');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -4447,6 +4448,7 @@ app.get('/api/ai/baybay-capabilities', (_req, res) => {
   res.set('Cache-Control', 'no-store'); res.json(baybayAssistant.capabilities());
 });
 app.post('/api/ai/guide-chat', async (req, res) => {
+  const requestStartedAt = Date.now();
   const locale = normalizeGuideLocale(req.body?.locale);
   const errorResponse = error => ({ ok: false, error: guideLocaleError(error, locale) });
   const normalized = normalizeGuideChatMessage(req.body?.message);
@@ -4487,6 +4489,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   // compatible while the unified assistant owns public research and day plans.
   if (req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && intent !== 'school') {
     res.set('Cache-Control', 'no-store');
+    let progressStream;
     try {
       let preferences;
       const userId = await getCurrentUserIdFromRequest(req);
@@ -4494,12 +4497,26 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         const account = await PlannerAccount.findOne({ userId }).select('preferences').lean();
         preferences = account?.preferences;
       }
-      return res.json(await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath,
-        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req) }));
+      const assistantStartedAt = Date.now();
+      if (req.body?.stream === true) progressStream = createBayBayProgressStream(res);
+      const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath,
+        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
+        ...(progressStream ? { onProgress: progressStream.progress } : {}) });
+      const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
+      const assistantMs = Math.max(0, Date.now() - assistantStartedAt);
+      const requestMs = Math.max(0, Date.now() - requestStartedAt);
+      // Numeric duration aggregates explain time outside the model workflow
+      // without logging the user's prompt, account, origin or session token.
+      response.research = { ...response.research, timings: { ...response.research?.timings, preparationMs, assistantMs, requestMs } };
+      if (progressStream) return progressStream.result(response);
+      res.set('Server-Timing', `baybay_prepare;dur=${preparationMs}, baybay_assistant;dur=${assistantMs}`);
+      return res.json(response);
     } catch (error) {
-      return res.status(error.status || 503).json({ ok: false, code: error.code || 'ASSISTANT_UNAVAILABLE',
+      const failure = { ok: false, code: error.code || 'ASSISTANT_UNAVAILABLE',
         error: locale === 'en' ? error.status === 400 ? 'This conversation context expired. Please start a new conversation.' : 'BayBay could not finish this request. Please try again.'
-          : error.status === 400 ? '会话条件已过期，请开启新对话后重试。' : 'BayBay 暂时无法完成本次查询，请稍后重试。' });
+          : error.status === 400 ? '会话条件已过期，请开启新对话后重试。' : 'BayBay 暂时无法完成本次查询，请稍后重试。' };
+      if (progressStream) return progressStream.error(failure);
+      return res.status(error.status || 503).json(failure);
     }
   }
   const selectedGuides = selectConversationGuides(locale === 'en' ? ENGLISH_SEARCH_CATALOG : GUIDE_CATALOG, analysisMessage, category, currentPath, analysisHistory, currentDatePacific)

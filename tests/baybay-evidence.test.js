@@ -249,3 +249,38 @@ test('replacing an immutable guide or location catalog snapshot creates a fresh 
   const revised = [guide('venue', 'Museum guide', 'Newly revised wheelchair access details provide a different entrance for visitors to these galleries.')];
   assert.match(search('wheelchair museum', { guideCatalog: revised, catalog: sj }).guides[0].text, /Newly revised/);
 });
+test('the complete multi-library question retains printing, films and separate pass eligibility', () => {
+  const { buildSiteEvidence } = require('../lib/baybayEvidence');
+  const result = buildSiteEvidence({
+    query: '我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。',
+    state: { goal: 'information', city: null, origin: 'Fremont' }, guideCatalog: require('../data/guide-catalog.json'), today: '2026-10-04',
+  });
+  const text = result.guides.map(guide => guide.text).join('\n');
+  for (const expected of ['10 页黑白', '每天最多 25 页', 'SFPL · KANOPY', '15 岁', '16 岁', 'eCard', 'SF 居民']) assert.ok(text.includes(expected), expected);
+  const sources = result.guides.flatMap(guide => guide.sourceUrls.map(source => source.url));
+  for (const url of ['https://aclibrary.org/faq/print-scan-fax/', 'https://smcl.org/printanywhere/', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv', 'https://smcl.org/faq/museum-passes-discover-go/']) assert.ok(sources.includes(url), url);
+  assert.ok(result.guides.length <= 8);
+  assert.ok(text.includes('每月 30 tickets'));
+  assert.ok(text.includes('本次未找到 AC 卡适用的 Kanopy 官方入口'));
+});
+
+test('multi-subject comparisons preserve different provider facts without weakening city filters', () => {
+  const repeated = Array.from({ length: 7 }, (_, index) => `East Gallery admission\nEast Gallery admission ticket prices apply to regular museum visitors. Ticket admission note ${index}: consult official ticket eligibility conditions.`);
+  const wanted = [
+    'East Gallery hours\nEast Gallery opening hours are 10 AM to 4 PM; special closures need checking.',
+    'East Gallery transit\nEast Gallery public transit visitors use the northern entrance near the bus station.',
+    'West Gallery admission\nWest Gallery general admission costs $18; discounts depend on the ticket type.',
+    'West Gallery hours\nWest Gallery opens at noon; the last entry is at 4 PM before the 5 PM close.',
+    'West Gallery transit\nWest Gallery public transit visitors should confirm the bus service on their selected day.',
+  ];
+  const content = [...repeated, ...wanted].join('\n\n');
+  const result = search('compare East Gallery and West Gallery admission ticket prices, opening hours and public transit', {
+    state: { goal: 'information', city: 'San Jose' }, catalog: fixture(),
+    guideCatalog: [guide('gallery-comparison', 'San Jose gallery visit reference', content), guide('gallery-repeat', 'San Jose second gallery guide', content), guide('other-city', 'Oakland gallery visit reference', 'West Gallery hours\nOakland-only branch opens at 6 AM. Its Oakland admission policy is unrelated to the San Jose branches.')],
+  });
+  const text = result.guides.map(item => item.text).join('\n');
+  for (const part of wanted) assert.ok(text.includes(part), part);
+  assert.doesNotMatch(text, /Oakland-only/);
+  assert.ok(result.guides.length <= 8);
+  assert.equal(new Set(result.guides.map(item => item.text)).size, result.guides.length);
+});
