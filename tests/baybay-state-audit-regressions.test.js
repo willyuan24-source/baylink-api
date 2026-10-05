@@ -174,3 +174,28 @@ test('the live cross-library eligibility comparison retains residence without in
   assert.equal(resolve('SFPL 的地址在哪里？').state.city, 'San Francisco');
   assert.ok(resolve('明天去San Francisco或San Mateo，请安排一天。').clarification);
 });
+
+test('the live ticket followup preserves the signed itinerary when the user says not to change it', () => {
+  const initial = resolve('10月10日从Ferry Building出发，想去Exploratorium和Pier 39，10点出发，17点在Pier 39结束，请安排一天。').state;
+  assert.equal(initial.goal, 'day-plan'); assert.equal(initial.returnToOrigin, false);
+  assert.deepEqual(initial.selectedCandidateIds, ['venue-exploratorium-daytime', 'pier39']);
+  const previous = sign(initial);
+  for (const message of [
+    '再核对刚才行程的儿童门票，保留顺序和地点，不改行程。',
+    '再核對剛才行程的兒童門票，保留順序和地點，不改行程。',
+    '核对儿童票价，不修改原来的行程。', '核對兒童票價，不改變原來的行程。',
+    '不需要修改行程，只查儿童票价。',
+    '查一下票价，不要调整当前行程。', '查一下票價，別更改這份行程。',
+    'Recheck child admission. Keep the order and places; do not change the itinerary.',
+    "Check the tickets without modifying our existing itinerary.",
+  ]) {
+    const state = resolve(message, previous).state;
+    assert.equal(state.goal, 'day-plan', message); assert.equal(state.returnToOrigin, false, message);
+    assert.deepEqual(state.selectedCandidateIds, initial.selectedCandidateIds, message);
+    assert.equal(state.date, initial.date, message); assert.equal(state.originCandidateId, initial.originCandidateId, message);
+  }
+  assert.equal(resolve('不需要行程，改问水电。', previous).state.goal, 'newcomer');
+  assert.equal(resolve('不用再安排行程，只问儿童票价。', previous).state.goal, 'information');
+  assert.equal(resolve('不改预算，但不需要行程。', previous).state.goal, 'information');
+  assert.equal(resolve('No itinerary. I need electricity service contacts.', previous).state.goal, 'newcomer');
+});
