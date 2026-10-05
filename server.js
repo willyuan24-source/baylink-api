@@ -38,6 +38,7 @@ const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
+const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -1620,8 +1621,8 @@ const authenticateToken = async (req, res, next) => {
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
 registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
-registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
-const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
+registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
+const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
@@ -4444,8 +4445,10 @@ const baybayAssistant = createBayBayAssistant({ config, catalog: options.planner
   fetchImpl: options.baybayFetch, routeCompute: options.plannerTravelCompute,
   monitorStatus: () => sourceMonitor.service.list(true),
 });
-app.get('/api/ai/baybay-capabilities', (_req, res) => {
-  res.set('Cache-Control', 'no-store'); res.json(baybayAssistant.capabilities());
+app.get('/api/ai/baybay-capabilities', async (req, res) => {
+  const webAccess = baybayWebAccess(await getCurrentUserIdFromRequest(req));
+  res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
+  res.json({ ...baybayAssistant.capabilities(), ...(!webAccess.allowed ? { tools: ['site', 'plans'], routeEstimates: false } : {}), webRequiresAuth: true, webAccess });
 });
 app.post('/api/ai/guide-chat', async (req, res) => {
   const requestStartedAt = Date.now();
@@ -4463,6 +4466,16 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   if (!checkGuideChatRateLimit(getClientIp(req))) {
     return res.status(429).json(errorResponse('提问过于频繁，请 60 秒后再试'));
   }
+  const requestedMode = searchMode;
+  const currentUserId = await getCurrentUserIdFromRequest(req);
+  const webAccess = baybayWebAccess(currentUserId);
+  if (!webAccess.allowed) searchMode = 'site';
+  // Apply the same truthful access contract to legacy, early-return and fallback
+  // responses. Streaming results are decorated separately below.
+  const decorateAccess = payload => withBaybayAccess(payload, { requestedMode, webAccess });
+  const sendJson = res.json.bind(res);
+  res.json = payload => sendJson(decorateAccess(payload));
+  res.set('Vary', 'Authorization');
   const message = normalized.message;
   let outingReply;
   try { outingReply = outingChatIntent({ message, history, locale, now: options.outingNow?.() ?? Date.now(), secret: config.JWT_SECRET, continuationToken: isSearchReset(message) ? undefined : req.body?.outingSearchToken }); }
@@ -4496,14 +4509,14 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     let progressStream;
     try {
       let preferences;
-      const userId = await getCurrentUserIdFromRequest(req);
+      const userId = currentUserId;
       if (userId) {
         const account = await PlannerAccount.findOne({ userId }).select('preferences').lean();
         preferences = account?.preferences;
       }
       const assistantStartedAt = Date.now();
       if (req.body?.stream === true) progressStream = createBayBayProgressStream(res);
-      const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath,
+      const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess,
         sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
         ...(progressStream ? { onProgress: progressStream.progress } : {}) });
       const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
@@ -4512,7 +4525,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       // Numeric duration aggregates explain time outside the model workflow
       // without logging the user's prompt, account, origin or session token.
       response.research = { ...response.research, timings: { ...response.research?.timings, preparationMs, assistantMs, requestMs } };
-      if (progressStream) return progressStream.result(response);
+      if (progressStream) return progressStream.result(decorateAccess(response));
       res.set('Server-Timing', `baybay_prepare;dur=${preparationMs}, baybay_assistant;dur=${assistantMs}`);
       return res.json(response);
     } catch (error) {
@@ -4600,7 +4613,6 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     }
     if (searchPlan) {
       // Public visibility is unconditional here, even for an administrator.
-      const currentUserId = await getCurrentUserIdFromRequest(req);
       if (currentUserId) {
         const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
         if (blockedIds.length) searchPlan.query.authorId = { $nin: blockedIds };

@@ -1,3 +1,4 @@
+const member = require('./support/member-session');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
@@ -22,13 +23,13 @@ function structured(rows, citations = {}, answer = '已找到有来源的地点�
   return response;
 }
 async function fixture(t, options = {}) {
-  const models = options.models || createMemoryModels();
+  const models = options.models || createMemoryModels({ User: [member.user] });
   const app = express(); app.use(express.json());
-  registerPlannerWebSearch(app, { Quota: models.PostTranslationQuota, checkRateLimit: () => true, ai: async () => raw(), isTest: true, now: () => NOW, lookup, ...options, config: { OPENAI_WEB_SEARCH_MAX_TOOL_CALLS: '1', ...options.config } });
+  registerPlannerWebSearch(app, { webAccessForRequest: member.accessForModels(models), Quota: models.PostTranslationQuota, checkRateLimit: () => true, ai: async () => raw(), isTest: true, now: () => NOW, lookup, ...options, config: { OPENAI_WEB_SEARCH_MAX_TOOL_CALLS: '1', ...options.config } });
   const server = await new Promise(resolve => { const server = app.listen(0, '127.0.0.1', () => resolve(server)); });
   t.after(() => new Promise(resolve => server.close(resolve)));
   const request = async body => {
-    const r = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/web-search`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const r = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/web-search`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...member.headers() }, body: JSON.stringify(body) });
     return { status: r.status, data: await r.json(), cacheControl: r.headers.get('cache-control') };
   };
   return { request, models };
@@ -191,7 +192,7 @@ test('one search plus one extraction is deduplicated, cached and charged as one 
   assert.equal(searches, 1); assert.equal(extractions, 1); assert.equal(models.PostTranslationQuota.rows[0].count, 1);
 });
 test('atomic global daily allowance is shared across instances and failed calls consume their reservation', async t => {
-  const models = createMemoryModels(); let calls = 0;
+  const models = createMemoryModels({ User: [member.user] }); let calls = 0;
   const options = { models, config: { PLANNER_WEB_SEARCH_DAILY_LIMIT: '1' }, ai: async () => { calls++; throw Error('upstream denied'); } };
   const a = await fixture(t, options); const b = await fixture(t, options);
   assert.equal((await a.request({ query: 'SF museum' })).status, 503);
@@ -263,10 +264,10 @@ test('daily quota exhaustion and query cooldown have distinct bounded failures',
 });
 test('application registers the real web route with isolated provider and DNS dependencies', async t => {
   let extractions = 0;
-  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-tests' }, models: createMemoryModels(), ai: { plannerWebSearch: async () => raw(), plannerWebExtract: async () => { extractions++; return { candidates: [] }; } }, plannerWebLookup: lookup, plannerNow: () => NOW });
+  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-tests' }, models: createMemoryModels({ User: [member.user] }), ai: { plannerWebSearch: async () => raw(), plannerWebExtract: async () => { extractions++; return { candidates: [] }; } }, plannerWebLookup: lookup, plannerNow: () => NOW });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => app.io.close(resolve)));
-  const response = await fetch(`http://127.0.0.1:${app.server.address().port}/api/planner/web-search`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: 'SF museums' }) });
+  const response = await fetch(`http://127.0.0.1:${app.server.address().port}/api/planner/web-search`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...member.headers('isolated-tests') }, body: JSON.stringify({ query: 'SF museums' }) });
   const data = await response.json();
   assert.equal(response.status, 200); assert.equal(data.responseMode, 'web'); assert.equal(data.candidateStatus, 'none'); assert.equal(extractions, 1);
 });

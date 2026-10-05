@@ -18,7 +18,7 @@ async function fixture(t, options = {}) {
     ai: { guideChat: options.guideChat, plannerWebSearch: options.search || (async () => raw()), plannerWebExtract: async () => ({ candidates: [] }) }, plannerWebLookup: async () => [{ address: '93.184.216.34' }], ...(options.guideCatalog ? { guideCatalog: options.guideCatalog } : {}) });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
-  const request = async (path, body, as) => {
+  const request = async (path, body, as = path.startsWith('/ai/') ? 'owner' : undefined) => {
     const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api${path}`, { method: body === undefined ? 'GET' : path.includes('web-candidates') ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', ...(as ? { Authorization: `Bearer ${jwt.sign({ id: as }, SECRET, { expiresIn: '1h' })}` } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     return { status: response.status, data: await response.json() };
   };
@@ -86,8 +86,8 @@ test('follow-up web queries retain only public constraints, not private user or 
 test('max two tool calls reserve two units and cannot overspend a smaller remaining budget', async t => {
   let calls = 0;
   const { request, models } = await fixture(t, { config: { PLANNER_WEB_SEARCH_DAILY_LIMIT: '3' }, search: async () => { calls++; return raw(); } });
-  assert.equal((await request('/planner/web-search', { query: 'Oakland museums' })).status, 200);
-  assert.equal((await request('/planner/web-search', { query: 'Berkeley museums' })).status, 429);
+  assert.equal((await request('/planner/web-search', { query: 'Oakland museums' }, 'owner')).status, 200);
+  assert.equal((await request('/planner/web-search', { query: 'Berkeley museums' }, 'owner')).status, 429);
   assert.equal(calls, 1); assert.equal(models.PostTranslationQuota.rows[0].count, 2);
 });
 

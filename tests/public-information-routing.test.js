@@ -1,3 +1,4 @@
+const member = require('./support/member-session');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApplication } = require('../server');
@@ -22,7 +23,7 @@ function cited(text, source = official) {
 }
 async function fixture(t, options = {}) {
   const calls = { agent: [], guide: [], web: [] };
-  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'public-routing-fixture-only' }, models: createMemoryModels(), plannerNow: () => NOW,
+  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'public-routing-fixture-only' }, models: createMemoryModels({ User: [member.user] }), plannerNow: () => NOW,
     ai: { guideChat: async payload => { calls.guide.push(payload); return { answer: '城市不等于学区，请自行到学区官方地址工具核对；无需在聊天中提交孩子身份或住址。' }; },
       baybay: async payload => {
         calls.agent.push(payload);
@@ -36,7 +37,7 @@ async function fixture(t, options = {}) {
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
   const ask = async body => {
-    const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...member.headers('public-routing-fixture-only') }, body: JSON.stringify(body) });
     const data = await response.json(); assert.equal(response.status, 200, JSON.stringify(data)); return data;
   };
   return { calls, ask };

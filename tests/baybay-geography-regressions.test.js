@@ -1,3 +1,4 @@
+const member = require('./support/member-session');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApplication } = require('../server');
@@ -11,12 +12,12 @@ function web(answer) {
 }
 async function fixture(t, overrides = {}) {
   let chatCalls = 0, searchCalls = 0, chatInput, searchInput;
-  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-baybay-geography', OPENAI_MODEL: 'configured-chat-model', OPENAI_WEB_SEARCH_MODEL: 'configured-web-model', OPENAI_API_KEY: 'never-include-this-secret' }, models: createMemoryModels(), plannerNow: () => NOW,
+  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-baybay-geography', OPENAI_MODEL: 'configured-chat-model', OPENAI_WEB_SEARCH_MODEL: 'configured-web-model', OPENAI_API_KEY: 'never-include-this-secret' }, models: createMemoryModels({ User: [member.user] }), plannerNow: () => NOW,
     ai: { guideChat: async input => { chatCalls++; chatInput = input; return { model: 'provider-chat-snapshot', choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ answer: 'Here is the published information about using BAYLINK and its local guides.' }) } }] }; }, plannerWebSearch: async input => { searchCalls++; searchInput = input; return overrides.web?.(input) || web('今天（2026年10月4日），上海有多場精彩活動可供參與：'); }, plannerWebExtract: async () => ({ candidates: [] }) },
     plannerWebLookup: async () => [{ address: '93.184.216.34' }], ...overrides.options });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
-  return { ask: async body => { const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); assert.equal(response.status, 200); const data = await response.json(); assert.doesNotMatch(JSON.stringify(data), /never-include-this-secret/); return data; }, counts: () => ({ chatCalls, searchCalls, chatInput, searchInput }) };
+  return { ask: async body => { const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...member.headers('isolated-baybay-geography') }, body: JSON.stringify(body) }); assert.equal(response.status, 200); const data = await response.json(); assert.doesNotMatch(JSON.stringify(data), /never-include-this-secret/); return data; }, counts: () => ({ chatCalls, searchCalls, chatInput, searchInput }) };
 }
 
 test('the exact screenshot request prefers date-filtered Bay Area records without letting an optional model overwrite them', async t => {

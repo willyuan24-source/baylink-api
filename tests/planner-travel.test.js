@@ -1,3 +1,4 @@
+const member = require('./support/member-session');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
@@ -33,12 +34,12 @@ test('fixed Google endpoint, bounded field mask and no private user details', as
 });
 
 async function fixture(t, options = {}) {
-  const app = express(), models = createMemoryModels(); app.use(express.json());
-  registerPlannerTravel(app, { catalog, now: () => NOW, Quota: models.PostTranslationQuota, checkRateLimit: () => true, isTest: true, ...options });
+  const app = express(), models = createMemoryModels({ User: [member.user] }); app.use(express.json());
+  registerPlannerTravel(app, { webAccessForRequest: member.accessForModels(models), catalog, now: () => NOW, Quota: models.PostTranslationQuota, checkRateLimit: () => true, isTest: true, ...options });
   const server = await new Promise(resolve => { const listener = app.listen(0, '127.0.0.1', () => resolve(listener)); });
   t.after(() => new Promise(resolve => server.close(resolve)));
-  const request = async () => { const res = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/travel-estimate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body()) }); return { status: res.status, cache: res.headers.get('cache-control'), data: await res.json() }; };
-  request.capabilities = async () => { const res = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/travel-capabilities`); return { status: res.status, cache: res.headers.get('cache-control'), data: await res.json() }; };
+  const request = async () => { const res = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/travel-estimate`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...member.headers() }, body: JSON.stringify(body()) }); return { status: res.status, cache: res.headers.get('cache-control'), data: await res.json() }; };
+  request.capabilities = async () => { const res = await fetch(`http://127.0.0.1:${server.address().port}/api/planner/travel-capabilities`, { headers: member.headers() }); return { status: res.status, cache: res.headers.get('cache-control'), data: await res.json() }; };
   return request;
 }
 
@@ -64,11 +65,11 @@ test('capability is a secret-free switch that never allocates quota or invokes p
   const compute = async () => { calls++; return raw(); };
   const enabled = await fixture(t, { compute, config: { GOOGLE_ROUTES_API_KEY: 'synthetic-secret' } });
   const capability = await enabled.capabilities();
-  assert.equal(capability.status, 200); assert.equal(capability.cache, 'no-store'); assert.deepEqual(capability.data, { available: true });
+  assert.equal(capability.status, 200); assert.equal(capability.cache, 'no-store'); assert.deepEqual(capability.data, { available: true, webRequiresAuth: true, webAccess: { authenticated: true, allowed: true } });
   assert.equal(calls, 0);
   for (const options of [{}, { compute, Quota: null }, { compute, config: { PLANNER_TRAVEL_DAILY_LIMIT: '0' } }]) {
     const disabled = await fixture(t, options);
-    assert.deepEqual((await disabled.capabilities()).data, { available: false });
+    assert.deepEqual((await disabled.capabilities()).data, { available: false, webRequiresAuth: true, webAccess: { authenticated: true, allowed: true } });
     assert.equal((await disabled()).status, 503);
   }
   assert.equal(calls, 0, 'off endpoints and availability checks cannot invoke a paid provider');
