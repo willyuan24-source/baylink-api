@@ -1,0 +1,61 @@
+{
+  "reviewedAt": "2026-10-04",
+  "release": "25c1a5a19a8f4f090226df051b9001b12d5279b6",
+  "rawReport": "baybay-capability-eval-2026-10-04.json",
+  "suiteCompleted": false,
+  "stopReason": "web_daily_limit",
+  "unrun": [
+    "dmv-new-resident"
+  ],
+  "cases": {
+    "library-comparison": {
+      "status": "fail",
+      "findings": [
+        "Incorrectly restricts SFPL card/Kanopy eligibility to San Francisco residents.",
+        "Transfers AC/SMCL Discover & Go age/residency requirements to card applications and printing.",
+        "Turns the absence of a verified AC Kanopy entry into categorical non-access.",
+        "Main prose duplicates the per-subject summaries; URL stripping leaves empty 'official entry' text.",
+        "Primary synthesis timed out at 18s and fallback gpt-4.1-mini produced the answer; coverage complete is not factual success."
+      ]
+    },
+    "printing-eligibility": {
+      "status": "pass",
+      "findings": [
+        "Correctly computes 12 black-and-white pages as 10 free + 2 × $0.15 = $0.30 if the daily allowance is unused.",
+        "Clearly distinguishes AC printing, SMCL 25-page offer, uncertain SMCL card requirement, and museum-pass eligibility.",
+        "Labels the 2026-10-04 site record as a snapshot, not a fresh official check."
+      ]
+    },
+    "strict-sf-family-plan": {
+      "status": "fail",
+      "findings": [
+        "Prose preserves order, adult/child rates and $109.85 subtotal honestly, but request was classified as discover and no structured plan/handoff was produced.",
+        "Precise Ferry Building origin was lost to city-only San Francisco.",
+        "Root added ordered movement intent and exact origin joiner/time handling regression."
+      ]
+    },
+    "strict-sf-child-followup": {
+      "status": "fail",
+      "findings": [
+        "Correct child ticket $29.95 and $109.85 subtotal, but no structured plan because parent was misclassified.",
+        "Introduces Chinatown/North Beach cost references despite explicit unchanged two-stop request; parent plan state was absent."
+      ]
+    },
+    "english-birthday": {
+      "status": "pass",
+      "findings": [
+        "English directly distinguishes seven-day joining rule, Star-earning transaction, exact birthday ambiguity and Green/Gold/Reserve windows.",
+        "Correctly calls evidence a site snapshot; does not promise an issued reward.",
+        "Redundant/truncated summaries still reduce clarity; normal-answer excerpt formatting is being revised."
+      ]
+    },
+    "lowes-date-member": {
+      "status": "pass_with_limitations",
+      "findings": [
+        "Does not treat the asked 10am start as known; distinguishes dated poster terms from store participation/inventory.",
+        "Separates the first-100-members giveaway from purchase discounts and avoids promising each child their own allocation.",
+        "Fresh web verification was incomplete and web_daily_limit stopped the suite. DMV was not run."
+      ]
+    }
+  }
+}

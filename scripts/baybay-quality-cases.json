@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "title": "BAYBAY synthetic quality acceptance cases",
+  "validUntil": "2026-10-10",
+  "privacy": "All personas and constraints below are synthetic. Never add a real account, address, library-card number or contact detail.",
+  "cases": [
+    {
+      "id": "library-comparison",
+      "request": { "message": "我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。", "searchMode": "smart", "locale": "zh-Hans" },
+      "assertions": { "coverageIds": ["printing", "kanopy", "museum_passes", "card_eligibility", "official_entries"] },
+      "manualReview": ["逐一覆盖 AC Library、SFPL、SMCL；已有事实给结论，缺失细节明确范围。", "打印额度、纸张/颜色/日期条件按对应馆官方资料或明确日期的站内快照陈述。", "Kanopy 服务和额度逐馆区分，不把 SFPL 资格套给 AC/SMCL。", "Discover & Go 与办卡资格区分，核对居住地、年龄、正式卡/eCard 限制。", "来源能直接支持对应事实；不能以搜索摘要或官方主页推定全部资格。"]
+    },
+    {
+      "id": "printing-eligibility",
+      "request": { "message": "我只有 Alameda County Library 正式图书证，住 Fremont。想打印 12 页黑白文件。我可以免费打印几页、超出怎么收费，需要另办 San Mateo County Libraries 卡吗？请区分 AC Library 和 SMCL，并说明这是站内收录还是本次官方核实。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "coverageIds": ["printing"], "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": ["用现有 AC Library 收录事实说明免费页数、超额费用和黑白限制；不能把 SMCL 的额度叠加。", "答复应直接解释 12 页请求，计算来自同一馆、同一种打印规则。", "仅站内是用户选择，不说网络故障，不虚称刚查官网。"]
+    },
+    {
+      "id": "strict-sf-family-plan",
+      "request": { "message": "2026-10-10 两位成人和一个5岁孩子，从 San Francisco 的 Ferry Building 10点出发，严格按 Exploratorium、Pier 39 的顺序走，不加其他景点。全家总预算120美元，步行或公交，17点在 Pier 39 结束，不返回起点。请给开放时间、各人的门票、费用小计、每段交通依据；未知就写待确认，不要保证总预算足够。", "searchMode": "smart", "locale": "zh-Hans" },
+      "assertions": { "planIds": ["venue-exploratorium-daytime", "pier39"], "exactAlternatives": true, "state": { "date": "2026-10-10", "partySize": 3, "childAges": [5], "budget": 120, "budgetScope": "total", "finishBy": "17:00", "returnToOrigin": false } },
+      "manualReview": ["从 Ferry Building 出发但不把起点当游览目的地；主卡、正文、备选、handoff 同一地点顺序。", "成人与5岁儿童票价、适用日和额外收费来自相同证据；结构化票价与正文一致。", "17点在 Pier 39 结束，无擅加返程；未获得路线估时就诚实未知。", "当前开放与具体日期特殊安排区分；预算小计不伪装全程包干。"]
+    },
+    {
+      "id": "strict-sf-child-followup",
+      "follows": "strict-sf-family-plan",
+      "request": { "message": "不改行程和顺序，只再解释5岁孩子的门票，以及哪些费用仍没算进120美元总预算。不要加景点或替换地点。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "planIds": ["venue-exploratorium-daytime", "pier39"], "exactAlternatives": true, "samePlanAs": "strict-sf-family-plan", "webStatus": "not_requested", "state": { "partySize": 3, "childAges": [5], "budget": 120, "budgetScope": "total", "returnToOrigin": false } },
+      "manualReview": ["沿用已确认人数、年龄、120美元全家预算和严格两站顺序。", "票价与现场规则的资料时效说清；缺少新证据不能默默把未核实金额改成0。", "任何备选不得换、删、增或重排指定地点。"]
+    },
+    {
+      "id": "english-birthday",
+      "request": { "message": "Can I get a Starbucks birthday reward next week if I join Rewards today and have no purchase history? Please distinguish joining requirements, the required Star-earning transaction, and the redemption window for each current Rewards tier. Use the site records and say what still needs current official verification.", "searchMode": "site", "locale": "en" },
+      "assertions": { "coverageIds": ["joining", "purchase_history", "redemption"], "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": ["Reply in English and answer the person's eligibility directly before ancillary details.", "Distinguish enrollment lead time, qualifying Star-earning purchase, and tier-specific redemption window.", "Do not promise a free reward merely for joining; do not describe chosen site-only mode as a failure."]
+    },
+    {
+      "id": "lowes-date-member",
+      "request": { "message": "Lowe’s 2026年10月24日 MrBeast Swarms 是不是10点开始？一定免费吗？我需要什么会员、每人几只、限多少人，湾区哪家店参加？请区分官方已经确定的条款和需要问本店的事，不要把其他亲子活动的时间套进来。", "searchMode": "smart", "locale": "zh-Hans" },
+      "assertions": { "state": { "startTime": null } },
+      "manualReview": ["不要把用户询问的10点当作事实或行程出发时间。", "核对10/24、首100名 MyLowe’s Rewards 会员、2只限定 Swarms；若新官方条款变化，以本次来源为准。", "起始时间、湾区具体店和库存未获来源时不能推测；不得套用10点亲子手工场次。"]
+    },
+    {
+      "id": "dmv-new-resident",
+      "request": { "message": "假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。", "searchMode": "smart", "locale": "zh-Hans" },
+      "assertions": { "coverageIds": ["driving_license", "vehicle_registration", "address_change", "documents", "deadlines", "official_entries"] },
+      "manualReview": ["驾照、车辆登记和地址更新各有明确结论/适用条件；不混淆10天、20天或其他时限。", "规则必须适用于假设的外州搬入居民；有例外时保留，不把身份、车辆类型或REAL ID材料猜定。", "官方DMV链接支持各项材料与期限；一般说明不能当个人法律资格保证。"]
+    }
+  ]
+}

@@ -140,8 +140,8 @@ test('clock-before-departure phrasing and an explicit multi-visit return schedul
   const first = resolve('两名成人带6岁孩子，09:30从Millbrae BART站出发，17:00前必须回到同一站。想去旧金山Exploratorium和奥克兰Oakland Museum of California。请判断跨城是否现实，再安排。');
   assert.equal(first.state.goal, 'day-plan'); assert.equal(first.state.startTime, '09:30'); assert.equal(first.state.finishBy, '17:00');
   const named = resolve('10:00从San Jose的The Tech Interactive出发，请安排一天', undefined, { catalog: originCatalog });
-  // An extra unrecognized joiner must not manufacture a precise venue origin.
-  assert.equal(named.state.originCandidateId, null);
+  // A Chinese possessive joiner after the matching catalog city is ordinary wording.
+  assert.equal(named.state.originCandidateId, 'tech');
   const precise = resolve('10:00从San Jose The Tech Interactive出发，请安排一天', undefined, { catalog: originCatalog });
   assert.equal(precise.state.originCandidateId, 'tech'); assert.equal(precise.state.startTime, '10:00');
   assert.equal(precise.state.origin, 'The Tech Interactive');
