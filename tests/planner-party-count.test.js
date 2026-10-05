@@ -4,6 +4,36 @@ const { inferFilters } = require('../lib/planner');
 
 const TODAY = '2026-10-02';
 
+test('adjacent Chinese weekdays never merge their numeral with adult, child or household counts', () => {
+  for (const message of [
+    '这周六两个大人带5岁娃，最多这两站。', '這週六兩個大人帶五歲娃，最多這兩站。',
+    '周日两位成人带五岁小朋友', '星期三两大一小，孩子五岁',
+    '星期三一家三口，孩子5岁', '周日全家三口，带5岁娃',
+    'This Saturday two adults and a five-year-old, at most two stops.',
+    'Sunday, two adults with one five-year-old child.',
+    'Wednesday, a family of three with a five-year-old.',
+  ]) {
+    const filters = inferFilters(message, '2026-10-05');
+    assert.equal(filters.partySize, 3, message);
+    assert.equal(filters.childAge, 5, message);
+  }
+  const wednesday = inferFilters('星期三十二位成人', '2026-10-05');
+  assert.equal(wednesday.partySize, 12);
+  assert.equal(wednesday.date, '2026-10-07');
+  assert.equal(inferFilters('周六十三个人', '2026-10-05').partySize, 13);
+  assert.equal(inferFilters('周六最多两站', '2026-10-05').partySize, undefined);
+  assert.equal(inferFilters('周六带5岁娃', '2026-10-05').partySize, undefined);
+  assert.throws(() => inferFilters('星期三五十一位成人', '2026-10-05'), /同行总人数须为 1–50 人/);
+});
+
+test('colloquial children counts and shared ages add children once', () => {
+  for (const message of ['周六两个大人和两个五岁娃', '週六兩位成人和兩名五歲小朋友', 'Saturday two adults and two five-year-old children']) {
+    const filters = inferFilters(message, '2026-10-05');
+    assert.equal(filters.partySize, 4, message);
+    assert.deepEqual(filters.childAges, [5, 5], message);
+  }
+});
+
 test('explicit Chinese adult counts include 成年人 and retain existing adult wording', () => {
   for (const message of ['两个成年人', '兩個成年人', '两位成人', '兩位成人', '2 名成年人', '两个人', '两个大人', 'two adults']) {
     assert.equal(inferFilters(message, TODAY).partySize, 2, message);

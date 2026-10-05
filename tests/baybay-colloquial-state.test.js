@@ -225,3 +225,59 @@ test('comparing transport modes does not choose one, while a later affirmative c
     assertRetained(chosen, previous.state, ['travelMode']);
   }
 });
+
+test('the exact UI family question reaches a two-stop plan and the signed colloquial followup retains only PIER39', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const message = '这周六两个大人带5岁娃，上午10点从Ferry Building出发，先去Exploratorium再去Pier39。我们坐公交，下午3点要离开，别太赶，最多这两站。';
+  const modelContexts = [];
+  const now = Date.parse('2026-10-05T17:00:00Z');
+  const assistant = createBayBayAssistant({ catalog, guideCatalog: require('../data/guide-catalog.json'), isTest: true, now: () => now,
+    config: { JWT_SECRET: tokenOptions.secret }, ai: async payload => {
+      const context = JSON.parse(payload.input[0].content);
+      modelContexts.push(context);
+      const ids = context.state.selectedCandidateIds;
+      const refs = ids.flatMap(id => context.candidates.find(candidate => candidate.id === id)?.sourceIds || []);
+      assert.ok(refs.length, 'fixture cites actual candidate evidence');
+      return { model: 'fixture', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({
+        answer: `按你指定的地点和顺序安排；公交耗时和所选日期的开放情况仍待确认，不能保证15点前完成。${refs.map(id => ` [[${id}]]`).join('')}`,
+        candidateIds: ['venue-exploratorium-daytime', 'pier39'], followups: [], coverage: [],
+      }) }] }] };
+    },
+  });
+  const first = await assistant.run({ message, searchMode: 'site' });
+  assert.equal(first.degraded, false);
+  assert.equal(first.taskState.goal, 'day-plan');
+  assert.equal(first.taskState.partySize, 3);
+  assert.deepEqual(first.taskState.childAges, [5]);
+  assert.equal(first.taskState.date, '2026-10-10');
+  assert.equal(first.taskState.originCandidateId, 'venue-ferry-building');
+  assert.equal(first.taskState.travelMode, 'transit');
+  assert.equal(first.taskState.startTime, '10:00');
+  assert.equal(first.taskState.finishBy, '15:00');
+  assert.equal(first.taskState.maxStops, 2);
+  assert.deepEqual(first.assistantPlan.stops.map(stop => stop.entityId), ['venue-exploratorium-daytime', 'pier39']);
+  assert.deepEqual(first.assistantPlan.handoff.stops.map(stop => stop.id), ['venue-exploratorium-daytime', 'pier39']);
+  assert.equal(first.assistantPlan.budget.knownTotalUsd, 109.85);
+  assert.doesNotMatch(first.answer, /同行总人数须/);
+
+  const second = await assistant.run({ message: '只去后面那个吧，还是3点走，不回起点了。', searchMode: 'site', sessionToken: first.assistantSessionToken });
+  assert.equal(second.degraded, false);
+  assertRetained(second.taskState, first.taskState, ['selectedCandidateIds', 'returnToOrigin']);
+  assert.equal(second.taskState.returnToOrigin, false);
+  assert.equal(second.taskState.maxStops, 2);
+  assert.deepEqual(second.taskState.selectedCandidateIds, ['pier39']);
+  assert.deepEqual(second.assistantPlan.stops.map(stop => stop.entityId), ['pier39']);
+  assert.deepEqual(second.assistantPlan.handoff.stops.map(stop => stop.id), ['pier39']);
+  assert.deepEqual(second.assistantPlan.alternatives, []);
+  const memory = decodeTaskToken(second.assistantSessionToken, { secret: tokenOptions.secret, now });
+  assert.deepEqual(memory.lastPlan.selectedIds, ['pier39']);
+  assert.equal(memory.state.partySize, 3);
+  assert.equal(memory.state.finishBy, '15:00');
+  assert.ok(modelContexts.length >= 2, 'both natural questions reached model reasoning rather than parser clarification');
+});
+
+test('new ordered-visit wording is not triggered by a past visit, refusal or a different numbered place', () => {
+  for (const message of ['上次先去Exploratorium再去Pier39。', '不想先去Exploratorium再去Pier39，只解释门票。']) assert.notEqual(resolve(message).state.goal, 'day-plan', message);
+  const wrongNumber = resolve('安排一天，先去Exploratorium再去Pier399。');
+  assert.ok(!wrongNumber.state.selectedCandidateIds.includes('pier39'));
+});
