@@ -43,3 +43,22 @@ test('an answer grounded only in an official web page does not append unrelated 
   assert.deepEqual(result.sources.map(row => row.url), ['https://museum.example.org/visit']);
   assert.deepEqual(result.suggestedGuides, []);
 });
+
+test('unpriced plans reach the model as pending costs in both initial context and tool results', async () => {
+  let round = 0;
+  const service = createBayBayAssistant(settings({ catalog: require('../data/planner-catalog.json'), ai: async payload => {
+    if (!round++) {
+      const plan = JSON.parse(payload.input[0].content).currentPlan;
+      assert.ok(plan.stops.some(stop => stop.entityId === 'venue-sfmoma'));
+      assert.equal(plan.budget.knownTotalUsd, null); assert.equal(plan.budget.calculationStatus, 'pending');
+      return { model: 'fixture-model', status: 'completed', output: [{ type: 'function_call', name: 'create_plan', call_id: 'pending-cost', arguments: JSON.stringify({ candidateIds: ['venue-sfmoma'] }) }] };
+    }
+    const plan = JSON.parse(payload.input.find(row => row.type === 'function_call_output').output);
+    assert.equal(plan.budget.knownTotalUsd, null); assert.equal(plan.budget.knownPerPersonUsd, null);
+    assert.ok(plan.budget.unknownItems.length); return final('费用待核算，不能确认全程在预算内。');
+  } }));
+  const result = await service.run({ message: '2026年10月11日两名成人想去SFMOMA，请安排一天，全程预算70美元。', searchMode: 'site' });
+  assert.equal(round, 2);
+  assert.equal(result.assistantPlan.budget.knownTotalUsd, 0, 'internal arithmetic subtotal remains available to existing consumers');
+  assert.ok(result.assistantPlan.budget.unknownItems.length);
+});
