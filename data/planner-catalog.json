@@ -3409,7 +3409,7 @@
       "officialUrl": "https://fleetweeksf.org/calendar-of-events/",
       "sourceLabel": "fleetweeksf.org",
       "verifiedAt": "2026-10-02",
-      "imageKey": "sf-wharf",
+      "imageKey": "verified-fishermans-wharf",
       "relatedGuideSlug": "sf-fishermans-wharf-pier39-guide",
       "planning": {
         "admissionUsd": null
@@ -6306,7 +6306,7 @@
       "officialUrl": "https://www.cityofsanmateo.org/2617/Free-Recycling-Events",
       "sourceLabel": "City of San Mateo",
       "verifiedAt": "2026-10-02",
-      "imageKey": "sanmateo",
+      "imageKey": "",
       "planning": {
         "admissionUsd": 0
       }
