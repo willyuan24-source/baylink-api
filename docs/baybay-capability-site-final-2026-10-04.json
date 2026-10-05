@@ -1,0 +1,3454 @@
+{
+  "version": 1,
+  "kind": "synthetic-baybay-quality-evaluation",
+  "verificationScope": "site-only-regression",
+  "expectedCommit": "b15f5b35eaa02276a0dc71abe54a7c31899c0fe6",
+  "endpoint": "https://baylink-api.onrender.com",
+  "startedAt": "2026-10-05T06:11:16.010Z",
+  "spacingMs": 65000,
+  "status": "pending_manual_review",
+  "cases": [
+    {
+      "id": "library-comparison",
+      "startedAt": "2026-10-05T06:11:16.177Z",
+      "httpStatus": 200,
+      "elapsedMs": 39049,
+      "serverTiming": "baybay_prepare;dur=148, baybay_assistant;dur=38714",
+      "request": {
+        "message": "我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。",
+        "searchMode": "site",
+        "locale": "zh-Hans",
+        "assistantVersion": 2,
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "response": {
+        "ok": true,
+        "answer": "以下按你问到的项目分别说明；每项条件仅适用于对应机构和服务。\n\n打印服务：你现有的 AC Library 卡可用于每天最多 10 页免费黑白打印：馆内电脑或个人设备均可提交；个人设备可用卡号和 PIN 登录 SmartAlec，随后到馆取件。免费额度不含复印，也不适用于无卡访客；超额黑白每页 $0.15，彩印每页 $0.35。无需为这项福利另办 SFPL 或 SMCL 卡。 SMCL 参与分馆另有每天最多 25 页免费打印，双面每一面均计入额度；通过 Print Anywhere 提交并到同一分馆取件，不是全县独立市图书馆通用。快照没有明确其打印是否要求办卡、年龄或居住地条件，不能据此断言必须另办 SMCL 卡，也不能套用其馆票限制。周六 17:00–24:00 维护会清空待印任务。SFPL 的免费打印政策在现有资料中未明确。出发前应确认取件分馆开放时间及现行收费。 [1] [2] [3]\n\nKanopy 使用资格：仅凭现有 AC Library 卡，尚不能确认可用 Kanopy：站内快照列出 AC Library 的 hoopla 等影音资源，但未找到 AC 卡适用的 Kanopy 官方入口；这不等于证明该服务不存在。 已有证据支持的两条途径都需另办对应机构的卡：SFPL 用有效 SFPL 卡绑定 Kanopy，片库、每月额度及观看期限以账户为准，不能套用 SMCL 的额度；SMCL 用有效卡号和 PIN 登录，每月 30 tickets，月初重置、不累积，每部影片借阅期为 3–7 天。SMCL 馆票的服务区、16 岁及实体卡限制不能直接套到 Kanopy；两馆 Kanopy 的独立年龄或 eCard 条款在快照中未完整说明。若要确认 AC 卡是否支持 Kanopy及这些细项，可切换 Smart 或 Web 模式核验当前官方条款。 [1] [4] [5] [6]\n\n图书馆博物馆票：你住 Fremont，应先用自己的 AC Library Discover & Go 入口：须年满 15 岁、住在 AC Library 服务区并持正式图书证；若现有的是 eCard，则不能使用馆票福利。票券可能免费，也可能只有折扣，人数及名额以登录后具体票券为准，不保证同行者全部免费；AC Library、Alameda 市与 Oakland 的卡不能混用。 另办 SFPL 卡不能解决你的馆票需求：其 Discover & Go 要求 San Francisco 市县居民、本人 SFPL 卡，Teacher Card 不适用；最多同时两项预约，每月 1 日放出新月份，下载或打印后不能取消，票券限实名预约者在指定日期使用。 SMCL 馆票另要求年满 16 岁、服务区居民和有效实体卡，不接受 eCard，最多同时两笔预约；仅凭 Fremont 居住地和新办 SMCL 卡不能认定符合资格。各馆票还须逐张确认场馆年龄、同行人数、证件及打印要求。 [7] [1] [8] [9]\n\n居住地、年龄与卡种限制：办卡与服务资格须分开：AC Library 免费实体卡面向在加州居住、工作或就学者；Alameda County 居民的 eCard 有效期为五年，其他加州居民的临时 eCard 须在 30 天内转实体卡。你的 Fremont 居住地属于前一类，但不能据此推定现有卡就是实体卡。SFPL 允许加州居民免费申请，所以你可申请；线上申请后仍须持有效照片证件到馆完成首次领卡。SMCL 对非 San Mateo County 居民要求到馆申请，你不能假定可在线办卡。 AC 的 15 岁及 SMCL 的 16 岁门槛是各自 Discover & Go 条件，SFPL 的旧金山居住要求也是馆票条件，不是三馆全部服务或办卡的统一限制。现有快照未完整列出办卡年龄及未成年人证件规则，也未明确所有打印或 Kanopy 的 eCard 条款；这些需单独核实。 [1] [7] [8] [10]\n\n官方办理与服务入口：AC Library 官方免费打印额度、收费与取件流程；SMCL 官方免费打印、页数及取件流程；SFPL 官方 Kanopy 免费观影入口；AC Library：图书证与 eCard 条件 [2] [3] [4] [8]",
+        "sources": [
+          {
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "/guides/bay-area-everyday-free-perks"
+          },
+          {
+            "title": "AC Library 官方免费打印额度、收费与取件流程",
+            "url": "https://aclibrary.org/faq/print-scan-fax"
+          },
+          {
+            "title": "SMCL 官方免费打印、页数及取件流程",
+            "url": "https://smcl.org/printanywhere"
+          },
+          {
+            "title": "SFPL 官方 Kanopy 免费观影入口",
+            "url": "https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv"
+          },
+          {
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "https://smcl.org/resources-types/evideos"
+          },
+          {
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "https://aclibrary.org/movies-tv"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10"
+          },
+          {
+            "title": "AC Library：图书证与 eCard 条件",
+            "url": "https://aclibrary.org/faq/library-cards-ecards"
+          },
+          {
+            "title": "SMCL：Discover & Go 资格",
+            "url": "https://smcl.org/faq/museum-passes-discover-go"
+          },
+          {
+            "title": "SFPL：申请图书证",
+            "url": "https://sfpl.org/welcome-new-cardholders/kiosk-application"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "information",
+          "city": null,
+          "region": null,
+          "date": null,
+          "origin": "Fremont",
+          "originCandidateId": null,
+          "travelMode": null,
+          "partySize": null,
+          "childAges": [],
+          "budget": null,
+          "budgetScope": null,
+          "freeOnly": null,
+          "setting": null,
+          "startTime": null,
+          "finishBy": null,
+          "topic": "arts",
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": [
+            "city",
+            "region",
+            "originCandidateId"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "s-d2cc145002ac7965",
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "/guides/bay-area-everyday-free-perks",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cf8a3bd2d8d9001f",
+            "title": "SFPL 官方 Kanopy 免费观影入口",
+            "url": "https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fd00dc932d8d0c09",
+            "title": "AC Library：图书证与 eCard 条件",
+            "url": "https://aclibrary.org/faq/library-cards-ecards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-93747e1e9e131710",
+            "title": "SFPL：申请图书证",
+            "url": "https://sfpl.org/welcome-new-cardholders/kiosk-application",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bf7017234711d7f3",
+            "title": "SMCL 官方免费打印、页数及取件流程",
+            "url": "https://smcl.org/printanywhere",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-d16ac2cc6b5d29c5",
+            "title": "AC Library 官方免费打印额度、收费与取件流程",
+            "url": "https://aclibrary.org/faq/print-scan-fax",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-66ea81eea801c158",
+            "title": "SMCL：Discover & Go 资格",
+            "url": "https://smcl.org/faq/museum-passes-discover-go",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2376da1640ff6384",
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "https://smcl.org/resources-types/evideos",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-5bfa2cf777d1909c",
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "https://aclibrary.org/movies-tv",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f5d342fb223b42af",
+            "title": "旧金山总图书馆中文对话：下班后认识新朋友",
+            "url": "https://sfpl.org/events/2026/10/06/dialogue-mandarin-bilingual-conversation-club",
+            "kind": "event",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-59f26f02d72aeeb4",
+            "title": "SFPL：Writing Hard Enough to Shift Gravity 写作工坊",
+            "url": "https://sfpl.org/events/2026/10/08/workshop-writing-hard-enough-shift-gravity",
+            "kind": "event",
+            "checkedAt": "2026-09-30",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2693a6fa585fe985",
+            "title": "SFPL：免费一对一职业咨询",
+            "url": "https://sfpl.org/events/2026/10/08/workshop-career-coaching",
+            "kind": "event",
+            "checkedAt": "2026-09-30",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a7d30492953fc863",
+            "title": "Marin 图书馆三类公园停车证与借期",
+            "url": "https://marinlibrary.org/parks",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6d2ef806d217fb19",
+            "title": "Intel 官方免费门票、停车与团体参观规则",
+            "url": "https://www.intel.com/content/www/us/en/company-overview/intel-museum.html",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-09dcbcae5a291e25",
+            "title": "ASIAN ART MUSEUM · SF：亚洲艺术博物馆 10/4 活动与票务规则",
+            "url": "https://calendar.asianart.org/event/sundays-at-the-asian-art-museum-october-4",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3ddfce04af9757d1",
+            "title": "SONOMA COUNTY LIBRARY：Sonoma 区域公园图书馆停车证",
+            "url": "https://sonomalibrary.org/browse/libraryofthings/socoparkspass",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0fdc79744dbce8fc",
+            "title": "SANTA CLARA COUNTY PARKS：Santa Clara 县图书馆公园通行证",
+            "url": "https://parks.santaclaracounty.gov/library-parks-pass",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-99c848e0279074a4",
+            "title": "GARDENS OF GOLDEN GATE PARK：GGGP 官方免费资格与居住证明规则",
+            "url": "https://gggp.org/tickets",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b6475d672346c1f8",
+            "title": "SFMTA · SAN FRANCISCO：SFMTA 官方 65+ 居民免费 Muni 申请规则",
+            "url": "https://www.sfmta.com/fares/free-muni-seniors-ages-65",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-072c90e2a9902936",
+            "title": "LEGO MAGAZINE：LEGO 官方免费杂志 · 年龄、邮寄与订阅规则",
+            "url": "https://www.lego.com/en-us/magazine",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6807f5d446fc95db",
+            "title": "SFMOMA · SAN FRANCISCO：SFMOMA 居民福利卡免费条款",
+            "url": "https://www.sfmoma.org/deals-discounts",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7196f505d9691bc1",
+            "title": "SAN FRANCISCO PUBLIC LIBRARY：SFPL 免费设备借用公告",
+            "url": "https://sfpl.org/releases/2026/07/15/free-radon-detector-loan-program-promote-home-safety",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6fd9e931a2ce10f0",
+            "title": "SMCL：非本县居民到馆申请",
+            "url": "https://www2.smcl.org/new-site/get-card.php",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-38efd8ce483f44a3",
+            "title": "SFPL 官方在线学习与 App 登录方法",
+            "url": "https://sfpl.org/research-learn/elearning",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b095ee5c9e29abe2",
+            "title": "SAN FRANCISCO PUBLIC LIBRARY：SFPL 官方 Discover & Go 预约与取消规则",
+            "url": "https://sfpl.libanswers.com/faq/97385",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          }
+        ],
+        "answerCoverage": {
+          "status": "partial",
+          "items": [
+            {
+              "id": "printing",
+              "label": "打印服务",
+              "status": "answered",
+              "summary": "你现有的 AC Library 卡可用于每天最多 10 页免费黑白打印：馆内电脑或个人设备均可提交；个人设备可用卡号和 PIN 登录 SmartAlec，随后到馆取件。免费额度不含复印，也不适用于无卡访客；超额黑白每页 $0.15，彩印每页 $0.35。无需为这项福利另办 SFPL 或 SMCL 卡。 SMCL 参与分馆另有每天最多 25 页免费打印，双面每一面均计入额度；通过 Print Anywhere 提交并到同一分馆取件，不是全县独立市图书馆通用。快照没有明确其打印是否要求办卡、年龄或居住地条件，不能据此断言必须另办 SMCL 卡，也不能套用其馆票限制。周六 17:00–24:00 维护会清空待印任务。SFPL 的免费打印政策在现有资料中未明确。出发前应确认取件分馆开放时间及现行收费。",
+              "sourceIds": [
+                "s-d2cc145002ac7965",
+                "s-d16ac2cc6b5d29c5",
+                "s-bf7017234711d7f3"
+              ]
+            },
+            {
+              "id": "kanopy",
+              "label": "Kanopy 使用资格",
+              "status": "unknown",
+              "summary": "仅凭现有 AC Library 卡，尚不能确认可用 Kanopy：站内快照列出 AC Library 的 hoopla 等影音资源，但未找到 AC 卡适用的 Kanopy 官方入口；这不等于证明该服务不存在。 已有证据支持的两条途径都需另办对应机构的卡：SFPL 用有效 SFPL 卡绑定 Kanopy，片库、每月额度及观看期限以账户为准，不能套用 SMCL 的额度；SMCL 用有效卡号和 PIN 登录，每月 30 tickets，月初重置、不累积，每部影片借阅期为 3–7 天。SMCL 馆票的服务区、16 岁及实体卡限制不能直接套到 Kanopy；两馆 Kanopy 的独立年龄或 eCard 条款在快照中未完整说明。若要确认 AC 卡是否支持 Kanopy及这些细项，可切换 Smart 或 Web 模式核验当前官方条款。",
+              "sourceIds": [
+                "s-d2cc145002ac7965",
+                "s-cf8a3bd2d8d9001f",
+                "s-2376da1640ff6384",
+                "s-5bfa2cf777d1909c"
+              ]
+            },
+            {
+              "id": "museum_passes",
+              "label": "图书馆博物馆票",
+              "status": "answered",
+              "summary": "你住 Fremont，应先用自己的 AC Library Discover & Go 入口：须年满 15 岁、住在 AC Library 服务区并持正式图书证；若现有的是 eCard，则不能使用馆票福利。票券可能免费，也可能只有折扣，人数及名额以登录后具体票券为准，不保证同行者全部免费；AC Library、Alameda 市与 Oakland 的卡不能混用。 另办 SFPL 卡不能解决你的馆票需求：其 Discover & Go 要求 San Francisco 市县居民、本人 SFPL 卡，Teacher Card 不适用；最多同时两项预约，每月 1 日放出新月份，下载或打印后不能取消，票券限实名预约者在指定日期使用。 SMCL 馆票另要求年满 16 岁、服务区居民和有效实体卡，不接受 eCard，最多同时两笔预约；仅凭 Fremont 居住地和新办 SMCL 卡不能认定符合资格。各馆票还须逐张确认场馆年龄、同行人数、证件及打印要求。",
+              "sourceIds": [
+                "s-8e90c25584f25ce3",
+                "s-d2cc145002ac7965",
+                "s-fd00dc932d8d0c09",
+                "s-66ea81eea801c158"
+              ]
+            },
+            {
+              "id": "card_eligibility",
+              "label": "居住地、年龄与卡种限制",
+              "status": "answered",
+              "summary": "办卡与服务资格须分开：AC Library 免费实体卡面向在加州居住、工作或就学者；Alameda County 居民的 eCard 有效期为五年，其他加州居民的临时 eCard 须在 30 天内转实体卡。你的 Fremont 居住地属于前一类，但不能据此推定现有卡就是实体卡。SFPL 允许加州居民免费申请，所以你可申请；线上申请后仍须持有效照片证件到馆完成首次领卡。SMCL 对非 San Mateo County 居民要求到馆申请，你不能假定可在线办卡。 AC 的 15 岁及 SMCL 的 16 岁门槛是各自 Discover & Go 条件，SFPL 的旧金山居住要求也是馆票条件，不是三馆全部服务或办卡的统一限制。现有快照未完整列出办卡年龄及未成年人证件规则，也未明确所有打印或 Kanopy 的 eCard 条款；这些需单独核实。",
+              "sourceIds": [
+                "s-d2cc145002ac7965",
+                "s-8e90c25584f25ce3",
+                "s-fd00dc932d8d0c09",
+                "s-93747e1e9e131710"
+              ]
+            },
+            {
+              "id": "official_entries",
+              "label": "官方办理与服务入口",
+              "status": "answered",
+              "summary": "AC Library 官方免费打印额度、收费与取件流程；SMCL 官方免费打印、页数及取件流程；SFPL 官方 Kanopy 免费观影入口；AC Library：图书证与 eCard 条件",
+              "sourceIds": [
+                "s-d16ac2cc6b5d29c5",
+                "s-bf7017234711d7f3",
+                "s-cf8a3bd2d8d9001f",
+                "s-fd00dc932d8d0c09"
+              ]
+            }
+          ]
+        },
+        "suggestedGuides": [
+          {
+            "title": "湾区免费生活清单：从图书馆到周末小旅行",
+            "url": "/guides/bay-area-everyday-free-perks",
+            "slug": "bay-area-everyday-free-perks"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "slug": "bay-area-freebies-deals-2026-10"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "search_site"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "function_call"
+              ],
+              "outputTextChars": 0,
+              "elapsedMs": 5097
+            },
+            {
+              "round": 2,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 2868,
+              "elapsedMs": 26597
+            }
+          ],
+          "elapsedMs": 38712,
+          "timings": {
+            "stateMs": 1006,
+            "siteMs": 5501,
+            "monitorMs": 108,
+            "quotaMs": 98,
+            "searchMs": 0,
+            "readMs": 0,
+            "modelMs": 5097,
+            "finalMs": 26597,
+            "routeMs": 0,
+            "weatherMs": 0,
+            "planMs": 0,
+            "otherMs": 305,
+            "totalMs": 38712,
+            "preparationMs": 148,
+            "assistantMs": 38714,
+            "requestMs": 38862
+          }
+        },
+        "retrieval": {
+          "requestedMode": "site",
+          "scope": "site",
+          "webStatus": "not_requested",
+          "requestedDate": null,
+          "city": null,
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 10
+        }
+      },
+      "automated": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "transport_success",
+            "status": "pass"
+          },
+          {
+            "id": "structured_assistant",
+            "status": "pass"
+          },
+          {
+            "id": "substantive_answer_present",
+            "status": "pass"
+          },
+          {
+            "id": "not_degraded",
+            "status": "pass"
+          },
+          {
+            "id": "citation_indices_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_contract",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_sources_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_printing",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_kanopy",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_museum_passes",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_card_eligibility",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_official_entries",
+            "status": "pass"
+          },
+          {
+            "id": "numeric_stage_timings",
+            "status": "pass"
+          },
+          {
+            "id": "chosen_search_scope",
+            "status": "pass"
+          },
+          {
+            "id": "no_search_web",
+            "status": "pass"
+          },
+          {
+            "id": "no_read_source",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_route",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_weather",
+            "status": "pass"
+          }
+        ],
+        "note": "Structural checks do not establish factual accuracy; human review remains required."
+      },
+      "manualReview": {
+        "status": "pending",
+        "rubric": [
+          "逐一覆盖 AC Library、SFPL、SMCL；已有事实给结论，缺失细节明确范围。",
+          "打印额度、纸张/颜色/日期条件按对应馆官方资料或明确日期的站内快照陈述。",
+          "Kanopy 服务和额度逐馆区分，不把 SFPL 资格套给 AC/SMCL。",
+          "Discover & Go 与办卡资格区分，核对居住地、年龄、正式卡/eCard 限制。",
+          "来源能直接支持对应事实；不能以搜索摘要或官方主页推定全部资格。"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "id": "strict-sf-family-plan",
+      "startedAt": "2026-10-05T06:12:21.319Z",
+      "httpStatus": 200,
+      "elapsedMs": 22616,
+      "serverTiming": "baybay_prepare;dur=5, baybay_assistant;dur=22538",
+      "request": {
+        "message": "2026-10-10 两位成人和一个5岁孩子，从 San Francisco 的 Ferry Building 10点出发，严格按 Exploratorium、Pier 39 的顺序走，不加其他景点。全家总预算120美元，步行或公交，17点在 Pier 39 结束，不返回起点。请给开放时间、各人的门票、费用小计、每段交通依据；未知就写待确认，不要保证总预算足够。",
+        "searchMode": "site",
+        "locale": "zh-Hans",
+        "assistantVersion": 2,
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "response": {
+        "ok": true,
+        "answer": "以下按你问到的项目分别说明；每项条件仅适用于对应机构和服务。\n\n开放与营业安排：2026-10-10 按要求10:00从 Ferry Building 出发，仅依次前往 Exploratorium、Pier 39，不加景点、不返回起点，目标17:00在 Pier 39结束。Exploratorium 站内常规周六日间开放记录为10:00–17:00，但这不是10月10日实际开放的保证，临时调整与购票名额待确认。 Pier 39缺少可用于该日安排的营业及公共区开放时间，17:00仍可访问待确认；两站抵达时间也尚不能确定。 [1] [2]\n\n门票与儿童票价：Exploratorium：按2026-10-02普通日间票价快照及18–64岁成人档计算，成人1为$39.95、成人2为$39.95，5岁孩子适用4–17岁票$29.95，小计$109.85；成人年龄若不在此档，适用票价待确认。10月10日实际售价、必要税费及附加费待确认；此金额不含成人夜场、Tactile Dome或其他加购。 Pier 39：按2026-10-04快照，仅公共商业步行区及开放的海狮观景处，两位成人和5岁孩子各$0，小计$0；水族馆、游船及游乐设施等另收费，本方案不安排这些项目，当日公共区可进入情况待确认。 [1] [3] [2] [4]\n\n路线、时长与交通费用：第一段 Ferry Building（One Ferry Building）→ Exploratorium（Pier 15）：站内有两端地点记录，但无已核实的步行路线、距离、时长，亦无公交上落站及班次，均待确认。 第二段 Exploratorium → Pier 39：站内指南只提供 F Market & Wharves 在 The Embarcadero、Stockton 一带查站的线索，不能据此确定本段乘车站点、当天运行或耗时；步行路线及耗时同样待确认。 两段如选择步行，乘车费为$0，但可走路线仍未核实；如乘常规Muni，站内政策快照显示5岁孩子免费，无需申请或Clipper卡，两位成人票价及换乘计费待确认，此儿童福利不适用于Cable Car。 不安排返程，也不虚设抵达时间来保证17:00结束。 [5] [1] [4] [6]\n\n费用与预算：全家已知门票快照小计为$109.85＋$0＝$109.85；相对全家总预算$120，账面剩余$10.15，并非每人预算。 这只是目录快照小计，不是结账价或全程总费用：Exploratorium当日适用售价、税费和必要附加费，以及成人公交费、餐饮费用均待确认；不计入未选择的付费项目。因此全程费用合计待确认，不能保证$120足够。 [1] [2]",
+        "sources": [
+          {
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit"
+          },
+          {
+            "title": "PIER 39：常见问题",
+            "url": "https://www.pier39.com/frequently-asked-questions"
+          },
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide"
+          },
+          {
+            "title": "Ferry Building · 公共大厅与外部会合点",
+            "url": "https://www.ferrybuildingmarketplace.com/visit"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "day-plan",
+          "city": "San Francisco",
+          "region": "sf",
+          "date": "2026-10-10",
+          "origin": "Ferry Building · One Ferry Building",
+          "originCandidateId": "venue-ferry-building",
+          "travelMode": "transit",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 120,
+          "budgetScope": "total",
+          "freeOnly": null,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": "17:00",
+          "returnToOrigin": false,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [
+            "venue-exploratorium-daytime",
+            "pier39"
+          ],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "assistantPlan": {
+          "id": "baybay-db148b517b62080dbc81",
+          "date": "2026-10-10",
+          "title": "San Francisco一日安排",
+          "status": "needs_verification",
+          "stops": [
+            {
+              "id": "place:venue-exploratorium-daytime",
+              "kind": "place",
+              "entityId": "venue-exploratorium-daytime",
+              "title": "Exploratorium · 日间科学探索馆",
+              "city": "San Francisco",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-3a5862ecaab8bf6f"
+              ],
+              "sourceUrls": [
+                "https://www.exploratorium.edu/visit",
+                "https://www.exploratorium.edu/hours"
+              ],
+              "notes": [
+                "普通日间门票时段；周日 10:00–12:00 仅日间会员及捐助者。周四 18 岁以上夜场另票；Tactile Dome 另需预约与购票。10/1、10/7、10/8、10/21 部分展厅有临时关闭安排，出发前查官网。",
+                "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+              ],
+              "path": "https://www.exploratorium.edu/visit",
+              "location": {
+                "lat": 37.8016649,
+                "lng": -122.397348,
+                "label": "Exploratorium · Pier 15",
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "precision": "venue"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "scheduleCheckedAt": "2026-09-29",
+              "openingWindows": [
+                {
+                  "open": "10:00",
+                  "close": "17:00"
+                }
+              ],
+              "knownAdmissionTotalUsd": 109.85,
+              "admissionStatus": "incomplete",
+              "admissionFacts": {
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 109.85,
+                "knownPerPersonUsd": 39.95,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "adult",
+                    "quantity": 2,
+                    "unitUsd": 39.95,
+                    "subtotalUsd": 79.9,
+                    "minAge": 18,
+                    "maxAge": 64
+                  },
+                  {
+                    "category": "child",
+                    "quantity": 1,
+                    "unitUsd": 29.95,
+                    "subtotalUsd": 29.95,
+                    "age": 5,
+                    "minAge": 4,
+                    "maxAge": 17
+                  }
+                ],
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "checkedAt": "2026-10-02",
+                "guideUrl": "/guides/sf-family-rain-fog-car-free-october-2026",
+                "sourceIds": [
+                  "s-3a5862ecaab8bf6f"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": null
+                },
+                "unknowns": [
+                  "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                  "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+              }
+            },
+            {
+              "id": "place:pier39",
+              "kind": "place",
+              "entityId": "pier39",
+              "title": "渔人码头与 PIER 39",
+              "city": "San Francisco",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-bb1fd584c7312c0a"
+              ],
+              "sourceUrls": [
+                "https://www.pier39.com/frequently-asked-questions/"
+              ],
+              "notes": [
+                "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+              ],
+              "path": "/guides/sf-fishermans-wharf-pier39-guide",
+              "guideSlug": "sf-fishermans-wharf-pier39-guide",
+              "location": {
+                "lat": 37.809992,
+                "lng": -122.410357,
+                "label": "PIER 39",
+                "sourceUrl": "https://www.wikidata.org/wiki/Q1856083",
+                "precision": "venue"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "admissionUsd": 0,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete",
+              "admissionFacts": {
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "all-ages",
+                    "quantity": 3,
+                    "unitUsd": 0,
+                    "subtotalUsd": 0
+                  }
+                ],
+                "sourceUrl": "https://www.pier39.com/frequently-asked-questions/",
+                "checkedAt": "2026-10-04",
+                "guideUrl": "/guides/sf-fishermans-wharf-pier39-guide",
+                "sourceIds": [
+                  "s-bb1fd584c7312c0a"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": true
+                },
+                "unknowns": [
+                  "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date."
+              }
+            }
+          ],
+          "budget": {
+            "knownTotalUsd": 109.85,
+            "knownPerPersonUsd": 39.95,
+            "unknownItems": [
+              "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+              "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+              "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+              "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+            ],
+            "scope": "total",
+            "admissionFacts": [
+              {
+                "stopId": "place:venue-exploratorium-daytime",
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 109.85,
+                "knownPerPersonUsd": 39.95,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "adult",
+                    "quantity": 2,
+                    "unitUsd": 39.95,
+                    "subtotalUsd": 79.9,
+                    "minAge": 18,
+                    "maxAge": 64
+                  },
+                  {
+                    "category": "child",
+                    "quantity": 1,
+                    "unitUsd": 29.95,
+                    "subtotalUsd": 29.95,
+                    "age": 5,
+                    "minAge": 4,
+                    "maxAge": 17
+                  }
+                ],
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "checkedAt": "2026-10-02",
+                "guideUrl": "/guides/sf-family-rain-fog-car-free-october-2026",
+                "sourceIds": [
+                  "s-3a5862ecaab8bf6f"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": null
+                },
+                "unknowns": [
+                  "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                  "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+              },
+              {
+                "stopId": "place:pier39",
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "all-ages",
+                    "quantity": 3,
+                    "unitUsd": 0,
+                    "subtotalUsd": 0
+                  }
+                ],
+                "sourceUrl": "https://www.pier39.com/frequently-asked-questions/",
+                "checkedAt": "2026-10-04",
+                "guideUrl": "/guides/sf-fishermans-wharf-pier39-guide",
+                "sourceIds": [
+                  "s-bb1fd584c7312c0a"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": true
+                },
+                "unknowns": [
+                  "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date."
+              }
+            ],
+            "priceBasis": "catalog-snapshot",
+            "limitUsd": 120
+          },
+          "checks": [
+            {
+              "code": "date",
+              "status": "pass",
+              "message": "日期：2026-10-10（湾区时间）。"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Exploratorium · 日间科学探索馆」的这段交通时间尚待查询。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "date_opening",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」有常规开放时间，所选日期临时调整仍待核实。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「渔人码头与 PIER 39」的这段交通时间尚待查询。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "finish_time",
+              "status": "unknown",
+              "message": "最后一站的结束时间尚未核实，不能确认按要求时间结束。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "budget",
+              "status": "unknown",
+              "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+            }
+          ],
+          "alternatives": [],
+          "unknowns": [
+            "前往「Exploratorium · 日间科学探索馆」的这段交通时间尚待查询。",
+            "「Exploratorium · 日间科学探索馆」有常规开放时间，所选日期临时调整仍待核实。",
+            "「Exploratorium · 日间科学探索馆」的预约要求或剩余名额仍待确认。",
+            "「Exploratorium · 日间科学探索馆」的儿童参加及入场规则仍待确认。",
+            "前往「渔人码头与 PIER 39」的这段交通时间尚待查询。",
+            "「渔人码头与 PIER 39」缺少可用于安排这一天的开放或场次时间。",
+            "「渔人码头与 PIER 39」的预约要求或剩余名额仍待确认。",
+            "「渔人码头与 PIER 39」的儿童参加及入场规则仍待确认。",
+            "最后一站的结束时间尚未核实，不能确认按要求时间结束。",
+            "费用仍有未知项，尚不能确认总安排符合预算。",
+            "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+            "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+            "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+            "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+          ],
+          "notes": [],
+          "rejectedCandidates": [],
+          "constraints": {
+            "city": "San Francisco",
+            "origin": "Ferry Building · One Ferry Building",
+            "startTime": "10:00",
+            "finishBy": "17:00",
+            "partySize": 3,
+            "childAges": [
+              5
+            ],
+            "travelMode": "transit",
+            "excludedCities": [],
+            "freeOnly": false,
+            "returnToOrigin": false
+          },
+          "travelLegs": [],
+          "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+          "handoff": {
+            "title": "San Francisco一日安排",
+            "date": "2026-10-10",
+            "stops": [
+              {
+                "kind": "place",
+                "id": "venue-exploratorium-daytime"
+              },
+              {
+                "kind": "place",
+                "id": "pier39"
+              }
+            ]
+          }
+        },
+        "evidence": [
+          {
+            "id": "s-6ee8333c124398b5",
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a0933c81ece3d85a",
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3a5862ecaab8bf6f",
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bb1fd584c7312c0a",
+            "title": "PIER 39：常见问题",
+            "url": "https://www.pier39.com/frequently-asked-questions",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3e4a941c966769d9",
+            "title": "Ferry Building · 公共大厅与外部会合点",
+            "url": "https://www.ferrybuildingmarketplace.com/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7f28ff8959aac665",
+            "title": "旧金山攻略",
+            "url": "/guides/san-francisco-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-27",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-555bc7e1639f6616",
+            "title": "Ferry Plaza 农夫市集：海边逛一圈",
+            "url": "https://foodwise.org/markets/ferry-plaza-farmers-market",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a967f0125c31783a",
+            "title": "Book Passage · Ferry Building 书店",
+            "url": "https://www.ferrybuildingmarketplace.com/shops/book-passage",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6b0f23b5cd4bf5b9",
+            "title": "Gott’s Roadside · Ferry Building",
+            "url": "https://www.gotts.com/location/sfferrybuilding",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-d745f394d60d8d77",
+            "title": "San Francisco Fleet Week：海湾与城市活动周",
+            "url": "https://fleetweeksf.org/calendar-of-events",
+            "kind": "event",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-04962ecc6ab6a605",
+            "title": "SFMOMA：常规开放与儿童票",
+            "url": "https://www.sfmoma.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef871207837e4453",
+            "title": "Randall Museum：时间与抵达路线",
+            "url": "https://randallmuseum.org/directions-hours",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef09c3db733c7d26",
+            "title": "Presidio：Field Station",
+            "url": "https://presidio.gov/explore/attractions/field-station",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-735b2fcdc02f4bd8",
+            "title": "Presidio：免费接驳与乘客限制",
+            "url": "https://presidio.gov/visit/getting-to-and-around-the-park/presidio-go-shuttle",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0eedc121e85db7aa",
+            "title": "SFMOMA：无障碍服务",
+            "url": "https://www.sfmoma.org/visit/accessibility",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3c6fc9f86c97ce5f",
+            "title": "SFMOMA · SAN FRANCISCO：SFMOMA 免费家庭日与成人名额",
+            "url": "https://www.sfmoma.org/free-days",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c52fada82ff02cbf",
+            "title": "YBCA · SAN FRANCISCO：YBCA 官方免费周三与开放时间",
+            "url": "https://ybca.org/visit",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-11f6e39a258a2729",
+            "title": "RANDALL MUSEUM · SAN FRANCISCO：Randall 官方开放时间与免费入馆",
+            "url": "https://randallmuseum.org/faqs",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-631f29c681f147fb",
+            "title": "BAMPFA：开放时段与票种",
+            "url": "https://bampfa.org/visit/hours",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2b20b518bc711004",
+            "title": "EXPLORATORIUM · SAN FRANCISCO：Exploratorium for All 当前价格与证件",
+            "url": "https://www.exploratorium.edu/visit/reduced-rates",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6205fc0b5b39bda7",
+            "title": "IKEA：IKEA Family 热饮福利",
+            "url": "https://www.ikea.com/us/en/ikea-family",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abe19a987c77485b",
+            "title": "MARIN TRANSIT：Marin Transit 官方免票日",
+            "url": "https://marintransit.gov/fare-free-promotions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-09dcbcae5a291e25",
+            "title": "ASIAN ART MUSEUM · SF：亚洲艺术博物馆 10/4 活动与票务规则",
+            "url": "https://calendar.asianart.org/event/sundays-at-the-asian-art-museum-october-4",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-633d63f6580b35b0",
+            "title": "SFMTA：Cable Car 乘坐指南",
+            "url": "https://www.sfmta.com/getting-around/muni/cable-cars",
+            "kind": "web",
+            "checkedAt": "2026-09-27",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2651b98848806d7e",
+            "title": "美国国家公园管理局：Alcatraz",
+            "url": "https://www.nps.gov/alcatraz",
+            "kind": "web",
+            "checkedAt": "2026-09-27",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6807f5d446fc95db",
+            "title": "SFMOMA · SAN FRANCISCO：SFMOMA 居民福利卡免费条款",
+            "url": "https://www.sfmoma.org/deals-discounts",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1310b8f9102426c6",
+            "title": "PIER 39：海狮与 K-Dock",
+            "url": "https://www.pier39.com/sealions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ce845f62c9e78c70",
+            "title": "NPS：海事公园参观与码头重建",
+            "url": "https://www.nps.gov/safr/planyourvisit/index.htm",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a8b8c806982e53e4",
+            "title": "SFMTA：F Market & Wharves",
+            "url": "https://www.sfmta.com/routes/f-market-wharves",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ca22929953d9e088",
+            "title": "SFMTA · SAN FRANCISCO：SFMTA 青少年免费乘车条件",
+            "url": "https://www.sfmta.com/fares/free-muni-all-youth-18-years-and-younger",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          }
+        ],
+        "answerCoverage": {
+          "status": "partial",
+          "items": [
+            {
+              "id": "hours",
+              "label": "开放与营业安排",
+              "status": "unknown",
+              "summary": "2026-10-10 按要求10:00从 Ferry Building 出发，仅依次前往 Exploratorium、Pier 39，不加景点、不返回起点，目标17:00在 Pier 39结束。Exploratorium 站内常规周六日间开放记录为10:00–17:00，但这不是10月10日实际开放的保证，临时调整与购票名额待确认。 Pier 39缺少可用于该日安排的营业及公共区开放时间，17:00仍可访问待确认；两站抵达时间也尚不能确定。",
+              "sourceIds": [
+                "s-3a5862ecaab8bf6f",
+                "s-bb1fd584c7312c0a"
+              ]
+            },
+            {
+              "id": "admission",
+              "label": "门票与儿童票价",
+              "status": "unknown",
+              "summary": "Exploratorium：按2026-10-02普通日间票价快照及18–64岁成人档计算，成人1为$39.95、成人2为$39.95，5岁孩子适用4–17岁票$29.95，小计$109.85；成人年龄若不在此档，适用票价待确认。10月10日实际售价、必要税费及附加费待确认；此金额不含成人夜场、Tactile Dome或其他加购。 Pier 39：按2026-10-04快照，仅公共商业步行区及开放的海狮观景处，两位成人和5岁孩子各$0，小计$0；水族馆、游船及游乐设施等另收费，本方案不安排这些项目，当日公共区可进入情况待确认。",
+              "sourceIds": [
+                "s-3a5862ecaab8bf6f",
+                "s-6ee8333c124398b5",
+                "s-bb1fd584c7312c0a",
+                "s-a0933c81ece3d85a"
+              ]
+            },
+            {
+              "id": "transport",
+              "label": "路线、时长与交通费用",
+              "status": "unknown",
+              "summary": "第一段 Ferry Building（One Ferry Building）→ Exploratorium（Pier 15）：站内有两端地点记录，但无已核实的步行路线、距离、时长，亦无公交上落站及班次，均待确认。 第二段 Exploratorium → Pier 39：站内指南只提供 F Market & Wharves 在 The Embarcadero、Stockton 一带查站的线索，不能据此确定本段乘车站点、当天运行或耗时；步行路线及耗时同样待确认。 两段如选择步行，乘车费为$0，但可走路线仍未核实；如乘常规Muni，站内政策快照显示5岁孩子免费，无需申请或Clipper卡，两位成人票价及换乘计费待确认，此儿童福利不适用于Cable Car。 不安排返程，也不虚设抵达时间来保证17:00结束。",
+              "sourceIds": [
+                "s-3e4a941c966769d9",
+                "s-3a5862ecaab8bf6f",
+                "s-a0933c81ece3d85a",
+                "s-8e90c25584f25ce3"
+              ]
+            },
+            {
+              "id": "budget",
+              "label": "费用与预算",
+              "status": "unknown",
+              "summary": "全家已知门票快照小计为$109.85＋$0＝$109.85；相对全家总预算$120，账面剩余$10.15，并非每人预算。 这只是目录快照小计，不是结账价或全程总费用：Exploratorium当日适用售价、税费和必要附加费，以及成人公交费、餐饮费用均待确认；不计入未选择的付费项目。因此全程费用合计待确认，不能保证$120足够。",
+              "sourceIds": [
+                "s-3a5862ecaab8bf6f",
+                "s-bb1fd584c7312c0a"
+              ]
+            }
+          ]
+        },
+        "suggestedGuides": [
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "slug": "sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "slug": "bay-area-freebies-deals-2026-10"
+          },
+          {
+            "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
+            "url": "/guides/sf-fishermans-wharf-pier39-guide",
+            "slug": "sf-fishermans-wharf-pier39-guide"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [
+          "切换到 Smart 或 Web 模式，核实这两站的当日开放、分段交通和最终票价。"
+        ],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "create_plan",
+              "status": "completed",
+              "label": "create_plan"
+            },
+            {
+              "tool": "create_plan",
+              "status": "completed",
+              "label": "create_plan"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 1965,
+              "elapsedMs": 20445
+            }
+          ],
+          "elapsedMs": 22538,
+          "timings": {
+            "stateMs": 438,
+            "siteMs": 1205,
+            "monitorMs": 7,
+            "quotaMs": 10,
+            "searchMs": 0,
+            "readMs": 0,
+            "modelMs": 0,
+            "finalMs": 20445,
+            "routeMs": 0,
+            "weatherMs": 0,
+            "planMs": 186,
+            "otherMs": 247,
+            "totalMs": 22538,
+            "preparationMs": 5,
+            "assistantMs": 22538,
+            "requestMs": 22543
+          }
+        },
+        "retrieval": {
+          "requestedMode": "site",
+          "scope": "site",
+          "webStatus": "not_requested",
+          "requestedDate": "2026-10-10",
+          "city": "San Francisco",
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 6
+        }
+      },
+      "automated": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "transport_success",
+            "status": "pass"
+          },
+          {
+            "id": "structured_assistant",
+            "status": "pass"
+          },
+          {
+            "id": "substantive_answer_present",
+            "status": "pass"
+          },
+          {
+            "id": "not_degraded",
+            "status": "pass"
+          },
+          {
+            "id": "citation_indices_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "factual_plan_has_citation",
+            "status": "pass",
+            "detail": "A factual plan needs at least one visible citation to its own evidence; an empty citation list cannot pass."
+          },
+          {
+            "id": "coverage_contract",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_sources_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "numeric_stage_timings",
+            "status": "pass"
+          },
+          {
+            "id": "state_date",
+            "status": "pass"
+          },
+          {
+            "id": "state_partySize",
+            "status": "pass"
+          },
+          {
+            "id": "state_childAges",
+            "status": "pass"
+          },
+          {
+            "id": "state_budget",
+            "status": "pass"
+          },
+          {
+            "id": "state_budgetScope",
+            "status": "pass"
+          },
+          {
+            "id": "state_finishBy",
+            "status": "pass"
+          },
+          {
+            "id": "state_returnToOrigin",
+            "status": "pass"
+          },
+          {
+            "id": "chosen_search_scope",
+            "status": "pass"
+          },
+          {
+            "id": "no_search_web",
+            "status": "pass"
+          },
+          {
+            "id": "no_read_source",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_route",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_weather",
+            "status": "pass"
+          },
+          {
+            "id": "exact_plan_order",
+            "status": "pass"
+          },
+          {
+            "id": "handoff_same_order",
+            "status": "pass"
+          },
+          {
+            "id": "no_changed_alternatives",
+            "status": "pass"
+          },
+          {
+            "id": "no_return_leg",
+            "status": "pass"
+          }
+        ],
+        "note": "Structural checks do not establish factual accuracy; human review remains required."
+      },
+      "manualReview": {
+        "status": "pending",
+        "rubric": [
+          "从 Ferry Building 出发但不把起点当游览目的地；主卡、正文、备选、handoff 同一地点顺序。",
+          "成人与5岁儿童票价、适用日和额外收费来自相同证据；结构化票价与正文一致。",
+          "17点在 Pier 39 结束，无擅加返程；未获得路线估时就诚实未知。",
+          "当前开放与具体日期特殊安排区分；预算小计不伪装全程包干。"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "id": "strict-sf-child-followup",
+      "startedAt": "2026-10-05T06:13:26.419Z",
+      "httpStatus": 200,
+      "elapsedMs": 15933,
+      "serverTiming": "baybay_prepare;dur=3, baybay_assistant;dur=15865",
+      "request": {
+        "message": "不改行程和顺序，只再解释5岁孩子的门票，以及哪些费用仍没算进120美元总预算。不要加景点或替换地点。",
+        "searchMode": "site",
+        "locale": "zh-Hans",
+        "assistantVersion": 2,
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "response": {
+        "ok": true,
+        "answer": "保持原行程与顺序：Exploratorium → PIER 39，不加景点、不替换地点。\n\n1. 5岁孩子的门票\nExploratorium 的站内普通日间票价记录中，4–17岁为 $29.95，只有3岁及以下免费，因此5岁孩子需要儿童票。按两位18–64岁普通成人各 $39.95，加孩子 $29.95，三人门票小计 $109.85。[1]\nPIER 39 公共步行区及开放的海狮观景区不收统一门票，孩子和成人均为 $0；这不包含馆内收费项目或游船。[2]\n\n2. 120美元里仍没算入什么\n目前只计入上述门票小计，账面剩余 $10.15，并不是已经确认的全天可用余额。尚未计入：餐饮与饮料、成人公共交通费，以及自行选择的加购项目。[1] PIER 39 的收费娱乐、游船、购物或行李寄存也不包含在免费公共区域内。[2]\n孩子乘常规 Muni 公交和轻轨按站内政策免费，无需申请或 Clipper 卡；不能把这项免费政策套用到 Cable Car、BART 或 Caltrain。成人车费仍未核算。[3]\n\n另外，Exploratorium 必要票务附加费、税费，以及2026年10月10日实际适用票价和结账总额仍未确认。因此只能说已知门票小计低于 $120，不能说全天总费用已控制在预算内。当前是站内快照；若需确认最终票价，可切换 Smart 或 Web 模式核对。[4]",
+        "sources": [
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "渔人码头与 PIER 39",
+            "url": "https://www.pier39.com/frequently-asked-questions"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10"
+          },
+          {
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 2,
+          "goal": "day-plan",
+          "city": "San Francisco",
+          "region": "sf",
+          "date": "2026-10-10",
+          "origin": "Ferry Building · One Ferry Building",
+          "originCandidateId": "venue-ferry-building",
+          "travelMode": "transit",
+          "partySize": 3,
+          "childAges": [
+            5
+          ],
+          "budget": 120,
+          "budgetScope": "total",
+          "freeOnly": null,
+          "setting": null,
+          "startTime": "10:00",
+          "finishBy": "17:00",
+          "returnToOrigin": false,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [
+            "venue-exploratorium-daytime",
+            "pier39"
+          ],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "assistantPlan": {
+          "id": "baybay-db148b517b62080dbc81",
+          "date": "2026-10-10",
+          "title": "San Francisco一日安排",
+          "status": "needs_verification",
+          "stops": [
+            {
+              "id": "place:venue-exploratorium-daytime",
+              "kind": "place",
+              "entityId": "venue-exploratorium-daytime",
+              "title": "Exploratorium · 日间科学探索馆",
+              "city": "San Francisco",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-3a5862ecaab8bf6f"
+              ],
+              "sourceUrls": [
+                "https://www.exploratorium.edu/visit",
+                "https://www.exploratorium.edu/hours"
+              ],
+              "notes": [
+                "普通日间门票时段；周日 10:00–12:00 仅日间会员及捐助者。周四 18 岁以上夜场另票；Tactile Dome 另需预约与购票。10/1、10/7、10/8、10/21 部分展厅有临时关闭安排，出发前查官网。",
+                "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+              ],
+              "path": "https://www.exploratorium.edu/visit",
+              "location": {
+                "lat": 37.8016649,
+                "lng": -122.397348,
+                "label": "Exploratorium · Pier 15",
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "precision": "venue"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "scheduleCheckedAt": "2026-09-29",
+              "openingWindows": [
+                {
+                  "open": "10:00",
+                  "close": "17:00"
+                }
+              ],
+              "knownAdmissionTotalUsd": 109.85,
+              "admissionStatus": "incomplete",
+              "admissionFacts": {
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 109.85,
+                "knownPerPersonUsd": 39.95,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "adult",
+                    "quantity": 2,
+                    "unitUsd": 39.95,
+                    "subtotalUsd": 79.9,
+                    "minAge": 18,
+                    "maxAge": 64
+                  },
+                  {
+                    "category": "child",
+                    "quantity": 1,
+                    "unitUsd": 29.95,
+                    "subtotalUsd": 29.95,
+                    "age": 5,
+                    "minAge": 4,
+                    "maxAge": 17
+                  }
+                ],
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "checkedAt": "2026-10-02",
+                "guideUrl": "/guides/sf-family-rain-fog-car-free-october-2026",
+                "sourceIds": [
+                  "s-3a5862ecaab8bf6f"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": null
+                },
+                "unknowns": [
+                  "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                  "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+              }
+            },
+            {
+              "id": "place:pier39",
+              "kind": "place",
+              "entityId": "pier39",
+              "title": "渔人码头与 PIER 39",
+              "city": "San Francisco",
+              "date": "2026-10-10",
+              "timeStatus": "unknown",
+              "sourceIds": [
+                "s-bb1fd584c7312c0a"
+              ],
+              "sourceUrls": [
+                "https://www.pier39.com/frequently-asked-questions/"
+              ],
+              "notes": [
+                "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+              ],
+              "path": "/guides/sf-fishermans-wharf-pier39-guide",
+              "guideSlug": "sf-fishermans-wharf-pier39-guide",
+              "location": {
+                "lat": 37.809992,
+                "lng": -122.410357,
+                "label": "PIER 39",
+                "sourceUrl": "https://www.wikidata.org/wiki/Q1856083",
+                "precision": "venue"
+              },
+              "external": false,
+              "suggestedDurationMinutes": 60,
+              "admissionUsd": 0,
+              "knownAdmissionTotalUsd": 0,
+              "admissionStatus": "incomplete",
+              "admissionFacts": {
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "all-ages",
+                    "quantity": 3,
+                    "unitUsd": 0,
+                    "subtotalUsd": 0
+                  }
+                ],
+                "sourceUrl": "https://www.pier39.com/frequently-asked-questions/",
+                "checkedAt": "2026-10-04",
+                "guideUrl": "/guides/sf-fishermans-wharf-pier39-guide",
+                "sourceIds": [
+                  "s-bb1fd584c7312c0a"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": true
+                },
+                "unknowns": [
+                  "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date."
+              }
+            }
+          ],
+          "budget": {
+            "knownTotalUsd": 109.85,
+            "knownPerPersonUsd": 39.95,
+            "unknownItems": [
+              "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+              "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+              "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+              "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+            ],
+            "scope": "total",
+            "admissionFacts": [
+              {
+                "stopId": "place:venue-exploratorium-daytime",
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 109.85,
+                "knownPerPersonUsd": 39.95,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "adult",
+                    "quantity": 2,
+                    "unitUsd": 39.95,
+                    "subtotalUsd": 79.9,
+                    "minAge": 18,
+                    "maxAge": 64
+                  },
+                  {
+                    "category": "child",
+                    "quantity": 1,
+                    "unitUsd": 29.95,
+                    "subtotalUsd": 29.95,
+                    "age": 5,
+                    "minAge": 4,
+                    "maxAge": 17
+                  }
+                ],
+                "sourceUrl": "https://www.exploratorium.edu/visit",
+                "checkedAt": "2026-10-02",
+                "guideUrl": "/guides/sf-family-rain-fog-car-free-october-2026",
+                "sourceIds": [
+                  "s-3a5862ecaab8bf6f"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": null
+                },
+                "unknowns": [
+                  "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+                  "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Regular daytime general admission only. After Dark, Tactile Dome, discounts and optional purchases are not included. A recorded price is not a verified checkout price for a future date."
+              },
+              {
+                "stopId": "place:pier39",
+                "status": "partial",
+                "basis": "catalog-snapshot",
+                "knownTotalUsd": 0,
+                "knownPerPersonUsd": 0,
+                "partySize": 3,
+                "childAges": [
+                  5
+                ],
+                "breakdown": [
+                  {
+                    "category": "all-ages",
+                    "quantity": 3,
+                    "unitUsd": 0,
+                    "subtotalUsd": 0
+                  }
+                ],
+                "sourceUrl": "https://www.pier39.com/frequently-asked-questions/",
+                "checkedAt": "2026-10-04",
+                "guideUrl": "/guides/sf-fishermans-wharf-pier39-guide",
+                "sourceIds": [
+                  "s-bb1fd584c7312c0a"
+                ],
+                "applicability": {
+                  "date": "2026-10-10",
+                  "dateStatus": "regular-unconfirmed",
+                  "feesIncluded": true
+                },
+                "unknowns": [
+                  "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。"
+                ],
+                "note": "Public pedestrian areas and open sea-lion viewing areas only. Aquarium, cruises, rides, food, shopping, luggage storage, parking and transport are excluded and must be priced separately. The snapshot does not confirm opening or access on a future date."
+              }
+            ],
+            "priceBasis": "catalog-snapshot",
+            "limitUsd": 120
+          },
+          "checks": [
+            {
+              "code": "date",
+              "status": "pass",
+              "message": "日期：2026-10-10（湾区时间）。"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「Exploratorium · 日间科学探索馆」的这段交通时间尚待查询。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "date_opening",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」有常规开放时间，所选日期临时调整仍待核实。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「Exploratorium · 日间科学探索馆」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:venue-exploratorium-daytime"
+            },
+            {
+              "code": "travel_time",
+              "status": "unknown",
+              "message": "前往「渔人码头与 PIER 39」的这段交通时间尚待查询。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "opening_hours",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」缺少可用于安排这一天的开放或场次时间。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "reservation",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」的预约要求或剩余名额仍待确认。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "child_access",
+              "status": "unknown",
+              "message": "「渔人码头与 PIER 39」的儿童参加及入场规则仍待确认。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "finish_time",
+              "status": "unknown",
+              "message": "最后一站的结束时间尚未核实，不能确认按要求时间结束。",
+              "stopId": "place:pier39"
+            },
+            {
+              "code": "budget",
+              "status": "unknown",
+              "message": "费用仍有未知项，尚不能确认总安排符合预算。"
+            }
+          ],
+          "alternatives": [],
+          "unknowns": [
+            "前往「Exploratorium · 日间科学探索馆」的这段交通时间尚待查询。",
+            "「Exploratorium · 日间科学探索馆」有常规开放时间，所选日期临时调整仍待核实。",
+            "「Exploratorium · 日间科学探索馆」的预约要求或剩余名额仍待确认。",
+            "「Exploratorium · 日间科学探索馆」的儿童参加及入场规则仍待确认。",
+            "前往「渔人码头与 PIER 39」的这段交通时间尚待查询。",
+            "「渔人码头与 PIER 39」缺少可用于安排这一天的开放或场次时间。",
+            "「渔人码头与 PIER 39」的预约要求或剩余名额仍待确认。",
+            "「渔人码头与 PIER 39」的儿童参加及入场规则仍待确认。",
+            "最后一站的结束时间尚未核实，不能确认按要求时间结束。",
+            "费用仍有未知项，尚不能确认总安排符合预算。",
+            "Exploratorium · 日间科学探索馆: 必要票务附加费及税费未确认。",
+            "Exploratorium · 日间科学探索馆: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+            "渔人码头与 PIER 39: 这是普通票价记录；所选日期的适用价格与结账总额仍待确认。",
+            "已知金额尚未包括未核实的餐饮、交通、停车及可选消费。"
+          ],
+          "notes": [],
+          "rejectedCandidates": [],
+          "constraints": {
+            "city": "San Francisco",
+            "origin": "Ferry Building · One Ferry Building",
+            "startTime": "10:00",
+            "finishBy": "17:00",
+            "partySize": 3,
+            "childAges": [
+              5
+            ],
+            "travelMode": "transit",
+            "excludedCities": [],
+            "freeOnly": false,
+            "returnToOrigin": false
+          },
+          "travelLegs": [],
+          "summary": "已按条件列出有来源的建议顺序；缺少的时段、交通、资格与费用仍待核实。",
+          "handoff": {
+            "title": "San Francisco一日安排",
+            "date": "2026-10-10",
+            "stops": [
+              {
+                "kind": "place",
+                "id": "venue-exploratorium-daytime"
+              },
+              {
+                "kind": "place",
+                "id": "pier39"
+              }
+            ]
+          }
+        },
+        "evidence": [
+          {
+            "id": "s-6ee8333c124398b5",
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3a5862ecaab8bf6f",
+            "title": "Exploratorium：参观与票价",
+            "url": "https://www.exploratorium.edu/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bb1fd584c7312c0a",
+            "title": "渔人码头与 PIER 39",
+            "url": "https://www.pier39.com/frequently-asked-questions",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-84b47faedea19423",
+            "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+            "url": "/guides/bay-area-commute-guide",
+            "kind": "guide",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abbb67c2a26b16fa",
+            "title": "不买门票的金门公园半日：白色温室、街头钢琴和草坪午餐",
+            "url": "/guides/golden-gate-park-free-car-free-day-guide",
+            "kind": "guide",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bf846f1834279287",
+            "title": "第一次到旧金山的 72 小时：无车看海湾、街区与公园",
+            "url": "/guides/sf-first-72-hours-car-free-october-2026",
+            "kind": "guide",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-131466cc32246135",
+            "title": "勇士对国王：NBA 季前赛",
+            "url": "https://www.chasecenter.com/events/?sjrnaid=447721518&sjrncid=18577082524&sjrnclid=ABAjH0iXOBDNu3qt88qYjM0EZdWr",
+            "kind": "event",
+            "checkedAt": "2026-09-28",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3f7053b5d2ef86de",
+            "title": "SF Travel：唐人街街区信息",
+            "url": "https://www.sftravel.com/neighborhoods/visit-chinatown",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aa8eb59493fae072",
+            "title": "Athanor",
+            "url": "https://www.athanorsf.com",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-04962ecc6ab6a605",
+            "title": "SFMOMA：常规开放与儿童票",
+            "url": "https://www.sfmoma.org/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef09c3db733c7d26",
+            "title": "Presidio：Field Station",
+            "url": "https://presidio.gov/explore/attractions/field-station",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-735b2fcdc02f4bd8",
+            "title": "Presidio：免费接驳与乘客限制",
+            "url": "https://presidio.gov/visit/getting-to-and-around-the-park/presidio-go-shuttle",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ef871207837e4453",
+            "title": "Randall Museum：时间与抵达路线",
+            "url": "https://randallmuseum.org/directions-hours",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0eedc121e85db7aa",
+            "title": "SFMOMA：无障碍服务",
+            "url": "https://www.sfmoma.org/visit/accessibility",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ca22929953d9e088",
+            "title": "SFMTA · SAN FRANCISCO：SFMTA 青少年免费乘车条件",
+            "url": "https://www.sfmta.com/fares/free-muni-all-youth-18-years-and-younger",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-6205fc0b5b39bda7",
+            "title": "IKEA：IKEA Family 热饮福利",
+            "url": "https://www.ikea.com/us/en/ikea-family",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-abe19a987c77485b",
+            "title": "MARIN TRANSIT：Marin Transit 官方免票日",
+            "url": "https://marintransit.gov/fare-free-promotions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-029c9395be53aae3",
+            "title": "CALTRAIN · SF / PENINSULA / SOUTH BAY：Caltrain 官方现行青少年票价",
+            "url": "https://www.caltrain.com/fares",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0a390d58cdb333a2",
+            "title": "THE HOME DEPOT：Home Depot 官方免费儿童工作坊与报名",
+            "url": "https://www.homedepot.com/c/kids-workshop",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b6475d672346c1f8",
+            "title": "SFMTA · SAN FRANCISCO：SFMTA 官方 65+ 居民免费 Muni 申请规则",
+            "url": "https://www.sfmta.com/fares/free-muni-seniors-ages-65",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-355e75b3a7e29b31",
+            "title": "TODAY AT APPLE · BAY AREA：Apple 官方 · Kids 互动善意故事课程",
+            "url": "https://www.apple.com/today/event/kids-create-interactive-story-of-kindness",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-82203848da57804c",
+            "title": "LOWE’S KIDS CLUB：Lowe’s 官方 Builder Recognition 条款（至 2026 年底）",
+            "url": "https://www.lowes.com/pdf/diy-u_kids_workshops_terms.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-11f6e39a258a2729",
+            "title": "RANDALL MUSEUM · SAN FRANCISCO：Randall 官方开放时间与免费入馆",
+            "url": "https://randallmuseum.org/faqs",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3c6fc9f86c97ce5f",
+            "title": "SFMOMA · SAN FRANCISCO：SFMOMA 免费家庭日与成人名额",
+            "url": "https://www.sfmoma.org/free-days",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-df9193f9f1369587",
+            "title": "BART：乘车与路线指南",
+            "url": "https://www.bart.gov/guide",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b9663505343431eb",
+            "title": "Caltrain：现行时刻表与临时调整",
+            "url": "https://www.caltrain.com/schedules/pdfs",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fa3b9d945cf9d8f4",
+            "title": "VTA：南湾公交与轻轨线路",
+            "url": "https://www.vta.org/go/routes",
+            "kind": "web",
+            "checkedAt": "2026-05-22",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b64d9116fc16b039",
+            "title": "SFMTA：现行 Muni 路线与站点",
+            "url": "https://www.sfmta.com/getting-around/muni/routes-stops",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3f356bbaec7a6bd2",
+            "title": "SF Rec & Parks：Music Concourse 交通",
+            "url": "https://sfrecpark.org/1544/Getting-to-the-Music-Concourse",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fe568c4723c775b5",
+            "title": "Gardens of Golden Gate Park：参观常见问题",
+            "url": "https://gggp.org/visit/frequently-asked-questions",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b33a963f8c0d41be",
+            "title": "SF Rec & Parks：公园花园与位置",
+            "url": "https://sfrecpark.org/1868/Golden-Gate-Park-Gardens",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-d51800faf05f9cf2",
+            "title": "SF Rec & Parks：JFK Promenade",
+            "url": "https://www.sfrecpark.org/1538/JFK-Promenade",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-db39510f69a4ef9b",
+            "title": "SF Rec & Parks：免费公园接驳车",
+            "url": "https://www.sfrecpark.org/1617/Golden-Gate-Park-Free-Shuttle",
+            "kind": "web",
+            "checkedAt": "2026-09-09",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-dc13f26cbb289a26",
+            "title": "SF Rec & Parks：金门公园交通",
+            "url": "https://sfrecpark.org/1159/Getting-to-Golden-Gate-Park",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f505e86709b78177",
+            "title": "SFMTA：MuniMobile 当前票种",
+            "url": "https://www.sfmta.com/getting-around/muni/fares/munimobile",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7576adf94f35dde0",
+            "title": "California Academy of Sciences：参观准备",
+            "url": "https://www.calacademy.org/plan-your-visit",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8714aa1aebc52392",
+            "title": "NPS：恶魔岛参观基础信息",
+            "url": "https://www.nps.gov/alca/planyourvisit/basicinfo.htm",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-827ef486f26b8243",
+            "title": "SFMTA：Visitor Passport 覆盖范围",
+            "url": "https://www.sfmta.com/fares/1-day-visitor-passport",
+            "kind": "web",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3e4a941c966769d9",
+            "title": "Ferry Building · 公共大厅与外部会合点",
+            "url": "https://www.ferrybuildingmarketplace.com/visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          }
+        ],
+        "answerCoverage": {
+          "status": "partial",
+          "items": [
+            {
+              "id": "admission",
+              "label": "门票与儿童票价",
+              "status": "answered",
+              "summary": "5岁孩子的 Exploratorium 普通日间儿童票为站内记录 $29.95；PIER 39 公共步行及开放海狮观景区免费，不含收费项目。",
+              "sourceIds": [
+                "s-6ee8333c124398b5",
+                "s-bb1fd584c7312c0a"
+              ]
+            },
+            {
+              "id": "budget",
+              "label": "费用与预算",
+              "status": "unknown",
+              "summary": "已知三人门票小计 $109.85，距 $120 剩 $10.15；餐饮、成人交通、可选消费及未确认的票务附加费和税费尚未计入，不能确认全天总预算达标。孩子常规 Muni 免费。",
+              "sourceIds": [
+                "s-6ee8333c124398b5",
+                "s-3a5862ecaab8bf6f",
+                "s-bb1fd584c7312c0a",
+                "s-8e90c25584f25ce3"
+              ]
+            }
+          ]
+        },
+        "suggestedGuides": [
+          {
+            "title": "带孩子或长辈游 SF：雨雾天也能执行的无车半日计划",
+            "url": "/guides/sf-family-rain-fog-car-free-october-2026",
+            "slug": "sf-family-rain-fog-car-free-october-2026"
+          },
+          {
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "slug": "bay-area-freebies-deals-2026-10"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            },
+            {
+              "tool": "create_plan",
+              "status": "completed",
+              "label": "create_plan"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 1222,
+              "elapsedMs": 15304
+            }
+          ],
+          "elapsedMs": 15865,
+          "timings": {
+            "stateMs": 56,
+            "siteMs": 291,
+            "monitorMs": 9,
+            "quotaMs": 93,
+            "searchMs": 0,
+            "readMs": 0,
+            "modelMs": 15304,
+            "finalMs": 0,
+            "routeMs": 0,
+            "weatherMs": 0,
+            "planMs": 3,
+            "otherMs": 109,
+            "totalMs": 15865,
+            "preparationMs": 3,
+            "assistantMs": 15865,
+            "requestMs": 15868
+          }
+        },
+        "retrieval": {
+          "requestedMode": "site",
+          "scope": "site",
+          "webStatus": "not_requested",
+          "requestedDate": "2026-10-10",
+          "city": "San Francisco",
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 4
+        }
+      },
+      "automated": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "transport_success",
+            "status": "pass"
+          },
+          {
+            "id": "structured_assistant",
+            "status": "pass"
+          },
+          {
+            "id": "substantive_answer_present",
+            "status": "pass"
+          },
+          {
+            "id": "not_degraded",
+            "status": "pass"
+          },
+          {
+            "id": "citation_indices_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "factual_plan_has_citation",
+            "status": "pass",
+            "detail": "A factual plan needs at least one visible citation to its own evidence; an empty citation list cannot pass."
+          },
+          {
+            "id": "coverage_contract",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_sources_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "numeric_stage_timings",
+            "status": "pass"
+          },
+          {
+            "id": "state_partySize",
+            "status": "pass"
+          },
+          {
+            "id": "state_childAges",
+            "status": "pass"
+          },
+          {
+            "id": "state_budget",
+            "status": "pass"
+          },
+          {
+            "id": "state_budgetScope",
+            "status": "pass"
+          },
+          {
+            "id": "state_returnToOrigin",
+            "status": "pass"
+          },
+          {
+            "id": "chosen_search_scope",
+            "status": "pass"
+          },
+          {
+            "id": "no_search_web",
+            "status": "pass"
+          },
+          {
+            "id": "no_read_source",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_route",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_weather",
+            "status": "pass"
+          },
+          {
+            "id": "exact_plan_order",
+            "status": "pass"
+          },
+          {
+            "id": "handoff_same_order",
+            "status": "pass"
+          },
+          {
+            "id": "no_changed_alternatives",
+            "status": "pass"
+          },
+          {
+            "id": "no_return_leg",
+            "status": "pass"
+          },
+          {
+            "id": "followup_preserves_plan",
+            "status": "pass"
+          }
+        ],
+        "note": "Structural checks do not establish factual accuracy; human review remains required."
+      },
+      "manualReview": {
+        "status": "pending",
+        "rubric": [
+          "沿用已确认人数、年龄、120美元全家预算和严格两站顺序。",
+          "票价与现场规则的资料时效说清；缺少新证据不能默默把未核实金额改成0。",
+          "任何备选不得换、删、增或重排指定地点。"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "id": "english-birthday",
+      "startedAt": "2026-10-05T06:14:31.518Z",
+      "httpStatus": 200,
+      "elapsedMs": 24723,
+      "serverTiming": "baybay_prepare;dur=13, baybay_assistant;dur=24612",
+      "request": {
+        "message": "Can I get a Starbucks birthday reward next week if I join Rewards today and have no purchase history? Please distinguish joining requirements, the required Star-earning transaction, and the redemption window for each current Rewards tier. Use the site records and say what still needs current official verification.",
+        "searchMode": "site",
+        "locale": "en",
+        "assistantVersion": 2,
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "response": {
+        "ok": true,
+        "answer": "Here are the requested services separately; each condition applies only to its named institution and service.\n\nJoining requirements：The October 4, 2026 site snapshot says birthday eligibility requires joining Starbucks Rewards AND adding your birthday at least 7 days before that birthday. Joining today, October 4, would meet the calendar-day lead time for October 11 or later, but not October 5–10. Your exact birthday is therefore needed to determine whether next week qualifies. These are birthday-benefit conditions, not a complete statement of general account-opening requirements. The snapshot does not establish general enrollment age/residency rules or precise deadline handling; those still need current official verification in Smart or Web mode. [1]\n\nPurchase history：No—not if you only join and still have no qualifying purchase activity before your birthday. Separately from the 7-day enrollment requirement, the site snapshot requires at least one Star-earning transaction before your birthday each year. Having no purchase history today is not necessarily disqualifying if you complete a qualifying transaction before the birthday and also meet the enrollment deadline; signup alone does not earn the birthday reward. The snapshot does not specify which purchases/payment methods qualify or transaction-posting cutoffs, so verify those in the current official terms before relying on a last-minute purchase. [1]\n\nRedemption window and tiers：The site snapshot reports rules effective March 2026 for all three listed tiers: Green—birthday only; Gold—7 days starting on the birthday; Reserve—30 days starting on the birthday. These are redemption windows, not substitutes for advance enrollment or the required Star-earning transaction. The reward covers one eligible handcrafted drink, food item or bottled drink; multi-serve items, alcohol, merchandise and packaged coffee are excluded. Confirm the reward has arrived and scan your member barcode at a participating store. The records do not establish tier-qualification thresholds or your assigned tier, so do not assume a new account gets Gold or Reserve's longer window. [1] [2]",
+        "sources": [
+          {
+            "title": "湾区生日福利图鉴：饮品、甜点、美妆与电影 Bay Area birthday perks: drinks, treats, beauty and movies",
+            "url": "/guides/bay-area-birthday-perks"
+          },
+          {
+            "title": "Starbucks 2026 会员等级与生日条款",
+            "url": "https://www.starbucks.com/terms/rewards"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "information",
+          "city": null,
+          "region": null,
+          "date": "2026-10-04",
+          "origin": null,
+          "originCandidateId": null,
+          "travelMode": null,
+          "partySize": null,
+          "childAges": [],
+          "budget": null,
+          "budgetScope": "person",
+          "freeOnly": null,
+          "setting": null,
+          "startTime": null,
+          "finishBy": null,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": []
+        },
+        "evidence": [
+          {
+            "id": "s-8ec37624304c70aa",
+            "title": "湾区生日福利图鉴：饮品、甜点、美妆与电影 Bay Area birthday perks: drinks, treats, beauty and movies",
+            "url": "/guides/bay-area-birthday-perks",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1d82bf9b4c749453",
+            "title": "Starbucks 2026 会员等级与生日条款",
+            "url": "https://www.starbucks.com/terms/rewards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-e27bddd7c89817b1",
+            "title": "Target、Lowe’s 到餐饮 App：湾区赠品与优惠查找手册 From Target and Lowe’s to dining apps: Bay Area freebies and deals",
+            "url": "/guides/bay-area-retail-freebies-family-deals",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-61ed79cf31fdf1bb",
+            "title": "2026 年 9 月剩余湾区优惠：Target 样品盒、$1 冷萃与 25¢ 咖啡 Remaining September 2026 Bay Area deals: Target sample boxes, $1 cold brew and 25¢ coffee",
+            "url": "/guides/bay-area-freebies-deals-2026-09",
+            "kind": "guide",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8e90c25584f25ce3",
+            "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票 October 2026 Bay Area savings: free museums, kids workshops and library passes",
+            "url": "/guides/bay-area-freebies-deals-2026-10",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-ad6ef6c5032b19a2",
+            "title": "San Mateo County History Museum · 半岛历史博物馆",
+            "url": "https://historysmc.org/plan-your-visit",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-f0846daf50492a0a",
+            "title": "Redwood City Downtown Library · 市中心图书馆",
+            "url": "https://www.redwoodcity.org/departments/library/locations-and-hours",
+            "kind": "place",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-91b49502f1ca24e3",
+            "title": "Chick-fil-A 官方各等级生日礼",
+            "url": "https://www.chick-fil-a.com/customer-support/chick-fil-a-one-membership-program/creating-and-managing-your-account/what-is-the-birthday-reward-for-each-membership-tier",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-bc0cd65ed1bc9cb1",
+            "title": "Peetnik Rewards 生日礼官方条件",
+            "url": "https://www.peets.com/pages/peetnik-rewards-terms-and-conditions",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-02c8053a8f96f0a5",
+            "title": "Panera 官方 MyPanera 生日奖励条款",
+            "url": "https://www.panerabread.com/en-us/legal/terms-of-use.html",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-290eb10cccc15bb4",
+            "title": "Ulta 官方生日礼与线上／店内条件",
+            "url": "https://www.ulta.com/rewards/birthday-gift",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-36da6429690f0851",
+            "title": "IHOP 官方生日礼与忠诚计划条款",
+            "url": "https://www.ihop.com/en/rewards/free-birthday-pancake",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7068690ed9aa2ca9",
+            "title": "Sephora 官方 2026 生日礼与兑换条件",
+            "url": "https://www.sephora.com/beauty/birthday-gift",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-8273cce25db2f918",
+            "title": "Dutch Bros 官方生日饮品 FAQ",
+            "url": "https://www.dutchbros.com/rewards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-220b985afd0afb44",
+            "title": "Krispy Kreme 官方现行欢迎礼（需购买）",
+            "url": "https://www.krispykreme.com/rewards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a801265e95ec71fe",
+            "title": "Chipotle 官方 Rewards 欢迎礼",
+            "url": "https://www.chipotle.com/rewards",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-54f9a05793d8b34f",
+            "title": "World Market 官方 Rewards 规则",
+            "url": "https://www.worldmarket.com/customer-service/world-market-rewards-rules.html",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aaa73e7f9618e1cd",
+            "title": "堂食续杯范围与例外",
+            "url": "https://about.starbucks.com/back-to-starbucks",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-aa789846e47b3982",
+            "title": "Lakeshore 官方 2026 免费儿童活动日历（PDF）",
+            "url": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-47e388e78a9e68ad",
+            "title": "Ike’s 官方欢迎奖励条件与 $18 上限",
+            "url": "https://www.ikessandwich.com/rewards/rewards-faq",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-fc13dd2666c635fb",
+            "title": "Starbucks：堂食杯与自带杯说明",
+            "url": "https://about.starbucks.com/a-better-cup-for-all",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-11875860c884f865",
+            "title": "Peet’s：生日奖励 FAQ",
+            "url": "https://faq.peets.com/hc/en-us/articles/14985828428052-Will-I-receive-a-Birthday-Reward",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0216176cf2bee41a",
+            "title": "PEET’S：Cold Brew Pass 完整条款",
+            "url": "https://www.peets.com/pages/current-offers",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog",
+            "needsReview": true
+          },
+          {
+            "id": "s-473f9da4dd0836fd",
+            "title": "85°C：品牌门店目录",
+            "url": "https://85cbakerycafe.orderexperience.net/85cbakerycafe/locations",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cd0194edba8dd6dd",
+            "title": "Michaels Emeryville：官方门店",
+            "url": "https://locations.michaels.com/ca/emeryville/1538",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-9c651883c055bfed",
+            "title": "COMPUTER HISTORY MUSEUM：CHM 持卡免费入场限制",
+            "url": "https://computerhistory.org/plan-your-visit/discounts",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b8aa6da63a86db0f",
+            "title": "SAN MATEO COUNTY HISTORY MUSEUM：SMCHA 官方首页 · 原免费日待复核",
+            "url": "https://historysmc.org",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b9b6fb7de7b3386b",
+            "title": "CHICHA SAN CHEN · NORCAL：吃茶三千官方生日 BOGO 置顶条款",
+            "url": "https://www.instagram.com/chichasanchen.norcal/p/DVUxImmkci8",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-66fe38e03411f1d0",
+            "title": "Oakland Drunken Film Fest：免费短片周",
+            "url": "https://www.drunkenfilmfest.com/2026-program",
+            "kind": "event",
+            "checkedAt": "2026-09-30",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3b71cba5208da888",
+            "title": "Danville 稻草人商圈漫步",
+            "url": "https://danville.ca.gov/851/Scarecrow-Stroll",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-acd267ca15f1d3f1",
+            "title": "Millbrae第21届日本文化节",
+            "url": "https://www.japaneseculturefest-millbrae.org",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c4d6c7d068c98d55",
+            "title": "Fremont Ohlone 文化聚会：听原住民讲述今天与过去",
+            "url": "https://www.ebparks.org/we-celebrate/Gathering-of-Ohlone-Peoples",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-4518a78e3bc998c6",
+            "title": "Rio Vista Bass Derby：三角洲小镇周末",
+            "url": "https://www.bassfestival.com/bass-festival",
+            "kind": "event",
+            "checkedAt": "2026-09-29",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-7b5629a50ebd5b83",
+            "title": "Castro 街区节：在音乐与市集中认识社区",
+            "url": "https://castrostreetfair.org/fair",
+            "kind": "event",
+            "checkedAt": "2026-10-02",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-50d07fc13f7e36ef",
+            "title": "Jersey Mike’s 9/22/2026 积分与生日条款",
+            "url": "https://www.jerseymikes.com/rewards/terms-conditions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-0fcce397f4f54fa2",
+            "title": "Red Robin 6/1/2026 新规与儿童生日条件",
+            "url": "https://www.redrobin.com/royalty/terms",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-cab5afbebc8cf702",
+            "title": "Sephora：Beauty Insider 条款",
+            "url": "https://www.sephora.com/beauty/terms-conditions-beauty-insider",
+            "kind": "web",
+            "checkedAt": "2026-09-23",
+            "verification": "catalog"
+          }
+        ],
+        "answerCoverage": {
+          "status": "complete",
+          "items": [
+            {
+              "id": "joining",
+              "label": "Joining requirements",
+              "status": "answered",
+              "summary": "The October 4, 2026 site snapshot says birthday eligibility requires joining Starbucks Rewards AND adding your birthday at least 7 days before that birthday. Joining today, October 4, would meet the calendar-day lead time for October 11 or later, but not October 5–10. Your exact birthday is therefore needed to determine whether next week qualifies. These are birthday-benefit conditions, not a complete statement of general account-opening requirements. The snapshot does not establish general enrollment age/residency rules or precise deadline handling; those still need current official verification in Smart or Web mode.",
+              "sourceIds": [
+                "s-8ec37624304c70aa"
+              ]
+            },
+            {
+              "id": "purchase_history",
+              "label": "Purchase history",
+              "status": "answered",
+              "summary": "No—not if you only join and still have no qualifying purchase activity before your birthday. Separately from the 7-day enrollment requirement, the site snapshot requires at least one Star-earning transaction before your birthday each year. Having no purchase history today is not necessarily disqualifying if you complete a qualifying transaction before the birthday and also meet the enrollment deadline; signup alone does not earn the birthday reward. The snapshot does not specify which purchases/payment methods qualify or transaction-posting cutoffs, so verify those in the current official terms before relying on a last-minute purchase.",
+              "sourceIds": [
+                "s-8ec37624304c70aa"
+              ]
+            },
+            {
+              "id": "redemption",
+              "label": "Redemption window and tiers",
+              "status": "answered",
+              "summary": "The site snapshot reports rules effective March 2026 for all three listed tiers: Green—birthday only; Gold—7 days starting on the birthday; Reserve—30 days starting on the birthday. These are redemption windows, not substitutes for advance enrollment or the required Star-earning transaction. The reward covers one eligible handcrafted drink, food item or bottled drink; multi-serve items, alcohol, merchandise and packaged coffee are excluded. Confirm the reward has arrived and scan your member barcode at a participating store. The records do not establish tier-qualification thresholds or your assigned tier, so do not assume a new account gets Gold or Reserve's longer window.",
+              "sourceIds": [
+                "s-8ec37624304c70aa",
+                "s-1d82bf9b4c749453"
+              ]
+            }
+          ]
+        },
+        "suggestedGuides": [
+          {
+            "title": "湾区生日福利图鉴：饮品、甜点、美妆与电影 Bay Area birthday perks: drinks, treats, beauty and movies",
+            "url": "/guides/bay-area-birthday-perks",
+            "slug": "bay-area-birthday-perks"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [
+          "What is your exact birthday date?",
+          "Switch to Smart or Web mode to verify the current official Rewards terms."
+        ],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "Searched site guides and candidates"
+            },
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "search_site"
+            }
+          ],
+          "model": "gpt-6.1-sol",
+          "warnings": [],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "reasoning",
+                "function_call"
+              ],
+              "outputTextChars": 0,
+              "elapsedMs": 4736
+            },
+            {
+              "round": 2,
+              "phase": "final",
+              "model": "gpt-6.1-sol",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 2915,
+              "elapsedMs": 11672
+            }
+          ],
+          "elapsedMs": 24612,
+          "timings": {
+            "stateMs": 119,
+            "siteMs": 7757,
+            "monitorMs": 91,
+            "quotaMs": 99,
+            "searchMs": 0,
+            "readMs": 0,
+            "modelMs": 4736,
+            "finalMs": 11672,
+            "routeMs": 0,
+            "weatherMs": 0,
+            "planMs": 0,
+            "otherMs": 138,
+            "totalMs": 24612,
+            "preparationMs": 13,
+            "assistantMs": 24612,
+            "requestMs": 24625
+          }
+        },
+        "retrieval": {
+          "requestedMode": "site",
+          "scope": "site",
+          "webStatus": "not_requested",
+          "requestedDate": "2026-10-04",
+          "city": null,
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-6.1-sol",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 2
+        }
+      },
+      "automated": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "transport_success",
+            "status": "pass"
+          },
+          {
+            "id": "structured_assistant",
+            "status": "pass"
+          },
+          {
+            "id": "substantive_answer_present",
+            "status": "pass"
+          },
+          {
+            "id": "not_degraded",
+            "status": "pass"
+          },
+          {
+            "id": "citation_indices_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_contract",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_sources_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_joining",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_purchase_history",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_redemption",
+            "status": "pass"
+          },
+          {
+            "id": "numeric_stage_timings",
+            "status": "pass"
+          },
+          {
+            "id": "chosen_search_scope",
+            "status": "pass"
+          },
+          {
+            "id": "no_search_web",
+            "status": "pass"
+          },
+          {
+            "id": "no_read_source",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_route",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_weather",
+            "status": "pass"
+          }
+        ],
+        "note": "Structural checks do not establish factual accuracy; human review remains required."
+      },
+      "manualReview": {
+        "status": "pending",
+        "rubric": [
+          "Reply in English and answer the person's eligibility directly before ancillary details.",
+          "Distinguish enrollment lead time, qualifying Star-earning purchase, and tier-specific redemption window.",
+          "Do not promise a free reward merely for joining; do not describe chosen site-only mode as a failure."
+        ],
+        "findings": []
+      }
+    },
+    {
+      "id": "dmv-new-resident",
+      "startedAt": "2026-10-05T06:15:36.619Z",
+      "httpStatus": 200,
+      "elapsedMs": 26153,
+      "serverTiming": "baybay_prepare;dur=54, baybay_assistant;dur=26038",
+      "request": {
+        "message": "假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。",
+        "searchMode": "site",
+        "locale": "zh-Hans",
+        "assistantVersion": 2,
+        "context": {
+          "currentPath": "/"
+        }
+      },
+      "response": {
+        "ok": true,
+        "answer": "以下按你问到的项目分别说明；每项条件仅适用于对应机构和服务。\n\n驾照办理：新居民驾照办理需在成为加州居民后尽快申请，法律允许外州驾照在成为居民后最多可继续驾驶10天，之后必须换成加州驾照。申请需准备SSN、身份和住址证明文件，现场需缴费、指纹、拍照、视力和知识考试。官方入口在加州DMV官网外州驾照换州章节。 [1] [2] [3]\n\n车辆登记：迁入加州并带入外州已登记自用车的新居民，需在成为居民或车辆带入加州后20天内完成车辆登记。所需材料包括登记车主签署的REG 343表、最近外州产权文件、登记证或替代记录，以及由授权人员完成的REG 31车辆核验。尾气检查和保险要求需符合加州规定。官方办理入口在加州DMV新居民与车辆登记页面。 [1] [4] [5]\n\n地址更新：已有加州DMV记录的地址更新需在地址变更后10天内通知DMV。线上地址更新需符合资格，若无加州DL/ID或无SSN则需通过邮寄等方式。更新时需准备旧地址和新地址信息，车辆地址更新需先将车辆加入MyDMV Garage。地址更新不会自动寄新证件。官方办理入口在加州DMV线上地址更新页面。 [1] [6]\n\n所需材料：办理加州驾照换州需准备有效外州驾照、SSN、被接受的身份原件或认证副本、住址证明文件。车辆登记需准备REG 343表、外州产权文件、登记证或替代记录、REG 31车辆核验表。地址更新需准备旧地址和新地址信息。具体材料清单可参考加州DMV官网相关页面。 [1] [7] [5]\n\n办理期限：加州驾照换州需在成为居民后尽快申请，外州驾照可继续驾驶最多10天。车辆登记需在成为居民或车辆带入加州后20天内完成。已有加州记录的地址更新需在地址变更后10天内通知DMV。三者办理期限独立计算。 [1] [2] [6]\n\n官方办理与服务入口：California DMV：新居民与车辆登记入口；California Vehicle Code 12505：新居民驾驶豁免；California DMV：线上地址更新资格；California DMV：驾照申请的不同情况 [4] [2] [6] [3]",
+        "sources": [
+          {
+            "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+            "url": "/guides/california-driver-license-id-preparation-guide"
+          },
+          {
+            "title": "California Vehicle Code 12505：新居民驾驶豁免",
+            "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=12505."
+          },
+          {
+            "title": "California DMV：驾照申请的不同情况",
+            "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/driver-licenses-dl"
+          },
+          {
+            "title": "California DMV：新居民与车辆登记入口",
+            "url": "https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california"
+          },
+          {
+            "title": "California DMV：外州车辆登记材料",
+            "url": "https://www.dmv.ca.gov/portal/how-to-9-register-a-vehicle-from-out-of-state-nonresident-vehicle"
+          },
+          {
+            "title": "California DMV：线上地址更新资格",
+            "url": "https://www.dmv.ca.gov/portal/online-change-of-address-coa-system"
+          },
+          {
+            "title": "California DMV：REAL ID 材料清单",
+            "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/real-id/real-id-checklist"
+          }
+        ],
+        "responseMode": "assistant",
+        "degraded": false,
+        "taskState": {
+          "version": 1,
+          "revision": 1,
+          "goal": "newcomer",
+          "city": "Fremont",
+          "region": "east-bay",
+          "date": null,
+          "origin": null,
+          "originCandidateId": null,
+          "travelMode": null,
+          "partySize": null,
+          "childAges": [],
+          "budget": null,
+          "budgetScope": null,
+          "freeOnly": null,
+          "setting": null,
+          "startTime": null,
+          "finishBy": null,
+          "topic": null,
+          "excludedCities": [],
+          "excludedCandidateIds": [],
+          "selectedCandidateIds": [],
+          "preferences": [],
+          "clearedFields": [
+            "origin",
+            "originCandidateId"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "s-b5178b763c37bd18",
+            "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+            "url": "/guides/california-driver-license-id-preparation-guide",
+            "kind": "guide",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-e9f7bc629700d4d2",
+            "title": "California DMV：新居民与车辆登记入口",
+            "url": "https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-dfcf46c650067b81",
+            "title": "California DMV：线上地址更新资格",
+            "url": "https://www.dmv.ca.gov/portal/online-change-of-address-coa-system",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-b751a44d70a79530",
+            "title": "California DMV：外州车辆登记材料",
+            "url": "https://www.dmv.ca.gov/portal/how-to-9-register-a-vehicle-from-out-of-state-nonresident-vehicle",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-43352ef580aff730",
+            "title": "California DMV：REAL ID 材料清单",
+            "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/real-id/real-id-checklist",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-a467eb66ac44db73",
+            "title": "California Vehicle Code 12505：新居民驾驶豁免",
+            "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=12505.",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-51e239f8d34f16de",
+            "title": "California DMV：驾照申请的不同情况",
+            "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/driver-licenses-dl",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-2b48a870cb1e1d3a",
+            "title": "California DMV：外州车辆基本登记要求",
+            "url": "https://www.dmv.ca.gov/portal/handbook/vehicle-industry-registration-procedures-manual-2/nonresident-vehicles/definitions",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-3278a87e8e990eb5",
+            "title": "California DMV：驾照或 ID 信息更新",
+            "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/updating-information-on-your-driver-license-or-identification-dl-id-card",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-c53e8e39a452acd4",
+            "title": "California DMV：普通驾照住址材料清单",
+            "url": "https://www.dmv.ca.gov/portal/file/residency-documents-list-pdf",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          },
+          {
+            "id": "s-1e2c4a56828e5126",
+            "title": "California DMV：车辆保险要求",
+            "url": "https://www.dmv.ca.gov/portal/vehicle-registration/insurance-requirements",
+            "kind": "web",
+            "checkedAt": "2026-10-04",
+            "verification": "catalog"
+          }
+        ],
+        "answerCoverage": {
+          "status": "complete",
+          "items": [
+            {
+              "id": "driving_license",
+              "label": "驾照办理",
+              "status": "answered",
+              "summary": "新居民驾照办理需在成为加州居民后尽快申请，法律允许外州驾照在成为居民后最多可继续驾驶10天，之后必须换成加州驾照。申请需准备SSN、身份和住址证明文件，现场需缴费、指纹、拍照、视力和知识考试。官方入口在加州DMV官网外州驾照换州章节。",
+              "sourceIds": [
+                "s-b5178b763c37bd18",
+                "s-a467eb66ac44db73",
+                "s-51e239f8d34f16de"
+              ]
+            },
+            {
+              "id": "vehicle_registration",
+              "label": "车辆登记",
+              "status": "answered",
+              "summary": "迁入加州并带入外州已登记自用车的新居民，需在成为居民或车辆带入加州后20天内完成车辆登记。所需材料包括登记车主签署的REG 343表、最近外州产权文件、登记证或替代记录，以及由授权人员完成的REG 31车辆核验。尾气检查和保险要求需符合加州规定。官方办理入口在加州DMV新居民与车辆登记页面。",
+              "sourceIds": [
+                "s-b5178b763c37bd18",
+                "s-e9f7bc629700d4d2",
+                "s-b751a44d70a79530"
+              ]
+            },
+            {
+              "id": "address_change",
+              "label": "地址更新",
+              "status": "answered",
+              "summary": "已有加州DMV记录的地址更新需在地址变更后10天内通知DMV。线上地址更新需符合资格，若无加州DL/ID或无SSN则需通过邮寄等方式。更新时需准备旧地址和新地址信息，车辆地址更新需先将车辆加入MyDMV Garage。地址更新不会自动寄新证件。官方办理入口在加州DMV线上地址更新页面。",
+              "sourceIds": [
+                "s-b5178b763c37bd18",
+                "s-dfcf46c650067b81"
+              ]
+            },
+            {
+              "id": "documents",
+              "label": "所需材料",
+              "status": "answered",
+              "summary": "办理加州驾照换州需准备有效外州驾照、SSN、被接受的身份原件或认证副本、住址证明文件。车辆登记需准备REG 343表、外州产权文件、登记证或替代记录、REG 31车辆核验表。地址更新需准备旧地址和新地址信息。具体材料清单可参考加州DMV官网相关页面。",
+              "sourceIds": [
+                "s-b5178b763c37bd18",
+                "s-43352ef580aff730",
+                "s-b751a44d70a79530"
+              ]
+            },
+            {
+              "id": "deadlines",
+              "label": "办理期限",
+              "status": "answered",
+              "summary": "加州驾照换州需在成为居民后尽快申请，外州驾照可继续驾驶最多10天。车辆登记需在成为居民或车辆带入加州后20天内完成。已有加州记录的地址更新需在地址变更后10天内通知DMV。三者办理期限独立计算。",
+              "sourceIds": [
+                "s-b5178b763c37bd18",
+                "s-a467eb66ac44db73",
+                "s-dfcf46c650067b81"
+              ]
+            },
+            {
+              "id": "official_entries",
+              "label": "官方办理与服务入口",
+              "status": "answered",
+              "summary": "California DMV：新居民与车辆登记入口；California Vehicle Code 12505：新居民驾驶豁免；California DMV：线上地址更新资格；California DMV：驾照申请的不同情况",
+              "sourceIds": [
+                "s-e9f7bc629700d4d2",
+                "s-a467eb66ac44db73",
+                "s-dfcf46c650067b81",
+                "s-51e239f8d34f16de"
+              ]
+            }
+          ]
+        },
+        "suggestedGuides": [
+          {
+            "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+            "url": "/guides/california-driver-license-id-preparation-guide",
+            "slug": "california-driver-license-id-preparation-guide"
+          }
+        ],
+        "suggestedActions": [],
+        "matchingPosts": [],
+        "interactiveCards": [],
+        "followups": [
+          "请问您是否需要我帮您列出具体所需材料清单？",
+          "您是否需要我帮您查找Fremont附近的DMV预约入口？"
+        ],
+        "research": {
+          "steps": [
+            {
+              "tool": "search_site",
+              "status": "completed",
+              "label": "已检索站内攻略与候选地点"
+            }
+          ],
+          "model": "gpt-4.1-mini-2025-04-14",
+          "warnings": [
+            "preferred_model_timeout"
+          ],
+          "modelResponses": [
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-6.1-sol",
+              "status": "failed",
+              "outputTypes": [],
+              "outputTextChars": 0,
+              "elapsedMs": 18004
+            },
+            {
+              "round": 1,
+              "phase": "research",
+              "model": "gpt-4.1-mini-2025-04-14",
+              "status": "completed",
+              "outputTypes": [
+                "message"
+              ],
+              "outputTextChars": 1882,
+              "elapsedMs": 7113
+            }
+          ],
+          "elapsedMs": 26038,
+          "timings": {
+            "stateMs": 403,
+            "siteMs": 404,
+            "monitorMs": 0,
+            "quotaMs": 103,
+            "searchMs": 0,
+            "readMs": 0,
+            "modelMs": 25117,
+            "finalMs": 0,
+            "routeMs": 0,
+            "weatherMs": 0,
+            "planMs": 0,
+            "otherMs": 11,
+            "totalMs": 26038,
+            "preparationMs": 54,
+            "assistantMs": 26038,
+            "requestMs": 26092
+          }
+        },
+        "retrieval": {
+          "requestedMode": "site",
+          "scope": "site",
+          "webStatus": "not_requested",
+          "requestedDate": null,
+          "city": "Fremont",
+          "area": "San Francisco Bay Area, California, United States",
+          "cached": false,
+          "model": "gpt-4.1-mini-2025-04-14",
+          "configuredModel": "gpt-6.1-sol",
+          "sourceCount": 7
+        }
+      },
+      "automated": {
+        "status": "pass",
+        "checks": [
+          {
+            "id": "transport_success",
+            "status": "pass"
+          },
+          {
+            "id": "structured_assistant",
+            "status": "pass"
+          },
+          {
+            "id": "substantive_answer_present",
+            "status": "pass"
+          },
+          {
+            "id": "not_degraded",
+            "status": "pass"
+          },
+          {
+            "id": "citation_indices_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_contract",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_sources_resolve",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_driving_license",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_vehicle_registration",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_address_change",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_documents",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_deadlines",
+            "status": "pass"
+          },
+          {
+            "id": "coverage_official_entries",
+            "status": "pass"
+          },
+          {
+            "id": "numeric_stage_timings",
+            "status": "pass"
+          },
+          {
+            "id": "chosen_search_scope",
+            "status": "pass"
+          },
+          {
+            "id": "no_search_web",
+            "status": "pass"
+          },
+          {
+            "id": "no_read_source",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_route",
+            "status": "pass"
+          },
+          {
+            "id": "no_get_weather",
+            "status": "pass"
+          }
+        ],
+        "note": "Structural checks do not establish factual accuracy; human review remains required."
+      },
+      "manualReview": {
+        "status": "pending",
+        "rubric": [
+          "驾照、车辆登记和地址更新各有明确结论/适用条件；不混淆10天、20天或其他时限。",
+          "规则必须适用于假设的外州搬入居民；有例外时保留，不把身份、车辆类型或REAL ID材料猜定。",
+          "官方DMV链接支持各项材料与期限；一般说明不能当个人法律资格保证。"
+        ],
+        "findings": []
+      }
+    }
+  ],
+  "factReview": "pending",
+  "finishedAt": "2026-10-05T06:16:02.777Z",
+  "automated": {
+    "passed": 5,
+    "failed": 0
+  }
+}

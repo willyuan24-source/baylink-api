@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { requestChecklist, coverageFor, checklistAnswer, admissionConflict, sourcedPlanSummary, needsExtendedSynthesis } = require('../lib/baybayAnswerQuality');
+const { requestChecklist, coverageFor, checklistAnswer, admissionConflict, sourcedPlanSummary, needsExtendedSynthesis, directSiteAnswer } = require('../lib/baybayAnswerQuality');
 const { createStageTimer, boundedOperation } = require('../lib/baybayTiming');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
 
@@ -257,4 +257,49 @@ test('signed acknowledgements and save instructions are not replaced with old ad
   }
   const factual = await assistant.run({ message: '谢谢，另外5岁孩子的门票多少？', searchMode: 'site', sessionToken: first.assistantSessionToken });
   assert.equal(factual.degraded, true); assert.ok(factual.research.warnings.includes('answer_plan_citations_repaired'));
+});
+
+test('the real supplied DMV question starts a 28-second site final with exceptions and document distinctions intact', async t => {
+  const message = require('../scripts/baybay-quality-cases.json').cases.find(item => item.id === 'dmv-new-resident').request.message;
+  const deadlines = [], schedule = globalThis.setTimeout;
+  t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => { deadlines.push(delay); return schedule(callback, delay, ...args); });
+  for (const searchMode of ['site', 'smart']) {
+    const payloads = []; deadlines.length = 0;
+    const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'complex-site-final-secret' }, isTest: true, now: () => NOW,
+      guideCatalog: require('../data/guide-catalog.json'),
+      webSearch: async () => { throw new Error('No external research is needed by this fixture'); },
+      ai: async payload => { payloads.push(payload); return final({ answer: '按三个业务分别解释已有规则，未确认的个人例外仍需核对。', coverage: [] }); },
+    });
+    const response = await assistant.run({ message, searchMode });
+    assert.equal(payloads.length, 1);
+    const payload = payloads[0], context = JSON.parse(payload.input[0].content);
+    assert.equal(context.state.goal, 'newcomer');
+    const text = [...context.evidence.map(source => source.text || ''), ...context.sourceScopes.map(source => source.text)].join('\n');
+    for (const fact of ['继续驾驶最多 10 天', '成为居民后受雇从事驾驶，须先取得加州驾照', '不能把这理解成只要 10 天内提交申请或约到 DMV', '普通非 REAL ID 的住址清单至少需一份合格文件，REAL ID 另需两份', '材料未齐时，仍应按期提交申请和应缴费用', '已有加州 DMV 记录', 'REG 343', 'REG 31']) assert.ok(text.includes(fact), fact);
+    assert.ok(context.evidence.some(source => source.url.includes('sectionNum=12505.')));
+    assert.match(payload.instructions, /triggering event, qualifying status, action required and exceptions/);
+    assert.match(payload.instructions, /distinct document categories, required counts/);
+    if (searchMode === 'site') {
+      assert.deepEqual(payload.tools, []); assert.match(payload.instructions, /Research is complete/);
+      assert.ok(deadlines.includes(28000));
+      assert.equal(response.research.modelResponses[0].phase, 'final');
+      assert.equal(response.retrieval.webStatus, 'not_requested');
+    } else {
+      assert.ok(payload.tools.some(tool => tool.name === 'read_source'));
+      assert.ok(deadlines.includes(18000));
+      assert.equal(response.research.modelResponses[0].phase, 'research');
+    }
+  }
+});
+
+test('complex site synthesis requires sourced coverage rather than merely a long or partial guide', () => {
+  const checklist = requestChecklist('比较打印、Kanopy 和博物馆门票，并给官方入口');
+  const state = { goal: 'information' }, message = 'Compare the supplied services.';
+  const text = '打印服务与 Kanopy 的资格彼此独立，需要按各自的图书馆服务条件核对。'.repeat(12);
+  const guides = [{ text, sourceUrls: [{ url: 'https://library.example/printing' }] }, { text, sourceUrls: [{ url: 'https://library.example/films' }] }];
+  assert.equal(directSiteAnswer({ message, checklist, state, site: { guides } }), false, 'museum-pass evidence is missing');
+  const all = guides.map(guide => ({ ...guide, text: `${guide.text} Discover & Go 博物馆门票有单独要求。` }));
+  assert.equal(directSiteAnswer({ message, checklist, state, site: { guides: all } }), true);
+  assert.equal(directSiteAnswer({ message, checklist, state, site: { guides: all.map(guide => ({ ...guide, sourceUrls: [] })) } }), false);
+  assert.equal(directSiteAnswer({ message, checklist, state: { goal: 'day-plan' }, site: { guides: all } }), false);
 });
