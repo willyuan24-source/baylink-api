@@ -263,7 +263,7 @@
       "officialUrl": "https://foodwise.org/markets/ferry-plaza-farmers-market/",
       "sourceLabel": "foodwise.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "weekend",
+      "imageKey": "verified-ferry-building",
       "location": {
         "lat": 37.7953186,
         "lng": -122.3936029,
@@ -2694,7 +2694,7 @@
       "officialUrl": "https://foodwise.org/events/pop-ups-on-the-plaza-celebrating-latine-makers/",
       "sourceLabel": "Foodwise",
       "verifiedAt": "2026-09-29",
-      "imageKey": "everyday",
+      "imageKey": "verified-ferry-building",
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -3162,7 +3162,7 @@
       "officialUrl": "https://www.ebparks.org/we-celebrate/Gathering-of-Ohlone-Peoples",
       "sourceLabel": "ebparks.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-coyote-hills",
       "planning": {
         "admissionUsd": null
       }
@@ -3193,7 +3193,7 @@
       "officialUrl": "https://www.litquake.org/events-1/litquake-out-loud-1",
       "sourceLabel": "litquake.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "october-library-culture",
+      "imageKey": "verified-yerba-buena-gardens",
       "planning": {
         "admissionUsd": 0
       }
@@ -3904,7 +3904,7 @@
       "officialUrl": "https://sfpl.org/events/2026/10/06/dialogue-mandarin-bilingual-conversation-club",
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-10-02",
-      "imageKey": "october-library-culture",
+      "imageKey": "verified-sf-main-library",
       "planning": {
         "admissionUsd": 0
       }
@@ -4634,7 +4634,7 @@
       "region": "sf",
       "city": "San Francisco",
       "sourceLabel": "San Francisco Public Library",
-      "imageKey": "culture-visit",
+      "imageKey": "verified-sf-main-library",
       "title": "SFPL：免费一对一职业咨询",
       "venue": "Main Library · Sycip Family Conference Room, 4th Floor",
       "category": "culture",
@@ -4729,7 +4729,7 @@
       "region": "sf",
       "city": "San Francisco",
       "sourceLabel": "San Francisco Public Library",
-      "imageKey": "culture-visit",
+      "imageKey": "verified-sf-main-library",
       "title": "SFPL：Writing Hard Enough to Shift Gravity 写作工坊",
       "venue": "Main Library · Latino/Hispanic Community Room",
       "category": "culture",
@@ -5322,7 +5322,7 @@
       "officialUrl": "https://www.ebparks.org/sites/default/files/RIN-Sept-Oct-2026.pdf",
       "sourceLabel": "ebparks.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-ardenwood-farm",
       "planning": {
         "admissionUsd": null
       }
@@ -5603,7 +5603,7 @@
       "officialUrl": "https://www.festivalnapavalley.org/calendar/musictime-napa-jay-benson-jesse-micek/",
       "sourceLabel": "festivalnapavalley.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "october-library-culture",
+      "imageKey": "verified-napa-library",
       "relatedGuideSlug": "bay-area-library-starter-guide",
       "planning": {
         "admissionUsd": 0
@@ -6422,7 +6422,7 @@
       "region": "sf",
       "city": "San Francisco",
       "sourceLabel": "San Francisco Public Library",
-      "imageKey": "culture-visit",
+      "imageKey": "verified-sf-main-library",
       "title": "从花园到绿桶：在家实践气候行动",
       "venue": "Main Library · Steve Silver Music Center, 4th Floor",
       "category": "culture",
@@ -6554,7 +6554,7 @@
       "officialUrl": "https://www.parks.ca.gov/?page_id=479",
       "sourceLabel": "parks.ca.gov",
       "verifiedAt": "2026-09-29",
-      "imageKey": "culture-visit",
+      "imageKey": "verified-sonoma-barracks",
       "planning": {
         "admissionUsd": null
       }
@@ -7531,7 +7531,7 @@
       "officialUrl": "https://sfpl.org/events/2026/10/15/activity-halloween-costume-swap",
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
-      "imageKey": "refresh-community-swap",
+      "imageKey": "verified-sf-main-library",
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -9374,7 +9374,7 @@
       "officialUrl": "https://sfpl.org/events/2026/10/17/celebration-filipino-american-international-book-festival",
       "sourceLabel": "sfpl.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "culture-visit",
+      "imageKey": "verified-sf-main-library",
       "planning": {
         "admissionUsd": 0
       }
@@ -9408,7 +9408,7 @@
       "officialUrl": "https://sfpl.org/events/2026/10/17/activity-halloween-broadside-printing-event",
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
-      "imageKey": "october-library-culture",
+      "imageKey": "verified-sf-main-library",
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -9654,7 +9654,7 @@
       "officialUrl": "https://www.parks.ca.gov/?page_id=479",
       "sourceLabel": "parks.ca.gov",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-sonoma-barracks",
       "planning": {
         "admissionUsd": null
       }
@@ -10410,7 +10410,7 @@
       "officialUrl": "https://events.napalibrary.gov/event/17353346",
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
-      "imageKey": "weekend",
+      "imageKey": "verified-napa-library",
       "planning": {
         "admissionUsd": null
       }
@@ -11577,7 +11577,7 @@
       "officialUrl": "https://www.hiller.org/event/paint-a-plane/2026-10-24/",
       "sourceLabel": "hiller.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "family-workshop",
+      "imageKey": "verified-hiller-museum",
       "relatedGuideSlug": "san-carlos-hiller-aviation-half-day-guide",
       "planning": {
         "admissionUsd": null
@@ -11663,7 +11663,7 @@
       "officialUrl": "https://www.cityofsanmateo.org/4740/Boos-and-Brews-on-B-Street",
       "sourceLabel": "cityofsanmateo.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-san-mateo-b-street",
       "planning": {
         "admissionUsd": 0
       }
@@ -11810,7 +11810,7 @@
       "officialUrl": "https://sfpl.org/events/2026/10/24/workshops-financial-planning-day",
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
-      "imageKey": "everyday",
+      "imageKey": "verified-sf-main-library",
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -11858,7 +11858,7 @@
       "officialUrl": "https://www.fishermanswharf.org/chowderfest/",
       "sourceLabel": "fishermanswharf.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "neighborhood-table",
+      "imageKey": "verified-fishermans-wharf",
       "planning": {
         "admissionUsd": null
       }
@@ -12273,7 +12273,7 @@
       "officialUrl": "https://www.eventbrite.com/e/world-of-dumplings-2026-tickets-1997773482264",
       "sourceLabel": "eventbrite.com",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-ferry-building",
       "planning": {
         "admissionUsd": 0
       }
@@ -12369,7 +12369,7 @@
       "officialUrl": "https://events.napalibrary.gov/event/17353821",
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
-      "imageKey": "weekend",
+      "imageKey": "verified-napa-library",
       "planning": {
         "admissionUsd": null
       }
@@ -12435,7 +12435,7 @@
       "officialUrl": "https://events.napalibrary.gov/event/17390000",
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
-      "imageKey": "weekend",
+      "imageKey": "verified-napa-library",
       "planning": {
         "admissionUsd": null
       }
@@ -13691,7 +13691,7 @@
       "officialUrl": "https://ybgfestival.org/event/halloween-hoopla-2026/",
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
-      "imageKey": "autumn-neighbors",
+      "imageKey": "verified-yerba-buena-gardens",
       "planning": {
         "admissionUsd": 0
       }
@@ -16508,6 +16508,25 @@
         "admissionUsd": null,
         "setting": "outdoor"
       }
+    },
+    {
+      "id": "opening-passdoor-santa-rosa-opening-2026",
+      "title": "The Passdoor",
+      "region": "north-bay",
+      "city": "Santa Rosa",
+      "summary": "The Passdoor 官网已列出 Santa Rosa 新址、营业时段及后续活动。珠宝、艺术及家居精选品牌迁至 1160 4th Street；10/1–3 的开业庆典已结束。",
+      "guideSlug": "",
+      "path": "/openings/passdoor-santa-rosa-opening-2026",
+      "officialUrl": "https://www.thepassdoor.net/new-page",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1160 4th Street, Santa Rosa, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": []
     },
     {
       "id": "opening-roundup-alesta-sebastopol-2026",
