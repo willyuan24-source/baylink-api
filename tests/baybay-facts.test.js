@@ -86,6 +86,26 @@ test('snapshot cannot survive a changed source, web identity, old date or old at
   }
 });
 
+test('a casual visit question can retain all-ages free access before the party count is known', () => {
+  const candidate = { ...catalog.places.find(row => row.id === 'pier39'), kind: 'place', sourceIds: ['pier-source'] };
+  const incompleteParty = { ...state, partySize: null };
+  const facts = withAdmissionFacts(candidate, incompleteParty, { today }).admissionFacts;
+  assert.equal(facts.status, 'partial');
+  assert.equal(facts.partySize, null);
+  assert.equal(facts.knownTotalUsd, 0);
+  assert.equal(facts.knownPerPersonUsd, 0);
+  assert.deepEqual(facts.breakdown, []);
+  assert.equal(facts.applicability.dateStatus, 'regular-unconfirmed');
+  assert.match(facts.unknowns.join(' '), /是否开放及适用/);
+  assert.equal(withAdmissionFacts(candidate, { ...incompleteParty, date: '2026-12-10' }, { today }).admissionFacts.knownTotalUsd, null);
+  const paid = admissionFactsFor(row(sourced({ allAgesUsd: 20, regularAdmission: true })), incompleteParty).facts;
+  assert.equal(paid.knownTotalUsd, null);
+  assert.equal(paid.knownPerPersonUsd, 20);
+  const member = admissionFactsFor(row(sourced({ allAgesUsd: 0, eligibility: 'members', regularAdmission: true })), incompleteParty).facts;
+  assert.equal(member.status, 'unknown');
+  assert.equal(member.knownTotalUsd, null);
+});
+
 test('unknown child age or adult price never turns a child-only free tier into a free party', () => {
   const childrenOnly = { ...row(sourced({ children: [{ minAge: 0, maxAge: 12, usd: 0 }] })), cost: 'free' };
   childrenOnly.planning.admissionUsd = 0;

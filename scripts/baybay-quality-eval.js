@@ -67,13 +67,19 @@ function structuralChecks(item, status, body, previous) {
 
 function selectCases(casebook, selectedIds = []) {
   const all = new Map(casebook.cases.map(item => [item.id, item]));
-  const wanted = new Set(selectedIds.length ? selectedIds : all.keys());
-  for (const id of [...wanted]) {
+  const wanted = new Set(), visiting = new Set();
+  const include = id => {
     if (!all.has(id)) throw new Error(`Unknown case: ${id}`);
+    if (visiting.has(id)) throw new Error(`Cyclic followup: ${id}`);
+    if (wanted.has(id)) return;
+    visiting.add(id);
     const parent = all.get(id).follows;
-    if (parent) wanted.add(parent);
-  }
-  return casebook.cases.filter(item => wanted.has(item.id));
+    if (parent) include(parent);
+    visiting.delete(id);
+    wanted.add(id);
+  };
+  for (const id of selectedIds.length ? selectedIds : all.keys()) include(id);
+  return [...wanted].map(id => all.get(id));
 }
 
 async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://baylink-api.onrender.com', selectedIds = [], siteOnly = false, spacingMs = MIN_SPACING_MS, fetchImpl = fetch, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = Date.now, persist = async () => {}, log = () => {} }) {
@@ -84,7 +90,7 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
   if (casebook.validUntil && date > casebook.validUntil) throw new Error('The dated casebook has expired. Review and update its prompts before live evaluation.');
   const cases = selectCases(casebook, selectedIds).map(item => siteOnly ? { ...item, request: { ...item.request, searchMode: 'site' }, assertions: { ...item.assertions, webStatus: 'not_requested', forbiddenTools: ['search_web', 'read_source', 'get_route', 'get_weather'] } } : item);
   const report = { version: 1, kind: 'synthetic-baybay-quality-evaluation', verificationScope: siteOnly ? 'site-only-regression' : 'casebook-requested-modes', expectedCommit: expectedCommit.toLowerCase(), endpoint: endpoint.origin, startedAt: new Date(now()).toISOString(), spacingMs: Math.max(MIN_SPACING_MS, Number(spacingMs) || MIN_SPACING_MS), status: 'running', cases: [], factReview: 'pending' };
-  const tokens = new Map(), responses = new Map();
+  const tokens = new Map(), responses = new Map(), conversations = new Map();
   let lastStart = null;
   for (const item of cases) {
     if (lastStart !== null) { const delay = report.spacingMs - (now() - lastStart); if (delay > 0) { log(`Waiting ${Math.ceil(delay / 1000)} seconds before ${item.id}.`); await sleep(delay); } }
@@ -96,7 +102,8 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
     } catch { report.status = 'stopped_health_unavailable'; break; }
     const token = item.follows ? tokens.get(item.follows) : null;
     if (item.follows && !token) { report.status = 'stopped_missing_continuation'; report.stoppedBeforeCase = item.id; break; }
-    const request = { ...item.request, assistantVersion: 2, context: { currentPath: '/' }, ...(token ? { assistantSessionToken: token } : {}) };
+    const history = item.follows ? conversations.get(item.follows) || [] : [];
+    const request = { ...item.request, assistantVersion: 2, context: { currentPath: '/' }, ...(history.length ? { history } : {}), ...(token ? { assistantSessionToken: token } : {}) };
     lastStart = now(); log(`Running ${item.id}; deployed commit verified.`);
     let response, body;
     try {
@@ -109,6 +116,7 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
     const elapsedMs = Math.max(0, now() - lastStart);
     if (typeof body?.assistantSessionToken === 'string') tokens.set(item.id, body.assistantSessionToken);
     const clean = sanitize(body); responses.set(item.id, clean);
+    if (typeof clean.answer === 'string') conversations.set(item.id, [...history, { role: 'user', content: item.request.message.slice(0, 500) }, { role: 'assistant', content: clean.answer.slice(0, 1200) }].slice(-8));
     report.cases.push({ id: item.id, startedAt: new Date(lastStart).toISOString(), httpStatus: response.status, elapsedMs, serverTiming: response.headers?.get?.('server-timing') || null,
       request: sanitize(request), response: clean, automated: structuralChecks(item, response.status, clean, item.assertions?.samePlanAs ? responses.get(item.assertions.samePlanAs) : null),
       manualReview: { status: 'pending', rubric: item.manualReview, findings: [] } });
@@ -128,7 +136,7 @@ async function runEvaluation({ casebook, expectedCommit, baseUrl = 'https://bayl
 async function main(argv) {
   const args = {}; for (let index = 0; index < argv.length; index++) { const key = argv[index]; if (!key.startsWith('--')) throw new Error(`Unexpected argument: ${key}`); args[key] = ['--live', '--help', '--site-only'].includes(key) ? true : argv[++index]; }
   if (args['--help']) { console.log('Dry run: node scripts/baybay-quality-eval.js\nLive: node scripts/baybay-quality-eval.js --live --expected-commit <full SHA> [--cases id,id] [--output path.json] [--site-only]\n--site-only runs a separately labelled site-only regression, never a Smart/Web verification.\nLive requests are sequential, >=65s apart, stop on quota/429, and never retry. Results always require human factual review.'); return; }
-  const casebook = JSON.parse(await fs.readFile(DEFAULT_CASEBOOK, 'utf8'));
+  const casebook = JSON.parse(await fs.readFile(args['--casebook'] ? path.resolve(args['--casebook']) : DEFAULT_CASEBOOK, 'utf8'));
   const selectedIds = String(args['--cases'] || '').split(',').filter(Boolean);
   const selected = selectCases(casebook, selectedIds);
   if (!args['--live']) { console.log(JSON.stringify({ mode: 'dry-run', networkRequests: 0, verificationScope: args['--site-only'] ? 'site-only-regression' : 'casebook-requested-modes', cases: selected.map(item => ({ id: item.id, searchMode: args['--site-only'] ? 'site' : item.request.searchMode, follows: item.follows || null, manualReview: item.manualReview })), validUntil: casebook.validUntil }, null, 2)); return; }

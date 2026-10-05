@@ -11,6 +11,40 @@ const lastPlan = { selectedIds: ['a', 'b', 'c'], date: state.date };
 const prepare = (message, options = {}) => preparePlanEdit({ message, state, previousState: state, lastPlan, catalog, ...options });
 const select = (edit, candidateIds, candidates = rows) => resolvePlanSelection({ edit, candidateIds, candidates, now: NOW });
 
+test('first and latter references use displayed order and exclude only the other signed stop', () => {
+  for (const [message, expected] of [
+    ['那就只去后面那个，别赶了。', 'b'], ['只去前面那个。', 'a'], ['只保留第一个', 'a'],
+    ['只去最後一站', 'b'], ['Only keep the latter one.', 'b'], ['Only visit the first stop.', 'a'],
+  ]) {
+    const prepared = prepare(message, { lastPlan: { selectedIds: ['a', 'b'], date: state.date } });
+    assert.deepEqual(prepared.state.selectedCandidateIds, [expected], message);
+    assert.deepEqual(prepared.state.excludedCandidateIds, [expected === 'a' ? 'b' : 'a'], message);
+    const result = select(prepared.edit, ['d', 'e', 'f']);
+    assert.deepEqual(result.selectedIds, [expected], message);
+    assert.equal(result.suppressAlternatives, true, message);
+  }
+});
+
+test('ambiguous one-stop references ask for a target without removing prior stops', () => {
+  for (const [message, previousIds] of [['只去一站', ['a', 'b']], ['只去后面那个', ['a', 'b', 'c']], ['只去第一个', []]]) {
+    const prepared = prepare(message, { lastPlan: { selectedIds: previousIds }, previousState: { ...state, selectedCandidateIds: previousIds }, state: { ...state, selectedCandidateIds: previousIds } });
+    assert.equal(prepared.edit.kind, 'invalid', message);
+    assert.deepEqual(prepared.state.selectedCandidateIds, previousIds, message);
+    assert.deepEqual(prepared.state.excludedCandidateIds, [], message);
+  }
+});
+
+test('pronoun-kept stop must pass fresh venue checks and never gains an invented replacement', () => {
+  const prepared = prepare('只去后面那个', { lastPlan: { selectedIds: ['a', 'b'], date: state.date } });
+  for (const candidates of [rows.filter(row => row.id !== 'b'), rows.map(row => row.id === 'b' ? { ...row, status: 'closed' } : row)]) {
+    const result = select(prepared.edit, ['d'], candidates);
+    assert.deepEqual(result.selectedIds, []);
+    assert.equal(result.explicitSelection, true);
+    assert.equal(result.needsRevalidation, true);
+    assert.equal(result.suppressAlternatives, true);
+  }
+});
+
 test('explicit stop counts parse as limits without confusing party size or indexed edits', () => {
   for (const message of ['把方案收紧成两站', '最多 2 站', '不要超过2站', '只安排兩站', '两站以内', 'only two stops', 'at most 2 stops', 'reduce the itinerary to two stops', 'no more than two stops']) {
     assert.equal(requestedStopLimit(message), 2, message);

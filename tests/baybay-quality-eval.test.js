@@ -23,6 +23,13 @@ test('live runner refuses wrong or absent release SHA before the first assistant
   assert.equal(probes, 1); assert.equal(report.cases.length, 0); assert.equal(report.status, 'stopped_release_mismatch');
 });
 
+test('natural conversation retests include every ancestor in order and reject broken chains', () => {
+  const book = { cases: [item('correction', { follows: 'question' }), item('question', { follows: 'opening' }), item('opening')] };
+  assert.deepEqual(selectCases(book, ['correction']).map(row => row.id), ['opening', 'question', 'correction']);
+  assert.throws(() => selectCases({ cases: [item('question', { follows: 'missing' })] }), /Unknown case: missing/);
+  assert.throws(() => selectCases({ cases: [item('one', { follows: 'two' }), item('two', { follows: 'one' })] }), /Cyclic followup/);
+});
+
 test('requests start at least 65 seconds apart, continuation remains only in memory, and HTTP 200 is not factual success', async () => {
   let clock = NOW; const starts = [], saved = [];
   const book = { validUntil: '2026-10-10', cases: [item('one'), item('two', { follows: 'one' })] };
@@ -32,7 +39,10 @@ test('requests start at least 65 seconds apart, continuation remains only in mem
       if (String(url).endsWith('/health')) return response({ status: 'ok', commit: COMMIT });
       starts.push(clock); const request = JSON.parse(options.body);
       if (starts.length === 1) assert.equal(request.assistantSessionToken, undefined);
-      else assert.equal(request.assistantSessionToken, 'fixture-continuation-secret');
+      else {
+        assert.equal(request.assistantSessionToken, 'fixture-continuation-secret');
+        assert.deepEqual(request.history, [{ role: 'user', content: 'Synthetic one' }, { role: 'assistant', content: result().answer }]);
+      }
       clock += 1200;
       return response(result({ assistantSessionToken: 'fixture-continuation-secret' }));
     },

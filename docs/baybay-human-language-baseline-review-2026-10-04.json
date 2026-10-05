@@ -1,0 +1,377 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-04",
+  "status": "manual_review_complete",
+  "rawReport": "baybay-human-language-baseline-2026-10-04.json",
+  "casebook": "../scripts/baybay-human-language-cases.json",
+  "apiCommit": "18229f5a64312f2c6bfb937e679ea1d3a956f723",
+  "verificationScope": "Read-only manual review of actual synthetic site-only responses and their state/plan. No new API calls or live web verification. Official facts are checked against existing catalog records where relevant.",
+  "criteria": "Assess response relevance, everyday wording, useful clarification, retained meaning, state/card consistency and evidence boundaries. Automated pass is not a manual pass.",
+  "cases": [
+    {
+      "id": "weekend-air",
+      "status": "pass_with_limitations",
+      "elapsedMs": 17432,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "直接给出一处短走、不串景点的轻松思路，句子自然。只给两个有条件的选择，并询问出发城市和交通方式。",
+        "Lake Merritt 南岸、到水道桥折返与现有指南一致；说明站内快照，未承诺当日开放或实时交通。",
+        "没有猜人数、预算、车辆或精确地址。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "unconfirmed_relative_date",
+          "observation": "正文识别已是10月4日深夜，并将10月10–11日作为条件性的下个周末；taskState.date却已固定为10月4日。用户没有选定哪一个周末，这个未确认日期可能传入后续检索或卡片。",
+          "evidence": "answer: 如果你指接下来的周末，就是10月10–11日； taskState.date: 2026-10-04",
+          "expectedBehavior": "保留日期未确认，或明确确认后再落入计划；后续不得把已经过去的10月4日当成用户确认的出游日期。"
+        }
+      ]
+    },
+    {
+      "id": "south-bay-tired-child",
+      "status": "pass_with_limitations",
+      "elapsedMs": 16883,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "正确理解 two adults 加5岁孩子是三人，保留南湾和轻松目标，询问城市与交通而未假定San Jose是用户起点。",
+        "未保证有座位或儿童区开放，公共入馆与交通停车费用分开。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "outdoor_intent_fit",
+          "observation": "用户连续说透气和孩子怕累，唯一具体推荐仍为室内图书馆；回答自己也承认户外透气感少，但没给符合户外偏好的候选或优先澄清。安全，却比较像现有检索命中决定需求。",
+          "expectedBehavior": "保留户外/换环境的真实意图，找不到合适户外证据时先问出发城市，或给有依据的室外短停类型与室内备选。"
+        },
+        {
+          "severity": "P2",
+          "topic": "unconfirmed_relative_date",
+          "observation": "上一轮尚未确认的10月4日仍传入taskState.date，正文仍只是条件性提出10月10–11日。",
+          "evidence": "taskState.date=2026-10-04; answer: 如果你说的是接下来的周末，就是10月10–11日。",
+          "expectedBehavior": "日期未获用户确认时不应成为固定检索条件。"
+        }
+      ]
+    },
+    {
+      "id": "short-afternoon-correction",
+      "status": "pass_with_limitations",
+      "elapsedMs": 7699,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "直接接住‘不是整天，我是两小时’的改口，未退出出游语境；保留两位成人、5岁、南湾、开车和休息要求。",
+        "只问公共出发参照与两小时是否含往返，没有假定午饭后具体钟点或车程，没有硬造主卡。",
+        "承认此前图书馆不完全满足户外透气，仅保留为室内备选；这轮更简明且容易继续对话。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "unconfirmed_relative_date",
+          "observation": "日期未在这三轮中得到确认，taskState仍持续携带2026-10-04；本轮正文未据此排过期行程，但状态问题仍在。",
+          "expectedBehavior": "同链日期确认前保留未定，不让其后默认变成已确认出行日。"
+        }
+      ]
+    },
+    {
+      "id": "sf-two-places",
+      "status": "fail",
+      "elapsedMs": 12835,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "fail",
+      "positives": [
+        "主行程及主handoff保留Exploratorium→PIER39，日期10月10日与5岁正确，没有猜定成人数、起点或开始时间。",
+        "没有伪造路线、开放确认或全组门票小计。"
+      ],
+      "findings": [
+        {
+          "severity": "P1",
+          "topic": "answer_repair_erases_user_intent",
+          "observation": "缺引用修复把回答改成面向内部处理的声明和逐站未知列表，没有回应‘怎么排比较轻松’，也没有通过有效追问推进安排。",
+          "evidence": "原答复缺少行程来源引用，以下仅保留记录中可追溯的事实；完整判断仍待补充。 / followups=[] / degraded=true / warning=answer_plan_citations_repaired",
+          "expectedBehavior": "修复来源时保留相关建议与必要澄清，用用户能理解的行程说明回应，而不是让用户承担系统修复过程。"
+        },
+        {
+          "severity": "P1",
+          "topic": "known_free_unit_fact_lost_when_party_unknown",
+          "observation": "PIER39有来源的全龄公共区$0被人数未知一并抹去：admissionUsd=0，但admissionFacts.status=unknown、knownPerPersonUsd=null，正文变成入场费用与资格待确认。未知人数妨碍群组合计，不妨碍说明公共区每人免费。",
+          "evidence": "PIER39 sourceUrl=https://www.pier39.com/frequently-asked-questions/; checkedAt=2026-10-04; admissionUsd=0; admissionFacts.partySize=null; knownTotalUsd=null; knownPerPersonUsd=null",
+          "expectedBehavior": "保留带范围的每人/全龄入场事实；总人数、未来日期开放及可选付费项目独立标未知，不把已知事实整体降为未知。"
+        },
+        {
+          "severity": "P1",
+          "topic": "unsolicited_destination_replacement",
+          "observation": "备选卡和其handoff把第二站PIER39换成Sergeant Ma，用户未请求餐厅或替换选定地点。",
+          "evidence": "assistantPlan.alternatives[0].stops=[venue-exploratorium-daytime,opening-sergeant-ma]",
+          "expectedBehavior": "明确用户两个地点的安排问题优先保留两者；如推荐改变地点，先在文字说明取舍并征询选择，不自动插入无关备选。"
+        }
+      ]
+    },
+    {
+      "id": "sf-pronoun-can-we-make-it",
+      "status": "pass_with_limitations",
+      "elapsedMs": 10892,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "正确解析‘那两个’为前两站，并说明方向上顺路与未核实路线时长的区别。",
+        "10点到首站/15点从末站离开均写成条件假设，没有保证赶得上；followups询问最早几点到以及15点离开还是到其他地方。",
+        "沿用5岁和周六，两站主卡不改，未重新要求提供已有地点。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "deadline_intent_not_retained_in_structured_state",
+          "observation": "用户明确提出下午3点要走，正文和followups有承接，但taskState.finishBy及plan.constraints.finishBy均为空。虽然离开/到达地点仍需澄清，时间要求不应在后续只依靠截断历史存活。",
+          "evidence": "request=那两个顺路吗？下午3点得走，来得及吗？; taskState.finishBy=null; assistantPlan.constraints.finishBy=null",
+          "expectedBehavior": "保留15点这一待澄清的约束及其语义，澄清地点前不把它当保证完成，也不丢失。"
+        },
+        {
+          "severity": "P2",
+          "topic": "known_fact_loss_carried_forward",
+          "observation": "继续沿用上一轮人数未知导致的PIER39事实未知卡；本轮正文未再错误强调票价未知，但卡片问题未消除。",
+          "expectedBehavior": "每人$0事实应独立于群组人数可得性。"
+        }
+      ]
+    },
+    {
+      "id": "sf-transit-only-last-place",
+      "status": "fail",
+      "elapsedMs": 13978,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "正文正确理解只去后面那个是PIER39、取消科学馆且改公交；保留5岁及15点要求，并问公共出发点和15点离开/到达的语义。",
+        "公共区免费、海狮数量不保证、常规Muni儿童免费且不覆盖其他交通均有对应站内来源；没有冒充实时班次。"
+      ],
+      "findings": [
+        {
+          "severity": "P1",
+          "topic": "chosen_venue_excluded_from_state",
+          "observation": "正文选定PIER39，但状态同时排除原两站、selected清空，主卡消失；后续检索可能拒绝用户真正想去的地点。这是自动检查未覆盖的明确正文/状态矛盾。",
+          "evidence": "answer=只去那里，取消Exploratorium; selectedCandidateIds=[]; excludedCandidateIds=[venue-exploratorium-daytime,pier39]; assistantPlan=null",
+          "expectedBehavior": "解析后面那个为先前第二站，保留PIER39所选身份，只剔除科学馆；必要澄清不能把明确保留的站也排除。"
+        },
+        {
+          "severity": "P2",
+          "topic": "deadline_not_persisted",
+          "observation": "正文仍记得下午3点得走，但taskState.finishBy为空；与上一轮同一问题。",
+          "expectedBehavior": "在带语义的待确认约束中保留15点，而非仅依靠历史文本。"
+        }
+      ]
+    },
+    {
+      "id": "ambiguous-central-park",
+      "status": "pass_with_limitations",
+      "elapsedMs": 12826,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "用‘如果你指SanMateo’明确限定对象，未无条件认定公园；followups确实问城市和哪一个周日。",
+        "施工区、普通周末开放、不能带狗、入口未核实等范围分开，未伪造入口通路或停车可用性。",
+        "未继承之前独立对话的人数、地点或交通。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "clarification_buried_after_specific_answer",
+          "observation": "同名地点尚未确认，已先长篇给SanMateo花园情况及50 East 5th Avenue地址，关键‘是哪座园/哪一天’只放followups。条件性表达避免了错误断言，但增加误读与认知负担。",
+          "expectedBehavior": "先用一句确认城市，必要时给少量同名选项，再提供对应入口。"
+        },
+        {
+          "severity": "P2",
+          "topic": "past_sunday_committed",
+          "observation": "当前已是周日23:51，正文知道当天常规开放结束，但taskState.date仍固定当天10月4日；未来哪一周日还未确认。",
+          "expectedBehavior": "保持未定或说明假设后确认，勿让过期日成为隐式后续条件。"
+        }
+      ]
+    },
+    {
+      "id": "target-vague-freebie",
+      "status": "pass_with_limitations",
+      "elapsedMs": 13936,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "开头说明不同活动不同条件，未认定某一个赠品，也不保证Fremont门店参加或有库存。",
+        "Welcome Kit门槛、线上领取、运费与新Circle15%折扣窗口均与现有零售指南逐项一致；没有将注册、买赠或折扣泛化成免费实物。",
+        "要求提供赠品名称/帖子后再对条件，没有执行注册、领券或下单。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "excess_detail_before_offer_identification",
+          "observation": "身份仍未知的帖子，答复已经讲三类活动并完整展开Welcome Kit条款；把确认是哪条放在末尾。虽无错误承诺，但‘咋领’还没有可确定对象，信息负担偏大。",
+          "expectedBehavior": "先问赠品名称或给两种极简辨别线索，确认后再展开对应领取条件；不要把过去样品活动作为当前可领建议。"
+        }
+      ]
+    },
+    {
+      "id": "mixed-language-no-car",
+      "status": "pass_with_limitations",
+      "elapsedMs": 13427,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "理解no car、少走路和chill，用自然中文回应，没有继承前面独立样例的人数、儿童、日期或预算。",
+        "咖啡店名称、地址和品类与catalog一致，明确没有BART衔接/最后一段步行及当日营业证据，没有伪造路线时间。",
+        "询问哪天下午、可接受5或10分钟步行，未推荐已过时段活动或要求私人地址。"
+      ],
+      "findings": [
+        {
+          "severity": "P2",
+          "topic": "known_public_origin_not_persisted",
+          "observation": "用户明确提供 near Fremont BART，正文知道从该站考量，但state.origin及originCandidateId均为空；这一公共参照可能在截断历史后丢失。",
+          "evidence": "request=I'm near Fremont BART; taskState.origin=null; originCandidateId=null",
+          "expectedBehavior": "保存‘Fremont BART附近’这一已给出的近似公共参照，不将near擅自转换成精确站口或已验证出发坐标。"
+        },
+        {
+          "severity": "P2",
+          "topic": "mobility_preference_only_in_prose",
+          "observation": "少走路被正文理解，但preferences仅有no-car，后续无法仅凭状态保持步行限制；唯一候选也没有证明符合公交加少走路。",
+          "expectedBehavior": "保留少走路偏好，澄清可接受步行量后优先筛选符合限制的地点；缺路线证据时短问比先推一处远近未知的店更有效。"
+        }
+      ]
+    },
+    {
+      "id": "sea-lions-missing-origin",
+      "status": "fail",
+      "elapsedMs": 7907,
+      "actualModel": "gpt-6.1-sol",
+      "automatedStatus": "pass",
+      "positives": [
+        "正文只将PIER39作为推测，并明确没有出发地/时间，未伪造分钟数、停车空位或公交班次。",
+        "以门到门过程比较公共交通与开车，询问车站/公共地点及时间，不索取私人地址或继承上一独立题的Fremont。"
+      ],
+      "findings": [
+        {
+          "severity": "P1",
+          "topic": "comparison_misread_as_selected_transport",
+          "observation": "用户问坐车还是开车，正文在比较两者，taskState却把travelMode设为drive。尚未作出的选择变成硬条件，可能污染下一轮路线。",
+          "evidence": "request=坐车还是开车省事？; taskState.travelMode=drive",
+          "expectedBehavior": "比较型问句保持travelMode=null，待用户选择后再确定。"
+        },
+        {
+          "severity": "P2",
+          "topic": "tentative_venue_needs_confirmation",
+          "observation": "‘应该是PIER39’已标推测，但后续问题仅问出发点和时间，没有显式确认是否该海狮地点。",
+          "expectedBehavior": "把‘你是指PIER39吗’合并进简短澄清，不能在未确认时持续当已选目的地。"
+        }
+      ]
+    }
+  ],
+  "casebookAssertions": "After this baseline started, the casebook added date:null for the ambiguous-weekend chain, day-plan intent and selected IDs for the named-venue question, finishBy 15:00, and correct selected/excluded IDs for the final-venue edit. Original automated results below remain unchanged. A separate strengthenedAssessment will document read-only re-evaluation. The transport-comparison case also now requires travelMode:null.",
+  "overallStatus": "fail",
+  "summary": {
+    "manual": {
+      "pass": 0,
+      "pass_with_limitations": 7,
+      "fail": 3
+    },
+    "originalAutomated": {
+      "passed": 9,
+      "failed": 1
+    },
+    "scope": "All 10 are actual site-only model responses on API 18229f5, all used gpt-6.1-sol. This review neither claims fresh web verification nor upgrades a historical failed response after local fixes.",
+    "keyFailures": [
+      "sf-two-places: citation repair removed the relevant helpful response; unknown party size erased known PIER39 public-access pricing; unsolicited replacement alternative.",
+      "sf-transit-only-last-place: prose selected PIER39 while state excluded both original venues and cleared selection.",
+      "sea-lions-missing-origin: comparison of transit versus driving committed driving as the chosen mode."
+    ],
+    "crossCuttingGaps": [
+      "Ambiguous weekend dates were stored as the already-ending 2026-10-04 rather than left unconfirmed.",
+      "15:00 departure intent, near Fremont BART reference and limited-walking preferences were understood in prose but not all persisted in state.",
+      "Some replies gave long or loosely related catalog suggestions before the most useful clarification."
+    ],
+    "positiveBehavior": [
+      "Mixed Chinese/English adult count and no-car intent understood; within-chain age and region carried correctly.",
+      "Short-afternoon correction was handled naturally with a useful question about whether two hours includes return travel.",
+      "No fabricated live routes, exact arrival promises, guaranteed stocks, false free purchase offers or private address demands observed."
+    ],
+    "latencyMs": {
+      "min": 7699,
+      "max": 17432,
+      "median": 13131,
+      "mean": 12781.5
+    },
+    "releaseDecision": "Do not count this baseline as human-language acceptance. Re-run the same prompts and chains after fixes; compare actual response, state and any card/handoff, not just the new assertions."
+  },
+  "strengthenedAssessment": {
+    "kind": "read_only_reinterpretation_of_existing_responses",
+    "executedNewRequests": false,
+    "modifiedOriginalReport": false,
+    "explanation": "The casebook was strengthened only after the original baseline process had loaded its prompts and assertions. These checks expose known mismatches in those same saved responses; they are not the baseline's original automated result and are not a new model run.",
+    "passed": 3,
+    "failed": 7,
+    "cases": [
+      {
+        "id": "weekend-air",
+        "status": "fail",
+        "failedChecks": [
+          "state_date"
+        ]
+      },
+      {
+        "id": "south-bay-tired-child",
+        "status": "fail",
+        "failedChecks": [
+          "state_date"
+        ]
+      },
+      {
+        "id": "short-afternoon-correction",
+        "status": "fail",
+        "failedChecks": [
+          "state_date"
+        ]
+      },
+      {
+        "id": "sf-two-places",
+        "status": "fail",
+        "failedChecks": [
+          "not_degraded",
+          "state_goal"
+        ]
+      },
+      {
+        "id": "sf-pronoun-can-we-make-it",
+        "status": "fail",
+        "failedChecks": [
+          "state_finishBy"
+        ]
+      },
+      {
+        "id": "sf-transit-only-last-place",
+        "status": "fail",
+        "failedChecks": [
+          "state_selectedCandidateIds",
+          "state_excludedCandidateIds"
+        ]
+      },
+      {
+        "id": "ambiguous-central-park",
+        "status": "pass",
+        "failedChecks": []
+      },
+      {
+        "id": "target-vague-freebie",
+        "status": "pass",
+        "failedChecks": []
+      },
+      {
+        "id": "mixed-language-no-car",
+        "status": "pass",
+        "failedChecks": []
+      },
+      {
+        "id": "sea-lions-missing-origin",
+        "status": "fail",
+        "failedChecks": [
+          "state_travelMode"
+        ]
+      }
+    ]
+  }
+}

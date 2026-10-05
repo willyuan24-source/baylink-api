@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "title": "BAYBAY everyday-language acceptance cases",
+  "validUntil": "2026-10-10",
+  "privacy": "All people, preferences and situations are synthetic. Public places are context only; do not add real names, contact details, account identifiers or private addresses. These requests authorize advice only, never booking, purchase, saving or sharing.",
+  "design": {
+    "purpose": "Evaluate natural conversation, useful clarification, retained meaning, simple explanations and honest route uncertainty without spelling out the expected answer in the prompt.",
+    "scope": "Site-only. A successful result does not establish fresh web, route, weather, inventory or opening-hours verification.",
+    "relativeDates": "Judge this weekend and Saturday against the actual America/Los_Angeles request date in the report; do not silently assume the casebook creation date. If this weekend is ambiguous, a brief clarification or clearly labelled date assumption is acceptable.",
+    "execution": "Run in file order. The two three-turn chains use follows; independent cases must start without continuation state. Keep follow-up credentials only in runner memory and stop on quota or rate limits.",
+    "assertionRevision": "Strengthened after the 2026-10-04 baseline had already loaded its original casebook. Do not retroactively overwrite that report's automated results: its manual review records the newly observed state inconsistencies. An ambiguous weekend remains date:null until a particular day is confirmed; no test requires a complete plan when material inputs are missing.",
+    "manualDimensions": [
+      "Answer the person's latest intent directly and naturally. Lead with a useful answer or the one missing fact that prevents one.",
+      "Ask one or two focused questions when a material detail is missing; do not request a private address when a city, public station or neighborhood is enough.",
+      "A small number of clearly conditional suggestions is useful; invented dates, party size, named-venue identity, tickets or verified route times are not.",
+      "Treat colloquial preferences, negation and corrections as meaning, not isolated keywords. Preserve prior confirmed facts only within the same follows chain.",
+      "When there is a plan, its stops, order, constraints, prices and handoff must agree with the prose. A clarification-only answer can be correct and need not invent a plan.",
+      "Separate source-backed facts from suggestions, estimates and unknowns. Site-only mode must not claim a fresh official check, live traffic, stock or a guaranteed arrival.",
+      "Prefer a short, actionable response to a catalog dump or repeated checklist. A valid structural result alone is not a human-language pass."
+    ],
+    "recommendedFirstEight": [
+      "weekend-air",
+      "south-bay-tired-child",
+      "short-afternoon-correction",
+      "sf-two-places",
+      "sf-pronoun-can-we-make-it",
+      "sf-transit-only-last-place",
+      "ambiguous-central-park",
+      "target-vague-freebie"
+    ],
+    "recommendationReason": "The first eight exercise two complete conversations, missing location, a tired child, mixed language, corrected duration, retained venue references, route feasibility, a transport correction, an ambiguous place and an underspecified offer. The last two add independent mixed-language and missing-origin probes."
+  },
+  "cases": [
+    {
+      "id": "weekend-air",
+      "request": { "message": "这周末想出去透透气，有啥不折腾的？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "date": null }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "识别为轻松外出想法，不把‘透气’当医疗咨询，也不立即生成跨湾全天多站路线。",
+        "尚不知道地区、出行方式与同行者，应优先用一两句问最有用的缺失信息；可以给少量类型建议，但不能猜定用户住哪、几个人或有车。",
+        "对‘这周末’按请求时的湾区日期理解；若给具体日期，含义与假设应清楚，不给过期活动当未来安排。",
+        "回应应口语、简短，方便用户接着说，不要求一次填写完整需求表。"
+      ]
+    },
+    {
+      "id": "south-bay-tired-child",
+      "follows": "weekend-air",
+      "request": { "message": "我在南湾，two adults 带个5岁娃，娃走一会儿就喊累，最好能坐着歇歇。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "date": null, "partySize": 3, "childAges": [5] }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "理解 two adults 加一个5岁孩子是三人；延续轻松透气的目标，主要使用中文回应。",
+        "南湾只是区域，不等于用户已指定 San Jose 某个地点或精确出发点；可以询问更近哪座城市和是否开车。",
+        "建议应体现少走路、可休息、少换站；不能仅凭‘亲子’标签保证适龄、平坦、有座位或推车可达。",
+        "不把孩子怕累推断成医学状况、轮椅需求或完全不能步行。若资料不足，说明具体缺口而非承诺每段都轻松。"
+      ]
+    },
+    {
+      "id": "short-afternoon-correction",
+      "follows": "south-bay-tired-child",
+      "request": { "message": "不是要玩一整天，我是说吃完午饭出去两个小时，开车别太远。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "date": null, "partySize": 3, "childAges": [5], "travelMode": "drive" }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "按改口收紧为饭后约两小时、开车、少走路，继续保留南湾、两大一小与5岁，不把‘不是一整天’理解成退出外出安排。",
+        "不擅自把午饭后定为12:00、14:00或某个精确时段，也不编造车程半径。缺具体出发城市时应问到足够判断附近的位置。",
+        "优先一处主去处和必要休息，不延续原先可能给出的全天或远距离多站方案。",
+        "若已输出主卡，其停留、站数和文字须符合两小时短途；未知路线时长不能被自动填入来凑出时间表。"
+      ]
+    },
+    {
+      "id": "sf-two-places",
+      "request": { "message": "周六想去 Exploratorium 再去 Pier 39，带5岁小朋友，怎么排比较轻松？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "goal": "day-plan", "selectedCandidateIds": ["venue-exploratorium-daytime", "pier39"], "childAges": [5] }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "理解两个具名去处和先后顺序，回答如何减少折腾；不要增添第三个景点或把问题变成泛泛的旧金山推荐。",
+        "成人数量、出发点、到达时间和交通方式尚未提供，不能自定两大一小、开车或精确出发时间。",
+        "可以给待确认的两站框架并问关键缺项；不要求在信息不足时强行产出完整主卡。",
+        "如果提票价，区分5岁儿童票与成人档，不编造全组小计；PIER 39 公共区与收费体验分开。若提开放时间，常规记录与所选日确认分开。"
+      ]
+    },
+    {
+      "id": "sf-pronoun-can-we-make-it",
+      "follows": "sf-two-places",
+      "request": { "message": "那两个顺路吗？下午3点得走，来得及吗？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "childAges": [5], "finishBy": "15:00" }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "‘那两个’指上一轮 Exploratorium 和 PIER 39；不重新询问是哪两个、不换成新地点，也不丢5岁儿童和周六背景。",
+        "顺路的方向性说明可以依据地点资料，但应区分方向判断与已经取得的路线或耗时证据。站内模式不能假装查了地图、班次或路况。",
+        "尚无开始时间及出发点，‘3点得走’也不等于3点到家；不能直接保证赶得上，应问几点能到首站、3点从哪里离开等真正影响判断的缺项。",
+        "可以说明时间紧时少安排一站的取舍，但未获用户选择前不要偷偷改掉主行程或强行承诺两个都逛完。"
+      ]
+    },
+    {
+      "id": "sf-transit-only-last-place",
+      "follows": "sf-pronoun-can-we-make-it",
+      "request": { "message": "不是自己开车，我们坐公交。那就只去后面那个，别赶了。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "childAges": [5], "travelMode": "transit", "selectedCandidateIds": ["pier39"], "excludedCandidateIds": ["venue-exploratorium-daytime"] }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "明确改为公交，‘后面那个’应落到原先第二站 PIER 39；先后文有歧义时简短确认，不能擅选新地点。",
+        "只留用户选定的一处；如有主卡、handoff或备选，不能继续把 Exploratorium 留成必去站。",
+        "保留5岁孩子、周六、轻松和下午3点离开的背景，不能把‘别赶了’理解为取消3点要求。",
+        "缺出发地点就问城市或公共交通站点，不猜一条公交线路、精确车费或到站时间。PIER 39 公共区免费不等于全天交通餐饮免费。"
+      ]
+    },
+    {
+      "id": "ambiguous-central-park",
+      "request": { "message": "周日去 Central Park 好不好？从哪儿进去方便？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "先识别同名地点歧义，询问城市或给少量有依据的同名选项；不直接选纽约、Santa Clara、San Mateo或其他城市。",
+        "在园区身份未确认前，不给具体入口、停车场、坐标或导航，也不把前面独立样例的南湾或旧金山地点带入。",
+        "对周日是否适合可说明还需要地点和偏好；不能编造当天天气、活动或入口开放情况。",
+        "回应要让用户容易补一句城市名，避免长篇列举全湾区公园。"
+      ]
+    },
+    {
+      "id": "target-vague-freebie",
+      "request": { "message": "刷到 Target 说有东西白拿，咋领啊？我在 Fremont。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "理解是领福利的操作问题，但尚不知商品、日期或活动；应问刷到的内容是什么，或列出一两个可能活动供确认，不能直接认定某项。",
+        "若举站内已收录活动，准确保留会员、年龄、消费或购买条件及日期；不把有买赠门槛的 eos 活动说成无消费免费，也不把 Welcome Kit 当随到随领。",
+        "Fremont 不自动证明某家门店参与或有库存。不可编造兑换码、店名、开始时间或保证有货。",
+        "先说明下一步怎么认活动、去哪个官方入口核对，避免塞一长串无关优惠；不能执行注册、领券、下单或保存操作。"
+      ]
+    },
+    {
+      "id": "mixed-language-no-car",
+      "request": { "message": "I'm near Fremont BART，想出去 chill 一下午，no car，走路别太多。有啥轻松的？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "理解 no car 与少走路是同时成立的条件，不给主要靠自驾、远距离徒步或多次转车的方案；用自然中文回应即可，无需逐句翻译。",
+        "Fremont BART 可作为公共出发参照，但 near 不代表人已在某一站口；确切上车口和到站时间未确认时不能伪造。",
+        "日期、人数和预算未知；不得继承其他独立样例的5岁孩子、三人、周六或120美元。",
+        "少量轻松选项应说明为何适合，并区分景点性质与未核实公交耗时/步行量。需要补充信息时优先问日期或可接受的单程时间。"
+      ]
+    },
+    {
+      "id": "sea-lions-missing-origin",
+      "request": { "message": "去那个看海狮的地方要多久，坐车还是开车省事？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "travelMode": null }, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source", "get_route", "get_weather"] },
+      "manualReview": [
+        "本题没有前文，不能把‘那个’当已确认目的地；可以问是否指旧金山 PIER 39，不能无提示地确定其他海狮地点。",
+        "没有出发地点或时间，不能算单程时长、哪种交通一定更省事，也不能从前面独立题继承 Fremont BART。",
+        "‘坐车还是开车’是比较两种方式，不是已选开车；结构化交通方式必须保持未定。",
+        "优先询问从哪个城市或公共站点出发，不索取家庭地址；可简短解释比较还受停车、班次和步行量影响。",
+        "不能以坐标直线距离代替已核实路线，不捏造拥堵、停车空位、公交班次或当日观赏保证。"
+      ]
+    }
+  ]
+}
