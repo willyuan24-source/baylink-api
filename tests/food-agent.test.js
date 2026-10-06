@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
+const { createPublicContext } = require('../lib/publicContext');
+const { foodEvidenceGap } = require('../lib/foodEvidence');
 const NOW = Date.parse('2026-10-06T19:00:00Z');
 const DAY = '2026-10-06';
 const MENU = 'https://example.org/restaurant/menu';
@@ -92,21 +94,72 @@ test('an unrelated explicitly selected article stays page context without becomi
     currentPath: housing.url, pageContext: { contextReferences: [ref], contextUsed: { references: [ref], notices: [] } } });
   assert.equal(calls, 0); assert.match(result.answer, /do not establish a tea\/dim-sum option/);
   assert.deepEqual(result.contextReferences, [ref]); assert.ok(result.evidence.some(row => /\/guides\/housing$/.test(row.url)));
-  assert.deepEqual(result.localMatches, [ref]); assert.deepEqual(result.contextUsed.references, [ref]);
+  assert.deepEqual(result.localMatches, []); assert.deepEqual(result.contextUsed.references, [ref]);
+});
+
+for (const [locale, message] of [
+  ['zh-Hans', '湾区哪里饮茶'], ['zh-Hant', '灣區哪裡飲茶'], ['en', 'Where can I get dim sum?'],
+]) {
+  test(`${locale}: real senior-guide page context stays evidence without final or streamed dining cards`, async () => {
+    const guides = require('../data/guide-catalog.json');
+    const englishGuides = require('../data/guide-catalog.en.json');
+    const currentPath = '/guides/bay-area-chinese-senior-services-referral-guide';
+    const pageContext = createPublicContext({ catalog: catalog([]), guideCatalog: guides, englishGuideCatalog: englishGuides })
+      .resolve({ currentPath, today: DAY, locale });
+    assert.equal(pageContext.contextReferences.length, 1);
+    const frames = [];
+    let calls = 0;
+    const forbidden = async () => { calls++; throw new Error('Unexpected external/model call'); };
+    const assistant = createBayBayAssistant(options({ guideCatalog: guides, englishGuideCatalog: englishGuides,
+      ai: forbidden, webSearch: forbidden, sourceFetch: forbidden, fetchImpl: forbidden }));
+    const result = await assistant.run({ message, locale, searchMode: 'site', currentPath, pageContext,
+      onQuickCard: cards => { frames.push(cards); return Promise.resolve(); } });
+    assert.equal(calls, 0); assert.equal(result.answer, foodEvidenceGap({ kind: 'dim-sum' }, locale));
+    assert.equal(result.degraded, false); assert.deepEqual(frames, [[]]);
+    assert.deepEqual(result.localMatches, []); assert.deepEqual(result.suggestedGuides, []);
+    assert.deepEqual(result.matchingPosts, []); assert.deepEqual(result.interactiveCards, []); assert.deepEqual(result.nextSteps, []);
+    assert.deepEqual(result.contextReferences, pageContext.contextReferences); assert.deepEqual(result.contextUsed, pageContext.contextUsed);
+    assert.ok(result.evidence.some(row => row.url.endsWith(currentPath)));
+  });
+}
+
+test('matched dining paragraphs retain their selected guide card, while unrelated selected context does not', async () => {
+  const dining = { slug: 'dim-sum-menu', title: 'Dim Sum Restaurant menu', url: '/guides/dim-sum-menu',
+    content: 'The restaurant menu lists Cantonese dim sum.', updatedAt: DAY, sources: [{ title: 'Official menu', url: MENU }] };
+  const ref = { kind: 'guide', id: dining.slug, title: dining.title, url: dining.url, summary: dining.content };
+  const unrelated = { kind: 'event', id: 'community-meeting', title: 'Community meeting', url: '/events/community-meeting', temporalStatus: 'current' };
+  const pageContext = { contextReferences: [ref, unrelated], contextUsed: { references: [ref, unrelated], notices: [] } };
+  const frames = [];
+  const assistant = createBayBayAssistant(options({ guideCatalog: [dining], ai: async payload => {
+    const context = JSON.parse(payload.input[0].content);
+    assert.equal(context.foodEvidenceRequirement.status, 'matched');
+    return final(`Check the published menu and current service with the venue. [[${context.evidence.find(row => row.kind === 'guide').id}]]`);
+  } }));
+  const result = await assistant.run({ message: 'Where can I get dim sum?', locale: 'en', searchMode: 'site', currentPath: dining.url, pageContext,
+    onQuickCard: cards => frames.push(cards) });
+  assert.equal(result.degraded, false); assert.deepEqual(frames, [[ref]]); assert.deepEqual(result.localMatches, [ref]);
+  assert.deepEqual(result.contextReferences, [ref, unrelated]); assert.deepEqual(result.contextUsed, pageContext.contextUsed);
+  assert.deepEqual(result.nextSteps, []);
 });
 
 test('a mixed museum/food request and a non-food question preserve the ordinary response envelope and sourced article', async () => {
   const museum = { slug: 'museum', title: 'Museum and lunch', content: 'Visit the museum. A nearby restaurant is a separate lunch option.',
     url: '/guides/museum', updatedAt: DAY, sources: [{ title: 'Museum visitor guide', url: 'https://example.org/museum' }] };
+  const ref = { kind: 'guide', id: museum.slug, title: museum.title, url: museum.url, summary: museum.content };
+  const pageContext = { contextReferences: [ref], contextUsed: { references: [ref], notices: [] } };
   for (const message of ['Find a museum and a restaurant for lunch', 'Museum visitor information']) {
     let modelCalls = 0;
+    const frames = [];
     const assistant = createBayBayAssistant(options({ guideCatalog: [museum], ai: async payload => {
       modelCalls++; const context = JSON.parse(payload.input[0].content);
       assert.equal(context.foodEvidenceRequirement, undefined);
       return final(`Use the visitor guide and check its published conditions. [[${context.evidence.find(row => row.kind === 'guide').id}]]`);
     } }));
-    const result = await assistant.run({ message, locale: 'en', searchMode: 'site' });
+    const result = await assistant.run({ message, locale: 'en', searchMode: 'site', currentPath: museum.url, pageContext,
+      onQuickCard: cards => frames.push(cards) });
     assert.ok(modelCalls); assert.equal(result.sources[0].url, museum.url);
+    assert.deepEqual(frames, [[ref]]); assert.deepEqual(result.localMatches, [ref]);
+    assert.deepEqual(result.contextReferences, [ref]); assert.deepEqual(result.contextUsed, pageContext.contextUsed);
     for (const key of ['suggestedActions', 'interactiveCards', 'contextReferences', 'nextSteps']) assert.ok(Array.isArray(result[key]), key);
     assert.ok(!result.research.warnings.includes('food_evidence_unconfirmed'));
   }
