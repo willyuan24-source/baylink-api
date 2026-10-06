@@ -75,6 +75,50 @@ test('usage reset honors winter Pacific midnight and aggregate usage exposes no 
   assert.deepEqual((await request('/admin/ai-metrics', { as: 'admin' })).data, { days: [] });
 });
 
+test('usage reads are limited by trusted client IP before identity or quota database reads', async t => {
+  const { request, models } = await fixture(t, { config: { TRUST_PROXY_HOPS: 1 } });
+  let reads = 0;
+  const find = models.AiGovernance.findOne.bind(models.AiGovernance);
+  models.AiGovernance.findOne = (...args) => { reads++; return find(...args); };
+  for (let i = 0; i < 120; i++) {
+    const response = await request('/ai/usage', { headers: { 'X-Forwarded-For': `203.0.113.${i + 1}, 198.51.100.20`, 'CF-Connecting-IP': `203.0.113.${i + 1}` } });
+    assert.equal(response.status, 200);
+  }
+  const blocked = await request('/ai/usage', { headers: { 'X-Forwarded-For': '203.0.113.200, 198.51.100.20' } });
+  assert.equal(blocked.status, 429);
+  assert.deepEqual(blocked.data, { remaining: null, limit: null, degraded: true, code: 'AI_USAGE_RATE_LIMIT' });
+  assert.equal(blocked.headers.get('cache-control'), 'no-store');
+  assert.equal(blocked.headers.get('retry-after'), '60');
+  assert.equal(reads, 120, 'rate rejection cannot query the quota document');
+  assert.equal(models.AiGovernance.rows.length, 0, 'reading usage cannot consume paid quota');
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.21' } })).status, 200);
+});
+
+test('post-assist denies new IPs at capacity without evicting restrictions or reserving paid quota', async t => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW });
+  const models = createMemoryModels({ User: [{ id: 'member', role: 'user', accountStatus: 'active' }] });
+  let calls = 0;
+  const { request } = await fixture(t, { models, testRateLimitCapacity: 2, config: { TRUST_PROXY_HOPS: 1 }, ai: { postAssist: async () => { calls++; return { title: 'Looking for a room', description: 'I am looking for a room in Fremont. Please share details.', category: 'rent', type: 'client', quickTags: ['Rental'] }; } } });
+  const post = ip => request('/ai/post-assist', { as: 'member', body: { intent: 'Looking for a room in Fremont', language: 'en' }, headers: { 'X-Forwarded-For': ip } });
+  for (let i = 0; i < 5; i++) assert.equal((await post('198.51.100.20')).status, 200);
+  assert.equal((await post('198.51.100.21')).status, 200);
+  assert.equal((await post('198.51.100.22')).status, 429);
+  assert.equal((await post('198.51.100.20')).status, 429, 'full capacity must not reset an existing exhausted minute');
+  assert.equal(calls, 6); assert.equal(models.AiGovernance.rows[0].count, 6);
+  t.mock.timers.tick(60001);
+  assert.equal((await post('198.51.100.22')).status, 200, 'expired identities free capacity naturally');
+  assert.equal(calls, 7); assert.equal(models.AiGovernance.rows[0].count, 7);
+});
+
+test('usage capacity cannot prevent a different interaction from admitting the same new client', async t => {
+  const models = createMemoryModels({ User: [{ id: 'member', role: 'user', accountStatus: 'active' }] });
+  const { request } = await fixture(t, { models, testRateLimitCapacity: 1, config: { TRUST_PROXY_HOPS: 1 }, ai: { postAssist: async () => ({ title: 'Looking for a room', description: 'I am looking for a room in Fremont. Please share details.', category: 'rent', type: 'client', quickTags: ['Rental'] }) } });
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.20' } })).status, 200);
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.21' } })).status, 429);
+  const assisted = await request('/ai/post-assist', { as: 'member', body: { intent: 'Looking for a room in Fremont', language: 'en' }, headers: { 'X-Forwarded-For': '198.51.100.21' } });
+  assert.equal(assisted.status, 200);
+});
+
 test('multilingual emergency and professional resources return before quota and paid providers', async t => {
   let calls = 0;
   const { request, models } = await fixture(t, { ai: { baybay: async () => { calls++; throw new Error('must not call'); } } });
@@ -95,6 +139,47 @@ test('small JSON routes reject oversized requests while image writing authentica
   assert.equal((await request('/ai/guide-chat', { body: { message: 'a'.repeat(110000) } })).status, 413);
   assert.equal((await request('/posts', { body: { imageUrls: ['a'.repeat(110000)] } })).status, 401);
   assert.equal(models.AiGovernance.rows.length, 0);
+});
+
+test('cleaner ingestion and wishing not to live return resources on every safety route before exhausted quota or providers', async t => {
+  let calls = 0, reservations = 0;
+  const provider = async () => { calls++; throw new Error('must not call'); };
+  const { request, models } = await fixture(t, { config: { AI_DAILY_REQUEST_LIMIT: 0 }, ai: { baybay: provider, guideChat: provider, postAssist: provider, outingDraft: provider, planner: { recommend: provider } } });
+  models.AiGovernance.updateOne = async () => { reservations++; throw new Error('quota storage offline'); };
+  const examples = [
+    ['zh-Hans', '孩子误吞清洁剂怎么办'], ['zh-Hant', '孩子誤吞清潔劑怎麼辦'], ['en', 'My child swallowed cleaner'],
+    ['zh-Hans', '我不想活了'], ['zh-Hant', '我不想活了怎麼辦'], ['en', "I don't want to live anymore"],
+    ['en', 'I do not want to be alive any more'], ['zh-Hant', '朋友現在說不想活下去了'],
+  ];
+  for (const path of ['/ai/guide-chat', '/planner/recommend', '/ai/post-assist', '/ai/outing-draft']) {
+    for (const [locale, message] of examples) {
+      const result = await request(path, { body: { message, locale, assistantVersion: 2, stream: true } });
+      assert.equal(result.status, 200, `${path}: ${message}`);
+      assert.match(result.headers.get('content-type'), /application\/json/);
+      assert.equal(result.data.safetyRoute, 'emergency', message);
+      assert.ok(result.data.sources.some(source => source.url === 'https://988lifeline.org/'));
+      assert.match(result.data.answer, /1-800-222-1222/);
+    }
+  }
+  assert.equal(calls, 0); assert.equal(reservations, 0); assert.equal(models.AiGovernance.rows.length, 0);
+});
+
+test('emergency routing separates current disclosures from denials, historical accounts and third-person factual discussion', () => {
+  for (const message of [
+    '孩子没有误吞清洁剂', '孩子沒有誤吞清潔劑', 'My child did not swallow cleaner',
+    '我不是不想活了，只是想安静一下', '我沒有不想活了', '我不想死',
+    'I am not suicidal', 'I do not want to die', 'No chest pain and no difficulty breathing', '无胸痛', '無胸痛',
+    '我以前不想活了，现在已经恢复', '孩子以前误吞清洁剂，已经康复',
+    "In the past I used to think I don't want to live anymore",
+    '新聞報導一個孩子誤吞清潔劑', '新闻说他不想活了',
+    "Someone in a news article said they don't want to live anymore",
+    '請翻譯「我不想活了」', "Translate: I don't want to live anymore",
+  ]) assert.equal(safetyResponse(message), null, message);
+  for (const message of [
+    '我没有胸痛但现在呼吸困难', '我沒有胸痛但是現在呼吸困難', 'No chest pain but I cannot breathe now',
+    '以前胸痛现在呼吸困难', '新闻里说有人误吞清洁剂，但是我孩子刚才误吞了清洁剂',
+    '朋友刚才说他不想活了', "My friend just said they don't want to live anymore",
+  ]) assert.equal(safetyResponse(message)?.safetyRoute, 'emergency', message);
 });
 
 test('disconnect propagates abort immediately even when a provider ignores AbortSignal', async () => {

@@ -738,91 +738,31 @@ const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed', 'all']);
 const REPORT_ADMIN_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
 const REPORT_DUPLICATE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-const reportRateByUser = new Map();
+// Keep each interaction's active counters independently bounded. A full
+// bucket denies new identities rather than evicting existing restrictions.
+const createInteractionLimiter = () => createRateLimiter({ capacity: isTest && Number.isSafeInteger(options.testRateLimitCapacity) && options.testRateLimitCapacity > 0 ? Math.min(options.testRateLimitCapacity, 5000) : 5000 });
+const reportLimiter = createInteractionLimiter();
+const checkReportRateLimit = userId => reportLimiter.check(userId, { windowMs: 60000, maxRequests: 5 });
 
-const checkReportRateLimit = (userId) => {
-  const key = String(userId);
-  const now = Date.now();
-  const windowMs = 60000;
-  const maxRequests = 5;
-  let entry = reportRateByUser.get(key);
-  if (!entry || now - entry.windowStart >= windowMs) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  reportRateByUser.set(key, entry);
-  if (reportRateByUser.size > 5000) {
-    for (const [k, val] of reportRateByUser) {
-      if (now - val.windowStart >= windowMs) reportRateByUser.delete(k);
-    }
-  }
-  return entry.count <= maxRequests;
-};
-
-const contactRequestRateByUser = new Map();
+const contactRequestLimiter = createInteractionLimiter();
 const CONTACT_REQUEST_RATE_WINDOW_MS = 60000;
 const CONTACT_REQUEST_RATE_MAX = 5;
 const CONTACT_REQUEST_DECLINED_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
-const checkContactRequestRateLimit = (userId) => {
-  const key = String(userId);
-  const now = Date.now();
-  let entry = contactRequestRateByUser.get(key);
-  if (!entry || now - entry.windowStart >= CONTACT_REQUEST_RATE_WINDOW_MS) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  contactRequestRateByUser.set(key, entry);
-  if (contactRequestRateByUser.size > 5000) {
-    for (const [k, val] of contactRequestRateByUser) {
-      if (now - val.windowStart >= CONTACT_REQUEST_RATE_WINDOW_MS) contactRequestRateByUser.delete(k);
-    }
-  }
-  return entry.count <= CONTACT_REQUEST_RATE_MAX;
-};
+const checkContactRequestRateLimit = userId => contactRequestLimiter.check(userId, { windowMs: CONTACT_REQUEST_RATE_WINDOW_MS, maxRequests: CONTACT_REQUEST_RATE_MAX });
 
-const commentRateByUser = new Map();
+const commentLimiter = createInteractionLimiter();
 const COMMENT_RATE_WINDOW_MS = 60000;
 const COMMENT_RATE_MAX = 10;
 
-const checkCommentRateLimit = (userId) => {
-  const key = String(userId);
-  const now = Date.now();
-  let entry = commentRateByUser.get(key);
-  if (!entry || now - entry.windowStart >= COMMENT_RATE_WINDOW_MS) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  commentRateByUser.set(key, entry);
-  if (commentRateByUser.size > 5000) {
-    for (const [k, val] of commentRateByUser) {
-      if (now - val.windowStart >= COMMENT_RATE_WINDOW_MS) commentRateByUser.delete(k);
-    }
-  }
-  return entry.count <= COMMENT_RATE_MAX;
-};
+const checkCommentRateLimit = userId => commentLimiter.check(userId, { windowMs: COMMENT_RATE_WINDOW_MS, maxRequests: COMMENT_RATE_MAX });
 
-const messageRateByUser = new Map();
+const messageLimiter = createInteractionLimiter();
 const MESSAGE_RATE_WINDOW_MS = 60000;
 const MESSAGE_RATE_MAX = 30;
 const MESSAGE_MAX_LENGTH = 2000;
 
-const checkMessageRateLimit = (userId) => {
-  const key = String(userId);
-  const now = Date.now();
-  let entry = messageRateByUser.get(key);
-  if (!entry || now - entry.windowStart >= MESSAGE_RATE_WINDOW_MS) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  messageRateByUser.set(key, entry);
-  if (messageRateByUser.size > 5000) {
-    for (const [k, val] of messageRateByUser) {
-      if (now - val.windowStart >= MESSAGE_RATE_WINDOW_MS) messageRateByUser.delete(k);
-    }
-  }
-  return entry.count <= MESSAGE_RATE_MAX;
-};
+const checkMessageRateLimit = userId => messageLimiter.check(userId, { windowMs: MESSAGE_RATE_WINDOW_MS, maxRequests: MESSAGE_RATE_MAX });
 
 const NICKNAME_RESERVED_PATTERNS = [
   'baylink', 'baybay', '管理员', '官方', '客服', '版主',
@@ -1625,8 +1565,13 @@ const authenticateToken = async (req, res, next) => {
 
 const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
 const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest });
+const aiUsageLimiter = createInteractionLimiter();
 app.get('/api/ai/usage', async (req, res) => {
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
+  if (!aiUsageLimiter.check(getClientIp(req), { windowMs: 60000, maxRequests: 120 })) {
+    res.set('Retry-After', '60');
+    return res.status(429).json({ remaining: null, limit: null, degraded: true, code: 'AI_USAGE_RATE_LIMIT' });
+  }
   try { res.json(await aiGovernance.usage({ userId: await getCurrentUserIdFromRequest(req), ip: getClientIp(req) })); }
   catch { res.status(503).json({ remaining: null, limit: null, degraded: true }); }
 });
@@ -3663,25 +3608,8 @@ const buildAiPostAssistUserMessage = ({ intent, type, categoryHint, areaHint, la
   ].join('\n');
 };
 
-const aiPostAssistRateByIp = new Map();
-
-const checkAiPostAssistRateLimit = (ip) => {
-  const now = Date.now();
-  const windowMs = 60000;
-  const maxRequests = 5;
-  let entry = aiPostAssistRateByIp.get(ip);
-  if (!entry || now - entry.windowStart >= windowMs) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  aiPostAssistRateByIp.set(ip, entry);
-  if (aiPostAssistRateByIp.size > 5000) {
-    for (const [key, val] of aiPostAssistRateByIp) {
-      if (now - val.windowStart >= windowMs) aiPostAssistRateByIp.delete(key);
-    }
-  }
-  return entry.count <= maxRequests;
-};
+const aiPostAssistLimiter = createInteractionLimiter();
+const checkAiPostAssistRateLimit = ip => aiPostAssistLimiter.check(ip, { windowMs: 60000, maxRequests: 5 });
 
 const extractJsonFromAiText = (text) => {
   const trimmed = String(text || '').trim();
