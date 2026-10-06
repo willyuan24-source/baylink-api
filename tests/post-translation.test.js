@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
@@ -224,6 +225,88 @@ test('translation validation rejects wrong fields, truncation, changed amounts a
   assert.equal((await request()).status, 502);
   assert.equal(models.PostTranslation.rows.length, 0);
   await assert.rejects(translateWithProvider(source, { config: { OPENAI_API_KEY: 'fake' }, isTest: true }));
+});
+
+test('Arabic digits remain bound to equivalent Chinese/English magnitude units, including traditional text', () => {
+  const pairs = [
+    ['300十', '300 tens'], ['300百', '300 hundreds'], ['300千', '300 thousand'],
+    ['300万', '300 ten-thousands'], ['300十万', '300 hundred thousand'], ['300百万', '300 million'],
+    ['300千万', '300 ten-million'], ['300亿', '300 hundred-millions'], ['300十亿', '300 billion'],
+    ['300百亿', '300 ten billions'], ['300千亿', '300 hundred billion'], ['300万亿', '300 trillion'],
+    ['$300.5萬', '$300.5 ten-thousands'], ['1,200億', '1,200 hundred-million'],
+  ];
+  for (const [budget, englishBudget] of pairs) {
+    const original = { title: '预算', description: '', budget, timeInfo: '' };
+    const english = { title: 'Budget', description: '', budget: englishBudget, timeInfo: '' };
+    assert.deepEqual(validateTranslation(english, original), english, budget);
+  }
+  const original = { title: '预算', description: '现金300千；见 https://example.test/300million?q=20 或 mail300million@example.test', budget: '300万', timeInfo: '' };
+  const english = { title: 'Budget', description: 'Cash 300 thousand; see https://example.test/300million?q=20 or mail300million@example.test', budget: '300 ten-thousands', timeInfo: '' };
+  assert.deepEqual(validateTranslation(english, original), english, 'URL/email digits are protected text, not numeric-unit pairs');
+});
+
+test('missing, wrong, ambiguous and reassigned multipliers fail closed without relaxing protected tokens', () => {
+  const original = { title: '预算', description: '', budget: '$300万', timeInfo: '' };
+  for (const budget of ['$300 dollars', '$300 thousand', '$300 millions', '$3 million',
+    '$300 ten-thousands thousand', '$300 ten-thousandths', '300 ten-thousands']) {
+    assert.throws(() => validateTranslation({ ...original, title: 'Budget', budget }, original), { status: 502 }, budget);
+  }
+  for (const budget of ['300兆', '300千百万']) {
+    assert.throws(() => validateTranslation({ ...original, title: 'Budget', budget: '300 trillion' }, { ...original, budget }), { status: 502 });
+  }
+  const differentAmounts = { ...original, budget: '300万、200千' };
+  assert.throws(() => validateTranslation({ ...differentAmounts, title: 'Budget', budget: '300 thousand and 200 ten-thousands' }, differentAmounts), { status: 502 });
+  const repeatedAmount = { ...original, budget: '300万、300千' };
+  assert.throws(() => validateTranslation({ ...repeatedAmount, title: 'Budget', budget: '300 ten-thousands and 300 dollars' }, repeatedAmount), { status: 502 });
+  const englishAmount = { ...original, budget: '300 million' };
+  assert.throws(() => validateTranslation({ ...englishAmount, title: 'Budget', budget: '300 thousand' }, englishAmount), { status: 502 });
+});
+
+test('an omitted multiplier returns the original-text fallback error and is never persisted', async t => {
+  const original = { title: '预算', description: '', budget: '300万', timeInfo: '' };
+  const { request, calls, models } = await fixture(t, {
+    posts: [post('public', original)], ai: async () => ({ title: 'Budget', description: '', budget: '300 dollars', timeInfo: '' }),
+  });
+  const result = await request();
+  assert.equal(result.status, 502);
+  assert.match(result.data.error, /Please read the original/);
+  assert.equal(result.data.translation, undefined);
+  assert.equal(models.PostTranslation.rows.length, 0);
+  assert.equal(calls.length, 1);
+  assert.equal(models.Post.rows[0].budget, original.budget);
+});
+
+test('new validation ignores v1 caches and isolates equal digit strings with changed source units', async t => {
+  const original = { title: '预算', description: '', budget: '300万', timeInfo: '' };
+  const legacy = { title: 'Legacy budget', description: '', budget: '300 ten-thousands', timeInfo: '' };
+  assert.deepEqual(validateTranslation(legacy, original), legacy, 'legacy entry is valid, so version isolation alone must exclude it');
+  const legacyKey = `post-translation:public:${crypto.createHash('sha256').update(JSON.stringify(['public-post-en-v1', 'en', original])).digest('hex')}`;
+  const { request, calls, models } = await fixture(t, {
+    posts: [post('public', original)], ai: async ({ source: current }) => ({ title: 'Budget', description: '', budget: current.budget === '300万' ? '300 ten-thousands' : '300 thousand', timeInfo: '' }),
+  });
+  models.PostTranslation.rows.push({ id: legacyKey, postId: 'public', translation: legacy, expiresAt: new Date(Date.now() + 86400000) });
+  assert.notEqual(cacheKey('public', original), legacyKey);
+  assert.equal((await request()).data.translation.title, 'Budget');
+  assert.equal(calls.length, 1);
+  const changed = { ...original, budget: '300千' };
+  models.Post.rows[0].budget = changed.budget;
+  assert.notEqual(sourceKey(original), sourceKey(changed));
+  assert.equal((await request()).data.translation.budget, '300 thousand');
+  assert.equal(calls.length, 2);
+  assert.equal(models.PostTranslation.rows.length, 3);
+  assert.equal((await request()).data.translation.budget, '300 thousand');
+  assert.equal(calls.length, 2, 'only the new matching source cache is reused');
+});
+
+test('a cached result missing its source multiplier is revalidated and safely replaced', async t => {
+  const original = { title: '预算', description: '', budget: '300万', timeInfo: '' };
+  const english = { title: 'Budget', description: '', budget: '300 ten-thousands', timeInfo: '' };
+  const { request, calls, models } = await fixture(t, { posts: [post('public', original)], ai: async () => english });
+  models.PostTranslation.rows.push({ id: cacheKey('public', original), postId: 'public', translation: { ...english, budget: '300 dollars' }, expiresAt: new Date(Date.now() + 86400000) });
+  assert.deepEqual((await request()).data.translation, english);
+  assert.equal(calls.length, 1);
+  assert.equal(models.PostTranslation.rows.length, 1);
+  assert.deepEqual(models.PostTranslation.rows[0].translation, english);
 });
 
 test('IP read limits include cached results and cannot be reset with a spoofed first proxy address', async t => {
