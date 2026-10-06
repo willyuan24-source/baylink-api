@@ -29,6 +29,8 @@
 
 完整隔离回归 `npm test`：1009 / 1009 通过；`npm run check` 通过。随后英文公开上下文调整的 22 个针对测试通过。新增回归覆盖代理头伪造、混合限速窗口、原子全站/身份预留、实例重建、Pacific 夏令/冬令午夜、无模型紧急资源、取消不合作 provider、解析上限、公开 DTO、别名/日期排除、页面指代与虚假无记录修复、快卡字段过滤。所有测试使用内存存储与 mock provider。修复依赖后 `npm audit --omit=dev` 报 0 漏洞。
 
+上线前追加复核补齐误吞清洁剂、误食药物与“不想活了”的简繁中文/英文表达。四个安全预路由入口在额度为 0、预算存储不可用及 `stream:true` 时仍直接返回官方资源，不调用 provider 或预留额度。另有针对否定、历史、新闻/翻译讨论和真实当前第三人称求助的回归；第三人称本身不会排除正在发生的危机，[988 官方支持帮助身边的人](https://988lifeline.org/help-someone-else/)。此规则仍不能代替完整临床筛查。此次语法检查通过，安全/本地 AI/出游草稿共 44 个针对测试通过。
+
 ## 尚需运营配置或后续独立实施
 
 - 必须核验生产 ingress 追加/覆盖 XFF 的真实行为与 origin 可达路径；一跳默认只有在 Render 路径契约成立时才能使用。Cloudflare 头不能仅因名称就成为可信来源。[Express 官方说明](https://expressjs.com/en/guide/behind-proxies/)、[Cloudflare 恢复真实 IP](https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/)。
