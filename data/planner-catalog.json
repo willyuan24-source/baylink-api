@@ -39,6 +39,48 @@
       "sourceLabel": "媒体报道 · thesocomarket.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Santa Rosa Ross Street 周日市集",
+        "Santa Rosa Ross Street Sunday Market",
+        "Santa Rosa Ross Street 週日市集"
+      ],
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "flower-piano-2026",
+      "title": "Flower Piano：在植物园里听一场钢琴",
+      "startDate": "2026-09-10",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 10–20 日",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "San Francisco Botanical Garden · Golden Gate Park",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "普通项目随植物园入场；符合条件者免费，Lounge 另票",
+      "summary": "钢琴散落在植物园里，散步途中可以遇见现场演奏，也有开放弹奏时段。适合把周末放慢，边听音乐边看植物。",
+      "plan": [
+        "先在官方日程里选想听的演出和所在园区，再安排散步路线；开放弹奏也要按当天安排。",
+        "普通活动包含在植物园入场内。旧金山居民等有免费资格，出发前核对证明要求；Zoox Lounge 需另外购票。",
+        "穿舒适的鞋、带一件外套，给园区之间的步行留时间；这是编辑建议，可按同行人的体力缩短行程。"
+      ],
+      "audience": [
+        "音乐爱好者",
+        "朋友约会",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://gggp.org/flowerpiano/",
+      "sourceLabel": "Gardens of Golden Gate Park",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-piano",
+      "relatedGuideSlug": "san-francisco-guide",
+      "aliases": [
+        "Flower Piano：在植物园里听一场钢琴",
+        "Flower Piano: Piano music in the botanical garden",
+        "Flower Piano：在植物園裡聽一場鋼琴"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -79,6 +121,11 @@
       "sourceLabel": "fremontstreeteats.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Fremont Street Eats 秋季周五餐车夜",
+        "Fremont Street Eats: Fall Friday Food Truck Nights",
+        "Fremont Street Eats 秋季週五餐車夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -114,8 +161,342 @@
       "sourceLabel": "vallejobrewing.net",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Vallejo Brewing：Art Walk 音乐夜",
+        "Vallejo Brewing: Art Walk Music Night",
+        "Vallejo Brewing：Art Walk 音樂夜"
+      ],
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "newark-days-2026",
+      "title": "Newark Days：巡游、游乐设施与社区舞台，选半天就能玩",
+      "startDate": "2026-09-17",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 17–20 日 · 每日节目时间不同",
+      "region": "east-bay",
+      "city": "Newark",
+      "venue": "MacGregor Playfields / Newark Community Center · 35501 Cedar Blvd",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "舞台演出免费 · 游乐设施、餐饮及部分项目另付",
+      "summary": "这场社区生日会有游乐设施、现场表演、手作摊位和周六巡游。想带孩子体验热闹，又不想安排远途旅行，可以按兴趣挑一个时段参加。",
+      "plan": [
+        "免费舞台节目不需买票；游乐设施和独立活动有各自规则，先看当天时间表再安排。",
+        "周六 9 月 19 日的巡游 10:00 开始，手作摊位同日上午开放；适合把巡游和逛摊安排在一起。",
+        "周四 9 月 17 日 17:00 起官网列有 $2 游乐设施时段；不是所有日期都享受同价，现场项目及限制以主办方为准。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "社区庆典",
+        "轻松半日游"
+      ],
+      "officialUrl": "https://newarkdays.org/schedule",
+      "sourceLabel": "Newark Days Celebration",
+      "imageKey": "sep26-newark-days",
+      "verifiedAt": "2026-09-11",
+      "aliases": [
+        "Newark Days：巡游、游乐设施与社区舞台，选半天就能玩",
+        "Newark Days: parades, carnival rides and community stages",
+        "Newark Days：巡遊、遊樂設施與社區舞臺，選半天就能玩"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "bark-in-the-park-san-jose-2026",
+      "title": "Bark in the Park：和狗狗过节",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-19",
+      "dateLabel": "9 月 19 日 · 周六",
+      "region": "south-bay",
+      "city": "San Jose",
+      "venue": "William Street Park",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费入场 · 主办方建议成人捐款",
+      "summary": "狗狗主题的户外社区活动，有趣味比赛、训练示范、宠物用品和救助组织展区。带狗参加前，先看看它是否适应热闹人群。",
+      "plan": [
+        "从登记入口入园，并为每只宠物填写登记表；全程牵绳，随手清理排泄物。",
+        "编辑建议带水、便携水碗和清理用品，先短逛一圈；狗狗紧张或疲倦时就休息、离场。",
+        "主办方鼓励可行时拼车或公共交通；若在 Naglee Park 周边停车，不要挡住住户车道。"
+      ],
+      "audience": [
+        "养狗家庭",
+        "宠物爱好者",
+        "社区活动"
+      ],
+      "officialUrl": "https://www.barksanjose.org/",
+      "sourceLabel": "Bark in the Park San Jose 官方",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-bark",
+      "relatedGuideSlug": "bay-area-dog-park-first-outing-guide",
+      "aliases": [
+        "Bark in the Park：和狗狗过节",
+        "Bark in the Park: Celebrate with your dog",
+        "Bark in the Park：和狗狗過節"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "lafayette-art-wine-2026",
+      "title": "Lafayette 艺术与葡萄酒节",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 19–20 日 · 周末",
+      "region": "east-bay",
+      "city": "Lafayette",
+      "venue": "Downtown · Mt. Diablo Boulevard 一带",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮与部分游乐另付",
+      "summary": "东湾的周末街区节庆，有艺术手作、现场音乐和餐饮摊位。免费入场，可以按自己的预算逛；带孩子则先挑一两项活动。",
+      "plan": [
+        "可搭 BART 到 Lafayette 站，按南出口步行指示前往；官方也提供车站与活动入口之间的免费接驳。",
+        "艺术摊位和音乐可自由逛看，儿童游乐按项目收费；编辑建议先定餐饮与游乐预算。",
+        "需要饮酒时带有效身份证件，主办方要求年满 21 岁；仅接受当年的节庆杯与饮品票。"
+      ],
+      "audience": [
+        "东湾居民",
+        "朋友出游",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://lafayettefestival.com/visitors-guide/",
+      "sourceLabel": "Lafayette Art & Wine Festival 游客指南",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-lafayette",
+      "relatedGuideSlug": "bay-area-commute-guide",
+      "aliases": [
+        "Lafayette 艺术与葡萄酒节",
+        "Lafayette Art & Wine Festival",
+        "Lafayette 藝術與葡萄酒節"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "mill-valley-fall-arts-2026",
+      "title": "Mill Valley 林间秋季艺术节",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 19–20 日 · 周末",
+      "region": "north-bay",
+      "city": "Mill Valley",
+      "venue": "Old Mill Park · 64 Cascade Drive",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "购票入场 · 按官方当前票种选择",
+      "summary": "在 Old Mill Park 的红杉树下看手作艺术、听现场音乐，儿童区也有表演和创作活动。适合留半天慢慢逛的北湾出游。",
+      "plan": [
+        "先从官网查看当前门票；9 月 1 日前的早鸟优惠已结束，不要按旧宣传估算票价。",
+        "场地附近不提供专用停车场；优先查官方远端停车与免费接驳路线，并记下回程末班时间。",
+        "儿童区有艺术活动和演出；宠物不能入场，也不能留在门外，合资格服务犬除外。"
+      ],
+      "audience": [
+        "艺术爱好者",
+        "亲子家庭",
+        "北湾半日游"
+      ],
+      "officialUrl": "https://www.mvfaf.org/visitor-information",
+      "sourceLabel": "Mill Valley Fall Arts Festival 游客指南",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-mill-valley",
+      "aliases": [
+        "Mill Valley 林间秋季艺术节",
+        "Mill Valley Fall Arts Festival among the trees",
+        "Mill Valley 林間秋季藝術節"
+      ],
+      "planning": {
+        "admissionUsd": null
+      }
+    },
+    {
+      "id": "muni-heritage-2026",
+      "title": "Muni Heritage：坐一次会行驶的城市历史",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 19–20 日 · 周末",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "San Francisco Railway Museum · 77 Steuart Street",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "活动古董公交与有轨电车免费；特色缆车按常规票价",
+      "summary": "老式公交和有轨电车重回街头，铁路博物馆周边还有亲子活动。适合喜欢交通工具的孩子，也适合借一段车程认识旧金山。",
+      "plan": [
+        "先到 Railway Museum 与 Embarcadero Plaza 一带，用活动当天的 Heritage Fun Map 确认上车点、路线和车辆位置。",
+        "将免费古董公交、有轨电车与收费 cable car 分开计划；不要把活动优惠理解为所有 Muni 线路免费。",
+        "博物馆免费开放，也有涂色、徽章制作等活动；想看历史公交车展示可优先选周六。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "交通爱好者",
+        "城市漫游"
+      ],
+      "officialUrl": "https://www.sfmta.com/calendar/muni-heritage-weekend-2026",
+      "sourceLabel": "SFMTA · Market Street Railway",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-muni",
+      "relatedGuideSlug": "bay-area-without-car-guide",
+      "aliases": [
+        "Muni Heritage：坐一次会行驶的城市历史",
+        "Muni Heritage: ride a piece of city history",
+        "Muni Heritage：坐一次會行駛的城市歷史"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "santa-clara-art-wine-2026",
+      "title": "Santa Clara Art & Wine：在 Central Park 逛手作、听音乐",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 19–20 日 · 周六 10:00–18:00，周日 10:00–17:00",
+      "region": "south-bay",
+      "city": "Santa Clara",
+      "venue": "Central Park · 909 Kiely Blvd",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场 · 餐饮、酒饮与购物另付",
+      "summary": "公园绿地、艺术手作与现场音乐放在同一个周末，适合约朋友逛一圈，也适合带家人出门。名字里虽有葡萄酒，市政府将它列为面向家庭的免费活动。",
+      "plan": [
+        "市政府列明免费入场；活动页 RSVP 用于接收更新，并非购票门槛。酒饮、餐饮与商品需另行付款。",
+        "周六 10:30–11:00，图书馆在 Magical Bridge Playground 安排故事时间；出门前再核对当天家庭活动表。",
+        "停车位有限，官方建议步行、骑车或拼车；带可重复使用的水瓶，现场有补水安排。"
+      ],
+      "audience": [
+        "艺术手作",
+        "亲子家庭",
+        "朋友结伴"
+      ],
+      "officialUrl": "https://www.santaclaraca.gov/our-city/departments-g-z/parks-recreation/parks-recreation-special-events/art-wine-festival",
+      "sourceLabel": "City of Santa Clara",
+      "imageKey": "sep26-santa-clara-art",
+      "verifiedAt": "2026-09-11",
+      "aliases": [
+        "Santa Clara Art & Wine：在 Central Park 逛手作、听音乐",
+        "Santa Clara Art & Wine: crafts and live music in Central Park",
+        "Santa Clara Art & Wine：在 Central Park 逛手作、聽音樂"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sf-autumn-moon-2026",
+      "title": "唐人街秋月节：看舞狮，找一口中秋味道",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 19–20 日 · 周末",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Chinatown · Grant Avenue，California 至 Broadway 段",
+      "category": "food",
+      "cost": "free",
+      "costLabel": "免费入场；食品与购物自费",
+      "summary": "唐人街商会带来中秋街区庆典，月饼、食品摊位、舞狮和儿童活动聚在一起。可以挑一段表演，再慢慢逛街，感受节日气氛。",
+      "plan": [
+        "从官方节目表挑一两项想看的演出；主舞台在 Washington 与 Grant 交叉口，街区活动沿 Grant 展开。",
+        "想看开幕巡游可安排周六；主办方提醒节目可能调整，出发前再看一次日程。",
+        "编辑建议：提前约好集合点，给买月饼和吃小食单列预算；免费入场不包含摊位消费。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "中华文化",
+        "美食散步"
+      ],
+      "officialUrl": "https://www.moonfestival.org/",
+      "sourceLabel": "Chinatown Merchants Association",
+      "verifiedAt": "2026-09-08",
+      "imageKey": "event-moon",
+      "relatedGuideSlug": "san-francisco-guide",
+      "aliases": [
+        "唐人街秋月节：看舞狮，找一口中秋味道",
+        "Chinatown Autumn Moon Festival: Lion dances and a taste of Mid-Autumn",
+        "唐人街秋月節：看舞獅，找一口中秋味道"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "treasure-island-coastal-cleanup-2026",
+      "title": "Coastal Cleanup Day：一起照顾 Treasure Island 海岸",
+      "startDate": "2026-09-19",
+      "endDate": "2026-09-19",
+      "dateLabel": "9 月 19 日 · 10:00–12:00",
+      "region": "sf",
+      "city": "San Francisco",
+      "venue": "Treasure Island Museum · Cityside Park / Clipper Cove",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费参与 · 需提前报名 · 交通与餐饮自理",
+      "summary": "到 Treasure Island 和朋友一起清理 Cityside Park、Clipper Cove 周边。两小时的社区志愿活动，既能认识海岸，也为下一次散步留下一点改变。",
+      "plan": [
+        "9 月 19 日 10:00–12:00，从 Treasure Island Museum 集合；必须提前登记，具体地点由报名通知提供。",
+        "主办方标注免费并有轮椅可达安排；需要协助、带孩子或团体参加时，在登记前确认具体作业区域与要求。",
+        "官方建议搭 Muni 25、渡轮或拼车，提前核对回程班次；交通票费不包含在免费志愿活动内。"
+      ],
+      "audience": [
+        "志愿活动入门",
+        "朋友结伴",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://www.sfenvironment.org/events/coastal-cleanup-day-treasure-island",
+      "sourceLabel": "San Francisco Environment Department",
+      "verifiedAt": "2026-09-09",
+      "imageKey": "fresh-treasure-island",
+      "relatedGuideSlug": "bay-area-coastal-cleanup-2026-guide",
+      "aliases": [
+        "Coastal Cleanup Day：一起照顾 Treasure Island 海岸",
+        "Coastal Cleanup Day: care for Treasure Island’s shoreline",
+        "Coastal Cleanup Day：一起照顧 Treasure Island 海岸"
+      ],
+      "planning": {
+        "admissionUsd": 0
+      }
+    },
+    {
+      "id": "san-rafael-porchfest-2026",
+      "title": "San Rafael PorchFest：街坊门廊就是音乐舞台",
+      "startDate": "2026-09-20",
+      "endDate": "2026-09-20",
+      "dateLabel": "9 月 20 日 · 12:00 起",
+      "region": "north-bay",
+      "city": "San Rafael",
+      "venue": "Gerstle Park 街区 · 各门廊与社区演出点",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费听演出 · 餐饮与个人消费另付",
+      "summary": "不用走进音乐厅，沿着 Gerstle Park 的住宅街散步，就能遇见门廊、庭院和公园里的演出。这场志愿者组织的免费音乐节适合挑几支乐队慢慢听。",
+      "plan": [
+        "官网明确免费且不售门票，9 月 20 日中午开始；不用把赞助或捐款入口当成必买门票。",
+        "演出点分散在住宅街区，按官方地图挑几个相邻点位，再看当年的乐队时段，不必追完所有演出。",
+        "编辑建议轻装步行，尊重住宅入口与居民空间；饮水、餐食和回程交通单独安排。"
+      ],
+      "audience": [
+        "现场音乐",
+        "街区散步",
+        "朋友结伴"
+      ],
+      "officialUrl": "https://www.sanrafaelporchfest.com/",
+      "sourceLabel": "San Rafael PorchFest",
+      "imageKey": "sep26-porchfest",
+      "verifiedAt": "2026-09-11",
+      "aliases": [
+        "San Rafael PorchFest：街坊门廊就是音乐舞台",
+        "San Rafael PorchFest: neighborhood porches become music stages",
+        "San Rafael PorchFest：街坊門廊就是音樂舞臺"
+      ],
+      "planning": {
+        "admissionUsd": 0
       }
     },
     {
@@ -145,6 +526,11 @@
       "sourceLabel": "petalumapumpkinpatch.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Petaluma 南瓜田与玉米迷宫",
+        "Petaluma Pumpkin Patch & Amazing Corn Maze",
+        "Petaluma 南瓜田與玉米迷宮"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -177,6 +563,11 @@
       "sourceLabel": "redwoodcity.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "sep26-redwood-oktoberfest",
+      "aliases": [
+        "Redwood City Oktoberfest：收官周末，去广场听一场巴伐利亚音乐",
+        "Redwood City Oktoberfest: Bavarian music on the closing weekend",
+        "Redwood City Oktoberfest：收官週末，去廣場聽一場巴伐利亞音樂"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -208,6 +599,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "everyday",
+      "aliases": [
+        "Cupertino 秋季自行车节：骑车去市政广场",
+        "Cupertino Fall Bike Fest: ride to Civic Center Plaza",
+        "Cupertino 秋季腳踏車節：騎車去市政廣場"
+      ],
       "location": {
         "lat": 37.3188973,
         "lng": -122.0286498,
@@ -264,6 +660,11 @@
       "sourceLabel": "foodwise.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-ferry-building",
+      "aliases": [
+        "Ferry Plaza 农夫市集：海边逛一圈",
+        "Ferry Plaza Farmers Market: A Waterfront Stroll",
+        "Ferry Plaza 農夫市集：海邊逛一圈"
+      ],
       "location": {
         "lat": 37.7953186,
         "lng": -122.3936029,
@@ -334,6 +735,11 @@
       "sourceLabel": "pacificcoastfogfest.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "sep26-fog-fest",
+      "aliases": [
+        "Pacifica Fog Fest：海风、手作摊位与三处音乐舞台",
+        "Pacifica Fog Fest: ocean air, craft stalls and three music stages",
+        "Pacifica Fog Fest：海風、手作攤位與三處音樂舞臺"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -367,6 +773,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "event-portola",
       "relatedGuideSlug": "bay-area-without-car-guide",
+      "aliases": [
+        "21+ · Portola：把月底留给现场音乐",
+        "21+ · Portola: Save the month's end for live music",
+        "21+ · Portola：把月底留給現場音樂"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -402,6 +813,11 @@
       "sourceLabel": "koreancentersf.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "sep26-chuseok",
+      "aliases": [
+        "Presidio Chuseok：在大草坪体验韩国秋夕",
+        "Presidio Chuseok: celebrate Korean harvest traditions on the lawn",
+        "Presidio Chuseok：在大草坪體驗韓國秋夕"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -433,6 +849,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
       "occurrenceDates": [],
+      "aliases": [
+        "San José 儿童博物馆中秋节：舞狮与灯笼",
+        "Mid-Autumn Moon Festival at Children’s Discovery Museum",
+        "San José 兒童博物館中秋節：舞獅與燈籠"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -465,6 +886,11 @@
       "sourceLabel": "farmtrails.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "sep26-farm-trails",
+      "aliases": [
+        "Sonoma Farm Trails：跟着收获季，去农场过一个秋天",
+        "Sonoma Farm Trails: spend a harvest-season weekend on the farms",
+        "Sonoma Farm Trails：跟著收穫季，去農場過一個秋天"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -501,6 +927,11 @@
       "sourceLabel": "marincountrymart.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Marin Country Mart 德式啤酒节",
+        "Marin Country Mart Oktoberfest",
+        "Marin Country Mart 德式啤酒節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -532,6 +963,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Menlo Park 免费故事节：Clara 的非洲故事",
+        "Clara’s Africrafty Tales in Menlo Park",
+        "Menlo Park 免費故事節：Clara 的非洲故事"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -563,6 +999,11 @@
       "sourceLabel": "minoans.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Novato 国际青少年民间舞蹈节",
+        "Novato International Youth Folk Dance Festival",
+        "Novato 國際青少年民間舞蹈節"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -595,6 +1036,11 @@
       "sourceLabel": "petalumadowntown.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "sep26-petaluma-antique",
+      "aliases": [
+        "Petaluma 秋季古董集市：把周日留给旧物寻宝",
+        "Petaluma Fall Antique Faire: a Sunday for vintage treasure hunting",
+        "Petaluma 秋季古董集市：把週日留給舊物尋寶"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -627,6 +1073,13 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "The AI Conference：从研究到实际产品",
+        "The AI Conference",
+        "AI Conference SF",
+        "The AI Conference: from research to real products",
+        "The AI Conference：從研究到實際產品"
+      ],
       "location": {
         "lat": 37.7758086,
         "lng": -122.3853487,
@@ -665,6 +1118,11 @@
       "sourceLabel": "lutherburbankcenter.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Pat Benatar & Neil Giraldo 圣罗莎演唱会",
+        "Pat Benatar & Neil Giraldo in Santa Rosa",
+        "Pat Benatar & Neil Giraldo 聖羅莎演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -699,6 +1157,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "小熊维尼出版百年亲子派对",
+        "Winnie-the-Pooh Publication Centenary Family Party",
+        "小熊維尼出版百年親子派對"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -735,6 +1198,11 @@
       "sourceLabel": "sfopera.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "旧金山歌剧院《苏格兰女王玛丽》",
+        "San Francisco Opera: Mary, Queen of Scots",
+        "舊金山歌劇院《蘇格蘭女王瑪麗》"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -767,6 +1235,10 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "The Phil Collins Story 致敬演出",
+        "The Phil Collins Story tribute performance"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -801,6 +1273,10 @@
       "sourceLabel": "members.claytoncbca.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Clayton CBCA 本地商家交流夜",
+        "Clayton CBCA local business networking evening"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -833,6 +1309,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "PyLadies：AI 时代的数据科学职业与实践",
+        "PyLadies: data science careers and practice in the AI era",
+        "PyLadies：AI 時代的資料科學職業與實踐"
+      ],
       "location": {
         "lat": 37.4850527,
         "lng": -122.1762167,
@@ -873,6 +1354,10 @@
       "sourceLabel": "danville.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Danville 稻草人商圈漫步",
+        "Danville Scarecrow Stroll"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -905,6 +1390,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "LLMday：智能体、评测与 AI 工程实践",
+        "LLMday: agents, evaluation and AI engineering",
+        "LLMday：智能體、評測與 AI 工程實踐"
+      ],
       "location": {
         "lat": 37.7863267,
         "lng": -122.4066852,
@@ -945,6 +1435,11 @@
       "sourceLabel": "marincountrymart.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Flora & Henri 摄影展开幕交流夜",
+        "Flora & Henri Photography Exhibition Opening Reception",
+        "Flora & Henri 攝影展開幕交流夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -976,6 +1471,11 @@
       "sourceLabel": "mvff.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "cinema-night",
+      "aliases": [
+        "Mill Valley Film Festival：北湾电影之旅",
+        "Mill Valley Film Festival: a North Bay film outing",
+        "Mill Valley Film Festival：北灣電影之旅"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1007,6 +1507,10 @@
       "sourceLabel": "kqed.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Rick Steves Redwood City 旅行分享夜",
+        "Rick Steves travel talk in Redwood City"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1038,6 +1542,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "Runtime by Modal：AI 基础设施交流日",
+        "Runtime by Modal: an AI infrastructure gathering",
+        "Runtime by Modal：AI 基礎設施交流日"
+      ],
       "location": {
         "lat": 37.7492774,
         "lng": -122.3856944,
@@ -1076,6 +1585,11 @@
       "sourceLabel": "srcity.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "garden-walk",
+      "aliases": [
+        "Santa Rosa 公园南瓜寻宝",
+        "Santa Rosa Pumpkins in the Parks Scavenger Hunt",
+        "Santa Rosa 公園南瓜尋寶"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1107,6 +1621,11 @@
       "sourceLabel": "theeastcut.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "10 月 Downtown First Thursdays 街区派对",
+        "October Downtown First Thursdays Block Party",
+        "10 月 Downtown First Thursdays 街區派對"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1137,6 +1656,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium After Dark：Echoes 回声之夜",
+        "Exploratorium After Dark: Echoes",
+        "Exploratorium After Dark：Echoes 回聲之夜"
+      ],
       "location": {
         "lat": 37.8016649,
         "lng": -122.397348,
@@ -1194,6 +1718,11 @@
         "音乐与夜生活",
         "艺术爱好者"
       ],
+      "aliases": [
+        "NEXUS Party：湾区黑人艺术周官方派对",
+        "NEXUS Party: the official SF/Bay Area Black Art Week party",
+        "NEXUS Party：灣區黑人藝術周官方派對"
+      ],
       "planning": {
         "admissionUsd": 25,
         "setting": "indoor",
@@ -1246,6 +1775,11 @@
       "sourceLabel": "sfsymphony.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "芮妮·弗莱明演唱施特劳斯",
+        "Renée Fleming sings Strauss",
+        "芮妮·佛萊明演唱史特勞斯"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1277,6 +1811,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Panthers：主场揭幕战",
+        "San Jose Sharks vs. Panthers: Home Opener",
+        "聖何塞 Sharks 對 Panthers：主場揭幕戰"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1308,6 +1847,11 @@
       "sourceLabel": "parks.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Sonoma 免费画廊夜：看水彩，也试着画",
+        "Sonoma’s Free Jorgensen Gallery and Sketch Night",
+        "Sonoma 免費畫廊夜：看水彩，也試著畫"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1343,6 +1887,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Billy Strings 奥克兰演唱会",
+        "Billy Strings in Oakland",
+        "Billy Strings 奧克蘭演唱會"
+      ],
       "planning": {
         "admissionUsd": null,
         "schedule": {
@@ -1387,6 +1936,11 @@
       "sourceLabel": "fremont.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "outdoor-cinema",
+      "aliases": [
+        "Fremont 星空电影：《海底总动员》",
+        "Fremont Movies Under the Stars: Finding Nemo",
+        "Fremont 星空電影：《海底總動員》"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor"
@@ -1421,6 +1975,15 @@
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
       "relatedGuideSlug": "golden-gate-park-free-car-free-day-guide",
+      "aliases": [
+        "Hardly Strictly Bluegrass 免费音乐节",
+        "Hardly Strictly Bluegrass",
+        "HSB",
+        "蓝草音乐节",
+        "藍草音樂節",
+        "Hardly Strictly Bluegrass: free music in the park",
+        "Hardly Strictly Bluegrass 免費音樂節"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1453,6 +2016,11 @@
       "sourceLabel": "sanjose.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Hayes Mansion：Mary Hayes 纪念下午茶",
+        "Hayes Mansion: Mary Hayes Commemorative Afternoon Tea",
+        "Hayes Mansion：Mary Hayes 紀念下午茶"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1484,6 +2052,11 @@
       "sourceLabel": "visitmarin.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Marin Country Mart 免费露天电影：Lilo & Stitch",
+        "Marin Country Mart Free Outdoor Movie: Lilo & Stitch",
+        "Marin Country Mart 免費露天電影：Lilo & Stitch"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1516,6 +2089,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "everyday",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "Oakland Civic Tech Design Sprint：用 AI 回应社区问题",
+        "Oakland Civic Tech Design Sprint: AI for community needs",
+        "Oakland Civic Tech Design Sprint：用 AI 回應社區問題"
+      ],
       "location": {
         "lat": 37.808664,
         "lng": -122.2687041,
@@ -1557,6 +2135,11 @@
       "sourceLabel": "oaklandfirstfridays.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Oakland First Fridays：艺术与街区夜市",
+        "Oakland First Fridays: Art and an evening street festival",
+        "Oakland First Fridays：藝術與街區夜市"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1588,6 +2171,11 @@
       "sourceLabel": "oacc.cc",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Oakland 免费缝补圈：带一件想修的旧衣服",
+        "Oakland’s Free Community Mending Circle",
+        "Oakland 免費縫補圈：帶一件想修的舊衣服"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -1620,6 +2208,11 @@
       ],
       "audience": [
         "艺术爱好者"
+      ],
+      "aliases": [
+        "Palo Alto Art Center：Live the moment light 公众开幕夜",
+        "Palo Alto Art Center: Live the moment light public opening reception",
+        "Palo Alto Art Center：Live the moment light 公眾開幕夜"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -1689,6 +2282,11 @@
       "sourceLabel": "alamedacountyfair.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Pleasanton Pumpkins After Dark 南瓜灯夜游",
+        "Pleasanton Pumpkins After Dark evening trail",
+        "Pleasanton Pumpkins After Dark 南瓜燈夜遊"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1720,6 +2318,11 @@
       "sourceLabel": "bassfestival.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-rio-vista",
+      "aliases": [
+        "Rio Vista Bass Derby：三角洲小镇周末",
+        "Rio Vista Bass Derby: a Delta town weekend",
+        "Rio Vista Bass Derby：三角洲小鎮週末"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1751,6 +2354,11 @@
       "sourceLabel": "sjmusart.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "San José 免费美术馆之夜：New Ballet 演出季预览",
+        "San José Museum of Art: Free First Friday with New Ballet",
+        "San José 免費美術館之夜：New Ballet 演出季預覽"
+      ],
       "location": {
         "lat": 37.333726,
         "lng": -121.889925,
@@ -1809,6 +2417,11 @@
       "officialUrl": "https://www.eventbrite.com/e/the-hellflowers-and-knights-of-molino-free-concert-tickets-1996056752479",
       "sourceLabel": "Filco Events · Fridays at the Lake",
       "verifiedAt": "2026-09-29",
+      "aliases": [
+        "San Jose 免费摇滚夜：The Hellflowers 与 Knights of Molino",
+        "Free San Jose rock night: The Hellflowers and Knights of Molino",
+        "San Jose 免費搖滾夜：The Hellflowers 與 Knights of Molino"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -1863,6 +2476,11 @@
       "sourceLabel": "westartgardens.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "San José 花园小市集：艺术、手作与预约餐券",
+        "SoFA Pocket Park: Art, Garden and Community Market",
+        "San José 花園小市集：藝術、手作與預約餐券"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1895,6 +2513,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "family-workshop",
       "relatedGuideSlug": "san-mateo-coyote-point-bayfront-guide",
+      "aliases": [
+        "CuriOdyssey 十月科学夜：动物、幻觉与南瓜实验",
+        "CuriOdyssey October Science Night: Animals, Illusions and Pumpkin Experiments",
+        "CuriOdyssey 十月科學夜：動物、幻覺與南瓜實驗"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1926,6 +2549,11 @@
       "sourceLabel": "westfield.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Valley Fair：Volvo EX60展示与周末试驾",
+        "Valley Fair: Volvo EX60 display and weekend test drives",
+        "Valley Fair：Volvo EX60展示與週末試駕"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1958,6 +2586,11 @@
       "sourceLabel": "sanjose.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Santana Row 玻璃南瓜艺术节",
+        "Santana Row Glass Pumpkin Festival",
+        "Santana Row 玻璃南瓜藝術節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -1990,6 +2623,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Assembling 2026 AI 峰会",
+        "Assembling 2026 AI Summit",
+        "Assembling 2026 AI 峰會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2045,6 +2683,11 @@
       "sourceLabel": "ssfca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "South San Francisco《Blooming Into Being》免费艺术展",
+        "South San Francisco: Blooming Into Being Free Art Exhibition",
+        "South San Francisco《Blooming Into Being》免費藝術展"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2080,6 +2723,11 @@
       "sourceLabel": "claytonoktoberfest.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Clayton Oktoberfest：山脚下的秋日街庆",
+        "Clayton Oktoberfest: a festival below Mount Diablo",
+        "Clayton Oktoberfest：山腳下的秋日街慶"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2112,6 +2760,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Cupertino 夏威夷音乐与呼啦舞日",
+        "Cupertino Hawaiian Music and Hula Day",
+        "Cupertino 夏威夷音樂與呼啦舞日"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2146,6 +2799,11 @@
       "audience": [
         "亲子家庭",
         "艺术手作"
+      ],
+      "aliases": [
+        "San Francisco 水灯节：Foster City 湖畔两晚",
+        "San Francisco Water Lantern Festival: two evenings by the lagoon in Foster City",
+        "San Francisco 水燈節：Foster City 湖畔兩晚"
       ],
       "planning": {
         "admissionUsd": null,
@@ -2217,6 +2875,11 @@
       "sourceLabel": "content.govdelivery.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Fremont NAMIWalks 心理健康社区步行",
+        "Fremont NAMIWalks Community Walk for Mental Health",
+        "Fremont NAMIWalks 心理健康社區步行"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2251,6 +2914,11 @@
       "sourceLabel": "acscienceinthepark.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Hayward Science in the Park 免费科学日",
+        "Hayward Science in the Park: Free Science Day",
+        "Hayward Science in the Park 免費科學日"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2283,6 +2951,11 @@
       "sourceLabel": "manymoonsfestival.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Many Moons 亚裔与太平洋岛民文化节",
+        "Many Moons Asian and Pacific Islander Cultural Festival",
+        "Many Moons 亞裔與太平洋島民文化節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2314,6 +2987,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Menlo Park 故事节：走近 Kasturba Gandhi",
+        "Menlo Park Storytelling Festival: Kasturba Gandhi",
+        "Menlo Park 故事節：走近 Kasturba Gandhi"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2345,6 +3023,11 @@
       "sourceLabel": "City of Newark",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "居民免费碎纸：带证件和地址证明",
+        "Free resident shredding: bring ID and address evidence",
+        "居民免費碎紙：帶證件和地址證明"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2380,6 +3063,11 @@
       "sourceLabel": "oaktoberfest.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Oakland Oaktoberfest：Dimond 街区啤酒节",
+        "Oakland Oaktoberfest in the Dimond",
+        "Oakland Oaktoberfest：Dimond 街區啤酒節"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2411,6 +3099,11 @@
       "sourceLabel": "cityofnapa.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Napa 消防开放日与免费万圣节服装交换",
+        "Napa fire station open house and free Halloween costume swap",
+        "Napa 消防開放日與免費萬聖節服裝交換"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2444,6 +3137,11 @@
       "audience": [
         "生活维修",
         "减少浪费"
+      ],
+      "aliases": [
+        "Redwood City 免费维修诊断：Fixit Clinic",
+        "Redwood City Fixit Clinic: free repair help",
+        "Redwood City 免費維修診斷：Fixit Clinic"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -2493,6 +3191,11 @@
       "sourceLabel": "redwoodcityport.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-redwood-port",
+      "aliases": [
+        "Redwood City PortFest：走进湾边工作港口",
+        "Redwood City PortFest: explore the working waterfront",
+        "Redwood City PortFest：走進灣邊工作港口"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2524,6 +3227,11 @@
       "sourceLabel": "Lambtown Festival 主办方",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Dixon Lambtown 羊毛与牧羊文化节",
+        "Dixon Lambtown fiber and sheep festival",
+        "Dixon Lambtown 羊毛與牧羊文化節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2558,6 +3266,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Cunamacué 非裔秘鲁舞蹈体验",
+        "Cunamacué Afro-Peruvian Dance Experience",
+        "Cunamacué 非裔秘魯舞蹈體驗"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2600,6 +3313,11 @@
       "sourceLabel": "Bay Area Discovery Museum",
       "verifiedAt": "2026-10-02",
       "imageKey": "family-workshop",
+      "aliases": [
+        "Sausalito Goblin Jamboree：儿童博物馆的万圣节探索",
+        "Sausalito Goblin Jamboree: Halloween Play at the Discovery Museum",
+        "Sausalito Goblin Jamboree：兒童博物館的萬聖節探索"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2631,6 +3349,11 @@
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-yerba-buena",
+      "aliases": [
+        "非洲艺术节：草坪上的鼓乐、舞蹈与市集",
+        "African Arts Festival: drums, dance and a lawn marketplace",
+        "非洲藝術節：草坪上的鼓樂、舞蹈與市集"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2661,6 +3384,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "迪士尼 Worlds Collide 演唱会",
+        "Disney Worlds Collide concert",
+        "迪士尼 Worlds Collide 演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2695,6 +3423,11 @@
       "sourceLabel": "Foodwise",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-ferry-building",
+      "aliases": [
+        "Foodwise Latine Makers：渡轮大厦拉丁裔创作者市集",
+        "Foodwise Latine Makers: A Market at the Ferry Building",
+        "Foodwise Latine Makers：渡輪大廈拉丁裔創作者市集"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -2743,6 +3476,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Kings：开季周末",
+        "San Jose Sharks vs. Kings: opening weekend",
+        "聖何塞 Sharks 對 Kings：開季週末"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2777,6 +3515,11 @@
       "audience": [
         "亲子阅读",
         "教育工作者"
+      ],
+      "aliases": [
+        "Sonoma 图书馆书展：儿童免费一本，教师购书半价",
+        "Sonoma library book sale: a free book for children, half-price books for educators",
+        "Sonoma 圖書館書展：兒童免費一本，教師購書半價"
       ],
       "planning": {
         "admissionUsd": null,
@@ -2832,6 +3575,11 @@
       "sourceLabel": "sacas.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Sunnyvale Diwali：市中心印度文化节",
+        "Sunnyvale Diwali: downtown South Asian celebration",
+        "Sunnyvale Diwali：市中心印度文化節"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -2863,6 +3611,11 @@
       "sourceLabel": "tiburonchamber.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-wine",
+      "aliases": [
+        "Tiburon Wine Festival：北湾品酒午后",
+        "Tiburon Wine Festival: a North Bay tasting afternoon",
+        "Tiburon Wine Festival：北灣品酒午後"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 21
@@ -2896,6 +3649,11 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Get the Led Out 摇滚致敬",
+        "Get the Led Out Rock Tribute",
+        "Get the Led Out 搖滾致敬"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2927,6 +3685,11 @@
       "sourceLabel": "color-run.vacavillekiwanis.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Vacaville 亲子彩色跑",
+        "Vacaville Learn Your Colors Run",
+        "Vacaville 親子彩色跑"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2959,6 +3722,11 @@
       "sourceLabel": "vallejowaterfrontweekend.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Vallejo Fest 海滨社区节",
+        "Vallejo Fest waterfront community festival",
+        "Vallejo Fest 海濱社區節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -2994,6 +3762,11 @@
       "sourceLabel": "Antiques By The Bay",
       "verifiedAt": "2026-10-02",
       "imageKey": "secondhand-check",
+      "aliases": [
+        "Alameda Point 古董市集：为新家找一件旧物",
+        "Alameda Point Antiques Faire: Vintage Finds for a New Home",
+        "Alameda Point 古董市集：為新家找一件舊物"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3028,6 +3801,11 @@
       "sourceLabel": "Cal Sailing Club",
       "verifiedAt": "2026-09-29",
       "imageKey": "refresh-sailing",
+      "aliases": [
+        "Cal Sailing 免费帆船开放日",
+        "Cal Sailing Free Introductory Sailing Day",
+        "Cal Sailing 免費帆船開放日"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -3081,6 +3859,11 @@
       "sourceLabel": "Crowden School",
       "verifiedAt": "2026-09-29",
       "imageKey": "refresh-music",
+      "aliases": [
+        "Crowden 免费社区音乐日：试奏乐器与亲子音乐会",
+        "Crowden Community Music Day: Free Instrument Activities and Family Concerts",
+        "Crowden 免費社區音樂日：試奏樂器與親子音樂會"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "mixed",
@@ -3132,6 +3915,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "墨西哥国家德比：Chivas 对 Club América",
+        "Mexico's National Derby: Chivas vs. Club America",
+        "墨西哥國家德比：Chivas 對 Club América"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3163,6 +3951,11 @@
       "sourceLabel": "ebparks.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-coyote-hills",
+      "aliases": [
+        "Fremont Ohlone 文化聚会：听原住民讲述今天与过去",
+        "Gathering of Ohlone Peoples at Coyote Hills",
+        "Fremont Ohlone 文化聚會：聽原住民講述今天與過去"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3194,6 +3987,11 @@
       "sourceLabel": "litquake.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-yerba-buena-gardens",
+      "aliases": [
+        "Litquake Out Loud 与独立出版书市",
+        "Litquake Out Loud & Small Press Book Fair",
+        "Litquake Out Loud 與獨立出版書市"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3225,6 +4023,11 @@
       "sourceLabel": "littleitalysj.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "San Jose Little Italy 十周年街头节",
+        "San Jose Little Italy 10th Anniversary Festival",
+        "San Jose Little Italy 十週年街頭節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3260,6 +4063,11 @@
       "sourceLabel": "japaneseculturefest-millbrae.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Millbrae第21届日本文化节",
+        "Millbrae's 21st Japanese Culture Festival",
+        "Millbrae第21屆日本文化節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3297,6 +4105,11 @@
       "sourceLabel": "Drunken Film Fest Oakland",
       "imageKey": "culture-visit",
       "verifiedAt": "2026-09-30",
+      "aliases": [
+        "Oakland Drunken Film Fest：免费短片周",
+        "Oakland Drunken Film Fest: free short films",
+        "Oakland Drunken Film Fest：免費短片周"
+      ],
       "planning": {
         "admissionUsd": 0,
         "programTimeUnconfirmed": true,
@@ -3331,6 +4144,11 @@
       "sourceLabel": "marinhistory.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Rafael 家庭纪念物保存日",
+        "San Rafael family keepsake preservation day",
+        "San Rafael 家庭紀念物保存日"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3369,6 +4187,11 @@
       "sourceLabel": "mareislandartstudios.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Mare Island Wonder Sundays 共同创作",
+        "Mare Island Wonder Sundays: Create Together",
+        "Mare Island Wonder Sundays 共同創作"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3411,6 +4234,17 @@
       "verifiedAt": "2026-10-02",
       "imageKey": "verified-fishermans-wharf",
       "relatedGuideSlug": "sf-fishermans-wharf-pier39-guide",
+      "aliases": [
+        "San Francisco Fleet Week：海湾与城市活动周",
+        "San Francisco Fleet Week",
+        "Fleet Week",
+        "舰队周",
+        "艦隊週",
+        "蓝天使",
+        "藍天使",
+        "Blue Angels",
+        "San Francisco Fleet Week：海灣與城市活動周"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3442,6 +4276,11 @@
       "sourceLabel": "levisstadium.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "49ers 主场对 Broncos",
+        "49ers Home Game vs. Broncos",
+        "49ers 主場對 Broncos"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3476,6 +4315,11 @@
       "audience": [
         "阅读爱好者",
         "优惠购书"
+      ],
+      "aliases": [
+        "Santa Rosa 大型书展优惠日：半价与 $5 一袋",
+        "Santa Rosa book sale discount days: half price and $5 a bag",
+        "Santa Rosa 大型書展優惠日：半價與 $5 一袋"
       ],
       "planning": {
         "admissionUsd": null,
@@ -3533,6 +4377,11 @@
       "sourceLabel": "castrostreetfair.org",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Castro 街区节：在音乐与市集中认识社区",
+        "Castro Street Fair: Music, markets and neighborhood connections",
+        "Castro 街區節：在音樂與市集中認識社區"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3565,6 +4414,9 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Duff Goldman：The Tao of Duff"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3597,6 +4449,13 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "n8n 实作夜：做一个能带走的自动化流程",
+        "n8n workshop",
+        "n8n 工作坊",
+        "n8n build night: leave with a working automation",
+        "n8n 實作夜：做一個能帶走的自動化流程"
+      ],
       "location": {
         "lat": 37.7817154,
         "lng": -122.4083666,
@@ -3636,6 +4495,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "FARR 前沿 AI 与机器人峰会",
+        "FARR Frontier AI and Robotics Summit",
+        "FARR 前沿 AI 與機器人峰會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3667,6 +4531,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "SurrealDB × Mastra：智能体共享记忆与生产实践",
+        "SurrealDB × Mastra: shared memory for production agents",
+        "SurrealDB × Mastra：智能體共享記憶與生產實踐"
+      ],
       "location": {
         "lat": 37.7904122,
         "lng": -122.3993448,
@@ -3712,6 +4581,11 @@
       "officialUrl": "https://djerassi.org/events/fall-art-hikes/",
       "sourceLabel": "Djerassi Resident Artists Program",
       "verifiedAt": "2026-09-29",
+      "aliases": [
+        "Woodside Djerassi 免费艺术徒步：预约进入山间创作园区",
+        "Woodside Djerassi free art hike: reserve a visit to the hillside artists’ grounds",
+        "Woodside Djerassi 免費藝術徒步：預約進入山間創作園區"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -3762,6 +4636,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "aespa 奥克兰巡演",
+        "aespa Oakland tour stop",
+        "aespa 奧克蘭巡演"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3801,6 +4680,11 @@
       "officialUrl": "https://marinlibrary.bibliocommons.com/v2/events?series=6a33170c2ea730c17ab7baeb",
       "sourceLabel": "Marin County Free Library 官方系列日历",
       "imageKey": "community-library-card",
+      "aliases": [
+        "Fairfax 幼儿西英双语故事会",
+        "Fairfax Spanish–English storytime for young children",
+        "Fairfax 幼兒西英雙語故事會"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -3874,6 +4758,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Leandro 图书馆免费桌游夜",
+        "San Leandro Library Free Board Game Night",
+        "San Leandro 圖書館免費桌遊夜"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3905,6 +4794,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-10-02",
       "imageKey": "verified-sf-main-library",
+      "aliases": [
+        "旧金山总图书馆中文对话：下班后认识新朋友",
+        "SF Main Library Mandarin Conversation: Meet People After Work",
+        "舊金山總圖書館中文對話：下班後認識新朋友"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -3936,6 +4830,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "勇士对湖人：NBA 季前赛",
+        "Warriors vs. Lakers: NBA Preseason",
+        "勇士對湖人：NBA 季前賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -3973,6 +4872,11 @@
       "sourceLabel": "Visit Concord · Side Gate",
       "imageKey": "autumn-neighbors",
       "verifiedAt": "2026-09-30",
+      "aliases": [
+        "Concord Side Gate：周三知识问答夜",
+        "Concord Side Gate: Wednesday trivia nights",
+        "Concord Side Gate：週三知識問答夜"
+      ],
       "planning": {
         "admissionUsd": null,
         "reservation": "unknown",
@@ -4060,6 +4964,11 @@
       "sourceLabel": "cityofnapa.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "garden-walk",
+      "aliases": [
+        "Napa 节水花园讲座：先养土，再选耐旱植物",
+        "Napa water-wise workshops: start with soil, then choose drought-tolerant plants",
+        "Napa 節水花園講座：先養土，再選耐旱植物"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -4091,6 +5000,11 @@
       "sourceLabel": "marinhistory.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Marin History Museum 馆长咖啡谈",
+        "Marin History Museum Coffee with the Curator",
+        "Marin History Museum 館長咖啡談"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -4125,6 +5039,11 @@
       "sourceLabel": "Alameda County Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "october-library-culture",
+      "aliases": [
+        "San Lorenzo 阅读自由故事会与赠书",
+        "San Lorenzo Freedom-to-Read Storytime and Book Giveaway",
+        "San Lorenzo 閱讀自由故事會與贈書"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -4174,6 +5093,11 @@
       "verifiedAt": "2026-10-02",
       "imageKey": "weekend",
       "occurrenceDates": [],
+      "aliases": [
+        "AI 基础设施扩展问题交流晚餐",
+        "Networking dinner on scaling AI infrastructure",
+        "AI 基礎設施擴展問題交流晚餐"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4204,6 +5128,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Rod Wave 旧金山演唱会",
+        "Rod Wave concert in San Francisco",
+        "Rod Wave 舊金山演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4237,6 +5166,10 @@
       "audience": [
         "5 岁以上亲子",
         "积木与动手"
+      ],
+      "aliases": [
+        "Richmond：LEGO 自由搭建",
+        "Richmond: LEGO Free Play"
       ],
       "planning": {
         "admissionUsd": null,
@@ -4287,6 +5220,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "SOMBR 圣何塞演唱会",
+        "SOMBR Live in San Jose",
+        "SOMBR 聖何塞演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4320,6 +5258,11 @@
       "audience": [
         "音乐爱好者",
         "校园短途"
+      ],
+      "aliases": [
+        "Stanford 免费午间音乐会：吉他学生演出",
+        "Stanford free noon concert: guitar students",
+        "Stanford 免費午間音樂會：吉他學生演出"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -4371,6 +5314,11 @@
         "5–14 岁儿童",
         "艺术手作"
       ],
+      "aliases": [
+        "Corte Madera 免费手作：木制糖骷髅彩绘",
+        "Corte Madera free craft: paint a wooden sugar skull",
+        "Corte Madera 免費手作：木製糖骷髏彩繪"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -4420,6 +5368,11 @@
       "sourceLabel": "Belvedere Tiburon Library 官方园艺活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Tiburon Master Gardeners 亚洲叶菜种植课",
+        "Tiburon Master Gardeners Asian greens session",
+        "Tiburon Master Gardeners 亞洲葉菜種植課"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4451,6 +5404,11 @@
       "sourceLabel": "Belvedere Tiburon Library 官方活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "refresh-makers",
+      "aliases": [
+        "Tiburon Makerspace 维修咨询晚间场",
+        "Tiburon Makerspace evening repair advice",
+        "Tiburon Makerspace 維修諮詢晚間場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4484,6 +5442,11 @@
       "audience": [
         "拼图爱好者",
         "物品交换"
+      ],
+      "aliases": [
+        "San Rafael 免费拼图交换：不必捐赠也能参加",
+        "San Rafael free puzzle swap: no donation required",
+        "San Rafael 免費拼圖交換：不必捐贈也能參加"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -4532,6 +5495,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-10-02",
       "imageKey": "october-library-culture",
+      "aliases": [
+        "唐人街中文书法临帖：先打电话预约的小课堂",
+        "Chinatown Chinese Calligraphy: Reserve a Place by Phone",
+        "唐人街中文書法臨帖：先打電話預約的小課堂"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -4562,6 +5530,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium After Dark：Unplug & Play 动手玩",
+        "Exploratorium After Dark: Unplug & Play",
+        "Exploratorium After Dark：Unplug & Play 動手玩"
+      ],
       "location": {
         "lat": 37.8016649,
         "lng": -122.397348,
@@ -4616,6 +5589,11 @@
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-yerba-buena",
+      "aliases": [
+        "Quinteto Latino：午休听一小时木管五重奏",
+        "Quinteto Latino: a lunchtime wind quintet",
+        "Quinteto Latino：午休聽一小時木管五重奏"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor"
@@ -4649,6 +5627,11 @@
       ],
       "audience": [
         "求职与职业发展"
+      ],
+      "aliases": [
+        "SFPL：免费一对一职业咨询",
+        "SFPL: free one-to-one career coaching",
+        "SFPL：免費一對一職業諮詢"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -4693,6 +5676,11 @@
       "audience": [
         "3 岁以上亲子",
         "STEM 探索"
+      ],
+      "aliases": [
+        "Ocean View：STEM 自由探索游戏",
+        "Ocean View: STEM Free Play",
+        "Ocean View：STEM 自由探索遊戲"
       ],
       "planning": {
         "admissionUsd": null,
@@ -4744,6 +5732,11 @@
       ],
       "audience": [
         "诗歌与写作"
+      ],
+      "aliases": [
+        "SFPL：Writing Hard Enough to Shift Gravity 写作工坊",
+        "SFPL: Writing Hard Enough to Shift Gravity workshop",
+        "SFPL：Writing Hard Enough to Shift Gravity 寫作工坊"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -4804,6 +5797,9 @@
       "sourceLabel": "svaff.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "cinema-night",
+      "aliases": [
+        "Silicon Valley African Film Festival"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4836,6 +5832,11 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Creed Bratton：《The Office》音乐与故事夜",
+        "Creed Bratton: A Night of Music and Stories from The Office",
+        "Creed Bratton：《The Office》音樂與故事夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4867,6 +5868,11 @@
       "sourceLabel": "marinwood.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Marinwood 万圣节收获庆典",
+        "Marinwood Halloween Harvest Festival",
+        "Marinwood 萬聖節收穫慶典"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4898,6 +5904,11 @@
       "sourceLabel": "marincountrymart.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Hero Shop：Anteros × Cecilia 两日品牌展售",
+        "Hero Shop: Anteros × Cecilia two-day trunk show",
+        "Hero Shop：Anteros × Cecilia 兩日品牌展售"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -4930,6 +5941,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-laptop",
       "relatedGuideSlug": "bay-area-ai-week-tech-week-first-timer-guide-2026",
+      "aliases": [
+        "SF Tech Week Agent Day：开源 AI 演讲、演示与工作坊",
+        "SF Tech Week Agent Day: open-source AI talks, demos and workshops",
+        "SF Tech Week Agent Day：開源 AI 演講、演示與工作坊"
+      ],
       "location": {
         "lat": 37.4850527,
         "lng": -122.1762167,
@@ -4969,6 +5985,11 @@
       "sourceLabel": "visitmarin.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Rafael 第二周五免费艺术漫步",
+        "San Rafael Second Friday Free Art Walk",
+        "San Rafael 第二週五免費藝術漫步"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5001,6 +6022,11 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Brian Regan 单口喜剧",
+        "Brian Regan Stand-Up Comedy",
+        "Brian Regan 單口喜劇"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5032,6 +6058,11 @@
       "sourceLabel": "sweetwatermusichall.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Zepparella：Sweetwater 摇滚致敬夜",
+        "Zepparella: rock tribute night at Sweetwater",
+        "Zepparella：Sweetwater 搖滾致敬夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5063,6 +6094,11 @@
       "sourceLabel": "City of Albany",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "消防站煎饼早餐回归",
+        "Fire station pancake breakfast returns",
+        "消防站煎餅早餐迴歸"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5093,6 +6129,11 @@
       "sourceLabel": "City of Antioch",
       "verifiedAt": "2026-10-02",
       "imageKey": "weekend",
+      "aliases": [
+        "15岁及以下免费钓鱼比赛",
+        "Free fishing derby for ages 15 and under",
+        "15歲及以下免費釣魚比賽"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5124,6 +6165,11 @@
       "sourceLabel": "ipdpowwow.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Berkeley 原住民日 Powwow：舞蹈、鼓声与文化市集",
+        "Berkeley Indigenous Peoples Day Powwow: Dance, drums and a cultural market",
+        "Berkeley 原住民日 Powwow：舞蹈、鼓聲與文化市集"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5155,6 +6201,11 @@
       "sourceLabel": "burlingame.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Burlingame 免费秋季植物交换",
+        "Burlingame Free Fall Plant Swap",
+        "Burlingame 免費秋季植物交換"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5186,6 +6237,11 @@
       "sourceLabel": "burlingame.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "october-library-culture",
+      "aliases": [
+        "Burlingame 图书馆中英双语故事时间",
+        "Burlingame Library Mandarin–English Storytime",
+        "Burlingame 圖書館中英雙語故事時間"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -5220,6 +6276,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "dog",
+      "aliases": [
+        "Cupertino Pooch Plunge：狗狗专属游泳场",
+        "Cupertino Pooch Plunge: a swim just for dogs",
+        "Cupertino Pooch Plunge：狗狗專屬游泳場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5254,6 +6315,11 @@
       "sourceLabel": "dublin.ca.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Dublin Harvest Fair：农场生活体验",
+        "Dublin Harvest Fair: farm life experiences",
+        "Dublin Harvest Fair：農場生活體驗"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5288,6 +6354,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Oakland Roots 对 San Antonio FC",
+        "Oakland Roots vs. San Antonio FC",
+        "Oakland Roots 對 San Antonio FC"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5323,6 +6394,11 @@
       "sourceLabel": "ebparks.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-ardenwood-farm",
+      "aliases": [
+        "Fremont Ardenwood 丰收节：收玉米、看农场",
+        "Ardenwood Harvest Festival in Fremont",
+        "Fremont Ardenwood 豐收節：收玉米、看農場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5356,6 +6432,11 @@
       "sourceLabel": "haywardrec.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Hayward Longwood Park 流动游乐日",
+        "Hayward Longwood Park Mobile Recreation Day",
+        "Hayward Longwood Park 流動遊樂日"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5388,6 +6469,11 @@
       "sourceLabel": "hmbpumpkinfest.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Half Moon Bay 首届月光电影夜：《Grow》",
+        "Half Moon Bay's First Moonlight Movie Night: Grow",
+        "Half Moon Bay 首屆月光電影夜：《Grow》"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5422,6 +6508,11 @@
       "sourceLabel": "livermorearts.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Livermore ArtWalk 与粉笔街头艺术",
+        "Livermore ArtWalk and chalk street art",
+        "Livermore ArtWalk 與粉筆街頭藝術"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5453,6 +6544,11 @@
       "sourceLabel": "333arts.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Livermore 大象迁徙公共艺术展",
+        "Livermore Great Elephant Migration Public Art Exhibition",
+        "Livermore 大象遷徙公共藝術展"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5484,6 +6580,10 @@
       "sourceLabel": "magicalglasspumpkinpatch.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Los Gatos 一日玻璃南瓜展",
+        "Los Gatos One-Day Glass Pumpkin Exhibition"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -5518,6 +6618,11 @@
       "audience": [
         "社区节庆",
         "音乐与美食"
+      ],
+      "aliases": [
+        "Mountain View Oktoberfest：免费入场的街区啤酒节",
+        "Mountain View Oktoberfest: a festival with free admission",
+        "Mountain View Oktoberfest：免費入場的街區啤酒節"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -5573,6 +6678,11 @@
       "sourceLabel": "naparecycling.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "family-workshop",
+      "aliases": [
+        "Beyond the Bin：看看回收物离开家后去了哪里",
+        "Beyond the Bin: see what happens after recycling leaves home",
+        "Beyond the Bin：看看回收物離開家後去了哪裡"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5605,6 +6715,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-napa-library",
       "relatedGuideSlug": "bay-area-library-starter-guide",
+      "aliases": [
+        "Napa 图书馆 MusicTime：万圣节音乐故事",
+        "Napa Library MusicTime: Halloween sounds",
+        "Napa 圖書館 MusicTime：萬聖節音樂故事"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5636,6 +6751,11 @@
       "sourceLabel": "downtownnovato.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-classic-car",
+      "aliases": [
+        "Novato Nostalgia Days 经典车展",
+        "Novato Nostalgia Days Classic Car Show",
+        "Novato Nostalgia Days 經典車展"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -5674,6 +6794,11 @@
       "officialUrl": "https://www.sonomacountyarttrails.org/",
       "sourceLabel": "Sonoma County Art Trails 主办方",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Sonoma County Art Trails 开放工作室",
+        "Sonoma County Art Trails open studios",
+        "Sonoma County Art Trails 開放工作室"
+      ],
       "planning": {
         "admissionUsd": 0,
         "reservation": "optional",
@@ -5744,6 +6869,11 @@
       "officialUrl": "https://napaoutdoors.org/events/",
       "sourceLabel": "Napa County Regional Park and Open Space District 官方排程",
       "imageKey": "family-workshop",
+      "aliases": [
+        "Bale Grist Mill Old Mill Days 收获历史体验",
+        "Bale Grist Mill Old Mill Days living-history harvest event",
+        "Bale Grist Mill Old Mill Days 收穫歷史體驗"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -5807,6 +6937,11 @@
       "officialUrl": "https://healdsburgfarmersmarket.org/",
       "sourceLabel": "Healdsburg Farmers’ Market 官方排程",
       "imageKey": "everyday",
+      "aliases": [
+        "Healdsburg 周六农夫市集：新棚亭地址",
+        "Healdsburg Saturday farmers market at its new pavilion",
+        "Healdsburg 週六農夫市集：新棚亭地址"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -5894,6 +7029,11 @@
       "officialUrl": "https://sugarloafpark.org/event/saturday-harvest-markets-at-sonoma-garden-park-75/",
       "sourceLabel": "Sonoma Ecology Center / Sugarloaf 官方市集页",
       "imageKey": "everyday",
+      "aliases": [
+        "Sonoma Garden Park 丰收市集",
+        "Sonoma Garden Park harvest market",
+        "Sonoma Garden Park 豐收市集"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -5975,6 +7115,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "ferry-market",
       "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "aliases": [
+        "Flour Craft 季节烘焙演示",
+        "Seasonal baking demonstration with Flour Craft",
+        "Flour Craft 季節烘焙演示"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -6030,6 +7175,11 @@
       "sourceLabel": "paloaltomuseum.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Palo Alto Rocks：公园免费音乐与社区下午",
+        "Palo Alto Rocks: Free Music at Heritage Park",
+        "Palo Alto Rocks：公園免費音樂與社區下午"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6061,6 +7211,11 @@
       "sourceLabel": "transitionpaloalto.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Palo Alto Scare Faire：交换万圣节服装",
+        "Palo Alto Scare Faire: swap Halloween costumes",
+        "Palo Alto Scare Faire：交換萬聖節服裝"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6092,6 +7247,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "American Canyon 幽灵灯笼手作",
+        "American Canyon Ghost Lantern Crafts",
+        "American Canyon 幽靈燈籠手作"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6124,6 +7284,10 @@
       "sourceLabel": "downtownvacaville.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Vacaville 月光秋季夜市",
+        "Vacaville Market by Moonlight: Fall Night Market"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6158,6 +7322,11 @@
       "sourceLabel": "mareislandartstudios.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Mare Island 成人创作工作坊",
+        "Mare Island Creative Workshop for Adults",
+        "Mare Island 成人創作工作坊"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 18
@@ -6193,6 +7362,11 @@
       "sourceLabel": "richmondartcenter.org",
       "verifiedAt": "2026-10-02",
       "imageKey": "weekend",
+      "aliases": [
+        "Richmond Art Center 免费版画工作坊",
+        "Richmond Art Center Free Printmaking Workshop",
+        "Richmond Art Center 免費版畫工作坊"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6225,6 +7399,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
       "relatedGuideSlug": "bay-area-without-car-guide",
+      "aliases": [
+        "San Carlos Art & Wine Faire：半岛秋日艺术节",
+        "San Carlos Art & Wine Faire",
+        "San Carlos Art & Wine Faire：半島秋日藝術節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6259,6 +7438,11 @@
       "sourceLabel": "Alameda County Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "october-library-culture",
+      "aliases": [
+        "San Lorenzo 墨西哥 Milagros 金属浮雕手工",
+        "San Lorenzo Metal Milagros: Mexican Folk Art",
+        "San Lorenzo 墨西哥 Milagros 金屬浮雕手工"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -6307,6 +7491,11 @@
       "sourceLabel": "City of San Mateo",
       "verifiedAt": "2026-10-02",
       "imageKey": "",
+      "aliases": [
+        "居民免费碎纸与电子垃圾回收日",
+        "Free resident shredding and e-waste collection",
+        "居民免費碎紙與電子垃圾回收日"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6342,6 +7531,11 @@
         "2026-10-10",
         "2026-10-11"
       ],
+      "aliases": [
+        "Bruno Mars：The Romantic Tour 两场",
+        "Bruno Mars: two nights of The Romantic Tour",
+        "Bruno Mars：The Romantic Tour 兩場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6374,6 +7568,11 @@
       "sourceLabel": "calendar.santaclaraca.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Santa Clara 图书馆免费 Comic Con",
+        "Santa Clara Library's free Comic Con",
+        "Santa Clara 圖書館免費 Comic Con"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6405,6 +7604,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "勇士对国王：NBA 季前赛",
+        "Warriors vs. Kings: NBA preseason",
+        "勇士對國王：NBA 季前賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6437,6 +7641,11 @@
       ],
       "audience": [
         "园艺与环保"
+      ],
+      "aliases": [
+        "从花园到绿桶：在家实践气候行动",
+        "From Garden to Green Bin: Climate Action at Home",
+        "從花園到綠桶：在家實踐氣候行動"
       ],
       "planning": {
         "admissionUsd": null,
@@ -6493,6 +7702,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Oilers：Sharks x PWHL San Jose 主题场",
+        "San Jose Sharks vs. Oilers: Sharks x PWHL San Jose themed game",
+        "聖何塞 Sharks 對 Oilers：Sharks x PWHL San Jose 主題場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6524,6 +7738,11 @@
       "sourceLabel": "harvestfair.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-wine",
+      "aliases": [
+        "Sonoma County Harvest Fair 颁奖品酒晚会",
+        "Sonoma County Harvest Fair Awards Gala",
+        "Sonoma County Harvest Fair 頒獎品酒晚會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6555,6 +7774,11 @@
       "sourceLabel": "parks.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sonoma-barracks",
+      "aliases": [
+        "Sonoma 免费历史活动：加州女性投票权 115 周年",
+        "Sonoma Celebrates 115 Years of Women’s Voting Rights",
+        "Sonoma 免費歷史活動：加州女性投票權 115 週年"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6589,6 +7813,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Gabriel Fluffy Iglesias 脱口秀",
+        "Gabriel Fluffy Iglesias Stand-Up Comedy",
+        "Gabriel Fluffy Iglesias 脫口秀"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6622,6 +7851,11 @@
       "sourceLabel": "SS Red Oak Victory",
       "verifiedAt": "2026-10-05",
       "imageKey": "everyday",
+      "aliases": [
+        "Red Oak Victory 船上煎饼早餐",
+        "Pancake breakfast aboard Red Oak Victory",
+        "Red Oak Victory 船上煎餅早餐"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -6673,6 +7907,11 @@
       "sourceLabel": "pleasanthillrec.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Pleasant Hill 水上南瓜活动",
+        "Pleasant Hill Floating Pumpkin Event",
+        "Pleasant Hill 水上南瓜活動"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6704,6 +7943,11 @@
       "sourceLabel": "visitpetaluma.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Petaluma The Yard 秋日快闪市集",
+        "Petaluma The Yard Fall Pop-Up Market",
+        "Petaluma The Yard 秋日快閃市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6734,6 +7978,11 @@
       "sourceLabel": "Boys & Girls Clubs of Sonoma-Marin 主办方",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Healdsburg Crush 葡萄酒公益活动",
+        "Healdsburg Crush wine fundraiser",
+        "Healdsburg Crush 葡萄酒公益活動"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6764,6 +8013,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Chayanne 拉丁流行演唱会",
+        "Chayanne Latin pop concert",
+        "Chayanne 拉丁流行演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6797,6 +8051,10 @@
       "audience": [
         "二手与手作",
         "社区家庭"
+      ],
+      "aliases": [
+        "Inner Sunset Flea：Tricks, Treats & Treasures 秋日市集",
+        "Inner Sunset Flea: Tricks, Treats & Treasures"
       ],
       "planning": {
         "admissionUsd": null,
@@ -6847,6 +8105,11 @@
       "sourceLabel": "sfitalianheritage.org",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "旧金山意大利文化游行：从渔人码头走进 North Beach",
+        "San Francisco Italian Heritage Parade",
+        "舊金山義大利文化遊行：從漁人碼頭走進 North Beach"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6878,6 +8141,11 @@
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-yerba-buena",
+      "aliases": [
+        "YBG Dance Day：免费试跳不同舞风",
+        "YBG Dance Day: try different dance styles for free",
+        "YBG Dance Day：免費試跳不同舞風"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -6911,6 +8179,11 @@
       "audience": [
         "亲子家庭",
         "艺术手作"
+      ],
+      "aliases": [
+        "Stanford Art for All：免费家庭艺术日",
+        "Stanford Art for All: free family art day",
+        "Stanford Art for All：免費家庭藝術日"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -6965,6 +8238,10 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Killer Queen：Queen 致敬演出",
+        "Killer Queen: A Tribute to Queen"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -6996,6 +8273,11 @@
       "sourceLabel": "City of Hercules",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Ohana Day 长者午间聚会需报名",
+        "Ohana Day senior gathering requires registration",
+        "Ohana Day 長者午間聚會需報名"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7027,6 +8309,11 @@
       "sourceLabel": "hmbweighoff.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Half Moon Bay 世界南瓜称重赛",
+        "Half Moon Bay World Championship Pumpkin Weigh-Off",
+        "Half Moon Bay 世界南瓜稱重賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7058,6 +8345,11 @@
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-yerba-buena",
+      "aliases": [
+        "旧金山原住民日：艺术、音乐与社区聚会",
+        "San Francisco Indigenous Peoples Day: art, music and community",
+        "舊金山原住民日：藝術、音樂與社區聚會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7089,6 +8381,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Bruins：常规赛",
+        "San Jose Sharks vs. Bruins: Regular Season",
+        "聖何塞 Sharks 對 Bruins：常規賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7120,6 +8417,11 @@
       "sourceLabel": "Town of Danville",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "12岁起可了解本地志愿服务机会",
+        "Explore local volunteer opportunities for ages 12 and up",
+        "12歲起可瞭解本地誌願服務機會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7153,6 +8455,11 @@
       "audience": [
         "亲子家庭",
         "自然科普"
+      ],
+      "aliases": [
+        "San Rafael 免费动物科普：认识本地蝙蝠",
+        "San Rafael free animal encounter: learn about local bats",
+        "San Rafael 免費動物科普：認識本地蝙蝠"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -7201,6 +8508,11 @@
       "sourceLabel": "City of Union City",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "免费了解 ShakeAlert 地震预警",
+        "Free introduction to ShakeAlert earthquake warnings",
+        "免費了解 ShakeAlert 地震預警"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7238,6 +8550,10 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Disney On Ice：Find Your Hero 冰上演出",
+        "Disney On Ice: Find Your Hero"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7271,6 +8587,11 @@
       "audience": [
         "11–18 岁青少年",
         "AI 与数字素养"
+      ],
+      "aliases": [
+        "Novato 青少年 AI 游戏：密室逃脱与信息辨识",
+        "Novato teen AI literacy: escape-room games and discussion",
+        "Novato 青少年 AI 遊戲：密室逃脫與資訊辨識"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -7322,6 +8643,14 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "region-lake-merritt",
       "relatedGuideSlug": "oakland-lake-merritt-omca-half-day",
+      "aliases": [
+        "Oakland Autumn Lights：湖畔花园灯光夜",
+        "Autumn Lights Festival",
+        "秋灯节",
+        "秋燈節",
+        "Oakland Autumn Lights Festival",
+        "Oakland Autumn Lights：湖畔花園燈光夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7355,6 +8684,11 @@
       "sourceLabel": "SS Red Oak Victory",
       "verifiedAt": "2026-10-05",
       "imageKey": "cinema-night",
+      "aliases": [
+        "Red Oak Victory 船上电影：Drums Along the Mohawk",
+        "Movie night aboard Red Oak Victory: Drums Along the Mohawk",
+        "Red Oak Victory 船上電影：Drums Along the Mohawk"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -7403,6 +8737,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium After Dark：Speak Easy 沟通实验",
+        "Exploratorium After Dark: Speak Easy Communication Experiments",
+        "Exploratorium After Dark：Speak Easy 溝通實驗"
+      ],
       "location": {
         "lat": 37.8016649,
         "lng": -122.397348,
@@ -7462,6 +8801,11 @@
       "audience": [
         "艺术爱好者",
         "设计与古董"
+      ],
+      "aliases": [
+        "San Francisco Fall Show：艺术、古董与设计展",
+        "San Francisco Fall Show: art, antiques and design",
+        "San Francisco Fall Show：藝術、古董與設計展"
       ],
       "planning": {
         "admissionUsd": null,
@@ -7532,6 +8876,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sf-main-library",
+      "aliases": [
+        "SF Main Library 儿童万圣节服装交换",
+        "Children's Halloween Costume Swap at SF Main Library",
+        "SF Main Library 兒童萬聖節服裝交換"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -7588,6 +8937,11 @@
       "sourceLabel": "sfopera.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "旧金山歌剧院《曼侬》",
+        "San Francisco Opera: Manon",
+        "舊金山歌劇院《曼儂》"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7618,6 +8972,10 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Young Miko：Late Checkout 巡演",
+        "Young Miko: Late Checkout tour"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7652,6 +9010,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Rush 圣何塞两场演出",
+        "Rush: Two San Jose Performances",
+        "Rush 聖何塞兩場演出"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7683,6 +9046,11 @@
       "sourceLabel": "artsbenicia.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Arts Benicia：A Night in Venice 艺术晚宴",
+        "Arts Benicia: A Night in Venice art gala",
+        "Arts Benicia：A Night in Venice 藝術晚宴"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7717,6 +9085,11 @@
       "sourceLabel": "cityofconcord.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Concord Baldwin Park 亲子讨糖步道",
+        "Concord Baldwin Park Family Trick-or-Treat Trail",
+        "Concord Baldwin Park 親子討糖步道"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7748,6 +9121,11 @@
       "sourceLabel": "piedmont.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "outdoor-cinema",
+      "aliases": [
+        "Piedmont 草坪免费电影：《Wonka》",
+        "Piedmont Free Outdoor Movie: Wonka",
+        "Piedmont 草坪免費電影：《Wonka》"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7779,6 +9157,9 @@
       "sourceLabel": "Windsor 镇可持续生活活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "refresh-makers",
+      "aliases": [
+        "Windsor Green Halloween Party & Swap"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7811,6 +9192,11 @@
       "sourceLabel": "sjmusart.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "San José 水道与气候艺术论坛：从展厅走向 Coyote Creek",
+        "San José Art and Climate Symposium: From the Gallery to Coyote Creek",
+        "San José 水道與氣候藝術論壇：從展廳走向 Coyote Creek"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7844,6 +9230,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Leandro 水上捞南瓜",
+        "San Leandro Pumpkin Splash",
+        "San Leandro 水上撈南瓜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7879,6 +9270,11 @@
       "occurrenceDates": [
         "2026-10-16"
       ],
+      "aliases": [
+        "Open Together 开源 AI 聚会",
+        "Open Together Open-Source AI Meetup",
+        "Open Together 開源 AI 聚會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7910,6 +9306,11 @@
       "sourceLabel": "The San Francisco Standard · Sundown Cinema",
       "verifiedAt": "2026-10-02",
       "imageKey": "outdoor-cinema",
+      "aliases": [
+        "Sundown Cinema 季末场：Crane Cove 免费电影夜",
+        "Sundown Cinema Finale: Free Movie Night at Crane Cove",
+        "Sundown Cinema 季末場：Crane Cove 免費電影夜"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -7941,6 +9342,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "勇士对开拓者：NBA 季前赛",
+        "Warriors vs. Trail Blazers: NBA Preseason",
+        "勇士對開拓者：NBA 季前賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -7973,6 +9379,10 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Jackson Dean Napa 演出",
+        "Jackson Dean in Napa"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8004,6 +9414,11 @@
       "sourceLabel": "diabloimprovfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-stage",
+      "aliases": [
+        "Walnut Creek Diablo Improv：即兴喜剧周末",
+        "Walnut Creek Diablo Improv: a weekend of unscripted comedy",
+        "Walnut Creek Diablo Improv：即興喜劇週末"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8038,6 +9453,11 @@
       "sourceLabel": "BORP Adaptive Sports and Recreation",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "BORP 无障碍体育体验日与社区庆祝",
+        "BORP Adaptive Sports Expo and Community Celebration",
+        "BORP 無障礙體育體驗日與社區慶祝"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "mixed",
@@ -8090,6 +9510,11 @@
       "sourceLabel": "berkeleyca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Berkeley 免费丰收节与种子交换",
+        "Berkeley Harvest Festival & Seed Swap",
+        "Berkeley 免費豐收節與種子交換"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -8121,6 +9546,11 @@
       "sourceLabel": "campbelloktoberfest.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Campbell Oktoberfest 德式街区嘉年华",
+        "Campbell Oktoberfest",
+        "Campbell Oktoberfest 德式街區嘉年華"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -8152,6 +9582,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Cupertino Bay Area Diwali 排灯节",
+        "Cupertino Bay Area Diwali festival",
+        "Cupertino Bay Area Diwali 排燈節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8186,6 +9621,11 @@
       "officialUrl": "https://www.dalycity.org/1221/Daly-Citys-Top-of-the-Hill-Festival",
       "sourceLabel": "City of Daly City / County of San Mateo",
       "verifiedAt": "2026-09-29",
+      "aliases": [
+        "Daly City Top of the Hill：免费街区音乐与文化节",
+        "Daly City Top of the Hill: a free street music and culture festival",
+        "Daly City Top of the Hill：免費街區音樂與文化節"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -8237,6 +9677,11 @@
       "sourceLabel": "elcerrito.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "El Cerrito 全城庭院旧物市集",
+        "El Cerrito Citywide Garage Sale",
+        "El Cerrito 全城庭院舊物市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8270,6 +9715,11 @@
       "audience": [
         "亲子家庭",
         "服装再利用"
+      ],
+      "aliases": [
+        "Fairfax 儿童万圣节服装交换：免费来挑一套",
+        "Fairfax kids’ Halloween costume swap: come choose a costume",
+        "Fairfax 兒童萬聖節服裝交換：免費來挑一套"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -8321,6 +9771,12 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "fresh-pumpkin-parade",
       "relatedGuideSlug": "half-moon-bay-pumpkin-season-2026-guide",
+      "aliases": [
+        "Half Moon Bay Art & Pumpkin Festival",
+        "Half Moon Bay Pumpkin Festival",
+        "半月湾南瓜节",
+        "半月灣南瓜節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8355,6 +9811,11 @@
       "sourceLabel": "hayward-ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Hayward Ruus 街区志愿清洁日",
+        "Hayward Ruus Neighborhood Volunteer Cleanup",
+        "Hayward Ruus 街區志願清潔日"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8390,6 +9851,11 @@
       "sourceLabel": "losaltosca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Los Altos免费户外电影：《沉睡魔咒》",
+        "Los Altos free outdoor movie: Maleficent",
+        "Los Altos免費戶外電影：《沉睡魔咒》"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -8422,6 +9888,11 @@
       "sourceLabel": "marincountrymart.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Copperfield’s Food Sense 免费作者读书会",
+        "Copperfield's Food Sense: Free Author Reading",
+        "Copperfield’s Food Sense 免費作者讀書會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -8453,6 +9924,11 @@
       "sourceLabel": "guardsmen.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Menlo Park Heritage & Harvest 秋日社区节",
+        "Menlo Park Heritage & Harvest autumn community festival",
+        "Menlo Park Heritage & Harvest 秋日社區節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8485,6 +9961,11 @@
       "officialUrl": "https://napavalleymuseum.org/blogs/upcoming-exhibitions/eames-eames",
       "sourceLabel": "Napa Valley Museum 官方展览及参观页",
       "imageKey": "culture-visit",
+      "aliases": [
+        "The MAC：Eames & Eames 现代设计展",
+        "The MAC: Eames & Eames modern-design exhibition",
+        "The MAC：Eames & Eames 現代設計展"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -8706,6 +10187,11 @@
         "艺术与社区文化爱好者",
         "关注无障碍创作的人"
       ],
+      "aliases": [
+        "NUMU Community Ignition 展览开幕招待会",
+        "NUMU Community Ignition opening reception",
+        "NUMU Community Ignition 展覽開幕招待會"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -8757,6 +10243,11 @@
       "sourceLabel": "vintagefashionfaire.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Vintage Fashion Faire：Bridge Yard 复古服饰市集",
+        "Vintage Fashion Faire: vintage clothing market at the Bridge Yard",
+        "Vintage Fashion Faire：Bridge Yard 復古服飾市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8790,6 +10281,11 @@
       "sourceLabel": "Contra Costa County Historical Society",
       "verifiedAt": "2026-10-05",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Contra Costa 历史中心档案开放日",
+        "Contra Costa History Center archive open house",
+        "Contra Costa 歷史中心檔案開放日"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -8840,6 +10336,11 @@
       "audience": [
         "宠物家庭",
         "社区居民"
+      ],
+      "aliases": [
+        "Palo Alto Pet Palooza：宠物游行与装扮赛",
+        "Palo Alto Pet Palooza: pet parade and costume contest",
+        "Palo Alto Pet Palooza：寵物遊行與裝扮賽"
       ],
       "location": {
         "lat": 37.4291646,
@@ -8899,6 +10400,11 @@
         "亲子家庭",
         "服装再利用"
       ],
+      "aliases": [
+        "Point Reyes 免费万圣节服装交换：成人、儿童与宠物",
+        "Point Reyes free Halloween costume swap: adults, children and pets",
+        "Point Reyes 免費萬聖節服裝交換：成人、兒童與寵物"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -8946,6 +10452,10 @@
       "sourceLabel": "zeffy.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Benicia Witching Wine Walk 品酒漫步",
+        "Benicia Witching Wine Walk"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -8977,6 +10487,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Calistoga：Napa Valley 鬼故事讲座",
+        "Calistoga: Napa Valley Ghost Stories Talk",
+        "Calistoga：Napa Valley 鬼故事講座"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9008,6 +10523,11 @@
       "sourceLabel": "marinhistory.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Tennessee Valley 历史徒步",
+        "Tennessee Valley History Hike",
+        "Tennessee Valley 歷史徒步"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9039,6 +10559,11 @@
       "sourceLabel": "thesocomarket.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Santa Rosa SoCo 万圣节创意市集",
+        "Santa Rosa SoCo Halloween Makers Market",
+        "Santa Rosa SoCo 萬聖節創意市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9069,6 +10594,11 @@
       "sourceLabel": "mareislandartstudios.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Mare Island After Dark 发光艺术夜",
+        "Mare Island After Dark: Glowing Art Night",
+        "Mare Island After Dark 發光藝術夜"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 18
@@ -9100,6 +10630,11 @@
       "sourceLabel": "Novato 市官方魔术活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Novato 不太吓人的万圣节魔术",
+        "Novato Not-So-Scary Halloween Magic Show",
+        "Novato 不太嚇人的萬聖節魔術"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9131,6 +10666,11 @@
       "sourceLabel": "Charles M. Schulz Museum 官方活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Schulz Museum《大南瓜》60周年活动",
+        "Schulz Museum Great Pumpkin 60th-anniversary event",
+        "Schulz Museum《大南瓜》60週年活動"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9162,6 +10702,11 @@
       "sourceLabel": "City of San Bruno",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "免费 Día de los Muertos 家庭庆典",
+        "Free family Día de los Muertos celebration",
+        "免費 Día de los Muertos 家庭慶典"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9196,6 +10741,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Leandro 不吓人的亲子游戏日",
+        "San Leandro not-so-spooky family play day",
+        "San Leandro 不嚇人的親子游戲日"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9230,6 +10780,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Floresta Park 免费电影《The Sandlot》",
+        "Floresta Park Free Movie: The Sandlot",
+        "Floresta Park 免費電影《The Sandlot》"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9263,6 +10818,11 @@
       "audience": [
         "艺术与市集",
         "社区家庭"
+      ],
+      "aliases": [
+        "A Toast to Sausalito：艺术街区节与品饮",
+        "A Toast to Sausalito: an art street fair and tasting",
+        "A Toast to Sausalito：藝術街區節與品飲"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -9312,6 +10872,11 @@
       "sourceLabel": "bayareasciencefestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "family-workshop",
+      "aliases": [
+        "湾区科学节：到 UCSF 动手做实验",
+        "Bay Area Science Festival: hands-on science at UCSF",
+        "灣區科學節：到 UCSF 動手做實驗"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9344,6 +10909,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "ExecuTorch 端侧 AI 黑客松",
+        "ExecuTorch On-Device AI Hackathon",
+        "ExecuTorch 端側 AI 黑客松"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9375,6 +10945,11 @@
       "sourceLabel": "sfpl.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sf-main-library",
+      "aliases": [
+        "旧金山菲律宾裔国际书展：阅读、讲座与签书",
+        "Filipino American International Book Festival in San Francisco",
+        "舊金山菲律賓裔國際書展：閱讀、講座與籤書"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9409,6 +10984,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sf-main-library",
+      "aliases": [
+        "万圣节活版印刷：体验 1909 年手压印刷机",
+        "Halloween Broadside Printing on a 1909 Handpress",
+        "萬聖節活版印刷：體驗 1909 年手壓印刷機"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -9460,6 +11040,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Marina 图书馆开放日：音乐、手工与赠书",
+        "Marina Library Open House: Music, Crafts, and Book Giveaway",
+        "Marina 圖書館開放日：音樂、手工與贈書"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -9511,6 +11096,11 @@
         "社区家庭",
         "街区音乐"
       ],
+      "aliases": [
+        "Potrero Hill Festival：秋日街区节",
+        "Potrero Hill Festival: a fall neighborhood fair",
+        "Potrero Hill Festival：秋日街區節"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -9552,6 +11142,11 @@
       "sourceLabel": "thehubinsf.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Sunnydale 免费南瓜节：The Hub 两周年社区聚会",
+        "Sunnydale Pumpkin Fest at The Hub",
+        "Sunnydale 免費南瓜節：The Hub 兩週年社區聚會"
+      ],
       "planning": {
         "admissionUsd": 0,
         "schedule": {
@@ -9599,6 +11194,11 @@
       ],
       "audience": [
         "社区历史"
+      ],
+      "aliases": [
+        "OMI History Day：认识旧金山三个社区的历史",
+        "OMI History Day: explore three San Francisco neighborhoods",
+        "OMI History Day：認識舊金山三個社區的歷史"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -9655,6 +11255,11 @@
       "sourceLabel": "parks.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sonoma-barracks",
+      "aliases": [
+        "Sonoma 免费亡灵节电影夜：户外电影与社区游戏",
+        "Sonoma’s Free Día de los Muertos Movie Night",
+        "Sonoma 免費亡靈節電影夜：戶外電影與社區遊戲"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9687,6 +11292,11 @@
       "sourceLabel": "tickets.gostanford.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Stanford 橄榄球主场对 Elon：校友返校周末",
+        "Stanford Football vs. Elon: Homecoming Weekend",
+        "Stanford 橄欖球主場對 Elon：校友返校週末"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9718,6 +11328,11 @@
       "sourceLabel": "sunnyvale.ca.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Sunnyvale 免费 Hands on the Arts 儿童艺术节",
+        "Sunnyvale's free Hands on the Arts children's festival",
+        "Sunnyvale 免費 Hands on the Arts 兒童藝術節"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9749,6 +11364,11 @@
       "sourceLabel": "Town of Atherton",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "旧火车站博物馆 10 月 18 日揭幕",
+        "Historic train station museum opens October 18",
+        "舊火車站博物館 10 月 18 日揭幕"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9784,6 +11404,11 @@
       "sourceLabel": "berkeleybirdfestival.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Berkeley Bird Festival：鸟类与自然社区日",
+        "Berkeley Bird Festival: a community day for birds and nature",
+        "Berkeley Bird Festival：鳥類與自然社區日"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9818,6 +11443,11 @@
       "sourceLabel": "hardingpta.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "El Cerrito Harding 社区嘉年华",
+        "El Cerrito Harding community carnival",
+        "El Cerrito Harding 社區嘉年華"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9853,6 +11483,11 @@
       "sourceLabel": "lafayettechamber.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Lafayette Res Run 秋季社区跑",
+        "Lafayette Res Run Fall Community Run",
+        "Lafayette Res Run 秋季社區跑"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9888,6 +11523,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Hana Baba：苏丹民间故事与乌德琴",
+        "Hana Baba: Sudanese Folktales and Oud",
+        "Hana Baba：蘇丹民間故事與烏德琴"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -9919,6 +11559,11 @@
       "sourceLabel": "petalumavintage.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Petaluma 免费复古市集",
+        "Petaluma Free Vintage Market",
+        "Petaluma 免費復古市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -9953,6 +11598,11 @@
       "audience": [
         "湾区新居民",
         "亲子与邻里活动"
+      ],
+      "aliases": [
+        "Sunday Streets Excelsior：把一段 Mission Street 交给行人",
+        "Sunday Streets Excelsior: Mission Street Opens to People",
+        "Sunday Streets Excelsior：把一段 Mission Street 交給行人"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -10002,6 +11652,11 @@
       "sourceLabel": "sanjose.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞互动悬疑晚餐：《Funeral For a Gangster》",
+        "San Jose Interactive Mystery Dinner: Funeral For a Gangster",
+        "聖何塞互動懸疑晚餐：《Funeral For a Gangster》"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10033,6 +11688,11 @@
       "sourceLabel": "levisstadium.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "49ers 主场对 Commanders",
+        "49ers home game against the Commanders",
+        "49ers 主場對 Commanders"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10065,6 +11725,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Cline 与 Composio 开源 AI 黑客松",
+        "Cline and Composio Open-Source AI Hackathon",
+        "Cline 與 Composio 開源 AI 黑客松"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10095,6 +11760,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Doja Cat：Tour Ma Vie 演唱会",
+        "Doja Cat: Tour Ma Vie concert",
+        "Doja Cat：Tour Ma Vie 演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10127,6 +11797,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "开放权重 AI 辩论之夜",
+        "Debate night on open-weight AI",
+        "開放權重 AI 辯論之夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10162,6 +11837,11 @@
         "2026-10-20",
         "2026-11-07"
       ],
+      "aliases": [
+        "MAP 免费说明会：了解申请材料与市政折扣",
+        "Free MAP workshops explain applications and city discounts",
+        "MAP 免費說明會：瞭解申請材料與市政折扣"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -10194,6 +11874,11 @@
       "sourceLabel": "luma.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "OpenClaw 与朋友们开发者聚会",
+        "OpenClaw and friends developer meetup",
+        "OpenClaw 與朋友們開發者聚會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10225,6 +11910,11 @@
       "sourceLabel": "sfsymphony.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "《午夜凶铃》电影现场配乐",
+        "The Ring with a live film score",
+        "《午夜兇鈴》電影現場配樂"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10256,6 +11946,11 @@
       "sourceLabel": "kearnystreet.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "APAture 文学夜：亚太裔创作者的代际故事",
+        "APAture Literary Arts Showcase: Generations and Stories",
+        "APAture 文學夜：亞太裔創作者的代際故事"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10287,6 +11982,11 @@
       "sourceLabel": "bayareamusicalimprov.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-stage",
+      "aliases": [
+        "Oakland 音乐即兴剧节",
+        "Bay Area Musical Improv Festival in Oakland",
+        "Oakland 音樂即興劇節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10318,6 +12018,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "secondhand-check",
+      "aliases": [
+        "Cupertino Hidden Treasures：社区旧物寻宝",
+        "Cupertino Hidden Treasures: a community treasure sale",
+        "Cupertino Hidden Treasures：社區舊物尋寶"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -10349,6 +12054,11 @@
       "sourceLabel": "City of Monte Sereno",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "10 月 22 日 CPR 与 AED 基础体验课",
+        "October 22 introductory CPR and AED class",
+        "10 月 22 日 CPR 與 AED 基礎體驗課"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10379,6 +12089,11 @@
       "sourceLabel": "City of Orinda",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Trunk & Treat 分三场，只给儿童登记",
+        "Trunk & Treat has three sessions; register children only",
+        "Trunk & Treat 分三場，只給兒童登記"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10411,6 +12126,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-napa-library",
+      "aliases": [
+        "第 18 届 Spooky Napa 故事夜",
+        "18th Annual Spooky Napa Story Night",
+        "第 18 屆 Spooky Napa 故事夜"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10442,6 +12162,11 @@
       "sourceLabel": "sjsff.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "cinema-night",
+      "aliases": [
+        "San Jose 国际短片电影节",
+        "San Jose International Short Film Festival",
+        "San Jose 國際短片電影節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10472,6 +12197,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium After Dark：Death and Life 生与死",
+        "Exploratorium After Dark: Death and Life",
+        "Exploratorium After Dark：Death and Life 生與死"
+      ],
       "location": {
         "lat": 37.8016649,
         "lng": -122.397348,
@@ -10530,6 +12260,11 @@
       "sourceLabel": "sfsymphony.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "久石让指挥久石让作品",
+        "Joe Hisaishi Conducts Hisaishi",
+        "久石讓指揮久石讓作品"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10567,6 +12302,10 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Disney On Ice：Find Your Hero 冰上表演",
+        "Disney On Ice: Find Your Hero"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10603,6 +12342,11 @@
       "sourceLabel": "alamedaca.gov",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Alameda 青少年制作的万圣节鬼屋",
+        "Alameda's teen-created Halloween haunted house",
+        "Alameda 青少年製作的萬聖節鬼屋"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10634,6 +12378,11 @@
       "sourceLabel": "festivalnapavalley.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "event-piano",
+      "aliases": [
+        "Calistoga 室内乐：Eleanor Alberga 与 Green Room Ensemble",
+        "Calistoga chamber music: Eleanor Alberga and the Green Room Ensemble",
+        "Calistoga 室內樂：Eleanor Alberga 與 Green Room Ensemble"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10668,6 +12417,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Kacey Musgraves 奥克兰演唱会",
+        "Kacey Musgraves in Oakland",
+        "Kacey Musgraves 奧克蘭演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10703,6 +12457,11 @@
       "sourceLabel": "elcerrito.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "El Cerrito 老年生活资源展",
+        "El Cerrito Senior Living Resource Fair",
+        "El Cerrito 老年生活資源展"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -10734,6 +12493,11 @@
       "sourceLabel": "emeryarts.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Emeryville 年度艺术展闭幕周末",
+        "Emeryville Annual Art Exhibition: Closing Weekend",
+        "Emeryville 年度藝術展閉幕週末"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor"
@@ -10766,6 +12530,10 @@
       "sourceLabel": "fremont.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Fremont 市中心 Trick-or-Treat",
+        "Downtown Fremont Trick-or-Treat"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 2,
@@ -10803,6 +12571,11 @@
       "sourceLabel": "pleasanthillrec.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Pleasant Hill 免费万圣节小径",
+        "Pleasant Hill's free Haunted Trail",
+        "Pleasant Hill 免費萬聖節小徑"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -10834,6 +12607,11 @@
       "sourceLabel": "fccenters.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "family-workshop",
+      "aliases": [
+        "旧金山 Portola 社区万圣节手工与游戏",
+        "Portola Community Halloween Crafts & Games",
+        "舊金山 Portola 社區萬聖節手工與遊戲"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -10865,6 +12643,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "勇士对灰熊：NBA 常规赛",
+        "Warriors vs. Grizzlies: NBA Regular Season",
+        "勇士對灰熊：NBA 常規賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10898,6 +12681,11 @@
       "audience": [
         "养狗家庭",
         "社区聚会"
+      ],
+      "aliases": [
+        "Springline Barks & Boos：宠物装扮与免费社区聚会",
+        "Springline Barks & Boos: costumes and a free community gathering",
+        "Springline Barks & Boos：寵物裝扮與免費社區聚會"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -10948,6 +12736,11 @@
       "sourceLabel": "tickets.gostanford.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Stanford 橄榄球主场对 NC State",
+        "Stanford Football at Home vs. NC State",
+        "Stanford 橄欖球主場對 NC State"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -10979,6 +12772,11 @@
       "sourceLabel": "City of Belmont",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-south-existing-belmont",
+      "aliases": [
+        "百年庆典：游行、时光胶囊与无人机表演",
+        "Centennial celebration: parade, time capsule and drone show",
+        "百年慶典：遊行、時光膠囊與無人機表演"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11014,6 +12812,11 @@
       "sourceLabel": "admissions.berkeley.edu",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "UC Berkeley 大学信息日与校园交流",
+        "UC Berkeley university information day and campus networking",
+        "UC Berkeley 大學資訊日與校園交流"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11048,6 +12851,11 @@
       "sourceLabel": "members.claytoncbca.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Clayton Hay Day 车尾箱讨糖",
+        "Clayton Hay Day Trunk-or-Treat",
+        "Clayton Hay Day 車尾箱討糖"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11082,6 +12890,11 @@
       "sourceLabel": "cityofconcord.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Concord 警局免费车尾箱讨糖",
+        "Concord Police Department Free Trunk or Treat",
+        "Concord 警局免費車尾箱討糖"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11113,6 +12926,11 @@
       "sourceLabel": "cupertino.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Cupertino Monster Mash：傍晚万圣节亲子场",
+        "Cupertino Monster Mash: an evening family Halloween event",
+        "Cupertino Monster Mash：傍晚萬聖節親子場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11144,6 +12962,11 @@
       "sourceLabel": "fostercity.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Foster City 万圣节：讨糖步道与装扮比赛",
+        "Foster City Halloween Festival: treat trail and costumes",
+        "Foster City 萬聖節：討糖步道與裝扮比賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11179,6 +13002,11 @@
       "officialUrl": "https://fogsv.com/event/fog-diwali/",
       "sourceLabel": "Festival of Globe / EventMozo",
       "verifiedAt": "2026-09-29",
+      "aliases": [
+        "Fremont FOG Diwali Mela：排灯节表演与市集",
+        "Fremont FOG Diwali Mela: performances and a Festival of Lights market",
+        "Fremont FOG Diwali Mela：排燈節表演與市集"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -11229,6 +13057,11 @@
       "sourceLabel": "haywardrec.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Hayward Trunk or Treat 与流动攀岩墙",
+        "Hayward Trunk or Treat and Mobile Climbing Wall",
+        "Hayward Trunk or Treat 與流動攀巖牆"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11260,6 +13093,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Menlo Park 万圣节游行与嘉年华",
+        "Menlo Park Halloween Hoopla Parade and Carnival",
+        "Menlo Park 萬聖節遊行與嘉年華"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11293,6 +13131,11 @@
       "audience": [
         "亲子家庭",
         "万圣节"
+      ],
+      "aliases": [
+        "Mountain View Monster Bash：免费万圣节亲子庆典",
+        "Mountain View Monster Bash: a free family Halloween festival",
+        "Mountain View Monster Bash：免費萬聖節親子慶典"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -11340,6 +13183,11 @@
       "sourceLabel": "Downtown Napa · Napa County Historical Society",
       "imageKey": "culture-visit",
       "verifiedAt": "2026-09-30",
+      "aliases": [
+        "Napa Tulocay：万圣节历史步行导览",
+        "Napa Tulocay: Heritage Halloween walking tour",
+        "Napa Tulocay：萬聖節歷史步行導覽"
+      ],
       "planning": {
         "admissionUsd": 45,
         "setting": "outdoor",
@@ -11387,6 +13235,11 @@
       "sourceLabel": "pollyklaastheater.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Petaluma 5 美元亲子电影：《寻梦环游记》",
+        "Petaluma’s $5 Family Matinee: Coco",
+        "Petaluma 5 美元親子電影：《尋夢環遊記》"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11418,6 +13271,11 @@
       "sourceLabel": "thefloathousepetaluma.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-petaluma-river",
+      "aliases": [
+        "Petaluma 水上巫师与女巫派对",
+        "Petaluma Witches & Wizards on the Water",
+        "Petaluma 水上巫師與女巫派對"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11448,6 +13306,11 @@
       "sourceLabel": "marinhistory.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Boyd Gate House 历史住宅导览",
+        "Boyd Gate House Historic Home Tour",
+        "Boyd Gate House 歷史住宅導覽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11480,6 +13343,11 @@
       "sourceLabel": "bigwest.biz",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Petaluma Cider Circus 苹果酒与河畔游园",
+        "Petaluma Cider Circus: Cider and Riverside Festivities",
+        "Petaluma Cider Circus 蘋果酒與河畔遊園"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11512,6 +13380,11 @@
       "sourceLabel": "lumafest.santarosa.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Petaluma LumaFest 校园开放与亡灵节庆典",
+        "Petaluma LumaFest: Campus Open House and Dia de los Muertos Celebration",
+        "Petaluma LumaFest 校園開放與亡靈節慶典"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11543,6 +13416,11 @@
       "sourceLabel": "Novato 市官方亡灵节活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Novato Día de los Muertos 社区庆典",
+        "Novato Día de los Muertos community celebration",
+        "Novato Día de los Muertos 社區慶典"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11579,6 +13457,11 @@
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-hiller-museum",
       "relatedGuideSlug": "san-carlos-hiller-aviation-half-day-guide",
+      "aliases": [
+        "Hiller 万圣节 Paint-A-Plane：给飞机添上节日颜色",
+        "Hiller Halloween Paint-A-Plane: Add Seasonal Color to an Aircraft",
+        "Hiller 萬聖節 Paint-A-Plane：給飛機添上節日顏色"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11611,6 +13494,11 @@
       "sourceLabel": "sjmusart.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "San José 美术馆免费社区日：亡灵节艺术与文化",
+        "San José Museum of Art Free Community Day: Día de los Muertos",
+        "San José 美術館免費社區日：亡靈節藝術與文化"
+      ],
       "location": {
         "lat": 37.333726,
         "lng": -121.889925,
@@ -11664,6 +13552,11 @@
       "sourceLabel": "cityofsanmateo.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-san-mateo-b-street",
+      "aliases": [
+        "San Mateo B Street 万圣节：要糖、手作与音乐",
+        "Boos and Brews on B Street in San Mateo",
+        "San Mateo B Street 萬聖節：要糖、手作與音樂"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11695,6 +13588,11 @@
       "sourceLabel": "srcity.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "family-workshop",
+      "aliases": [
+        "Santa Rosa Howarth Park 万圣节",
+        "Santa Rosa Halloween at Howarth",
+        "Santa Rosa Howarth Park 萬聖節"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11729,6 +13627,11 @@
       "sourceLabel": "Illuminate",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Bay Beats 金门公园免费音乐会",
+        "Bay Beats Free Concert at the Golden Gate Bandshell",
+        "Bay Beats 金門公園免費音樂會"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -11777,6 +13680,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium 家庭科学日：蝴蝶手作与乐团排练",
+        "Exploratorium Family Science Day: Butterfly Crafts and Orchestra Rehearsal",
+        "Exploratorium 家庭科學日：蝴蝶手作與樂團排練"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11811,6 +13719,11 @@
       "sourceLabel": "San Francisco Public Library",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-sf-main-library",
+      "aliases": [
+        "Financial Planning Day：免费财务讲座与一对一咨询",
+        "Financial Planning Day: Free Workshops and One-on-One Counseling",
+        "Financial Planning Day：免費財務講座與一對一諮詢"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "indoor",
@@ -11859,6 +13772,11 @@
       "sourceLabel": "fishermanswharf.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-fishermans-wharf",
+      "aliases": [
+        "渔人码头 Chowder Fest：浓汤比赛与海边市集",
+        "Fisherman’s Wharf Chowder Fest: Chowder competition and waterfront market",
+        "漁人碼頭 Chowder Fest：濃湯比賽與海邊市集"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -11890,6 +13808,11 @@
       "sourceLabel": "Presidio Trust",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Presidio 免费艺术开放日：在 Sports Basement 遇见创作者",
+        "Presidio Free Art Showcase: Meet Artists at Sports Basement",
+        "Presidio 免費藝術開放日：在 Sports Basement 遇見創作者"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11921,6 +13844,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Thrive City 免费万圣节亲子庆典",
+        "Thrive City's free family Halloween celebration",
+        "Thrive City 免費萬聖節親子慶典"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -11953,6 +13881,11 @@
       ],
       "audience": [
         "社区家庭"
+      ],
+      "aliases": [
+        "Western Addition 图书馆社区开放日",
+        "Western Addition Library community open house",
+        "Western Addition 圖書館社區開放日"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -12006,6 +13939,11 @@
       "sourceLabel": "symphonysanjose.org",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Symphony San Jose 万圣节交响音乐会",
+        "Symphony San Jose Halloween Concert",
+        "Symphony San Jose 萬聖節交響音樂會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12037,6 +13975,11 @@
       "sourceLabel": "townofwindsor.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "garden-walk",
+      "aliases": [
+        "Windsor 免费预约讨糖步道",
+        "Windsor Trick-or-Treat Trail",
+        "Windsor 免費預約討糖步道"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12070,6 +14013,11 @@
       "audience": [
         "养狗家庭",
         "宠物与市集"
+      ],
+      "aliases": [
+        "Ameswell Barks & Boos：宠物巡游、装扮与市集",
+        "Ameswell Barks & Boos: a pet parade, costumes and market",
+        "Ameswell Barks & Boos：寵物巡遊、裝扮與市集"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -12123,6 +14071,11 @@
       "sourceLabel": "burlingamedowntown.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Burlingame Downtown秋日节与装扮活动",
+        "Burlingame Downtown Fall Festival and Costume Activities",
+        "Burlingame Downtown秋日節與裝扮活動"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12154,6 +14107,11 @@
       "sourceLabel": "museumca.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "region-omca",
+      "aliases": [
+        "OMCA 亡灵节社区庆典：祭坛、音乐与创作",
+        "OMCA Día de los Muertos: ofrendas, music and creativity",
+        "OMCA 亡靈節社區慶典：祭壇、音樂與創作"
+      ],
       "location": {
         "lat": 37.798641,
         "lng": -122.263611,
@@ -12212,6 +14170,11 @@
       "sourceLabel": "bishopranch.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "City Center Howl-O-Ween 宠物巡游",
+        "City Center Howl-O-Ween Pet Parade",
+        "City Center Howl-O-Ween 寵物巡遊"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12243,6 +14206,11 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Thrive City 周日橄榄球观赛",
+        "Thrive City Sunday Football Watch Party",
+        "Thrive City 週日橄欖球觀賽"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12274,6 +14242,11 @@
       "sourceLabel": "eventbrite.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-ferry-building",
+      "aliases": [
+        "旧金山世界饺子节：在 Ferry Building 尝不同文化",
+        "World of Dumplings at San Francisco’s Ferry Building",
+        "舊金山世界餃子節：在 Ferry Building 嘗不同文化"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12305,6 +14278,11 @@
       "sourceLabel": "srsymphony.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Boo! Let’s Dance：和 Snoopy 一起听交响乐",
+        "Boo! Let’s Dance: an orchestral afternoon with Snoopy",
+        "Boo! Let’s Dance：和 Snoopy 一起聽交響樂"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12339,6 +14317,9 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "beabadoobee：The Powerlines Tour"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12370,6 +14351,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-napa-library",
+      "aliases": [
+        "Napa 成人塔罗基础工作坊",
+        "Napa Introductory Tarot Workshop for Adults",
+        "Napa 成人塔羅基礎工作坊"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12405,6 +14391,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Menlo Park新故事分享聚会",
+        "Menlo Park's new storytelling meetup",
+        "Menlo Park新故事分享聚會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12436,6 +14427,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-napa-library",
+      "aliases": [
+        "Napa 万圣季恐怖小说读书会",
+        "Napa Halloween-Season Horror Book Club",
+        "Napa 萬聖季恐怖小說讀書會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12467,6 +14463,11 @@
       "sourceLabel": "kearnystreet.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "culture-visit",
+      "aliases": [
+        "APAture 电影夜：五位亚太裔导演的作品与对谈",
+        "APAture Film Showcase at the Roxie",
+        "APAture 電影夜：五位亞太裔導演的作品與對談"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12497,6 +14498,9 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Phoebe Bridgers：The Lost Tour"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12528,6 +14532,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Sabres：常规赛",
+        "San Jose Sharks vs. Sabres: Regular Season",
+        "聖何塞 Sharks 對 Sabres：常規賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12562,6 +14571,11 @@
       "sourceLabel": "ssfca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "South San Francisco城市近况交流会",
+        "South San Francisco State of the City gathering",
+        "South San Francisco城市近況交流會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12593,6 +14607,11 @@
       "sourceLabel": "uptowntheatrenapa.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Be Like Blippi 亲子舞台秀",
+        "Be Like Blippi Family Stage Show",
+        "Be Like Blippi 親子舞臺秀"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12627,6 +14646,9 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Gorillaz：The Mountain Tour"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12658,6 +14680,11 @@
       "sourceLabel": "menlopark.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Menlo Park Belle Haven 车尾箱讨糖",
+        "Belle Haven Trunk-or-Treat in Menlo Park",
+        "Menlo Park Belle Haven 車尾箱討糖"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12691,6 +14718,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Leandro 图书馆万圣节故事与讨糖",
+        "San Leandro Library Halloween Stories and Trick-or-Treating",
+        "San Leandro 圖書館萬聖節故事與討糖"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12722,6 +14754,11 @@
       "sourceLabel": "library.sunnyvale.ca.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "october-library-culture",
+      "aliases": [
+        "Sunnyvale Spooky StoryWalk：穿着装扮读故事",
+        "Sunnyvale Spooky StoryWalk: costumes and outdoor reading",
+        "Sunnyvale Spooky StoryWalk：穿著裝扮讀故事"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -12753,6 +14790,11 @@
       "sourceLabel": "beniciamainstreet.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "Benicia 周四农贸市场季末场",
+        "Benicia Thursday Farmers Market: Season Finale",
+        "Benicia 週四農貿市場季末場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12784,6 +14826,11 @@
       "sourceLabel": "City of Brisbane",
       "verifiedAt": "2026-10-02",
       "imageKey": "everyday",
+      "aliases": [
+        "Dog Pawty 狗狗装扮聚会",
+        "Dog Pawty costume gathering",
+        "Dog Pawty 狗狗裝扮聚會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12818,6 +14865,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "aliases": [
+        "Mission 市集：亡灵节与万圣节下午",
+        "Día de los Muertos and Halloween at Mission Community Market",
+        "Mission 市集：亡靈節與萬聖節下午"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -12866,6 +14918,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Yountville 第三届 Napa Valley Haunts",
+        "Yountville's Third Annual Napa Valley Haunts",
+        "Yountville 第三屆 Napa Valley Haunts"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12897,6 +14954,11 @@
       "sourceLabel": "City of San Pablo",
       "verifiedAt": "2026-10-02",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "City Hall-o-Ween 已公布日期",
+        "City Hall-o-Ween date announced",
+        "City Hall-o-Ween 已公佈日期"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -12927,6 +14989,11 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Exploratorium After Dark：Creepatorium 万圣节夜场",
+        "Exploratorium After Dark: Creepatorium Halloween night",
+        "Exploratorium After Dark：Creepatorium 萬聖節夜場"
+      ],
       "location": {
         "lat": 37.8016649,
         "lng": -122.397348,
@@ -12981,6 +15048,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Canucks：常规赛",
+        "San Jose Sharks vs. Canucks: regular season",
+        "聖何塞 Sharks 對 Canucks：常規賽"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13015,6 +15087,11 @@
       "sourceLabel": "theoaklandarena.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Rahat Fateh Ali Khan 奥克兰演唱会",
+        "Rahat Fateh Ali Khan concert in Oakland",
+        "Rahat Fateh Ali Khan 奧克蘭演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13050,6 +15127,10 @@
       "sourceLabel": "lafayettechamber.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "Lafayette 商圈 Trick or Treat Street",
+        "Lafayette Shopping District Trick or Treat Street"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13080,6 +15161,11 @@
       "sourceLabel": "Town of Moraga",
       "verifiedAt": "2026-10-02",
       "imageKey": "outdoor-cinema",
+      "aliases": [
+        "Hacienda 傍晚万圣节与草地电影",
+        "Halloween evening and lawn movie at the Hacienda",
+        "Hacienda 傍晚萬聖節與草地電影"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13111,6 +15197,10 @@
       "sourceLabel": "theduckhorncollection.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-wine",
+      "aliases": [
+        "21+ · Napa Harvest After Dark 面具晚宴",
+        "21+ · Napa Harvest After Dark masquerade dinner"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 21
@@ -13143,6 +15233,11 @@
       "sourceLabel": "museumca.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "region-omca",
+      "aliases": [
+        "OMCA 周五夜季末场：LA GENTE SF 现场音乐",
+        "OMCA Friday Nights finale: live music by LA GENTE SF",
+        "OMCA 週五夜季末場：LA GENTE SF 現場音樂"
+      ],
       "location": {
         "lat": 37.798641,
         "lng": -122.263611,
@@ -13197,6 +15292,11 @@
       "sourceLabel": "paplayers.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-stage",
+      "aliases": [
+        "Palo Alto《亚当斯一家》：万圣节开演周末",
+        "Palo Alto’s The Addams Family: Halloween opening weekend",
+        "Palo Alto《亞當斯一家》：萬聖節開演週末"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -13230,6 +15330,11 @@
       "sourceLabel": "events.napalibrary.gov",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "American Canyon 图书馆万圣节派对",
+        "American Canyon Library Halloween party",
+        "American Canyon 圖書館萬聖節派對"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13264,6 +15369,10 @@
       "sourceLabel": "365 Night Market",
       "imageKey": "autumn-neighbors",
       "verifiedAt": "2026-09-30",
+      "aliases": [
+        "San Jose 365 Night Market：十月底夜市",
+        "San Jose 365 Night Market: October edition"
+      ],
       "planning": {
         "admissionUsd": 0,
         "programTimeUnconfirmed": true,
@@ -13300,6 +15409,11 @@
       "sourceLabel": "sanleandro.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "aliases": [
+        "San Leandro 长者中心万圣节宾果下午",
+        "San Leandro Senior Community Center Halloween bingo afternoon",
+        "San Leandro 長者中心萬聖節賓果下午"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13330,6 +15444,11 @@
       "sourceLabel": "City of San Ramon",
       "verifiedAt": "2026-10-02",
       "imageKey": "garden-walk",
+      "aliases": [
+        "自然故事时间有万圣节专场",
+        "Nature Storytime has a Halloween session",
+        "自然故事時間有萬聖節專場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13361,6 +15480,11 @@
       "sourceLabel": "San Francisco Recreation and Parks",
       "verifiedAt": "2026-10-02",
       "imageKey": "family-workshop",
+      "aliases": [
+        "Scaregrove：Stern Grove 免费万圣节嘉年华",
+        "Scaregrove: Free Halloween Fun at Stern Grove",
+        "Scaregrove：Stern Grove 免費萬聖節嘉年華"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13394,6 +15518,11 @@
       "audience": [
         "音乐爱好者",
         "学生优惠"
+      ],
+      "aliases": [
+        "Stanford 万圣节音乐会：交响乐与管乐团同台",
+        "Stanford Halloween Concert: orchestra and wind symphony",
+        "Stanford 萬聖節音樂會：交響樂與管樂團同臺"
       ],
       "planning": {
         "admissionUsd": 32,
@@ -13442,6 +15571,9 @@
       "sourceLabel": "downtownvacaville.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Downtown Vacaville 21+ Boo Bash"
+      ],
       "planning": {
         "admissionUsd": null,
         "minAge": 21
@@ -13478,6 +15610,11 @@
         "2026-10-31",
         "2026-11-28"
       ],
+      "aliases": [
+        "免费观察 Baer Blacksmith Shop 锻造示范",
+        "Free Baer Blacksmith Shop demonstrations",
+        "免費觀察 Baer Blacksmith Shop 鍛造示範"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13509,6 +15646,11 @@
       "sourceLabel": "marincountrymart.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Marin Country Mart 万圣节装扮与讨糖",
+        "Marin Country Mart Halloween Costumes and Trick-or-Treating",
+        "Marin Country Mart 萬聖節裝扮與討糖"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13543,6 +15685,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "ferry-market",
       "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "aliases": [
+        "Ferry Plaza 秋果品尝与墨西哥烘焙演示",
+        "Fall fruit tasting and Mexican baking at Ferry Plaza",
+        "Ferry Plaza 秋果品嚐與墨西哥烘焙演示"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -13590,6 +15737,11 @@
       "sourceLabel": "City of Palo Alto",
       "imageKey": "autumn-neighbors",
       "verifiedAt": "2026-09-30",
+      "aliases": [
+        "Palo Alto Cal Ave：万圣节街区音乐日",
+        "Palo Alto Cal Ave: Halloween street music",
+        "Palo Alto Cal Ave：萬聖節街區音樂日"
+      ],
       "location": {
         "lat": 37.4262659,
         "lng": -122.1417963,
@@ -13630,6 +15782,11 @@
       "sourceLabel": "Sausalito 市 2026 Halloween 官方页",
       "verifiedAt": "2026-10-02",
       "imageKey": "region-sausalito",
+      "aliases": [
+        "Sausalito 万圣节游行与狗狗装扮赛",
+        "Sausalito Halloween parade and dog costume contest",
+        "Sausalito 萬聖節遊行與狗狗裝扮賽"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13661,6 +15818,11 @@
       "sourceLabel": "mhplaza.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "aliases": [
+        "San José Avenida de Altares 亡灵节文化夜",
+        "San José Avenida de Altares Día de los Muertos",
+        "San José Avenida de Altares 亡靈節文化夜"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13692,6 +15854,11 @@
       "sourceLabel": "ybgfestival.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "verified-yerba-buena-gardens",
+      "aliases": [
+        "旧金山 Halloween Hoopla：儿童装扮大游行",
+        "San Francisco Halloween Hoopla",
+        "舊金山 Halloween Hoopla：兒童裝扮大遊行"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13723,6 +15890,11 @@
       "sourceLabel": "sfopera.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "《费加罗的婚礼》10 月首演",
+        "The Marriage of Figaro: October Opening Performance",
+        "《費加羅的婚禮》10 月首演"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13754,6 +15926,11 @@
       "sourceLabel": "sapcenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "圣何塞 Sharks 对 Senators：Los Tiburones 主题场",
+        "San Jose Sharks vs. Senators: Los Tiburones themed game",
+        "聖何塞 Sharks 對 Senators：Los Tiburones 主題場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -13785,6 +15962,11 @@
       "sourceLabel": "downtownvacaville.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "aliases": [
+        "Downtown Vacaville 免费万圣节讨糖",
+        "Downtown Vacaville free Halloween trick-or-treating",
+        "Downtown Vacaville 免費萬聖節討糖"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -13822,6 +16004,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Big Break 湿地散步：11月四个场次",
+        "Big Break nature walks: four November dates",
+        "Big Break 溼地散步：11月四個場次"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -13914,6 +16101,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "weekend",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Black Diamond 山径挑战：5.2英里爬升路线",
+        "Black Diamond Trails Challenge: a 5.2-mile hill hike",
+        "Black Diamond 山徑挑戰：5.2英里爬升路線"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -13973,6 +16165,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "weekend",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Brushy Peak：原住民历史与山地徒步",
+        "Brushy Peak: Indigenous heritage and a hill hike",
+        "Brushy Peak：原住民歷史與山地徒步"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14031,6 +16228,11 @@
       "sourceLabel": "Visit Oakland",
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
+      "aliases": [
+        "Fruitvale 亡灵节：社区祭坛与街头庆典",
+        "Fruitvale Día de los Muertos: altars and a community festival",
+        "Fruitvale 亡靈節：社區祭壇與街頭慶典"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14079,6 +16281,11 @@
       "sourceLabel": "Suisun City 市官方活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Suisun City 亡灵节文化晚会",
+        "Suisun City Día de los Muertos celebration",
+        "Suisun City 亡靈節文化晚會"
+      ],
       "planning": {
         "admissionUsd": 0
       }
@@ -14111,6 +16318,11 @@
         "自然与地方历史爱好者"
       ],
       "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "aliases": [
+        "林地看古树与砂岩：El Corte de Madera 导览",
+        "Ancient redwood and sandstone: El Corte de Madera guided hike",
+        "林地看古樹與砂岩：El Corte de Madera 導覽"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14169,6 +16381,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Hayward 周一观鸟：West Winton 入口",
+        "Monday birding at Hayward: West Winton entrance",
+        "Hayward 週一觀鳥：West Winton 入口"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14225,6 +16442,11 @@
       "sourceLabel": "SAP Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-sap-center",
+      "aliases": [
+        "Sharks 主场迎战 Flames",
+        "Sharks host the Flames",
+        "Sharks 主場迎戰 Flames"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14256,6 +16478,10 @@
       "sourceLabel": "Oakland Arena",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-oakland-arena",
+      "aliases": [
+        "XG WORLD TOUR: THE CORE Oakland 站",
+        "XG WORLD TOUR: THE CORE in Oakland"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14287,6 +16513,11 @@
         "想认识本地食物的人"
       ],
       "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "aliases": [
+        "San Mateo 周四傍晚农贸市场",
+        "Downtown San Mateo Thursday farmers’ market",
+        "San Mateo 週四傍晚農貿市場"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -14335,6 +16566,11 @@
       "sourceLabel": "Chase Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-chase-center",
+      "aliases": [
+        "Warriors 主场对 Miami Heat",
+        "Warriors home game vs. Miami Heat",
+        "Warriors 主場對 Miami Heat"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14366,6 +16602,9 @@
       "sourceLabel": "SAP Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-sap-center",
+      "aliases": [
+        "Don Omar：Back to Reggaeton"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14397,6 +16636,11 @@
       "sourceLabel": "SAP Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-sap-center",
+      "aliases": [
+        "Mon Laferte 圣荷西演唱会",
+        "Mon Laferte in San Jose",
+        "Mon Laferte 聖荷西演唱會"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14430,6 +16674,11 @@
       "sourceLabel": "Presidio Trust",
       "verifiedAt": "2026-10-05",
       "imageKey": "presidio",
+      "aliases": [
+        "Presidio：亡灵节与排灯节文化庆典",
+        "Día de los Muertos and Diwali at the Presidio",
+        "Presidio：亡靈節與排燈節文化慶典"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14480,6 +16729,11 @@
       "officialUrl": "https://sugarloafpark.org/event/public-star-party-46/",
       "sourceLabel": "Sugarloaf / Robert Ferguson Observatory 官方活动页",
       "imageKey": "november-stargazing",
+      "aliases": [
+        "Sugarloaf 公众观星夜",
+        "Sugarloaf public star party",
+        "Sugarloaf 公眾觀星夜"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -14526,6 +16780,11 @@
       "sourceLabel": "Windsor 镇可持续生活活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "refresh-makers",
+      "aliases": [
+        "Windsor 秋季装饰与衣物交换",
+        "Windsor fall decoration and clothing swap",
+        "Windsor 秋季裝飾與衣物交換"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14557,6 +16816,11 @@
       "sourceLabel": "SJSU Athletics",
       "verifiedAt": "2026-10-02",
       "imageKey": "sanjose-city",
+      "aliases": [
+        "SJSU 对 Northern Illinois：家庭周末主场",
+        "SJSU vs Northern Illinois: Family Weekend home game",
+        "SJSU 對 Northern Illinois：家庭週末主場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14586,6 +16850,11 @@
       "audience": [
         "想买本地手作的人",
         "安排室内社区活动的家庭"
+      ],
+      "aliases": [
+        "South San Francisco 节日手作市集",
+        "South San Francisco Holiday Boutique & Maker’s Faire",
+        "South San Francisco 節日手作市集"
       ],
       "planning": {
         "admissionUsd": 0,
@@ -14636,6 +16905,11 @@
         "想了解南湾山地的人"
       ],
       "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "aliases": [
+        "Mount Umunhum 冷战历史：Sentinel in the Sky",
+        "Mount Umunhum Cold War history: Sentinel in the Sky",
+        "Mount Umunhum 冷戰歷史：Sentinel in the Sky"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14691,6 +16965,11 @@
         "坐 Caltrain 逛市集的人"
       ],
       "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "aliases": [
+        "Mountain View 农贸市场：11 月 8 日改到 Hope Street",
+        "Mountain View farmers’ market moves to Hope Street on November 8",
+        "Mountain View 農貿市場：11 月 8 日改到 Hope Street"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -14741,6 +17020,11 @@
       "sourceLabel": "Gardens of Golden Gate Park",
       "verifiedAt": "2026-10-05",
       "imageKey": "garden-walk",
+      "aliases": [
+        "植物园 One Day Choir：一起学唱一首歌",
+        "One Day Choir at the Botanical Garden",
+        "植物園 One Day Choir：一起學唱一首歌"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -14797,6 +17081,11 @@
       "officialUrl": "https://sugarloafpark.org/event/tabletop-nature-talk-colors-patterns-signals/",
       "sourceLabel": "Sugarloaf Ridge State Park 官方自然活动页",
       "imageKey": "garden-walk",
+      "aliases": [
+        "Sugarloaf 自然桌边讲解：颜色、图案与信号",
+        "Sugarloaf nature talk: colors, patterns and signals",
+        "Sugarloaf 自然桌邊講解：顏色、圖案與信號"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14845,6 +17134,11 @@
       "sourceLabel": "Levi's Stadium",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-levis-stadium",
+      "aliases": [
+        "49ers 主场迎战 Raiders",
+        "49ers host the Raiders",
+        "49ers 主場迎戰 Raiders"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14876,6 +17170,9 @@
       "sourceLabel": "SAP Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-sap-center",
+      "aliases": [
+        "The Smashing Pumpkins：The Rats In a Cage Tour"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14910,6 +17207,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Martinez 滨水周一观鸟",
+        "Monday shoreline birding in Martinez",
+        "Martinez 濱水週一觀鳥"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -14965,6 +17267,11 @@
       "sourceLabel": "Charles M. Schulz Museum 官方签书活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "culture-visit",
+      "aliases": [
+        "Pearls Jubilee：Stephan Pastis 对谈与签书",
+        "Pearls Jubilee: Stephan Pastis conversation and book signing",
+        "Pearls Jubilee：Stephan Pastis 對談與籤書"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -14999,6 +17306,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
+      "aliases": [
+        "Mission Community Market：2026收季最后一天",
+        "Mission Community Market: final day of the 2026 season",
+        "Mission Community Market：2026收季最後一天"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "outdoor",
@@ -15047,6 +17359,11 @@
         "周五下班后出门的人"
       ],
       "relatedGuideSlug": "san-carlos-hiller-aviation-half-day-guide",
+      "aliases": [
+        "Hiller Starlight Nights：晚间航空馆与星空",
+        "Hiller Starlight Nights: aviation museum after dark",
+        "Hiller Starlight Nights：晚間航空館與星空"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -15095,6 +17412,11 @@
       "officialUrl": "https://sugarloafpark.org/event/sips-and-stars-4/",
       "sourceLabel": "Sugarloaf / Robert Ferguson Observatory 官方活动页",
       "imageKey": "november-stargazing",
+      "aliases": [
+        "Sips and Stars：21岁以上酒与星空之夜",
+        "Sips and Stars: wine and astronomy for ages 21+",
+        "Sips and Stars：21歲以上酒與星空之夜"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -15143,6 +17465,11 @@
       "sourceLabel": "Oakland Arena",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-oakland-arena",
+      "aliases": [
+        "Jo Koy: Koy Meets World 喜剧专场",
+        "Jo Koy: Koy Meets World comedy show",
+        "Jo Koy: Koy Meets World 喜劇專場"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -15181,6 +17508,11 @@
       "audience": [
         "喜欢家庭题材音乐剧的人",
         "关注青少年舞台表演的人"
+      ],
+      "aliases": [
+        "CMT San Jose《Matilda》音乐剧",
+        "CMT San Jose presents Matilda the Musical",
+        "CMT San Jose《Matilda》音樂劇"
       ],
       "planning": {
         "admissionUsd": null,
@@ -15264,6 +17596,11 @@
         "2026-11-14",
         "2026-11-15"
       ],
+      "aliases": [
+        "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
+        "Holidays at Filoli begins: choose daytime or evening lights",
+        "Filoli 節日季開幕：日間花園與夜間燈飾分開選"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -15333,6 +17670,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "expanded-coyote-hills",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Coyote Hills 儿童识鸟游戏",
+        "Birding basics for kids at Coyote Hills",
+        "Coyote Hills 兒童識鳥遊戲"
+      ],
       "planning": {
         "admissionUsd": 0,
         "minAge": 5,
@@ -15390,6 +17732,11 @@
       "sourceLabel": "SS Red Oak Victory",
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
+      "aliases": [
+        "Red Oak Victory 秋日摇摆舞会",
+        "Fall swing dance aboard Red Oak Victory",
+        "Red Oak Victory 秋日搖擺舞會"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "mixed",
@@ -15438,6 +17785,11 @@
         "想制作食物礼物的人"
       ],
       "relatedGuideSlug": "peninsula-south-bay-autumn-farmers-markets-2026",
+      "aliases": [
+        "San Carlos 食物保存实作：Gifts from the Kitchen",
+        "San Carlos food-preserving workshop: Gifts from the Kitchen",
+        "San Carlos 食物保存實作：Gifts from the Kitchen"
+      ],
       "planning": {
         "admissionUsd": 115,
         "setting": "indoor",
@@ -15496,6 +17848,11 @@
       "verifiedAt": "2026-10-05",
       "imageKey": "november-community",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
+      "aliases": [
+        "Hayward 海湾晨间观鸟：6岁起报名",
+        "Bay Bird Mornings in Hayward: ages 6+",
+        "Hayward 海灣晨間觀鳥：6歲起報名"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -15553,6 +17910,11 @@
       "officialUrl": "https://jacklondonpark.com/events/the-second-mrs-london-2026/",
       "sourceLabel": "Jack London Park Partners 官方活动页",
       "imageKey": "community-library-card",
+      "aliases": [
+        "Jack London 公园作家下午会：The Second Mrs. London",
+        "Jack London Park author’s afternoon: The Second Mrs. London",
+        "Jack London 公園作家下午會：The Second Mrs. London"
+      ],
       "planning": {
         "admissionUsd": null,
         "setting": "indoor",
@@ -15601,6 +17963,11 @@
         "观鸟入门者"
       ],
       "relatedGuideSlug": "peninsula-south-bay-november-nature-walks-2026",
+      "aliases": [
+        "Ravenswood 潮汐湿地慢走与观鸟",
+        "Ravenswood tidal-marsh nature walk",
+        "Ravenswood 潮汐溼地慢走與觀鳥"
+      ],
       "planning": {
         "admissionUsd": 0,
         "setting": "outdoor",
@@ -15656,6 +18023,11 @@
       "sourceLabel": "City of San Ramon",
       "verifiedAt": "2026-10-02",
       "imageKey": "refresh-makers",
+      "aliases": [
+        "San Ramon 冬季润唇膏手作课",
+        "San Ramon winter lip balm workshop",
+        "San Ramon 冬季潤唇膏手作課"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -15687,6 +18059,11 @@
       "sourceLabel": "Chase Center",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-chase-center",
+      "aliases": [
+        "Journey Final Frontier Tour 旧金山站",
+        "Journey Final Frontier Tour in San Francisco",
+        "Journey Final Frontier Tour 舊金山站"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -15718,6 +18095,11 @@
       "sourceLabel": "Stanford Athletics",
       "verifiedAt": "2026-10-02",
       "imageKey": "region-stanford-quad",
+      "aliases": [
+        "Stanford 主场迎战 SMU",
+        "Stanford hosts SMU",
+        "Stanford 主場迎戰 SMU"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -15749,6 +18131,11 @@
       "sourceLabel": "Levi's Stadium",
       "verifiedAt": "2026-10-02",
       "imageKey": "roundup-levis-stadium",
+      "aliases": [
+        "49ers 主场迎战 Seahawks",
+        "49ers host the Seahawks",
+        "49ers 主場迎戰 Seahawks"
+      ],
       "planning": {
         "admissionUsd": null
       }
@@ -15758,6 +18145,14 @@
     {
       "id": "golden-gate",
       "title": "金门大桥与 Fort Point",
+      "aliases": [
+        "金门大桥与 Fort Point",
+        "Golden Gate Bridge",
+        "金门大桥",
+        "金門大橋",
+        "Golden Gate Bridge & Fort Point",
+        "金門大橋與 Fort Point"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "把看桥和走桥分开安排，出发前确认步道与堡垒开放。",
@@ -15781,6 +18176,11 @@
     {
       "id": "pier39",
       "title": "渔人码头与 PIER 39",
+      "aliases": [
+        "渔人码头与 PIER 39",
+        "Fisherman's Wharf & PIER 39",
+        "漁人碼頭與 PIER 39"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "海狮与滨水散步可免费欣赏，游船和馆内项目另购票。",
@@ -15804,6 +18204,11 @@
     {
       "id": "alcatraz",
       "title": "恶魔岛 Alcatraz",
+      "aliases": [
+        "恶魔岛 Alcatraz",
+        "Alcatraz Island",
+        "惡魔島 Alcatraz"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "提前订含登岛的船票；地图指向 Pier 33 登船处。",
@@ -15827,6 +18232,14 @@
     {
       "id": "chinatown",
       "title": "唐人街与 North Beach",
+      "aliases": [
+        "唐人街与 North Beach",
+        "San Francisco Chinatown",
+        "旧金山唐人街",
+        "舊金山唐人街",
+        "Chinatown & North Beach",
+        "唐人街與 North Beach"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "从牌楼走进街巷，把吃饭和小店停留留在行程里。",
@@ -15850,6 +18263,14 @@
     {
       "id": "palace",
       "title": "艺术宫与 Marina",
+      "aliases": [
+        "艺术宫与 Marina",
+        "Palace of Fine Arts",
+        "艺术宫",
+        "藝術宮",
+        "Palace of Fine Arts & Marina",
+        "藝術宮與 Marina"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "外部环湖散步与建筑观赏免费，演出和私人活动另计。",
@@ -15873,6 +18294,11 @@
     {
       "id": "golden-gate-park",
       "title": "金门公园与 JFK Promenade",
+      "aliases": [
+        "金门公园与 JFK Promenade",
+        "Golden Gate Park & JFK Promenade",
+        "金門公園與 JFK Promenade"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "先逛免费户外区域，花园与博物馆分别查票。",
@@ -15896,6 +18322,10 @@
     {
       "id": "presidio",
       "title": "Presidio Tunnel Tops",
+      "aliases": [
+        "Presidio Tunnel Tops",
+        "Presidio"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "草坡、湾景和野餐；带外套，并确认餐桌使用规则。",
@@ -15919,6 +18349,11 @@
     {
       "id": "berkeley",
       "title": "Berkeley 校园与植物园",
+      "aliases": [
+        "Berkeley 校园与植物园",
+        "Berkeley campus & Botanical Garden",
+        "Berkeley 校園與植物園"
+      ],
       "region": "east-bay",
       "city": "Berkeley",
       "summary": "校园和山上植物园是两个停留点，植物园需要门票。",
@@ -15942,6 +18377,13 @@
     {
       "id": "lake-merritt",
       "title": "Lake Merritt 与 OMCA",
+      "aliases": [
+        "Lake Merritt 与 OMCA",
+        "Lake Merritt",
+        "梅里特湖",
+        "Lake Merritt & OMCA",
+        "Lake Merritt 與 OMCA"
+      ],
       "region": "east-bay",
       "city": "Oakland",
       "summary": "湖畔散步搭配加州故事，博物馆门票与开放日另查。",
@@ -15965,6 +18407,13 @@
     {
       "id": "redwood",
       "title": "Reinhardt Redwood 红杉林",
+      "aliases": [
+        "Reinhardt Redwood 红杉林",
+        "Reinhardt Redwood Regional Park",
+        "红杉区域公园",
+        "紅杉區域公園",
+        "Reinhardt Redwood 紅杉林"
+      ],
       "region": "east-bay",
       "city": "Oakland",
       "summary": "选适合自己的短步道；停车费用和步道公告单独确认。",
@@ -15988,6 +18437,11 @@
     {
       "id": "stanford",
       "title": "Stanford 与 Cantor 艺术馆",
+      "aliases": [
+        "Stanford 与 Cantor 艺术馆",
+        "Stanford & Cantor Arts Center",
+        "Stanford 與 Cantor 藝術館"
+      ],
       "region": "peninsula",
       "city": "Stanford",
       "summary": "校园建筑与艺术馆慢慢看，留意闭馆日和停车规则。",
@@ -16011,6 +18465,14 @@
     {
       "id": "filoli",
       "title": "Filoli 庄园与花园",
+      "aliases": [
+        "Filoli 庄园与花园",
+        "Filoli",
+        "费罗丽",
+        "費羅麗",
+        "Filoli House & Garden",
+        "Filoli 莊園與花園"
+      ],
       "region": "peninsula",
       "city": "Woodside",
       "summary": "按入场时段订票，花园状态随季节变化。",
@@ -16086,6 +18548,13 @@
     {
       "id": "half-moon-bay",
       "title": "Half Moon Bay 海岸",
+      "aliases": [
+        "Half Moon Bay 海岸",
+        "Half Moon Bay",
+        "半月湾",
+        "半月灣",
+        "Half Moon Bay coast"
+      ],
       "region": "peninsula",
       "city": "Half Moon Bay",
       "summary": "海风与沙滩适合留白；停车另计，下海前查海况。",
@@ -16109,6 +18578,11 @@
     {
       "id": "baylands",
       "title": "Palo Alto Baylands 湿地",
+      "aliases": [
+        "Palo Alto Baylands 湿地",
+        "Palo Alto Baylands wetlands",
+        "Palo Alto Baylands 溼地"
+      ],
       "region": "peninsula",
       "city": "Palo Alto",
       "summary": "观鸟和短途散步，先读当前部分步道封闭提醒。",
@@ -16132,6 +18606,11 @@
     {
       "id": "san-jose",
       "title": "San Jose 科技馆与日本城",
+      "aliases": [
+        "San Jose 科技馆与日本城",
+        "San Jose: The Tech & Japantown",
+        "San Jose 科技館與日本城"
+      ],
       "region": "south-bay",
       "city": "San Jose",
       "summary": "科技馆需票，日本城街区可自由散步；两地间预留交通。",
@@ -16155,6 +18634,10 @@
     {
       "id": "hakone",
       "title": "Saratoga 的 Hakone Gardens",
+      "aliases": [
+        "Saratoga 的 Hakone Gardens",
+        "Hakone Gardens, Saratoga"
+      ],
       "region": "south-bay",
       "city": "Saratoga",
       "summary": "日式庭园短程，先确认坡道、池塘整修与优惠资格。",
@@ -16236,6 +18719,14 @@
     {
       "id": "muir-woods",
       "title": "Muir Woods 红杉森林",
+      "aliases": [
+        "Muir Woods 红杉森林",
+        "Muir Woods",
+        "缪尔森林",
+        "繆爾森林",
+        "Muir Woods redwood forest",
+        "Muir Woods 紅杉森林"
+      ],
       "region": "north-bay",
       "city": "Mill Valley",
       "summary": "停车或接驳需预约，与公园门票分开；提前安排返程。",
@@ -16259,6 +18750,11 @@
     {
       "id": "sausalito",
       "title": "Sausalito 渡轮与海滨",
+      "aliases": [
+        "Sausalito 渡轮与海滨",
+        "Sausalito ferry & waterfront",
+        "Sausalito 渡輪與海濱"
+      ],
       "region": "north-bay",
       "city": "Sausalito",
       "summary": "海滨散步免费，船票另付；先确认返程码头和班次。",
@@ -16282,6 +18778,11 @@
     {
       "id": "lands-end",
       "title": "Lands End 与 Sutro Baths",
+      "aliases": [
+        "Lands End 与 Sutro Baths",
+        "Lands End and Sutro Baths",
+        "Lands End 與 Sutro Baths"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "柏树林间看海与浴场遗址；无障碍短段之后有台阶，下到遗址需走陡坡。",
@@ -16305,6 +18806,11 @@
     {
       "id": "mission-dolores",
       "title": "Dolores Park 与 Mission 壁画",
+      "aliases": [
+        "Dolores Park 与 Mission 壁画",
+        "Dolores Park and Mission murals",
+        "Dolores Park 與 Mission 壁畫"
+      ],
       "region": "sf",
       "city": "San Francisco",
       "summary": "在草坡看天际线，再读 Mission 社区壁画；公园与公共街巷免费，社区导览另计。",
@@ -16328,6 +18834,11 @@
     {
       "id": "uss-hornet",
       "title": "USS Hornet 航母与 Alameda 海岸",
+      "aliases": [
+        "USS Hornet 航母与 Alameda 海岸",
+        "USS Hornet and the Alameda shoreline",
+        "USS Hornet 航母與 Alameda 海岸"
+      ],
       "region": "east-bay",
       "city": "Alameda",
       "summary": "看飞机与历史舰船，再到海岸放松；航母需票且通行有限，海岸是独立转场。",
@@ -16351,6 +18862,11 @@
     {
       "id": "coyote-hills",
       "title": "Coyote Hills 湿地与草坡",
+      "aliases": [
+        "Coyote Hills 湿地与草坡",
+        "Coyote Hills wetlands and grassland",
+        "Coyote Hills 溼地與草坡"
+      ],
       "region": "east-bay",
       "city": "Fremont",
       "summary": "看鸟、读 Ohlone 文化与走湿地短线；停车另计，铺装环线也要按坡度与体力选段。",
@@ -16374,6 +18890,11 @@
     {
       "id": "hiller-aviation",
       "title": "Hiller 航空博物馆",
+      "aliases": [
+        "Hiller 航空博物馆",
+        "Hiller Aviation Museum",
+        "Hiller 航空博物館"
+      ],
       "region": "peninsula",
       "city": "San Carlos",
       "summary": "飞机与航空互动适合慢慢看，项目开放另查；车站到馆还有一段接驳。",
@@ -16397,6 +18918,11 @@
     {
       "id": "coyote-point",
       "title": "Coyote Point 海滨与科学馆",
+      "aliases": [
+        "Coyote Point 海滨与科学馆",
+        "Coyote Point waterfront and science museum",
+        "Coyote Point 海濱與科學館"
+      ],
       "region": "peninsula",
       "city": "San Mateo",
       "summary": "户外散步加选另售票的 CuriOdyssey；车辆入园另收费，先查游乐场施工封闭。",
@@ -16420,6 +18946,11 @@
     {
       "id": "computer-history",
       "title": "计算机历史馆与 Shoreline 加选",
+      "aliases": [
+        "计算机历史馆与 Shoreline 加选",
+        "Computer History Museum and optional Shoreline",
+        "計算機歷史館與 Shoreline 加選"
+      ],
       "region": "south-bay",
       "city": "Mountain View",
       "summary": "以需票的计算机历史馆为主，机器演示另查排期，湖边需独立安排交通。",
@@ -16443,6 +18974,11 @@
     {
       "id": "rosicrucian",
       "title": "埃及博物馆与市立玫瑰园",
+      "aliases": [
+        "埃及博物馆与市立玫瑰园",
+        "Egyptian Museum and Municipal Rose Garden",
+        "埃及博物館與市立玫瑰園"
+      ],
       "region": "south-bay",
       "city": "San Jose",
       "summary": "博物馆需票，花园散步免费；两处需街区转场，推车不能使用馆内轮椅升降平台。",
@@ -16466,6 +19002,10 @@
     {
       "id": "point-reyes",
       "title": "Point Reyes · Bear Valley 自然半日",
+      "aliases": [
+        "Point Reyes · Bear Valley 自然半日",
+        "Point Reyes · a Bear Valley nature outing"
+      ],
       "region": "north-bay",
       "city": "Olema",
       "summary": "从游客中心、地震短线与林间散步开始；轮椅和推车先查实际路面，往返交通另计。",
@@ -16489,6 +19029,11 @@
     {
       "id": "angel-island",
       "title": "Angel Island · 渡轮与移民历史",
+      "aliases": [
+        "Angel Island · 渡轮与移民历史",
+        "Angel Island · ferries and immigration history",
+        "Angel Island · 渡輪與移民歷史"
+      ],
       "region": "north-bay",
       "city": "Tiburon",
       "summary": "船票、入园和馆内参观分别核对；先定回程船，再按坡度与台阶选择路线。",
@@ -16526,7 +19071,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "The Passdoor"
+      ]
     },
     {
       "id": "opening-roundup-alesta-sebastopol-2026",
@@ -16545,7 +19093,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Alesta Modern Mediterranean"
+      ]
     },
     {
       "id": "opening-roundup-bonnie-bagels-sebastopol-2026",
@@ -16564,7 +19115,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Bonnie Bagels & Co"
+      ]
     },
     {
       "id": "opening-roundup-capriciano-santarosa-2026",
@@ -16583,7 +19137,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Capriciano Osteria"
+      ]
     },
     {
       "id": "opening-eriks-delicafe-san-ramon-relocation",
@@ -16602,7 +19159,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Erik’s DeliCafé — San Ramon"
+      ]
     },
     {
       "id": "opening-handroll-hawker",
@@ -16621,7 +19181,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Handroll Hawker"
+      ]
     },
     {
       "id": "opening-jean-dousset-valley-fair",
@@ -16640,7 +19203,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Jean Dousset"
+      ]
     },
     {
       "id": "opening-plur-cafe-san-mateo-library",
@@ -16659,7 +19225,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "PLUR Café"
+      ]
     },
     {
       "id": "opening-thirdlove-valley-fair",
@@ -16678,7 +19247,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "ThirdLove"
+      ]
     },
     {
       "id": "opening-vivaia-valley-fair",
@@ -16697,7 +19269,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "VIVAIA"
+      ]
     },
     {
       "id": "opening-dead-letter-sonoma-new-restaurant-2026",
@@ -16716,7 +19291,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Dead Letter"
+      ]
     },
     {
       "id": "opening-sucre-damour-fremont-celebration-2026",
@@ -16735,7 +19313,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Sucré d’Amour Café & Sushi"
+      ]
     },
     {
       "id": "opening-walnut-creek-vici-new-store-2026",
@@ -16806,7 +19387,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "VICI Walnut Creek"
+      ]
     },
     {
       "id": "opening-san-jose-bitterbuck-soft-opening-2026",
@@ -16825,7 +19409,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "BitterBuck"
+      ]
     },
     {
       "id": "opening-santa-clara-cider-valley-fair-opening-2026",
@@ -16844,7 +19431,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Cider at Westfield Valley Fair"
+      ]
     },
     {
       "id": "opening-hijau-san-jose-storefront",
@@ -16863,7 +19453,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Hijau Coffee"
+      ]
     },
     {
       "id": "opening-kaiyo-handroll-union",
@@ -16882,7 +19475,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Kaiyō Handroll Bar"
+      ]
     },
     {
       "id": "opening-santa-clara-rhone-valley-fair-new-store-2026",
@@ -16900,7 +19496,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Rhone at Westfield Valley Fair"
+      ]
     },
     {
       "id": "opening-walnut-creek-saatva-new-store-2026",
@@ -16970,7 +19569,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Saatva Viewing Room"
+      ]
     },
     {
       "id": "opening-yutori-palo-alto-restaurant",
@@ -16990,7 +19592,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Yutori · Restaurant & Bar"
+      ]
     },
     {
       "id": "opening-berkeley-world-of-hoagies-opening-2026",
@@ -17010,7 +19615,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Hoagie’s World of Hoagies"
+      ]
     },
     {
       "id": "opening-sergeant-ma",
@@ -17076,7 +19684,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Sergeant Ma"
+      ]
     },
     {
       "id": "opening-oakland-55-coffee-pop-up-2026",
@@ -17095,7 +19706,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "55 Coffee Co.／The Saap Avenue"
+      ]
     },
     {
       "id": "opening-anya-gifting-larkspur",
@@ -17172,7 +19786,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Anya’s Gifting Agency"
+      ]
     },
     {
       "id": "opening-sf-athanor-new-restaurant-2026",
@@ -17232,7 +19849,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Athanor"
+      ]
     },
     {
       "id": "opening-berkeley-cere-tea-opening-2026",
@@ -17251,7 +19871,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Ceré Tea"
+      ]
     },
     {
       "id": "opening-oakland-chez-maeju-soft-opening-2026",
@@ -17270,7 +19893,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Chez Maeju"
+      ]
     },
     {
       "id": "opening-oakland-delage-reopening-2026",
@@ -17365,7 +19991,10 @@
           "note": "官网列周一至周六午、晚餐，15:00–17:00 不营业；周日时间未确认。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Delage"
+      ]
     },
     {
       "id": "opening-ignite-san-pedro-square",
@@ -17391,7 +20020,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "IGNITE"
+      ]
     },
     {
       "id": "opening-alameda-juxi-soft-opening-2026",
@@ -17449,7 +20081,10 @@
           "note": "试营业期间官网列周二至周六晚餐；周日、周一时间未确认。建议查看订位与当日安排。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "JuXi"
+      ]
     },
     {
       "id": "opening-margaux-larkspur",
@@ -17519,7 +20154,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Margaux"
+      ]
     },
     {
       "id": "opening-pittsburg-nekter-opening-2026",
@@ -17538,7 +20176,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Nékter Juice Bar"
+      ]
     },
     {
       "id": "opening-berkeley-top-dog-downtown-opening-2026",
@@ -17557,7 +20198,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Top Dog／The BreakRoom"
+      ]
     },
     {
       "id": "opening-varley-larkspur",
@@ -17634,7 +20278,10 @@
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Varley"
+      ]
     },
     {
       "id": "opening-raising-canes-jefferson-sf",
@@ -17654,7 +20301,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Raising Cane’s · Fisherman’s Wharf"
+      ]
     },
     {
       "id": "opening-game-parlour-oakland",
@@ -17674,7 +20324,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "The Game Parlour · Oakland"
+      ]
     },
     {
       "id": "opening-panama-hotel-restaurant-reopened-sep2026",
@@ -17694,7 +20347,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Panama Hotel Restaurant"
+      ]
     },
     {
       "id": "opening-aliotos-focacceria-san-rafael",
@@ -17713,7 +20369,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Alioto’s Focacceria · San Rafael"
+      ]
     },
     {
       "id": "opening-asia-live-valley-fair",
@@ -17732,7 +20391,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Asia Live · Valley Fair"
+      ]
     },
     {
       "id": "opening-chicha-san-chen-pleasanton",
@@ -17751,7 +20413,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "CHICHA San Chen · Pleasanton"
+      ]
     },
     {
       "id": "opening-hey-yogurt-san-mateo",
@@ -17770,7 +20435,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Hey Yogurt · San Mateo"
+      ]
     },
     {
       "id": "opening-broken-dreams-oakland",
@@ -17801,7 +20469,10 @@
           "note": "官网确认暂时周末休息；工作日开门时间同时出现 11:00 与 12:00，尚待商家确认。"
         }
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Broken Dreams"
+      ]
     },
     {
       "id": "opening-boulangerie-eria-celebration",
@@ -17820,7 +20491,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "La Boulangerie at ERIA Marina"
+      ]
     },
     {
       "id": "opening-mess-hall-presidio-breadwinner",
@@ -17839,7 +20513,10 @@
       "planning": {
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "The Mess Hall · Breadwinner"
+      ]
     },
     {
       "id": "restaurant-gotts-ferry-building",
@@ -17914,7 +20591,10 @@
           },
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
-      }
+      },
+      "aliases": [
+        "Gott’s Roadside · Ferry Building"
+      ]
     },
     {
       "id": "restaurant-el-cafecito-sjma",
@@ -17983,7 +20663,10 @@
           },
           "note": "美术馆咖啡餐厅营业时间，入店无需美术馆门票；特别活动营业可能调整。周一未列时间。"
         }
-      }
+      },
+      "aliases": [
+        "El Cafecito · San José Museum of Art"
+      ]
     },
     {
       "id": "restaurant-town-fare-omca",
@@ -18053,7 +20736,10 @@
           },
           "note": "堂食最晚 15:15 点单；无需博物馆门票。周日 brunch 先到先得、不接受预约；临时及特殊活动安排另查官网。"
         }
-      }
+      },
+      "aliases": [
+        "Town Fare · Oakland Museum of California"
+      ]
     },
     {
       "id": "restaurant-eureka-cupertino",
@@ -18117,7 +20803,10 @@
           },
           "note": "周五营业时间尚待确认；周六营业至午夜，优惠适用时段须另看具体条件。"
         }
-      }
+      },
+      "aliases": [
+        "Eureka! · Cupertino"
+      ]
     },
     {
       "id": "restaurant-pacific-catch-mountain-view",
@@ -18187,13 +20876,17 @@
           },
           "note": "普通营业时间；节假日、包场及临时调整请出发前查看官方页面。"
         }
-      }
+      },
+      "aliases": [
+        "Pacific Catch · Mountain View"
+      ]
     },
     {
       "id": "venue-sfmoma",
       "title": "SFMOMA · San Francisco Museum of Modern Art",
       "aliases": [
-        "San Francisco Museum of Modern Art"
+        "San Francisco Museum of Modern Art",
+        "SFMOMA · San Francisco Museum of Modern Art"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -18289,7 +20982,12 @@
             ]
           }
         }
-      }
+      },
+      "aliases": [
+        "Exploratorium · 日间科学探索馆",
+        "Exploratorium · Daytime science museum",
+        "Exploratorium · 日間科學探索館"
+      ]
     },
     {
       "id": "venue-sjma",
@@ -18361,7 +21059,11 @@
           },
           "note": "普通展馆时段；官网此表未列周一时间。10 人及以上团体须提前预约；首个周五 18:00 后免费，其他时段依本人票种与资格购票。"
         }
-      }
+      },
+      "aliases": [
+        "San José Museum of Art · 美术馆",
+        "San José Museum of Art · 美術館"
+      ]
     },
     {
       "id": "venue-omca",
@@ -18429,7 +21131,11 @@
           },
           "note": "仅 OMCA 展馆，不代表 Lake Merritt 湖区开放时间。普通票含特别展；首个周日免费。10/25 社区庆典有专门票种，团体与特别活动请另查预约条件。"
         }
-      }
+      },
+      "aliases": [
+        "Oakland Museum of California · OMCA 展馆",
+        "Oakland Museum of California · OMCA 展館"
+      ]
     },
     {
       "id": "venue-ferry-building",
@@ -18454,7 +21160,11 @@
         "setting": "mixed",
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "Ferry Building · 公共大厅与外部会合点",
+        "Ferry Building · 公共大廳與外部會合點"
+      ]
     },
     {
       "id": "shop-san-francisco-premium-outlets",
@@ -18472,7 +21182,10 @@
         "setting": "outdoor",
         "admissionUsd": null
       },
-      "offerIds": []
+      "offerIds": [],
+      "aliases": [
+        "San Francisco Premium Outlets"
+      ]
     },
     {
       "id": "shop-book-passage-ferry-building",
@@ -18547,7 +21260,12 @@
           "note": "Ferry Building #37A 的普通书店营业时间，不是作家活动场次。购物另付；商场提醒营业时间可能调整。位置标记所在 Ferry Building，入内按 #37A 找店。"
         }
       },
-      "path": "https://www.ferrybuildingmarketplace.com/shops/book-passage/"
+      "path": "https://www.ferrybuildingmarketplace.com/shops/book-passage/",
+      "aliases": [
+        "Book Passage · Ferry Building 书店",
+        "Book Passage · Ferry Building bookstore",
+        "Book Passage · Ferry Building 書店"
+      ]
     },
     {
       "id": "venue-oakland-main-library",
@@ -18622,7 +21340,12 @@
           "note": "主馆公共阅览开放时间，普通入馆免费；历史中心、活动与会议室可能另有开放及预约安排，复印、打印、停车另计。"
         }
       },
-      "path": "https://oaklandlibrary.org/locations/XXA/"
+      "path": "https://oaklandlibrary.org/locations/XXA/",
+      "aliases": [
+        "Oakland Main Library · 奥克兰主图书馆",
+        "Oakland Main Library",
+        "Oakland Main Library · 奧克蘭主圖書館"
+      ]
     },
     {
       "id": "venue-sj-king-library",
@@ -18697,7 +21420,12 @@
           "note": "公共图书馆普通开放时间，入馆免费；儿童区周一至周六 10:00 才开放，周日 13:00 开放。特藏、AI Center、活动与服务柜台另有时间，不能据此假定随时可参加；停车等另计。"
         }
       },
-      "path": "https://www.sjpl.org/locations/king/"
+      "path": "https://www.sjpl.org/locations/king/",
+      "aliases": [
+        "Dr. Martin Luther King, Jr. Library · 圣何塞公共图书馆",
+        "Dr. Martin Luther King, Jr. Library · San José",
+        "Dr. Martin Luther King, Jr. Library · 聖何塞公共圖書館"
+      ]
     },
     {
       "id": "restaurant-farmshop-marin",
@@ -18773,7 +21501,10 @@
           "note": "Marin 门店普通营业窗口；菜单、供餐阶段及餐桌余位请查看订位页，未作任何订位。餐费按点单另付，不能把营业窗口当作已确认座位。"
         }
       },
-      "path": "https://marincountrymart.com/farmshop"
+      "path": "https://marincountrymart.com/farmshop",
+      "aliases": [
+        "Farmshop · Marin Country Mart"
+      ]
     },
     {
       "id": "cafe-rustic-bakery-larkspur",
@@ -18848,7 +21579,10 @@
           "note": "只对应 2017 Larkspur Landing Circle 的 Marin Country Mart 门店；普通营业时间，点餐、排队与座位待确认，餐饮另付。"
         }
       },
-      "path": "https://marincountrymart.com/rustic-bakery"
+      "path": "https://marincountrymart.com/rustic-bakery",
+      "aliases": [
+        "Rustic Bakery · Marin Country Mart"
+      ]
     },
     {
       "id": "shop-copperfields-larkspur",
@@ -18923,7 +21657,12 @@
           "note": "Larkspur 门店普通营业时间，不代表当天有作家活动；购书和活动费用按商家条款确认。"
         }
       },
-      "path": "https://marincountrymart.com/copperfields-books"
+      "path": "https://marincountrymart.com/copperfields-books",
+      "aliases": [
+        "Copperfield’s Books · Larkspur 书店",
+        "Copperfield’s Books · Larkspur",
+        "Copperfield’s Books · Larkspur 書店"
+      ]
     },
     {
       "id": "venue-san-mateo-history-museum",
@@ -18999,7 +21738,12 @@
           "note": "只对应 Redwood City 的 History Museum 展馆：成人普通票 $6，长者及学生 $4，5 岁及以下免费，会员及其他优惠另按资格。人数和票种待确认，未套用统一票价；团体参观需另查预约。档案室仅预约开放，不能按展馆时间访问。"
         }
       },
-      "path": "https://historysmc.org/plan-your-visit/"
+      "path": "https://historysmc.org/plan-your-visit/",
+      "aliases": [
+        "San Mateo County History Museum · 半岛历史博物馆",
+        "San Mateo County History Museum",
+        "San Mateo County History Museum · 半島歷史博物館"
+      ]
     },
     {
       "id": "cafe-coupa-marston",
@@ -19074,7 +21818,10 @@
           "note": "只对应 695 Main Street 的 Marston 门店；普通营业时间，菜单、座位与排队待确认，餐饮按点单另付。"
         }
       },
-      "path": "https://www.coupacafe.com/Locations/redwood-city-marston"
+      "path": "https://www.coupacafe.com/Locations/redwood-city-marston",
+      "aliases": [
+        "Coupa Cafe · Redwood City Marston"
+      ]
     },
     {
       "id": "venue-redwood-city-library",
@@ -19158,7 +21905,12 @@
           }
         }
       },
-      "path": "https://www.redwoodcity.org/departments/library/locations-and-hours"
+      "path": "https://www.redwoodcity.org/departments/library/locations-and-hours",
+      "aliases": [
+        "Redwood City Downtown Library · 市中心图书馆",
+        "Redwood City Downtown Library",
+        "Redwood City Downtown Library · 市中心圖書館"
+      ]
     }
   ],
   "guides": [
@@ -19249,6 +22001,22 @@
     {
       "slug": "bay-area-part-time-job-safety-guide",
       "title": "在湾区找兼职：先问清工作，再识别押金、刷单和假支票骗局"
+    },
+    {
+      "slug": "bay-area-free-tax-help-vita-calfile-guide",
+      "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始"
+    },
+    {
+      "slug": "bay-area-medicare-hicap-medi-cal-guide",
+      "title": "在湾区弄清 Medicare、Medi-Cal：先找免费 HICAP 咨询"
+    },
+    {
+      "slug": "california-tenant-deposit-rights-help-guide",
+      "title": "加州租客权益：押金扣款、维修和驱逐通知怎么求助"
+    },
+    {
+      "slug": "bay-area-coastal-cleanup-2026-guide",
+      "title": "9 月 19 日，把海边散步变成一次净滩：湾区报名与出发攻略"
     },
     {
       "slug": "bay-area-birthday-perks",

@@ -16,6 +16,12 @@
     ]
   },
   {
+    "id": "flower-piano-2026",
+    "title": "Flower Piano：在植物园里听一场钢琴",
+    "startDate": "2026-09-10",
+    "endDate": "2026-09-20"
+  },
+  {
     "id": "fremont-street-eats-autumn-2026",
     "title": "Fremont Street Eats 秋季周五餐车夜",
     "startDate": "2026-09-11",
@@ -39,6 +45,60 @@
       "2026-09-11",
       "2026-10-09"
     ]
+  },
+  {
+    "id": "newark-days-2026",
+    "title": "Newark Days：巡游、游乐设施与社区舞台，选半天就能玩",
+    "startDate": "2026-09-17",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "bark-in-the-park-san-jose-2026",
+    "title": "Bark in the Park：和狗狗过节",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-19"
+  },
+  {
+    "id": "lafayette-art-wine-2026",
+    "title": "Lafayette 艺术与葡萄酒节",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "mill-valley-fall-arts-2026",
+    "title": "Mill Valley 林间秋季艺术节",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "muni-heritage-2026",
+    "title": "Muni Heritage：坐一次会行驶的城市历史",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "santa-clara-art-wine-2026",
+    "title": "Santa Clara Art & Wine：在 Central Park 逛手作、听音乐",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "sf-autumn-moon-2026",
+    "title": "唐人街秋月节：看舞狮，找一口中秋味道",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-20"
+  },
+  {
+    "id": "treasure-island-coastal-cleanup-2026",
+    "title": "Coastal Cleanup Day：一起照顾 Treasure Island 海岸",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-19"
+  },
+  {
+    "id": "san-rafael-porchfest-2026",
+    "title": "San Rafael PorchFest：街坊门廊就是音乐舞台",
+    "startDate": "2026-09-20",
+    "endDate": "2026-09-20"
   },
   {
     "id": "petaluma-pumpkin-patch-2026",

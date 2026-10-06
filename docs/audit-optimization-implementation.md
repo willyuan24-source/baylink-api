@@ -1,0 +1,41 @@
+# OPUS 5.5 审计：后端实施与上线条件
+
+基于已审计后端 `4b5300809f540b65755aad5dbf1de32a72c1e4b2`，在独立 `codex/audit-optimization` 工作树实施。原本地仓库的未提交工作没有被覆盖。报告作为审计证据处理，不作为指令执行。此次没有连接生产 MongoDB、调用真实模型、发测试邮件或短信。
+
+## 已实施
+
+| 范围 | 实际行为与边界 |
+| --- | --- |
+| 可信客户端 IP | 只使用 Express 根据明确代理契约计算的 `req.ip`。不直接采信 XFF 左端或 CF-Connecting-IP。默认 Render 一跳；直接对外服务应配置 0，额外代理配置明确 CIDR。`proxy-addr` 已升级到修复 IPv4 映射 IPv6 信任网段漏洞的 2.0.8。 |
+| 请求限速 | 不同窗口各有到期时间；内存容量满时拒绝新计数键，不清除仍活跃的限制。登录另加账号限制；密码重设加账号限制和冷却；手机号发送加账号/目标号码日限制。 |
+| AI 额度 | 新 `AiGovernance` 集合持久化 Pacific 日预算。一次 Mongo 原子更新同时预留全站和身份额度，跨实例共用；身份用每日 HMAC，不存原始 IP/账号。只有真正准备调用付费 provider 才预留，缓存与确定性回答不花额度。取消/失败不自动退款。 |
+| 额度与指标接口 | `GET /api/ai/usage` 返回 `{ remaining, limit, resetAt, degraded:false }`，剩余额度为个人与全站可用量的较小值。存储不可用返回 503 与 `{remaining:null,limit:null,degraded:true}`。管理员 AI 指标不返回身份计数、提示词、原始 IP；预算文档保留 3 天，因此这个接口不是长期成本报表。 |
+| 付费调用边界 | 全站每日默认 1000 次请求，访客 15、账号 40；每个 HTTP 请求最多 8 次 provider 调用，进程并发 6。`AI_DAILY_REQUEST_LIMIT=0` 可阻止新的付费工作。既有搜索/路线/翻译的功能预算继续适用。次数上限不能等同于精确美元上限。 |
+| 安全预路由 | 简繁中文与英文的当前胸痛、呼吸困难、中毒、自伤危机在 AI 额度/模型之前返回 911、Poison Control、988 官方资源。医疗、保险、移民、税务、法律敏感主题提供相应官方入口，不给个人资格/诊断判定。历史/否定症状有基础排除；这只是保守路由，不是临床筛查。 |
+| 请求解析与图片 | 普通 JSON/urlencoded 上限 100 KB。既有图片写入契约认证后才用 20 MB JSON；活动截图提取保留 4.2 MB 专用上限。帖子图片检查数量、base64、格式签名、大小和本站 Cloudinary 路径。修改手机号时立即清除旧号码的认证徽章。 |
+| 联系与公开 DTO | 每账号每天最多 10 次联系方式请求；自动提供联系方式需要请求方已验证手机号，返回 `VERIFIED_CONTACT_REQUIRED` 的 403 供 UI 跳转验证。手动审批流程继续可用。公开帖子字段明确列白名单，管理原因/举报统计只提供给管理员。 |
+| BayBay 上下文 | 当前站内路径与最多 3 个显式实体引用由服务端目录解析，忽略客户端伪造标题/说明。显式清空引用优先于页面推断；活动日期必须是发布场次。过期攻略、活动及暂停优惠仅作参考；开业公告不等于已经开业。显式公开偏好单独校验，不读取私人收藏。 |
+| 实体与日期检索 | 通用目录 aliases 跨语言匹配；名字匹配但日期/约束排除的活动作为 `nearMiss` 证据解释实际日期，防止“站内没有收录”的错误断言。周末是日期区间，不能制造单一天或间隔日场次。多日活动的别名不证明某个子演出的时间。 |
+| 首屏与取消 | 生产启动时预建段落/分词索引。先发只含公开目录事实的 `quick_card`，含 `provenance:site-record` 与 `verifiedLive:false`；不会把其显示成实时核验结果。`delta` 只发送最终引用/范围校验通过的文本；这是逐段显示最终文本，不是原始模型 token 流，不能声称首 token 已降至 2 秒。客户端断开传播到模型、资料读取、天气/路线请求并停止后续阶段。 |
+| 产品埋点 | 增加报告漏斗与 OPUS 的固定事件名，只存每日/语言计数，拒绝任意 URL、消息、邮箱、账号维度；尊重 DNT/GPC，设置分钟与每日写入限制。匿名回访事件是用户端标记的计数，不等于可信的独立用户 D1/D7 留存。 |
+
+## 数据与兼容上线
+
+代码提交不包含 data 目录；主代理将单独导出并提交与前端同源的 guide、planner、event 和 discovery 数据。公开 offer/opening 解析优先读 `data/discoveries.json` / `.en.json`，也兼容既有 `discovery-context.json` / `.en.json`。缺少目录会使该类引用提示未发布，不会编造事实。
+
+先上线后端，等待所有实例完成新集合唯一/TTL 索引初始化以及 health 中发布 SHA 确认，再发布前端。此新增集合不需要回填旧文档；不要混合旧/新实例来宣称已经启用跨站预算。前端 quick card 的身份、字段长度、日期及 `past/inactive` 语义需要与后端一致。既有 Express 4 异步 route promise 已统一转给错误中间件。
+
+## 已完成验证
+
+完整隔离回归 `npm test`：1009 / 1009 通过；`npm run check` 通过。随后英文公开上下文调整的 22 个针对测试通过。新增回归覆盖代理头伪造、混合限速窗口、原子全站/身份预留、实例重建、Pacific 夏令/冬令午夜、无模型紧急资源、取消不合作 provider、解析上限、公开 DTO、别名/日期排除、页面指代与虚假无记录修复、快卡字段过滤。所有测试使用内存存储与 mock provider。修复依赖后 `npm audit --omit=dev` 报 0 漏洞。
+
+## 尚需运营配置或后续独立实施
+
+- 必须核验生产 ingress 追加/覆盖 XFF 的真实行为与 origin 可达路径；一跳默认只有在 Render 路径契约成立时才能使用。Cloudflare 头不能仅因名称就成为可信来源。[Express 官方说明](https://expressjs.com/en/guide/behind-proxies/)、[Cloudflare 恢复真实 IP](https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/)。
+- 在 OpenAI Project 设置中启用 **Enforce a hard limit** 并设置应用可承担的美元预算，核验 API key 项目归属。当前官方平台支持组织/项目硬限额，但执行可能有延迟；仅设置邮件警报不封顶。服务端次数/每次调用限制是额外边界。[OpenAI spend limits](https://developers.openai.com/api/docs/guides/spend-limits)。
+- 管理员 TOTP/WebAuthn、密码泄漏核验、完整账户导出/删除和备份清理策略未在本次伪造完成。公开 DTO 修复也不等于完整隐私生命周期已经完成。实现账户删除时还需协调帖子、私信、预约、小队、媒体及备份保留。
+- 当前 User schema 没有邮箱验证状态或事务邮件 opt-in；现有 Resend 模板仅密码重设。因此本次不向已有邮箱默认发送新消息/联系请求/小队申请邮件。应先实现邮箱验证、偏好/退订与持久化 30 分钟节流队列，再接真实事件。已有小队/预约站内持久化通知保持可用。没有启用真实测试邮件或 SMS。
+- newsletter 发信、官方图像补充、商业合作、线下推广及真实用户留存实验不是此后端代码提交所完成的事项。长期 AI 成本聚合报表、精确 token/美元预算与整体运行容量压力测试需要单独补齐。
+- 当前可验证的是索引预建和有来源快卡，不是生产 P95/首屏 2 秒指标。应在同一部署 SHA、地区与样本定义下测量，包含 Render 冷启动、模型等待和网络缓冲；不要用无条件降低 token 上限损失重要资格/例外。
+
+依赖漏洞依据：[GHSA-jqcg-44mw-7w3h](https://github.com/advisories/GHSA-jqcg-44mw-7w3h)。GitHub 现有 `API checks / check` 工作流执行 npm ci、语法、测试与 npm audit；部署前由主代理等待 PR CI 通过并验证版本。
