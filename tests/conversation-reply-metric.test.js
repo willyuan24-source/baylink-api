@@ -17,7 +17,9 @@ test('opening a verified post context does not count; actual request and first o
   await Promise.all([f.metric.recordMessage(f.message('request_1', 'requester')), f.metric.recordMessage(f.message('request_1', 'requester'))]);
   f.clock(at + 1000); await Promise.all([f.metric.recordMessage(f.message('reply_1', 'owner')), f.metric.recordMessage(f.message('reply_2', 'owner'))]);
   const events = [...f.ProductMetric.rows.values()]; assert.equal(events.find(row => row.event === 'message_request_started').count, 1); assert.equal(events.find(row => row.event === 'owner_reply_24h').count, 1);
-  assert.ok(events.every(row => row.locale === 'en')); assert.doesNotMatch(JSON.stringify(events), /requester|owner|dm_pair|post_1/);
+  assert.ok(events.every(row => row.locale === 'en'));
+  for (const row of events) assert.deepEqual(Object.keys(row).sort(), ['_id', 'count', 'day', 'event', 'expiresAt', 'locale']);
+  assert.doesNotMatch(JSON.stringify(events), /"(?:requester|owner|dm_pair|post_1)"/);
 });
 test('legacy unknown context, wrong owner, system/contact-card and late replies never count', async () => {
   const legacy = fixture(); await legacy.metric.recordMessage(legacy.message('legacy', 'owner')); assert.equal(legacy.ProductMetric.rows.size, 0);

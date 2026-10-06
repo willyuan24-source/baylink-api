@@ -4,11 +4,21 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
-const { PRODUCT_EVENTS, createProductMetricModel } = require('../lib/productMetrics');
+const { PRODUCT_EVENTS, SERVER_EVENTS, createProductMetricModel, recordServerProductEvent } = require('../lib/productMetrics');
 
 const SECRET = 'isolated-product-metrics-test-secret';
 const NOW = Date.parse('2026-09-23T19:00:00Z');
 const copy = value => structuredClone(value);
+
+test('server counters record only a fixed anonymous daily bucket and reject unsupported events', async () => {
+  const ProductMetric = metricModel();
+  await recordServerProductEvent(ProductMetric, 'signup_completed', 'en', NOW);
+  assert.equal(ProductMetric.rows[0].event, 'signup_completed');
+  assert.equal(ProductMetric.rows[0].count, 1);
+  assert.deepEqual(Object.keys(ProductMetric.rows[0]).sort(), ['_id', 'count', 'day', 'event', 'expiresAt', 'locale']);
+  await assert.rejects(recordServerProductEvent(ProductMetric, 'untrusted-text', 'en', NOW));
+  assert.equal(ProductMetric.rows.length, 1);
+});
 function metricModel(seed = []) {
   const rows = seed.map(copy); const writes = [];
   return {
@@ -56,7 +66,7 @@ test('public product events persist only daily event/locale buckets with no iden
   const ProductMetric = metricModel();
   let { post } = await fixture(t, { model: ProductMetric });
   let tested = 0;
-  for (const event of PRODUCT_EVENTS) {
+  for (const event of PRODUCT_EVENTS.filter(event => !SERVER_EVENTS.includes(event))) {
     // Cover every allowlisted event without weakening the separate per-IP
     // abuse test as the event vocabulary grows.
     if (tested++ && tested % 20 === 0) ({ post } = await fixture(t, { model: ProductMetric }));
@@ -65,7 +75,7 @@ test('public product events persist only daily event/locale buckets with no iden
   }
   // Public ingestion has no authentication dependency, including expired UI sessions.
   assert.deepEqual((await post({ event: 'plan_saved', locale: 'zh-Hant' }, { auth: 'Bearer invalid' })).data, { ok: true });
-  assert.equal(ProductMetric.rows.length, PRODUCT_EVENTS.length * 2 + 1);
+  assert.equal(ProductMetric.rows.length, (PRODUCT_EVENTS.length - SERVER_EVENTS.length) * 2 + 1);
   for (const row of ProductMetric.rows) {
     assert.deepEqual(Object.keys(row).sort(), ['_id', 'count', 'day', 'event', 'expiresAt', 'locale']);
     assert.equal(row._id, `${row.day}:${row.event}:${row.locale}`);
@@ -79,7 +89,7 @@ test('public product events persist only daily event/locale buckets with no iden
 
 test('unknown dimensions, injected fields and invalid event or locale types cannot be persisted', async t => {
   const { post, ProductMetric } = await fixture(t);
-  const invalid = [null, [], {}, { event: 'page_view' }, { event: { $ne: '' } }, { event: 'plan_saved', locale: null }, { event: 'plan_saved', locale: ['en'] }, { event: 'plan_saved', locale: 'fr' },
+  const invalid = [null, [], {}, { event: 'unknown_page' }, ...SERVER_EVENTS.map(event => ({ event })), { event: { $ne: '' } }, { event: 'plan_saved', locale: null }, { event: 'plan_saved', locale: ['en'] }, { event: 'plan_saved', locale: 'fr' },
     ...['userId', 'session', 'ip', 'message', 'url', 'content', 'day', 'count'].map(field => ({ event: 'plan_saved', [field]: 'private' })),
   ];
   for (const body of invalid) assert.equal((await post(body)).status, 400, JSON.stringify(body));
