@@ -3,14 +3,14 @@ const assert = require('node:assert/strict');
 const { createNotificationService, HALF_HOUR, trustedOrigin } = require('../lib/notifications');
 const { memory } = require('./support/notification-memory');
 
-function fixture({ enabled = true, mail, sms, config = {} } = {}) {
+function fixture({ enabled = true, mail, sms, holdAccount, acquireAccount, config = {} } = {}) {
   let at = Date.parse('2026-10-06T12:00:00Z');
   const sent = [], texts = [];
   const models = {
     User: memory([{ id: 'owner', email: 'owner@example.test', isPhoneVerified: true, phoneNormalized: '+16505550123' }, { id: 'guest', email: 'guest@example.test' }]),
     UserBlock: memory(), NotificationAccount: memory(), NotificationToken: memory(), NotificationJob: memory(), NotificationWindow: memory(), NotificationBudget: memory(),
   };
-  const service = createNotificationService({ ...models, isTest: true, isolated: true, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
+  const service = createNotificationService({ ...models, isTest: true, isolated: true, holdAccount, acquireAccount, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
     sendEmail: mail || (async value => { sent.push(value); return { id: 'mock-email' }; }), sendSms: sms || (async value => { texts.push(value); return { sid: 'mock-sms' }; }) });
   const rawToken = value => value.text.match(/#token=([A-Za-z0-9_-]{43})/)[1];
   const verify = async () => { await service.startEmailVerification('owner'); await service.runOnce(); await service.verifyEmail(rawToken(sent.at(-1))); sent.length = 0; };
@@ -50,6 +50,48 @@ test('email verification token is expiring, single use, email-bound, and does no
   const changed = fixture(); await changed.service.startEmailVerification('owner'); await changed.service.runOnce();
   await changed.models.User.updateOne({ id: 'owner' }, { $set: { email: 'other@example.test' } });
   await assert.rejects(changed.service.verifyEmail(changed.rawToken(changed.sent[0])), /邮箱已更改/);
+});
+
+test('anonymous verify and unsubscribe prove their token before holding the owner deletion gate', async () => {
+  for (const purpose of ['verify', 'unsubscribe']) {
+    let armed = false, f; const held = [];
+    f = fixture({ holdAccount: async id => {
+      held.push(id); assert.equal(id, 'owner');
+      if (!armed) return;
+      // Deletion won the gate after token lookup, before any user/account write.
+      await f.service.eraseUser(id); await f.models.User.deleteMany({ id });
+      throw Object.assign(new Error('Account deleted'), { code: 'ACCOUNT_CHANGED', status: 409 });
+    } });
+    let raw;
+    if (purpose === 'verify') {
+      await f.service.startEmailVerification('owner'); await f.service.runOnce(); raw = f.rawToken(f.sent[0]);
+    } else {
+      await f.verify(); await f.optIn(); await f.service.enqueueEvent(f.event()); f.advance(HALF_HOUR); await f.service.runOnce(); raw = f.rawToken(f.sent[0]);
+    }
+    const before = held.length;
+    await assert.rejects(f.service[purpose === 'verify' ? 'verifyEmail' : 'unsubscribe']('B'.repeat(43)), /无效/);
+    assert.equal(held.length, before, 'invalid tokens cannot select or hold an account');
+    armed = true;
+    await assert.rejects(f.service[purpose === 'verify' ? 'verifyEmail' : 'unsubscribe'](raw), error => error.code === 'ACCOUNT_CHANGED');
+    assert.equal(held.length, before + 1);
+    assert.equal(f.models.NotificationAccount.rows.size, 0, 'a late token cannot recreate deleted private preferences');
+    assert.equal(f.models.NotificationToken.rows.size, 0); assert.equal(f.models.NotificationJob.rows.size, 0);
+  }
+});
+
+test('background provider submission holds recipient and actor deletion gates until settled', async () => {
+  let complete, entered;
+  const pending = new Promise(resolve => { complete = resolve; });
+  const started = new Promise(resolve => { entered = resolve; });
+  const f = fixture({ sms: async value => { entered(value); return pending; } });
+  await f.optIn('sms'); await f.service.enqueueEvent(f.event()); f.advance(HALF_HOUR);
+  const delivery = f.service.runOnce(); await started;
+  for (const id of ['owner', 'guest']) {
+    assert.equal((await f.models.User.findOne({ id })).activeAccountOperations, 1);
+    assert.equal(await f.models.User.findOneAndUpdate({ id, activeAccountOperations: 0 }, { $set: { accountDeletionPending: true } }), null);
+  }
+  complete({ sid: 'mock-only' }); assert.equal((await delivery).processed, 1);
+  for (const id of ['owner', 'guest']) assert.equal((await f.models.User.findOne({ id })).activeAccountOperations, 0);
 });
 
 test('verification limits survive fresh service instances and reject burst and daily overflow', async () => {
