@@ -16,6 +16,24 @@ const assertRetained = (state, previous, except = []) => {
   }
 };
 
+test('half-day constraints survive signed handoffs without inventing clocks or a numeric duration', () => {
+  for (const message of ['明天在San Francisco安排半天，带一个5岁孩子', '明天在San Francisco安排半日，帶一個5歲孩子', 'Plan a half-day in San Francisco tomorrow with a 5-year-old child', 'We only have half a day for an outing tomorrow']) {
+    const first = resolve(message).state;
+    assert.ok(first.preferences.includes('outing-duration:half-day'), message);
+    assert.equal(first.startTime, null, message);
+    assert.equal(first.finishBy, null, message);
+    assert.ok(!first.preferences.includes('outing-duration:240-minutes'));
+    const continued = resolve('继续', sign(first)).state;
+    assert.ok(continued.preferences.includes('outing-duration:half-day'));
+    assert.deepEqual(continued.childAges, first.childAges);
+    const changed = resolve('只出去3小时', sign(first)).state;
+    assert.ok(changed.preferences.includes('outing-duration:180-minutes'));
+    assert.ok(!changed.preferences.includes('outing-duration:half-day'));
+    assert.ok(!resolve('时间不限', sign(first)).state.preferences.some(value => value.startsWith('outing-duration:')));
+  }
+  for (const message of ['不要安排半天，只解释门票', 'Do not plan a half-day, just explain admission', '上次安排半天去了博物馆', 'The website says “half-day tour”', '官网写着半日活动']) assert.ok(!resolve(message).state.preferences.includes('outing-duration:half-day'), message);
+});
+
 test('crowd, pace and nearby preferences survive signed followups without inventing party, route or times', () => {
   const original = base();
   let previous = sign(original);
