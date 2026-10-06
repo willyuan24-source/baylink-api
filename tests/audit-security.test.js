@@ -245,6 +245,70 @@ test('emergency routing separates current disclosures from denials, historical a
   ]) assert.equal(safetyResponse(message)?.safetyRoute, 'emergency', message);
 });
 
+const acuteSynonyms = [
+  { kind: 'breathing', locale: 'en', messages: ['I am having trouble breathing right now.', 'I am struggling to breathe right now.', 'I am unable to breathe right now.',
+    'Since yesterday I cannot breathe and it is still happening now.', 'A news article discussed breathing issues, but I am now unable to breathe.'],
+    other: ['I am not having trouble breathing.', 'I am not struggling to breathe.', 'I used to have trouble breathing but I am fine now.',
+      'I am not currently struggling to breathe.', 'I am no longer struggling to breathe.',
+      'Translate the phrase: I am now struggling to breathe.', 'What does "I am unable to breathe right now" mean?', 'Which breathing exercises should I do after a walk?', 'What causes trouble breathing?',
+      'Yesterday I could not breathe but I am fine now.', 'A news article reports that yesterday someone could not breathe and it is still happening now.',
+      'A news article quotes: I am now struggling to breathe.', 'He is asking me to translate: I am now unable to breathe.'] },
+  { kind: 'breathing', locale: 'zh-Hans', messages: ['我妈现在喘不上气，怎么办？', '我妈现在透不过气，怎么办？', '我现在呼吸很困难', '我妈昨天开始喘不过气，现在还是这样', '新闻报道有人呼吸困难，但是我现在喘不上气'],
+    other: ['我妈现在没有喘不上气', '以前呼吸很困难，现在已经好了', '昨天我妈喘不上气，今天好了', '请翻译「我现在喘不上气」', '翻译「我现在呼吸很困难」', '散步后喘口气应该休息多久？',
+      '昨天我妈喘不过气，现在没有这些症状', '新闻报道昨天有人喘不过气，现在还是这样'] },
+  { kind: 'breathing', locale: 'zh-Hant', messages: ['我媽現在喘不上氣，怎麼辦？', '我媽現在透不過氣，怎麼辦？', '我現在呼吸很困難', '我媽昨天開始喘不過氣，現在還是這樣', '新聞報導有人呼吸困難，但是我現在喘不上氣'],
+    other: ['我媽現在沒有喘不上氣', '以前呼吸很困難，現在已經好了', '昨天我媽喘不上氣，今天好了', '請翻譯「我現在喘不上氣」', '翻譯「我現在呼吸很困難」', '散步後喘口氣應該休息多久？',
+      '昨天我媽喘不過氣，現在沒有這些症狀', '新聞報導昨天有人喘不過氣，現在還是這樣'] },
+  { kind: 'chest pain', locale: 'en', messages: ['My chest hurts badly right now.', 'I have severe pain in my chest right now.',
+    'Yesterday I started having chest pain and it is still happening now.'],
+    other: ['My chest does not hurt.', 'I do not have pain in my chest.', 'I do not have severe pain in my chest.', 'I do not have any severe pain in my chest.',
+      'In the past I had severe pain in my chest.', 'Yesterday I had pain in my chest.',
+      'Translate: My chest hurts badly right now.', 'What does "my chest hurts" mean?', 'What muscles are used for chest exercises?', 'What causes severe pain in the chest?'] },
+  { kind: 'chest pain', locale: 'zh-Hans', messages: ['我现在胸口非常疼'],
+    other: ['我现在没有胸口非常疼', '以前胸口非常疼，现在恢复了', '请翻译「我现在胸口非常疼」', '如何做胸部拉伸？'] },
+  { kind: 'chest pain', locale: 'zh-Hant', messages: ['我現在胸口非常疼'],
+    other: ['我現在沒有胸口非常疼', '以前胸口非常疼，現在恢復了', '請翻譯「我現在胸口非常疼」', '如何做胸部伸展？'] },
+  { kind: 'self-harm intent', locale: 'en', messages: ['I want to end my life tonight.'],
+    other: ['I do not want to end my life.', 'In the past I wanted to end my life.', 'Translate: I now want to end my life tonight.',
+      'What does "I want to end my life" mean?', 'How can I make the end of my working life fulfilling?'] },
+  { kind: 'self-harm intent', locale: 'zh-Hans', messages: ['我现在想结束自己的生命'],
+    other: ['我现在不想结束自己的生命', '以前想结束自己的生命，现在恢复了', '请翻译「我现在想结束自己的生命」', '退休以后怎样安排生活？', '新闻报道他说：我现在想结束自己的生命'] },
+  { kind: 'self-harm intent', locale: 'zh-Hant', messages: ['我現在想結束自己的生命'],
+    other: ['我現在不想結束自己的生命', '以前想結束自己的生命，現在恢復了', '請翻譯「我現在想結束自己的生命」', '退休以後怎樣安排生活？', '新聞報導他說：我現在想結束自己的生命'] },
+];
+for (const { kind, locale, messages, other } of acuteSynonyms) {
+  test(`${locale}: explicit ${kind} synonyms route urgently while denials, history, quotations and ordinary questions do not`, () => {
+    for (const message of messages) {
+      const result = safetyResponse(message, locale);
+      assert.equal(result?.safetyRoute, 'emergency', message); assert.equal(result.responseMode, 'safety');
+      assert.match(result.answer, /911/); assert.match(result.answer, /988/);
+    }
+    for (const message of other) assert.equal(safetyResponse(message, locale), null, message);
+  });
+}
+
+for (const kind of ['breathing', 'chest pain', 'self-harm intent']) {
+  test(`HTTP ${kind} synonyms in all three languages return before exhausted quota and every paid provider`, async t => {
+    let calls = 0, quota = 0, external = 0;
+    const provider = async () => { calls++; throw new Error('An emergency must not reach a provider'); };
+    const { request, models } = await fixture(t, { config: { AI_DAILY_REQUEST_LIMIT: 0 },
+      ai: { baybay: provider, guideChat: provider, postAssist: provider, outingDraft: provider, planner: { recommend: provider } },
+      baybayFetch: async () => { external++; throw new Error('No emergency external fetch'); },
+      baybaySourceFetch: async () => { external++; throw new Error('No emergency source fetch'); } });
+    models.AiGovernance.updateOne = models.AiGovernance.findOneAndUpdate = async () => { quota++; throw new Error('Quota is offline'); };
+    for (const path of ['/ai/guide-chat', '/planner/recommend', '/ai/post-assist', '/ai/outing-draft']) {
+      for (const { locale, messages } of acuteSynonyms.filter(row => row.kind === kind)) for (const message of messages) {
+        const result = await request(path, { body: { message, intent: message, locale, assistantVersion: 2, stream: true } });
+        assert.equal(result.status, 200, `${path}: ${message}`); assert.match(result.headers.get('content-type'), /application\/json/);
+        assert.equal(result.data.safetyRoute, 'emergency', message); assert.equal(result.data.responseMode, 'safety');
+        assert.equal(result.data.degraded, false); assert.match(result.data.answer, /911/); assert.match(result.data.answer, /988/);
+        assert.deepEqual(result.data.suggestedGuides, []); assert.deepEqual(result.data.interactiveCards, []);
+      }
+    }
+    assert.equal(calls, 0); assert.equal(quota, 0); assert.equal(external, 0); assert.equal(models.AiGovernance.rows.length, 0);
+  });
+}
+
 test('disconnect propagates abort immediately even when a provider ignores AbortSignal', async () => {
   const controller = new AbortController(); let providerSignal;
   const result = fetchAiJson('https://fixture.invalid', { signal: controller.signal }, { fetchImpl: async (_url, options) => { providerSignal = options.signal; return new Promise(() => {}); }, timeoutMs: 20000 });
