@@ -2503,6 +2503,17 @@ const isDefaultCoverUrl = (value) =>
 
 const MAX_POST_IMAGES = 5;
 
+const isPostCloudinaryImageUrl = (value) => {
+  if (typeof value !== 'string') return false;
+  try {
+    const parsed = new URL(value);
+    const prefix = `/${config.CLOUDINARY_CLOUD_NAME || 'baylink'}/image/upload/`;
+    return parsed.protocol === 'https:' && parsed.hostname === 'res.cloudinary.com' && !parsed.port
+      && !parsed.username && !parsed.password
+      && parsed.pathname.startsWith(prefix) && parsed.pathname.length > prefix.length;
+  } catch { return false; }
+};
+
 const validatePostImageUrls = (imageUrls) => {
   if (!imageUrls || !Array.isArray(imageUrls)) return { ok: true, urls: [] };
   const urls = imageUrls.filter((img) => typeof img === 'string' && img.trim());
@@ -2521,26 +2532,31 @@ const validatePostImageUrls = (imageUrls) => {
         : bytes.toString('ascii', 4, 8) === 'ftyp' && /avif|avis/.test(bytes.toString('ascii', 8, 32));
       if (signature && bytes.toString('base64') === encoded[2]) continue;
     }
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol === 'https:' && parsed.hostname === 'res.cloudinary.com' && !parsed.username && !parsed.password && parsed.pathname.startsWith(`/${config.CLOUDINARY_CLOUD_NAME || 'baylink'}/image/upload/`)) continue;
-    } catch { /* invalid URLs never reach remote upload */ }
+    if (isPostCloudinaryImageUrl(url)) continue;
     return { ok: false, status: 400, message: '图片须为大小受限的 JPEG、PNG、WebP、GIF、AVIF，或本站 Cloudinary 图片。' };
   }
   return { ok: true, urls };
 };
 
+class PostImageUploadError extends Error {
+  constructor() { super('图片上传失败，帖子尚未保存。请重试或重新选择图片。'); }
+}
+
 const processPostImageUrls = async (imageUrls) => {
   if (!imageUrls || !Array.isArray(imageUrls)) return [];
   const results = await Promise.all(imageUrls.map(async (img) => {
-    if (typeof img !== 'string' || !img.trim()) return null;
     const url = img.trim();
-    if (isDefaultCoverUrl(url)) return url;
-    if (/^https?:\/\//i.test(url)) return url;
-    if (url.startsWith('data:image')) return uploadToCloudinary(url);
-    return null;
+    // Inputs have passed validation; retained URLs need no provider request.
+    if (!url.startsWith('data:image')) return url;
+    let uploaded;
+    try { uploaded = await (options.uploadPostImage || uploadToCloudinary)(url); }
+    catch { return null; }
+    if (!isPostCloudinaryImageUrl(uploaded)) return null;
+    return uploaded.trim();
   }));
-  return results.filter(Boolean);
+  // Settle every in-flight upload before releasing the request's account gate.
+  if (results.some(url => url === null)) throw new PostImageUploadError();
+  return results;
 };
 
 app.post('/api/posts', authenticateToken, async (req, res) => {
@@ -2589,7 +2605,10 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
       payload.trustWarning = '为了提升可信度，建议完成手机验证后再发布租房、服务或接送相关信息。';
     }
     res.json(payload);
-  } catch (e) { res.status(500).json({ error: '发布失败，请稍后再试' }); }
+  } catch (e) {
+    if (e instanceof PostImageUploadError) return res.status(502).json({ error: e.message, code: 'POST_IMAGE_UPLOAD_FAILED' });
+    res.status(500).json({ error: '发布失败，请稍后再试' });
+  }
 });
 
 app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
@@ -2627,33 +2646,33 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
-    const allowed = POST_USER_WRITABLE_FIELDS;
     let lifecycle;
     try { lifecycle = postLifecycleChanges(req.body, { isOwner: post.authorId === req.user.id, previousStatus: post.status }); }
     catch (error) { return res.status(400).json({ error: error.message }); }
-    Object.assign(post, lifecycle);
-    for (const key of allowed) {
-      if (req.body[key] !== undefined) post[key] = req.body[key];
-    }
+    const updates = { ...pickUserPostFields(req.body), ...lifecycle };
     if (req.body.imageUrls !== undefined) {
       const imageCheck = validatePostImageUrls(req.body.imageUrls);
       if (!imageCheck.ok) {
         return res.status(imageCheck.status).json({ message: imageCheck.message, error: imageCheck.message });
       }
-      post.imageUrls = await processPostImageUrls(imageCheck.urls);
+      updates.imageUrls = await processPostImageUrls(imageCheck.urls);
     }
     if (req.body.contactPreference !== undefined) {
       const contactPreference = normalizeContactPreference(req.body.contactPreference);
       const contactPrefErr = validateContactPreference(contactPreference);
       if (contactPrefErr) return res.status(400).json({ error: contactPrefErr });
-      post.contactPreference = contactPreference;
+      updates.contactPreference = contactPreference;
     }
-    post.updatedAt = Date.now();
+    // Do not mutate the original document until every requested image is ready.
+    Object.assign(post, updates, { updatedAt: Date.now() });
     await post.save();
     const p = post.toObject();
     const authorById = await fetchAuthorTrustByIds([p]);
     res.json(formatPostResponse(p, req.user.id, authorById, req.user.role === 'admin'));
-  } catch (e) { res.status(500).json({ error: '更新失败，请稍后再试' }); }
+  } catch (e) {
+    if (e instanceof PostImageUploadError) return res.status(502).json({ error: e.message, code: 'POST_IMAGE_UPLOAD_FAILED' });
+    res.status(500).json({ error: '更新失败，请稍后再试' });
+  }
 });
 
 app.post('/api/posts/:id/report', authenticateToken, (req, res) => {
