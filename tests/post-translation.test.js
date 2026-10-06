@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
-const { sourceKey, validateTranslation, translateWithProvider } = require('../lib/postTranslation');
+const { createPostTranslationModels, sourceKey, cacheKey, validateTranslation, translateWithProvider } = require('../lib/postTranslation');
 
 const SECRET = 'isolated-post-translation-test-secret-at-least-32-characters';
 const source = { title: 'Fremont 房间出租', description: '月租 $1900。请看 https://example.test/room?id=12 ，周末可看房。', budget: '$1900/月', timeInfo: '10月1日起入住' };
@@ -39,8 +39,10 @@ test('anonymous translation reads only public text, preserves original posts, an
   const original = structuredClone(models.Post.rows[0]);
   assert.deepEqual((await request()).data, { ok: true, target: 'en', source, translation: translated });
   assert.deepEqual(calls, [{ target: 'en', source }]);
-  assert.deepEqual(models.Post.rows[0], original);
+  assert.deepEqual(models.Post.rows[0], { ...original, activePostOperations: 0 });
   assert.equal(models.PostTranslation.rows.length, 1);
+  assert.equal(models.PostTranslation.rows[0].postId, 'public');
+  assert.equal(models.PostTranslation.rows[0].id, cacheKey('public', source));
   assert.equal((await request()).status, 200);
   assert.equal(calls.length, 1);
   assert.equal(models.PostTranslationQuota.rows[0].count, 1);
@@ -54,6 +56,46 @@ test('English-only content is returned unchanged without AI or quota use', async
   const { request, calls, models } = await fixture(t, { posts: [post('public', english)], unconfigured: true });
   assert.deepEqual((await request()).data, { ok: true, target: 'en', source: english, translation: english });
   assert.equal(calls.length, 0);
+  assert.equal(models.PostTranslationQuota.rows.length, 0);
+});
+
+test('the actual Mongo cache schema records and indexes the source post, rather than relying on a fixture-only field', () => {
+  const { Mongoose } = require('mongoose');
+  const isolated = new Mongoose(), models = createPostTranslationModels(isolated);
+  assert.equal(models.PostTranslation.schema.path('postId').instance, 'String');
+  assert.equal(models.PostTranslation.schema.path('postId').isRequired, true);
+  assert.ok(models.PostTranslation.schema.indexes().some(([keys]) => keys.postId === 1));
+});
+
+test('identical posts from different owners have independently traceable cache entries and ignore ownerless legacy caches', async t => {
+  const { request, models, calls } = await fixture(t, { posts: [post('first'), post('second', { authorId: 'viewer' })] });
+  models.PostTranslation.rows.push({ id: sourceKey(source), translation: translated, expiresAt: new Date(Date.now() + 86400000) });
+  assert.equal((await request('first')).status, 200); assert.equal((await request('second')).status, 200);
+  assert.equal(calls.length, 2, 'legacy ownership cannot be guessed from identical text');
+  const traced = models.PostTranslation.rows.filter(row => row.postId);
+  assert.deepEqual(traced.map(row => row.postId).sort(), ['first', 'second']);
+  assert.notEqual(traced[0].id, traced[1].id);
+  assert.equal((await request('first')).status, 200); assert.equal(calls.length, 2);
+});
+
+test('anonymous translation holds the real owner and shared-post gates through provider completion', async t => {
+  const entered = deferred(), release = deferred();
+  const { request, models } = await fixture(t, { ai: async () => { entered.resolve(); await release.promise; return translated; } });
+  const pending = request(); await entered.promise;
+  assert.equal(models.User.rows.find(row => row.id === 'owner').activeAccountOperations, 1);
+  assert.equal(models.Post.rows[0].activePostOperations, 1);
+  assert.equal(await models.User.findOneAndUpdate({ id: 'owner', activeAccountOperations: 0 }, { $set: { accountDeletionPending: true } }), null, 'deletion cannot claim an owner during anonymous paid work');
+  release.resolve(); assert.equal((await pending).status, 200);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(models.User.rows.find(row => row.id === 'owner').activeAccountOperations, 0);
+  assert.equal(models.Post.rows[0].activePostOperations, 0);
+});
+
+test('a pending-deletion owner rejects anonymous translation before model or cache writes', async t => {
+  const { request, models, calls } = await fixture(t);
+  models.User.rows.find(row => row.id === 'owner').accountDeletionPending = true;
+  assert.equal((await request()).status, 404);
+  assert.equal(calls.length, 0); assert.equal(models.PostTranslation.rows.length, 0);
   assert.equal(models.PostTranslationQuota.rows.length, 0);
 });
 
@@ -127,6 +169,7 @@ test('editing, hiding, deleting or blocking during a provider call prevents a st
       const result = await pending;
       assert.equal(result.status, change === 'edit' ? 503 : 404);
       assert.equal(result.data.translation, undefined);
+      assert.equal(models.PostTranslation.rows.length, 0, 'changed source data is not persisted before the final visibility check');
     });
   }
 });
