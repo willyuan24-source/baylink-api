@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const { createSourceMonitor, registerSourceMonitor, normalizeBody, fetchSource, isPublicAddress, INTERVAL_MS } = require('../lib/sourceMonitor');
+const { createSourceMonitor, createMongoStore, registerSourceMonitor, normalizeBody, fetchSource, isPublicAddress, INTERVAL_MS, BATCH_LIMIT, BATCH_MAX_MS } = require('../lib/sourceMonitor');
 
 const source = { id: 'source-fixture', title: 'Official museum', url: 'https://museum.example/visit', kind: 'offer', contentIds: ['museum-october'] };
 const lookup = async () => [{ address: '8.8.8.8', family: 4 }];
@@ -138,14 +138,59 @@ test('DNS lookups obey the timeout and a pinned public address is passed into th
   assert.deepEqual(pinned, { address: '8.8.8.8', family: 4 });
 });
 
-test('production registry contains 30–50 unique HTTPS sources, dated through October, across five regions', () => {
+test('production registry covers the current catalog with unique HTTPS sources and preserves the five original event regions', () => {
   const registry = require('../data/source-registry.json');
-  assert.ok(registry.length >= 30 && registry.length <= 50);
+  assert.ok(registry.length > 1000);
+  const contentIds = new Set(registry.flatMap(row => row.contentIds));
+  assert.ok(contentIds.size >= 827);
+  for (const guide of require('../data/guide-catalog.json')) assert.ok(contentIds.has(guide.slug), `missing monitored guide sources: ${guide.slug}`);
+  for (const id of ['bay-area-medicare-hicap-medi-cal-guide', 'california-tenant-deposit-rights-help-guide', 'bay-area-free-tax-help-vita-calfile-guide', 'bay-area-social-security-retirement-preparation-guide', 'bay-area-naturalization-official-path-guide']) assert.ok(contentIds.has(id), id);
   assert.equal(new Set(registry.map(row => row.id)).size, registry.length);
   assert.equal(new Set(registry.map(row => row.url)).size, registry.length);
-  assert.deepEqual(new Set(registry.filter(row => row.kind === 'event').map(row => row.region)), new Set(['sf', 'east-bay', 'south-bay', 'peninsula', 'north-bay']));
+  assert.deepEqual(new Set(registry.filter(row => row.kind === 'event' && row.region).map(row => row.region)), new Set(['sf', 'east-bay', 'south-bay', 'peninsula', 'north-bay']));
   assert.ok(registry.some(row => row.endDate === '2026-10-31'));
   for (const row of registry) { assert.equal(new URL(row.url).protocol, 'https:'); assert.ok(row.contentIds.length > 0); assert.equal(row.verifiedAt, undefined); }
+});
+
+test('large registries rotate bounded batches through unseen sources even when pages fail and manual runs repeat', async () => {
+  const registry = Array.from({ length: BATCH_LIMIT * 2 + 7 }, (_, i) => ({ ...source, id: `source-${String(i).padStart(4, '0')}` }));
+  const { store, service } = fixture({ registry, fetch: async () => ({ status: 403, headers: {}, body: '' }) });
+  await service.run(true);
+  assert.equal(store.rows.size, BATCH_LIMIT);
+  const first = new Set(store.rows.keys());
+  await service.run(true);
+  assert.equal(store.rows.size, BATCH_LIMIT * 2);
+  const second = [...store.rows.keys()].filter(id => !first.has(id));
+  assert.equal(second.length, BATCH_LIMIT);
+  await service.run(false);
+  assert.equal(store.rows.size, registry.length);
+  assert.ok([...store.rows.values()].every(row => row.status === 'manual-required' && !row.lastReviewedAt));
+});
+
+test('a batch stops at its runtime budget and later continues with the next untouched source', async () => {
+  let clock = Date.UTC(2026, 9, 6, 12);
+  const { store, service } = fixture({ registry: [source, { ...source, id: 'source-z-next' }], now: () => clock, delay: async () => { clock += BATCH_MAX_MS + 1; } });
+  await service.run(true);
+  assert.equal(store.rows.size, 1);
+  await service.run(false);
+  assert.equal(store.rows.size, 2);
+});
+
+test('a lost distributed lease discards an in-flight fetch before it can publish a snapshot', async () => {
+  const store = memoryStore(); let owned = true;
+  store.ownsLease = async () => owned;
+  const { service } = fixture({ store, fetch: async () => { owned = false; return response(body('$5')); } });
+  await assert.rejects(service.run(), /lease-lost/);
+  assert.equal(store.rows.size, 0);
+  assert.equal(service.isRunning(), false);
+});
+
+test('Mongo snapshot writes cannot replace a newer attempt after a late batch finishes', async () => {
+  let query;
+  const snapshot = { findOneAndUpdate: filter => { query = filter; return { lean: async () => { throw Object.assign(new Error('newer snapshot exists'), { code: 11000 }); } }; } };
+  const store = createMongoStore({}, { SourceMonitorSnapshot: snapshot, SourceMonitorLease: {} });
+  assert.equal(await store.save('source-fixture', { lastAttemptAt: 100, status: 'baseline' }), null);
+  assert.deepEqual(query, { sourceId: 'source-fixture', $or: [{ lastAttemptAt: { $exists: false } }, { lastAttemptAt: { $lte: 100 } }] });
 });
 
 test('admin APIs reject non-admin users; freshness exposes no snapshot or reviewer identity', async t => {
