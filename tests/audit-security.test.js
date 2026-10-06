@@ -39,6 +39,69 @@ test('mixed rate windows expire independently and capacity never evicts an activ
   assert.equal(clientIp({ ip: 'trusted', headers: { 'x-forwarded-for': 'forged', 'cf-connecting-ip': 'forged' } }), 'trusted');
 });
 
+test('full rate limiter rejects many identities with one expiry check and no scan or index growth', () => {
+  const capacity = 2048;
+  const limiter = createRateLimiter({ now: () => 0, capacity });
+  for (let i = 0; i < capacity; i++) {
+    assert.equal(limiter.check(`admitted-${i}`, { windowMs: 100000 - i, maxRequests: 1 }), true);
+  }
+  const before = limiter.diagnostics();
+  const attempts = 10000;
+  for (let i = 0; i < attempts; i++) {
+    assert.equal(limiter.check(`rejected-${i}`, { windowMs: 100000, maxRequests: 1 }), false);
+    const existing = i % capacity;
+    assert.equal(limiter.check(`admitted-${existing}`, { windowMs: 100000 - existing, maxRequests: 1 }), false);
+  }
+  const after = limiter.diagnostics();
+  assert.equal(after.expiryChecks - before.expiryChecks, attempts * 2, 'each rejection inspects just the earliest active expiry');
+  assert.equal(after.heapComparisons, before.heapComparisons, 'rejections do not walk or mutate the expiry index');
+  assert.equal(after.expiredEntries, 0, 'active limits must survive capacity pressure');
+  assert.equal(after.expiryQueueSize, capacity, 'unknown identities cannot grow the expiry index');
+  assert.equal(limiter.size(), capacity);
+  assert.ok(Object.isFrozen(after), 'diagnostics are read-only snapshots');
+  assert.doesNotMatch(JSON.stringify(after), /admitted|rejected/, 'diagnostics cannot expose client keys');
+});
+
+test('unordered mixed expiries reclaim capacity at the exact boundary without resetting surviving windows', () => {
+  let now = 0;
+  const limiter = createRateLimiter({ now: () => now, capacity: 5 });
+  for (const windowMs of [1000, 50, 500, 100, 75]) {
+    assert.equal(limiter.check('shared', { windowMs, maxRequests: 1 }), true);
+  }
+  now = 49;
+  assert.equal(limiter.check('new', { windowMs: 5000, maxRequests: 1 }), false);
+  now = 50;
+  assert.equal(limiter.check('new', { windowMs: 5000, maxRequests: 1 }), true);
+  assert.equal(limiter.check('shared', { windowMs: 75, maxRequests: 1 }), false);
+  assert.equal(limiter.check('shared', { windowMs: 50, maxRequests: 1 }), false, 'full capacity stays closed even for a previously expired key');
+  assert.equal(limiter.diagnostics().expiredEntries, 1);
+  now = 100;
+  assert.equal(limiter.check('shared', { windowMs: 50, maxRequests: 1 }), true);
+  assert.equal(limiter.check('another', { windowMs: 1000, maxRequests: 1 }), true);
+  assert.equal(limiter.check('overflow', { windowMs: 1000, maxRequests: 1 }), false);
+  assert.equal(limiter.check('shared', { windowMs: 500, maxRequests: 1 }), false);
+  assert.equal(limiter.check('shared', { windowMs: 1000, maxRequests: 1 }), false);
+  assert.equal(limiter.diagnostics().expiredEntries, 3);
+  assert.equal(limiter.diagnostics().expiryQueueSize, limiter.size());
+});
+
+test('repeated fixed-window renewal keeps one bounded expiry entry per counter', () => {
+  let now = 0;
+  const capacity = 32;
+  const limiter = createRateLimiter({ now: () => now, capacity });
+  for (let cycle = 0; cycle < 40; cycle++) {
+    now = cycle * 100;
+    for (let i = 0; i < capacity; i++) {
+      assert.equal(limiter.check(`identity-${i}`, { windowMs: 100, maxRequests: 1 }), true);
+      assert.equal(limiter.check(`identity-${i}`, { windowMs: 100, maxRequests: 1 }), false);
+    }
+    assert.equal(limiter.size(), capacity);
+    assert.equal(limiter.diagnostics().expiryQueueSize, capacity, 'renewal must not leave stale heap records');
+  }
+  assert.equal(limiter.diagnostics().expiredEntries, 39 * capacity);
+  assert.ok(limiter.diagnostics().heapComparisons < 40 * capacity * 12, 'total expiry/index work stays within an O(admissions log capacity) bound');
+});
+
 test('forged leftmost XFF and CF headers cannot evade login rate limits at one trusted edge', async t => {
   const { request } = await fixture(t, { config: { TRUST_PROXY_HOPS: 1 } });
   for (let i = 0; i < 10; i++) {
