@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
-const { createPostTranslationModels, sourceKey, cacheKey, validateTranslation, translateWithProvider } = require('../lib/postTranslation');
+const { createPostTranslationModels, sourceKey, cacheKey, failureCacheKey, validateTranslation, translateWithProvider } = require('../lib/postTranslation');
 
 const SECRET = 'isolated-post-translation-test-secret-at-least-32-characters';
 const source = { title: 'Fremont 房间出租', description: '月租 $1900。请看 https://example.test/room?id=12 ，周末可看房。', budget: '$1900/月', timeInfo: '10月1日起入住' };
@@ -66,6 +66,13 @@ test('the actual Mongo cache schema records and indexes the source post, rather 
   assert.equal(models.PostTranslation.schema.path('postId').instance, 'String');
   assert.equal(models.PostTranslation.schema.path('postId').isRequired, true);
   assert.ok(models.PostTranslation.schema.indexes().some(([keys]) => keys.postId === 1));
+  const negative = new models.PostTranslation({ id: failureCacheKey('public', source), postId: 'public', kind: 'failure', failureStatus: 503, expiresAt: new Date(Date.now() + 60000) });
+  assert.equal(negative.validateSync(), undefined, 'a negative record has no translation payload');
+  assert.equal(negative.translation, undefined);
+  assert.equal(negative.sourceVersion, 'public-post-en-v2');
+  negative.failureStatus = 400;
+  assert.ok(negative.validateSync()?.errors.failureStatus, 'negative results permit only the fixed public 502/503 classes');
+  assert.ok(new models.PostTranslation({ id: 'success-without-translation', postId: 'public', expiresAt: new Date() }).validateSync()?.errors.translation);
 });
 
 test('identical posts from different owners have independently traceable cache entries and ignore ownerless legacy caches', async t => {
@@ -195,7 +202,7 @@ test('global concurrency and persistent daily budgets reject new work but still 
   assert.equal((await restart.request('second')).status, 429, 'daily quota survives process restart');
 });
 
-test('provider failure uses bounded cooldown and never caches an unavailable response', async t => {
+test('provider failure persists only a bounded negative classification, never an unavailable translation or provider detail', async t => {
   let clock = Date.parse('2026-09-24T12:00:00Z');
   const { request, calls, models } = await fixture(t, { now: () => clock, ai: async () => { throw new Error('private provider error'); } });
   const first = await request();
@@ -207,9 +214,112 @@ test('provider failure uses bounded cooldown and never caches an unavailable res
   clock += 61000;
   assert.equal((await request()).status, 503);
   assert.equal(calls.length, 2);
-  assert.equal(models.PostTranslation.rows.length, 0);
+  assert.equal(models.PostTranslation.rows.length, 1);
+  const negative = models.PostTranslation.rows[0];
+  assert.equal(negative.id, failureCacheKey('public', source));
+  assert.equal(negative.postId, 'public'); assert.equal(negative.kind, 'failure'); assert.equal(negative.failureStatus, 503);
+  assert.equal(negative.translation, undefined);
+  assert.doesNotMatch(JSON.stringify(negative), /private provider error|example\.test|Fremont|1900|description/);
   const missing = await fixture(t, { unconfigured: true });
   assert.equal((await missing.request()).status, 503);
+  assert.equal(missing.models.PostTranslation.rows.length, 0, 'missing provider configuration is not cached as paid work');
+});
+
+test('a failed source version does not call the provider again after restart or through another instance', async t => {
+  const clock = Date.parse('2026-10-06T10:00:00Z');
+  const first = await fixture(t, { now: () => clock, ai: async () => { throw new Error('upstream-secret'); } });
+  assert.equal((await first.request()).status, 503); assert.equal(first.calls.length, 1);
+  const second = await fixture(t, { models: first.models, now: () => clock + 1000 });
+  const result = await second.request();
+  assert.equal(result.status, 503); assert.equal(result.retry, '60'); assert.equal(second.calls.length, 0);
+  assert.equal(first.models.PostTranslationQuota.rows[0].count, 1, 'negative reuse reserves no new paid quota');
+  const restarted = await fixture(t, { models: first.models, now: () => clock + 2000 });
+  assert.equal((await restarted.request()).status, 503); assert.equal(restarted.calls.length, 0);
+});
+
+test('502 validation failures retain their public classification across instances without exposing an invalid translation', async t => {
+  let clock = Date.parse('2026-10-06T10:00:00Z');
+  const failedAt = clock;
+  const first = await fixture(t, { now: () => clock, ai: async () => ({ ...translated, budget: '$2000/month' }) });
+  const failed = await first.request(); assert.equal(failed.status, 502); assert.equal(failed.retry, '86400');
+  assert.equal(new Date(first.models.PostTranslation.rows[0].expiresAt).getTime(), failedAt + 86400000);
+  clock += 60001;
+  const second = await fixture(t, { models: first.models, now: () => clock });
+  const repeated = await second.request(); assert.equal(repeated.status, 502); assert.equal(repeated.data.translation, undefined); assert.equal(second.calls.length, 0);
+  assert.equal(first.models.PostTranslation.rows[0].failureStatus, 502); assert.equal(first.models.PostTranslation.rows[0].translation, undefined);
+  clock = failedAt + 86400000;
+  const expired = await fixture(t, { models: first.models, now: () => clock });
+  assert.equal((await expired.request()).status, 200); assert.equal(expired.calls.length, 1, 'validation failure retries at the exact 24-hour boundary despite TTL lag');
+});
+
+test('a configured public model switch or source-version switch invalidates a negative immediately, while credentials do not', async t => {
+  const clock = Date.parse('2026-10-06T10:00:00Z');
+  const first = await fixture(t, { now: () => clock, config: { OPENAI_MODEL: 'public-model-a', OPENAI_API_KEY: 'old-private-key' }, ai: async () => ({ ...translated, budget: '$2000/month' }) });
+  assert.equal((await first.request()).status, 502);
+  const stored = first.models.PostTranslation.rows[0];
+  assert.equal(stored.id, failureCacheKey('public', source, 'public-model-a'));
+  assert.doesNotMatch(JSON.stringify(stored), /public-model-a|old-private-key/);
+  const credentialsChanged = await fixture(t, { models: first.models, now: () => clock + 1000, config: { OPENAI_MODEL: 'public-model-a', OPENAI_API_KEY: 'new-private-key' } });
+  assert.equal((await credentialsChanged.request()).status, 502); assert.equal(credentialsChanged.calls.length, 0);
+  const modelChanged = await fixture(t, { models: first.models, now: () => clock + 1000, config: { OPENAI_TRANSLATION_MODEL: 'public-model-b', OPENAI_MODEL: 'public-model-a' } });
+  assert.equal((await modelChanged.request()).status, 200); assert.equal(modelChanged.calls.length, 1);
+  assert.notEqual(failureCacheKey('public', source, 'public-model-a'), failureCacheKey('public', source, 'public-model-b'));
+  const versioned = await fixture(t, { now: () => clock });
+  versioned.models.PostTranslation.rows.push({ id: failureCacheKey('public', source), postId: 'public', kind: 'failure', sourceVersion: 'public-post-en-v1', failureStatus: 502, expiresAt: new Date(clock + 86400000) });
+  assert.equal((await versioned.request()).status, 200); assert.equal(versioned.calls.length, 1, 'a negative from another validator/source version is not reusable');
+});
+
+test('source edits invalidate a negative result, unrelated updates do not, and an exact 60-second boundary retries despite TTL lag', async t => {
+  let clock = Date.parse('2026-10-06T10:00:00Z');
+  const first = await fixture(t, { now: () => clock, ai: async () => { throw new Error('unavailable'); } });
+  assert.equal((await first.request()).status, 503);
+  first.models.Post.rows[0].updatedAt = 123; first.models.Post.rows[0].likes = ['viewer'];
+  const next = await fixture(t, { models: first.models, now: () => clock });
+  assert.equal((await next.request()).status, 503); assert.equal(next.calls.length, 0);
+  first.models.Post.rows[0].title = 'Fremont 新房间出租';
+  const changed = await fixture(t, { models: first.models, now: () => clock, ai: async () => ({ ...translated, title: 'New room for rent in Fremont' }) });
+  assert.equal((await changed.request()).status, 200); assert.equal(changed.calls.length, 1);
+  first.models.Post.rows[0].title = source.title;
+  clock += 60000;
+  const expired = await fixture(t, { models: first.models, now: () => clock });
+  assert.equal((await expired.request()).status, 200); assert.equal(expired.calls.length, 1, 'Mongo TTL sweeper need not have deleted the expired negative');
+  assert.equal(first.models.PostTranslation.rows.filter(row => row.kind === 'failure').length, 1, 'the test deliberately retains the expired record');
+});
+
+test('a late failed instance cannot overwrite or block a success cached by another instance', async t => {
+  const entered = deferred(), release = deferred();
+  const first = await fixture(t, { ai: async () => { entered.resolve(); await release.promise; throw new Error('late-private-error'); } });
+  const pending = first.request(); await entered.promise;
+  const second = await fixture(t, { models: first.models });
+  assert.equal((await second.request()).status, 200);
+  release.resolve(); assert.equal((await pending).status, 503);
+  assert.deepEqual(first.models.PostTranslation.rows.find(row => row.id === cacheKey('public', source)).translation, translated);
+  assert.equal(first.models.PostTranslation.rows.find(row => row.id === failureCacheKey('public', source)).kind, 'failure');
+  assert.deepEqual((await first.request()).data.translation, translated, 'success wins even over this process\'s failure cooldown');
+  const restarted = await fixture(t, { models: first.models });
+  assert.equal((await restarted.request()).status, 200); assert.equal(restarted.calls.length, 0);
+});
+
+test('provider failure after visibility or source changes does not persist a negative, and post-scoped erasure removes both cache kinds', async t => {
+  for (const change of ['edit', 'delete', 'hide', 'owner-delete', 'block']) await t.test(change, async t => {
+    const entered = deferred(), release = deferred();
+    const current = await fixture(t, { ai: async () => { entered.resolve(); await release.promise; throw new Error('failed'); } });
+    const pending = current.request('public', { user: 'viewer' }); await entered.promise;
+    if (change === 'edit') current.models.Post.rows[0].title += '新';
+    if (change === 'delete') current.models.Post.rows[0].isDeleted = true;
+    if (change === 'hide') current.models.Post.rows[0].adminHidden = true;
+    if (change === 'owner-delete') current.models.User.rows.splice(current.models.User.rows.findIndex(row => row.id === 'owner'), 1);
+    if (change === 'block') current.models.UserBlock.rows.push({ blockerId: 'owner', blockedUserId: 'viewer' });
+    release.resolve(); assert.equal((await pending).status, 503);
+    assert.equal(current.models.PostTranslation.rows.length, 0, 'failed generation does not create a cache for an unavailable or changed source');
+  });
+  const current = await fixture(t, { ai: async () => { throw new Error('failed'); } });
+  assert.equal((await current.request()).status, 503);
+  current.models.PostTranslation.rows.push({ id: cacheKey('public', source), postId: 'public', kind: 'translation', translation: translated, expiresAt: new Date(Date.now() + 86400000) });
+  const { accountMemory } = require('./support/account-memory');
+  const deletionStore = accountMemory([...current.models.PostTranslation.rows, { id: failureCacheKey('other', source), postId: 'other', kind: 'failure', failureStatus: 503, expiresAt: new Date(Date.now() + 60000) }]);
+  await deletionStore.deleteMany({ postId: { $in: ['public'] } });
+  assert.deepEqual(deletionStore.rows.map(row => row.postId), ['other'], 'the existing postId cleanup shape identifies both owned kinds without erasing another post');
 });
 
 test('translation validation rejects wrong fields, truncation, changed amounts and links', async t => {
@@ -223,7 +333,8 @@ test('translation validation rejects wrong fields, truncation, changed amounts a
   assert.notEqual(sourceKey(source), sourceKey({ ...source, budget: '$2000/月' }));
   const { request, models } = await fixture(t, { ai: async () => invalid[0] });
   assert.equal((await request()).status, 502);
-  assert.equal(models.PostTranslation.rows.length, 0);
+  assert.equal(models.PostTranslation.rows.length, 1);
+  assert.equal(models.PostTranslation.rows[0].kind, 'failure'); assert.equal(models.PostTranslation.rows[0].translation, undefined);
   await assert.rejects(translateWithProvider(source, { config: { OPENAI_API_KEY: 'fake' }, isTest: true }));
 });
 
@@ -262,7 +373,7 @@ test('missing, wrong, ambiguous and reassigned multipliers fail closed without r
   assert.throws(() => validateTranslation({ ...englishAmount, title: 'Budget', budget: '300 thousand' }, englishAmount), { status: 502 });
 });
 
-test('an omitted multiplier returns the original-text fallback error and is never persisted', async t => {
+test('an omitted multiplier returns the original-text fallback error and never persists an invalid translation', async t => {
   const original = { title: '预算', description: '', budget: '300万', timeInfo: '' };
   const { request, calls, models } = await fixture(t, {
     posts: [post('public', original)], ai: async () => ({ title: 'Budget', description: '', budget: '300 dollars', timeInfo: '' }),
@@ -271,7 +382,8 @@ test('an omitted multiplier returns the original-text fallback error and is neve
   assert.equal(result.status, 502);
   assert.match(result.data.error, /Please read the original/);
   assert.equal(result.data.translation, undefined);
-  assert.equal(models.PostTranslation.rows.length, 0);
+  assert.equal(models.PostTranslation.rows.length, 1);
+  assert.equal(models.PostTranslation.rows[0].kind, 'failure'); assert.equal(models.PostTranslation.rows[0].failureStatus, 502); assert.equal(models.PostTranslation.rows[0].translation, undefined);
   assert.equal(calls.length, 1);
   assert.equal(models.Post.rows[0].budget, original.budget);
 });

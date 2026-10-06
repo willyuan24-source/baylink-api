@@ -397,9 +397,10 @@ const ReportSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   reporterId: String,
   reporterNickname: String,
-  targetType: { type: String, enum: ['post', 'user', 'outing', 'outing_message'], required: true },
+  targetType: { type: String, enum: ['post', 'user', 'message', 'outing', 'outing_message'], required: true },
   targetId: { type: String, required: true },
   targetPostId: { type: String, default: '' },
+  targetConversationId: { type: String, default: '' },
   targetUserId: { type: String, default: '' },
   targetOutingId: { type: String, default: '' },
   evidence: { type: mongoose.Schema.Types.Mixed, default: undefined },
@@ -774,7 +775,7 @@ const MODERATION_LOG_ACTIONS = new Set([
 ]);
 const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing']);
 
-const REPORT_TARGET_TYPES = new Set(['post', 'user', 'outing', 'outing_message']);
+const REPORT_TARGET_TYPES = new Set(['post', 'user', 'message', 'outing', 'outing_message']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
 const REPORT_STATUSES = new Set(['open', 'reviewed', 'dismissed', 'all']);
 const REPORT_ADMIN_STATUSES = new Set(['open', 'reviewed', 'dismissed']);
@@ -1058,7 +1059,7 @@ const getCurrentUserIdFromRequest = async (req) => {
   try { return (await verifySession(token)).user.id; } catch { return null; }
 };
 
-const resolveReportTarget = async (targetType, targetId) => {
+const resolveReportTarget = async (targetType, targetId, reporterId, conversationId) => {
   const id = String(targetId ?? '').trim();
   if (!id) return { ok: false, error: '举报目标无效' };
   try {
@@ -1072,7 +1073,35 @@ const resolveReportTarget = async (targetType, targetId) => {
       if (!user) return { ok: false, error: '用户不存在' };
       return { ok: true, targetId: id, targetPostId: '', targetUserId: id };
     }
-  } catch (_) {
+    if (targetType === 'message') {
+      if (typeof conversationId !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(conversationId)
+        || !/^[A-Za-z0-9_-]{1,200}$/.test(id)) return { ok: false, error: '消息不存在或不可举报' };
+      const readConversation = () => Conversation.findOne({ id: conversationId }).select('userIds').lean();
+      let conversation = await readConversation();
+      if (!conversation?.userIds?.includes(reporterId)) return { ok: false, error: '消息不存在或不可举报' };
+      // Legacy message IDs need not be globally unique. Scope the lookup to the
+      // participant-verified conversation, using its existing compound index.
+      const readMessage = () => Message.findOne({ id, conversationId, isDeleted: { $ne: true } })
+        .select('id conversationId senderId type messageType content createdAt').lean();
+      let message = await readMessage();
+      if (!message) return { ok: false, error: '消息不存在或不可举报' };
+      const accessible = () => conversation?.userIds?.includes(reporterId) && conversation.userIds.includes(message.senderId)
+        && message.senderId && message.senderId !== 'system' && message.type !== 'system' && message.messageType !== 'system';
+      if (!accessible()) return { ok: false, error: '消息不存在或不可举报' };
+      // The authenticated reporter is already held. Hold the real author before
+      // copying evidence so account erasure cannot race with a late report write.
+      await holdAccountOperation(User, message.senderId);
+      message = await readMessage();
+      if (!message) return { ok: false, error: '消息不存在或不可举报' };
+      conversation = await readConversation();
+      if (!accessible()) return { ok: false, error: '消息不存在或不可举报' };
+      const plainText = message.type === 'text' && (!message.messageType || message.messageType === 'text');
+      return { ok: true, targetId: id, targetConversationId: conversationId, targetPostId: '', targetUserId: message.senderId,
+        evidence: { messageId: id, conversationId: message.conversationId, type: message.type || 'text',
+          createdAt: message.createdAt, ...(plainText ? { text: String(message.content || '').slice(0, 3000) } : { attachmentOmitted: true }) } };
+    }
+  } catch (error) {
+    if (error.publicSafe) throw error;
     return { ok: false, error: '举报目标无效' };
   }
   return { ok: false, error: '举报目标无效' };
@@ -1146,7 +1175,8 @@ const formatAdminReportsList = async (docs) => {
     reporter: formatTrustUserSummary(userById.get(doc.reporterId)),
     targetUser: formatAdminUserSummary(userById.get(doc.targetUserId)),
     targetPost: formatAdminPostSummary(postById.get(doc.targetPostId)),
-    ...(doc.targetOutingId ? { outingId: doc.targetOutingId, evidence: doc.evidence || {} } : {}),
+    ...(doc.targetOutingId ? { outingId: doc.targetOutingId, evidence: doc.evidence || {} } :
+      doc.targetType === 'message' ? { evidence: doc.evidence || {} } : {}),
   }));
 };
 
@@ -3273,7 +3303,7 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: '举报原因无效' });
     }
 
-    const targetCheck = await resolveReportTarget(targetType, req.body?.targetId);
+    const targetCheck = await resolveReportTarget(targetType, req.body?.targetId, req.user.id, req.body?.conversationId);
     if (!targetCheck.ok) {
       return res.status(404).json({ error: targetCheck.error });
     }
@@ -3287,6 +3317,7 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
       reporterId: req.user.id,
       targetType,
       targetId: targetCheck.targetId,
+      ...(targetType === 'message' ? { targetConversationId: targetCheck.targetConversationId } : {}),
       createdAt: { $gte: since },
     }).select('id').lean();
 
@@ -3302,7 +3333,9 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
       targetType,
       targetId: targetCheck.targetId,
       targetPostId: targetCheck.targetPostId || '',
+      ...(targetType === 'message' ? { targetConversationId: targetCheck.targetConversationId } : {}),
       targetUserId: targetCheck.targetUserId || '',
+      ...(targetCheck.evidence ? { evidence: targetCheck.evidence } : {}),
       reason,
       detail,
       status: 'open',
@@ -3315,6 +3348,7 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
 
     return res.json({ success: true, message: '举报已提交，感谢你的反馈。', id: report.id });
   } catch (e) {
+    if (e.publicSafe) return res.status(e.status || 409).json({ error: e.message, code: e.code });
     console.error('POST /api/reports error:', e.message);
     return res.status(500).json({ error: '举报提交失败，请稍后再试' });
   }

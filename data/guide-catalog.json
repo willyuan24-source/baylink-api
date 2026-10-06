@@ -830,6 +830,112 @@
     "updatedAt": "2026-10-05"
   },
   {
+    "title": "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
+    "slug": "bay-area-social-security-retirement-preparation-guide",
+    "url": "/guides/bay-area-social-security-retirement-preparation-guide",
+    "summary": "从 SSA 官方账号查看工作积分与个人估算，比较领取时间，准备继续工作、家庭福利及语言帮助的问题清单。",
+    "keywords": [
+      "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
+      "退休与社会保障",
+      "退休金",
+      "社安金",
+      "社会保障",
+      "SSA",
+      "Social Security",
+      "SSI",
+      "工作积分",
+      "父母退休"
+    ],
+    "categories": [
+      "other"
+    ],
+    "content": "第一步：确认自己在问哪一种福利\n\nSocial Security 退休福利通常依据缴纳社会保障税的工作记录；401(k)、IRA 或雇主退休计划另有自己的规则。SSI 则面向收入和资源有限、年满 65 岁或符合残障／失明条件的人，还需核对其他资格条件。不要只凭“到了退休年龄”判断能领取哪一项。\n\n从 SSA 官方页面查看个人估算\n通过此页进入 my Social Security，核对工作记录与账号显示的估算。\nhttps://www.ssa.gov/prepare/get-benefits-estimate\n\n第二步：先核对记录，不用朋友的金额作比较\n\nSSA 说明，按本人工作记录申请退休福利通常需要 40 个工作积分，每年最多四个；积分与受保障的收入有关，并非在美国住满十年自动取得。积分决定资格的一部分，更多积分本身不等于更高月领金额。请核对账号中的逐年工作收入；发现缺漏，向 SSA 询问更正材料。\n\n把工作年份、雇主和自雇收入与 SSA 工作记录逐项比对；记录缺漏年份。\n分别询问本人退休福利、可能适用的配偶／前配偶或遗属福利；这些路径条件和领取时间不同。\n涉及移民身份、境外工作或长期境外居住计划时，直接请 SSA 核对对应规则。\n家庭收入或资源较少时，另问 SSI；不把退休福利积分当作 SSI 资格判断。\n\n第三步：比较时间，分清领取月份和到账月份\n\n本人退休福利通常最早可从 62 岁开始，提前于完全退休年龄领取会降低月领金额；延后领取可增加月领金额，增额通常到 70 岁为止。完全退休年龄按出生年份计算，1960 年及以后出生者为 67 岁。适合哪一个月份取决于个人情况，本文不替你作领取决定。\n\nSSA 的时间说明允许最早在希望开始领取的月份前四个月提出申请，首笔支付一般在所选领取月份的下一个月到达。准备继续工作时，要问清完全退休年龄之前的年度收入限制及可能暂扣的福利；同时单独核对 Medicare 报名时间，延后退休金不表示可以延后医保报名。\n\n核对自己的完全退休年龄\n在 SSA 计算器按出生年份查日期，再比较本人账号的估算。\nhttps://www.ssa.gov/benefits/retirement/planner/ageincrease.html\n\n第四步：带着清单联系 SSA，可以要求口译\n\nSSA 官方提供免费口译，电话与办公室均可使用。可拨打 1-800-772-1213 并向接线员说明需要中文口译；是否需要办公室预约和哪些证明材料，由 SSA 按你的申请说明。家属可以帮助整理问题，但账号与申请资料应由本人或获授权者妥善管理。\n\n查看 SSA 免费口译与联系说明\n先从官方页面确认联系方式和预约安排。\nhttps://www.ssa.gov/multilanguage/interpreter.html\n\n咨询退休福利时这样问\n我希望从___月开始领取，出生年份是___，目前工作情况是___。请问工作记录是否完整、可以查看哪些个人估算？本人福利和家庭福利应分别确认什么？继续工作、Medicare 报名或境外居住会影响哪些步骤？需要什么材料，能否安排中文口译？\n\n只在核实后的办理渠道提交资料\n不要把社安号码、完整生日、银行账号或福利通知上传到公开帖子。网上的统一月领金额和“保证申请成功”不能替代 SSA 的个人决定。",
+    "sources": [
+      {
+        "title": "SSA：社会保障工作积分",
+        "url": "https://www.ssa.gov/benefits/retirement/planner/credits.html"
+      },
+      {
+        "title": "SSA：查看个人福利估算",
+        "url": "https://www.ssa.gov/prepare/get-benefits-estimate"
+      },
+      {
+        "title": "SSA：规划退休领取时间",
+        "url": "https://www.ssa.gov/retirement/plan-for-retirement"
+      },
+      {
+        "title": "SSA：完全退休年龄计算器",
+        "url": "https://www.ssa.gov/benefits/retirement/planner/ageincrease.html"
+      },
+      {
+        "title": "SSA：首笔退休金与申请时间",
+        "url": "https://www.ssa.gov/retirement/timing-first-payment"
+      },
+      {
+        "title": "SSA：SSI 项目",
+        "url": "https://www.ssa.gov/ssi"
+      },
+      {
+        "title": "SSA：免费口译服务",
+        "url": "https://www.ssa.gov/multilanguage/interpreter.html"
+      }
+    ],
+    "updatedAt": "2026-10-06"
+  },
+  {
+    "title": "在湾区准备入籍：先确认申请路径，再整理材料与考试版本",
+    "slug": "bay-area-naturalization-official-path-guide",
+    "url": "/guides/bay-area-naturalization-official-path-guide",
+    "summary": "把绿卡年限、居住与出境记录、英语／公民知识考试和申请费用拆开核对；附长者语言例外、材料清单及咨询问题。",
+    "keywords": [
+      "在湾区准备入籍：先确认申请路径，再整理材料与考试版本",
+      "入籍准备",
+      "入籍",
+      "公民",
+      "美国国籍",
+      "naturalization",
+      "USCIS",
+      "N-400",
+      "绿卡",
+      "入籍考试"
+    ],
+    "categories": [
+      "other"
+    ],
+    "content": "第一步：年限是入口，完整资格要逐项核对\n\n一般成年申请路径是年满 18 岁、持有永久居民身份至少五年；符合完整条件的美国公民配偶可能使用三年路径。三年路径还涉及配偶成为公民的时间、婚姻关系及共同生活等条件，不能只凭结婚日期判断。军人或其他特殊情况应查自己的官方路径。\n\n绿卡年限之外，还要核对连续居住、实际在美国的时间、递交辖区居住、良好道德品行及其他条件。整理出入境记录，不把多次短期出境或一次长期旅行只当成“绿卡仍有效”来判断；复杂经历先向合资格法律服务咨询。\n\n从 USCIS 的 N-400 官方入口开始\n先读当前说明书和资格要求，再决定是否递交；本文不代办申请。\nhttps://www.uscis.gov/n-400\n\n第二步：先整理事实，再填写表格\n\n记录绿卡上的居民起始日期，以及住所、工作或就学的时间线。\n按当前 N-400 要求整理每次出境与返美日期；保留可核对的旅行记录。\n有婚姻、子女、税务、兵役登记或司法记录相关问题时，按说明书准备真实材料。\n曾被逮捕、收到法院文件、长期离境或资料互相矛盾时，先问合资格法律服务，避免猜测填表。\n每次提交前确认表格版本、递交方式、费用及减费／免费要求；不使用旧截图中的金额。\n保留完整提交副本、收据与官方通知，并记录每份通知上的回应期限。\n\n第三步：先确认考试版本，长者例外也有条件\n\n申请人通常需要满足英语和美国公民知识要求。先根据 N-400 递交日期到 USCIS 面试与考试页面确认适用版本。官方 2025 版题库为 128 道题，一般口试最多问 20 道，答对至少 12 道通过；不要把这一规则套用到另一版本或特别考虑的考试。涉及现任官员的答案，面试前还须查看官方更新。\n\nUSCIS 官方长者说明列出：递交时年满 50 岁且作为永久居民居住至少 20 年，或年满 55 岁且至少 15 年，可能免英语要求，但仍需公民知识考试。年满 65 岁且至少 20 年还有公民知识特别考虑。年龄与年限要同时满足；口译及医疗例外分别核对官方要求，不能只凭“英语不好”申请例外。\n\n查看 USCIS 面试与考试说明\n确认适用版本、免费学习材料、更新答案和可能适用的例外。\nhttps://www.uscis.gov/citizenship/find-study-materials-and-resources/the-naturalization-interview-and-test\n\n第四步：选择可以核实资格的帮助渠道\n\n社区入籍课可以帮助学习和准备材料，但法律资格判断应交给获准在美国执业的律师，或司法部认可机构中的获认证代表。先问服务范围、人员资格、中文／口译、费用，以及是否包括补件和面试支持；“保证通过”不代表 USCIS 的决定。\n\n通过 USCIS 找法律服务核实入口\n选择服务前先核对律师或机构代表的资格。\nhttps://www.uscis.gov/scams-fraud-and-misconduct/avoid-scams/find-legal-services\n\n第一次咨询时这样问\n我从___起是永久居民，拟考虑五年／婚姻／其他路径。出境和住址时间线已整理，另有___需要确认。请问哪些条件或材料需要先核查？应准备哪一版考试？能否安排中文，费用和服务范围是什么？哪些资料应通过安全渠道提交？\n\n账号和身份资料由本人妥善保管\n不要在公开帖子上传绿卡、护照、A-Number、完整生日或入籍通知。不要向陌生人提供 USCIS 账号密码；只在已核实的官方或法律服务渠道交换申请资料。",
+    "sources": [
+      {
+        "title": "USCIS：N-400 入籍申请入口",
+        "url": "https://www.uscis.gov/n-400"
+      },
+      {
+        "title": "USCIS：N-400 官方说明书",
+        "url": "https://www.uscis.gov/sites/default/files/document/forms/n-400instr.pdf"
+      },
+      {
+        "title": "USCIS：入籍流程概览",
+        "url": "https://www.uscis.gov/sites/default/files/document/guides/M-685.pdf"
+      },
+      {
+        "title": "USCIS：入籍面试与考试",
+        "url": "https://www.uscis.gov/citizenship/find-study-materials-and-resources/the-naturalization-interview-and-test"
+      },
+      {
+        "title": "USCIS：2025 版公民知识题库",
+        "url": "https://www.uscis.gov/sites/default/files/document/questions-and-answers/2025-Civics-Test-128-Questions-and-Answers.pdf"
+      },
+      {
+        "title": "USCIS：50 岁以上申请人的说明",
+        "url": "https://www.uscis.gov/sites/default/files/document/fact-sheets/Fact-Sheet-Promoting-Citizenship-for-50-and-Older.pdf"
+      },
+      {
+        "title": "USCIS：寻找合资格法律服务",
+        "url": "https://www.uscis.gov/scams-fraud-and-misconduct/avoid-scams/find-legal-services"
+      }
+    ],
+    "updatedAt": "2026-10-06"
+  },
+  {
     "title": "9 月 19 日，把海边散步变成一次净滩：湾区报名与出发攻略",
     "slug": "bay-area-coastal-cleanup-2026-guide",
     "url": "/guides/bay-area-coastal-cleanup-2026-guide",
