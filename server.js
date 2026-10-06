@@ -9,7 +9,11 @@ const twilio = require('twilio');
 const bcrypt = require('bcryptjs'); // ✨ 新增：引入加密庫
 const crypto = require('crypto');
 const { Resend } = require('resend');
-const { publicPostFilters, postLifecycleChanges } = require('./lib/postLifecycle');
+const { publicPostFilters, postLifecycleChanges, publicPostAvailability } = require('./lib/postLifecycle');
+const { createAccountAuthChallengeModel, createAccountTotp } = require('./lib/accountTotp');
+const { registerAccountPrivacy, erasePostContacts, holdAccountOperation, holdPostOperation, runAccountHandler } = require('./lib/accountPrivacy');
+const { registerNotifications } = require('./lib/notifications');
+const { createConversationResponseMetricModel, createConversationReplyMetric } = require('./lib/conversationReplyMetric');
 const { normalizeContact, allowedOrigins, apiSecurityHeaders, hashSessionToken } = require('./lib/security');
 const { keywordFilter } = require('./lib/postSearch');
 const { MAX_CANDIDATES, POST_FIELDS, isProviderRequest, planPostSearch, summarizeMatches } = require('./lib/baybaySearch');
@@ -29,7 +33,7 @@ const { registerPlannerWebSearch, normalizeWebSearchError } = require('./lib/pla
 const { registerPlannerTravel } = require('./lib/plannerTravel');
 const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset, hasPrivateSearchData } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
-const { createProductMetricModel, registerProductMetrics } = require('./lib/productMetrics');
+const { createProductMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
@@ -56,7 +60,7 @@ const app = express();
 // Express 4 does not forward rejected async route promises automatically.
 for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
   const register = app[method].bind(app);
-  app[method] = (...args) => register(...args.map(value => typeof value === 'function' && value.length < 4 ? function(req, res, next) { Promise.resolve().then(() => value(req, res, next)).catch(next); } : value));
+  app[method] = (...args) => register(...args.map(value => typeof value === 'function' && value.length < 4 ? function(req, res, next) { runAccountHandler(req, res, () => value(req, res, next)).catch(next); } : value));
 }
 app.disable('x-powered-by');
 app.set('trust proxy', proxyTrust(config, isTest));
@@ -112,7 +116,14 @@ app.use((req, res, next) => {
   // reads the bearer header and never needs to parse this body first.
   const upload = ['POST', 'PUT', 'PATCH'].includes(req.method) && /^\/api\/(?:posts(?:\/[^/]+)?|ads(?:\/[^/]+)?|users\/me)$/.test(req.path);
   if (!upload) return next();
-  authenticateToken(req, res, () => largeJson(req, res, next));
+  runAccountHandler(req, res, async () => {
+    let allowed = false;
+    await authenticateToken(req, res, () => { allowed = true; });
+    if (!allowed) return;
+    await new Promise((resolve, reject) => largeJson(req, res, failure => {
+      if (failure) reject(failure); else { next(); resolve(); }
+    }));
+  }).catch(next);
 });
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ limit: '100kb', extended: true }));
@@ -226,6 +237,14 @@ const UserSchema = new mongoose.Schema({
   passwordResetRequestedAt: Number,
   passwordResetUsedAt: Number,
   passwordChangedAt: Number,
+  sessionsRevokedAt: Number,
+  sessionRevision: { type: Number, default: 0 },
+  securityRevision: { type: Number, default: 0 },
+  totpEnabledAt: { type: Number, default: null },
+  accountSecurity: { type: mongoose.Schema.Types.Mixed, select: false },
+  accountDeletionPending: { type: Boolean, default: false },
+  accountDeletionClaim: { type: String, select: false },
+  activeAccountOperations: { type: Number, default: 0, select: false },
 
   bio: String,
   avatar: String,
@@ -291,6 +310,7 @@ UserSchema.post('init', function coerceLegacyOfficialVerification() {
 });
 
 const PostSchema = new mongoose.Schema({
+  activePostOperations: { type: Number, default: 0 },
   id: { type: String, unique: true },
   authorId: String,
   authorNickname: String,
@@ -490,6 +510,8 @@ const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 const ServiceBookingAgenda = createServiceBookingModel(mongoose, injectedModels);
 const Outing = createOutingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
+const AccountAuthChallenge = createAccountAuthChallengeModel(mongoose, injectedModels);
+const ConversationResponseMetric = createConversationResponseMetricModel(mongoose, injectedModels);
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -497,15 +519,18 @@ const verifySession = async (token) => {
   try { payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }); }
   catch { throw sessionError(401, '登录已过期，请重新登录。'); }
   if (!payload || typeof payload.id !== 'string' || !Number.isFinite(payload.exp)) throw sessionError(401, '登录已过期，请重新登录。');
+  if (payload.purpose && payload.purpose !== 'session') throw sessionError(401, '登录已过期，请重新登录。');
   const tokenHash = hashSessionToken(token);
   if (await RevokedSession.exists({ tokenHash })) throw sessionError(401, '登录已过期，请重新登录。');
   const user = await User.findOne({ id: payload.id });
-  if (!user || user.isBanned || user.accountStatus === 'suspended') throw sessionError(403, '账号不可用或已被限制');
+  if (!user || user.isBanned || user.accountStatus === 'suspended' || user.accountDeletionPending) throw sessionError(403, '账号不可用或已被限制');
   const issuedAt = Number.isFinite(payload.sessionIssuedAt) ? payload.sessionIssuedAt : Number(payload.iat) * 1000;
   if (user.passwordChangedAt && (!Number.isFinite(issuedAt) || issuedAt < user.passwordChangedAt)) throw sessionError(401, '登录已过期，请重新登录。');
+  if ((payload.sessionRevision || 0) !== (user.sessionRevision || 0) || (user.sessionsRevokedAt && (!Number.isFinite(issuedAt) || issuedAt < user.sessionsRevokedAt))) throw sessionError(401, '登录已过期，请重新登录。');
+  if (user.totpEnabledAt && payload.mfaVerified !== true) throw sessionError(401, '请完成验证器登录。');
   return { user, payload, tokenHash };
 };
-const issueToken = user => jwt.sign({ id: user.id, sessionIssuedAt: Date.now() }, JWT_SECRET, {
+const issueToken = (user, { mfaVerified = false } = {}) => jwt.sign({ id: user.id, purpose: 'session', sessionIssuedAt: Date.now(), sessionRevision: user.sessionRevision || 0, ...(mfaVerified ? { mfaVerified: true } : {}) }, JWT_SECRET, {
   algorithm: 'HS256', expiresIn: JWT_EXPIRES_IN, jwtid: crypto.randomUUID(),
 });
 const extractBearerToken = header => typeof header === 'string' ? /^Bearer\s+([^\s]+)$/i.exec(header)?.[1] || '' : '';
@@ -565,9 +590,26 @@ const emitMessageToUser = async (userId, message, event = 'new_message') => {
     try {
       const { user } = await verifySession(socket.sessionToken);
       if (user.id !== userId || !conversation.userIds.includes(user.id)) return;
-      socket.emit(event, publicMessage(message));
+      socket.emit(event, (await formatPrivateMessages([message]))[0]);
     } catch { socket.disconnect(true); }
   }));
+};
+
+const formatPrivateMessages = async messages => {
+  const values = messages.map(publicMessage);
+  const cards = values.filter(value => value.type === 'contact_card' || value.messageType === 'contact_card');
+  if (!cards.length) return values;
+  const postIds = [...new Set(cards.map(card => card.contactCard?.postId).filter(Boolean))];
+  const posts = postIds.length ? await Post.find({ id: { $in: postIds }, isDeleted: false }).select('id authorId').lean() : [];
+  const owners = [...new Set(posts.map(post => post.authorId))];
+  const activeOwners = owners.length ? await User.find({ id: { $in: owners }, isBanned: { $ne: true }, accountStatus: { $ne: 'suspended' }, accountDeletionPending: { $ne: true } }).select('id').lean() : [];
+  const ownerIds = new Set(activeOwners.map(owner => owner.id)), available = new Set(posts.filter(post => ownerIds.has(post.authorId)).map(post => post.id));
+  const removed = new Set();
+  for (const card of cards) if (!available.has(card.contactCard?.postId)) {
+    card.contactCard = { ...(card.contactCard || {}), methods: [] }; card.content = '这条信息的联系方式已移除。'; removed.add(card.id);
+  }
+  for (const value of values) if (removed.has(value.replyTo?.id)) delete value.replyTo;
+  return values;
 };
 
 const CONTACT_PREFERENCE_MODES = new Set(['dm_first', 'auto_send', 'manual_approve']);
@@ -989,8 +1031,10 @@ const formatModerationLogForAdmin = (doc) => ({
 });
 
 const assertCanMessage = async (senderId, recipientId) => {
-  const recipient = await User.findOne({ id: recipientId }).select('id isBanned accountStatus').lean();
-  if (!recipient || recipient.isBanned || recipient.accountStatus === 'suspended') {
+  await holdAccountOperation(User, senderId);
+  await holdAccountOperation(User, recipientId);
+  const recipient = await User.findOne({ id: recipientId }).select('id isBanned accountStatus accountDeletionPending').lean();
+  if (!recipient || recipient.isBanned || recipient.accountStatus === 'suspended' || recipient.accountDeletionPending) {
     const err = new Error('暂时无法向该用户发送消息。');
     err.statusCode = 403;
     throw err;
@@ -1286,6 +1330,13 @@ const uploadToCloudinary = async (base64Image) => {
 };
 
 const SENSITIVE_USER_FIELDS = [
+  'accountSecurity',
+  'sessionsRevokedAt',
+  'sessionRevision',
+  'securityRevision',
+  'accountDeletionPending',
+  'accountDeletionClaim',
+  'activeAccountOperations',
   'password',
   'verifyCode',
   'verifyCodeExpires',
@@ -1554,6 +1605,29 @@ const authenticateToken = async (req, res, next) => {
     const session = await verifySession(token);
     req.user = session.user;
     req.session = session;
+    if (!(req.method === 'DELETE' && req.path === '/api/users/me/privacy/account')) await holdAccountOperation(User, req.user.id);
+    // Preserve the target owner's privacy while another account edits a shared
+    // record; a stale post.save() must not restore a deleted owner's data.
+    if (!['GET', 'HEAD'].includes(req.method)) {
+      const postId = /^\/api\/(?:admin\/)?posts\//.test(req.path) ? req.params.postId || req.params.id : '';
+      if (postId) { await holdPostOperation(Post, postId); const post = await Post.findOne({ id: postId, isDeleted: false }).select('authorId').lean(); if (post?.authorId) await holdAccountOperation(User, post.authorId); }
+      if (req.params.userId || (/^\/api\/(?:admin\/)?users\//.test(req.path) && req.params.id)) await holdAccountOperation(User, req.params.userId || req.params.id);
+      if (/^\/api\/contact-requests\//.test(req.path) && req.params.requestId) {
+        const contact = await ContactRequest.findOne({ id: req.params.requestId }).select('postOwnerId requesterId').lean();
+        if (contact) for (const id of [contact.postOwnerId, contact.requesterId]) await holdAccountOperation(User, id);
+      }
+      if (req.path === '/api/reports') {
+        if (req.body?.targetType === 'user' && typeof req.body.targetId === 'string') await holdAccountOperation(User, req.body.targetId);
+        if (req.body?.targetType === 'post' && typeof req.body.targetId === 'string') {
+          const target = await Post.findOne({ id: req.body.targetId, isDeleted: false }).select('authorId').lean();
+          if (target?.authorId) await holdAccountOperation(User, target.authorId);
+        }
+      }
+      if (/^\/api\/admin\/reports\//.test(req.path) && req.params.id) {
+        const report = await Report.findOne({ id: req.params.id }).select('targetUserId reporterId').lean();
+        if (report) for (const id of [...new Set([report.targetUserId, report.reporterId].filter(id => id && !id.startsWith('deleted_')))]) await holdAccountOperation(User, id);
+      }
+    }
     next();
   } catch (error) {
     const status = error.status || 503;
@@ -1562,6 +1636,32 @@ const authenticateToken = async (req, res, next) => {
 };
 
 // --- Routes ---
+
+const disconnectAccount = userId => io.in(userId).disconnectSockets(true);
+const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, config, checkRateLimit: checkAuthRateLimit, getClientIp, issueToken,
+  holdAccount: id => holdAccountOperation(User, id),
+  sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });
+accountTotp.register(app, authenticateToken);
+const notifications = registerNotifications(app, { mongoose, models: injectedModels, User, UserBlock, authenticateToken,
+  holdAccount: id => holdAccountOperation(User, id),
+  checkRateLimit: checkAuthRateLimit, getClientIp, config, isTest, now: options.notificationNow,
+  sendEmail: isTest ? options.notificationEmail : (resend && config.RESEND_FROM_EMAIL ? async ({ to, subject, text, idempotencyKey }) => {
+    const { data, error } = await resend.emails.send({ from: config.RESEND_FROM_EMAIL, to, subject, text }, { idempotencyKey });
+    if (error) throw Object.assign(new Error('Email rejected'), { status: error.statusCode || error.status });
+    return data;
+  } : undefined),
+  sendSms: isTest ? options.notificationSms : (twilioClient && TWILIO_PHONE ? ({ to, body }) => twilioClient.messages.create({ to, from: TWILIO_PHONE, body }) : undefined),
+});
+server.once('close', notifications.stop);
+const conversationReplyMetric = createConversationReplyMetric({ Metric: ConversationResponseMetric, ProductMetric, Post, Message,
+  now: options.notificationNow, enabled: !isTest || !!injectedModels.ConversationResponseMetric });
+registerAccountPrivacy(app, { models: { User, Post, Message, Conversation, ContactRequest, UserBlock, EventInterest, PlannerAccount, Outing,
+  ServiceBookingAgenda, PostTranslation, Report, ModerationLog, AccountAuthChallenge }, authenticateToken,
+  confirmCredentials: accountTotp.confirmCredentials, limit: accountTotp.limit, disconnectUser: disconnectAccount,
+  withTransaction: options.accountPrivacyTransaction || (work => mongoose.connection.transaction(work)),
+  eraseNotifications: async (id, settings) => { await notifications.eraseUser(id, settings); await conversationReplyMetric.eraseUser(id, settings); },
+  now: options.accountSecurityNow,
+});
 
 const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
 const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest });
@@ -1599,12 +1699,15 @@ registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, ch
 registerPostTranslation(app, { Post, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
 registerLocalAi(app, { Conversation, Message, UserBlock, Quota: PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai, isTest, now: options.localAiNow });
 registerServiceBookings(app, { Agenda: ServiceBookingAgenda, Post, User, UserBlock, Message, Conversation, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp,
+  holdAccount: id => holdAccountOperation(User, id),
   openConversation: openOrCreateConversationBetween, emitMessage: emitMessageToUser, officialStatus: getOfficialVerificationStatus, config, now: options.serviceBookingNow,
   testSms: isTest ? options.serviceBookingSms : undefined,
   sendSms: !isTest && twilioClient && config.TWILIO_MESSAGING_SERVICE_SID
     ? ({ to, body }) => twilioClient.messages.create({ to, body, messagingServiceSid: config.TWILIO_MESSAGING_SERVICE_SID }) : undefined,
 });
 const outings = registerOutings(app, { Outing, User, UserBlock, Message, Conversation, Report, authenticateToken, requireAdmin, config, checkRateLimit: checkAuthRateLimit, getClientIp,
+  holdAccount: id => holdAccountOperation(User, id),
+  enqueueNotification: notifications.enqueueEvent,
   officialStatus: getOfficialVerificationStatus, openConversation: openOrCreateConversationBetween, emitMessage: emitMessageToUser, createModerationLog,
   catalog: options.outingCatalog, now: options.outingNow });
 registerOutingDraft(app, { authenticateToken, checkRateLimit: checkAuthRateLimit, Quota: PostTranslationQuota, config, ai: options.ai?.outingDraft, isTest, now: options.outingNow, catalog: outings.catalog });
@@ -1658,17 +1761,22 @@ app.post('/api/auth/register', async (req, res) => {
     const contact = normalizeContact(contactType || 'wechat', contactValue);
     if (contact.error) return res.status(400).json({ error: contact.error });
     const registerRole = 'user';
-    const reservedNicknameErr = validateNicknameReservedWords(nickname, { role: registerRole });
+    const safeNickname = nickname.replace(/[\u0000-\u001f\u007f]/g, '').trim();
+    if (!safeNickname || [...safeNickname].length > 30) return res.status(400).json({ error: '昵称须为1–30个字符。' });
+    const reservedNicknameErr = validateNicknameReservedWords(safeNickname, { role: registerRole });
     if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
     if (await User.findOne({ email: String(email).trim().toLowerCase() })) {
       return res.status(400).json({ error: 'Email already registered' });
     }
     const newUser = await User.create({
-      id: Date.now().toString(), email: String(email).trim().toLowerCase(), password, nickname,
+      id: crypto.randomUUID(), email: String(email).trim().toLowerCase(), password, nickname: safeNickname,
       role: 'user',
       contactType: contact.contactType, contactValue: contact.contactValue, bio: '这个邻居很懒，什么也没写~',
       socialLinks: { linkedin: '', instagram: '' }
     });
+    if (!isTest || injectedModels.ProductMetric) {
+      try { await recordServerProductEvent(ProductMetric, 'signup_completed', req.body?.locale, options.productMetricsNow?.() || Date.now()); } catch { /* Anonymous aggregate failure must not turn a completed signup into an error. */ }
+    }
     const token = issueToken(newUser);
     res.json({ ...sanitizeUserForClient(newUser), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
@@ -1699,7 +1807,13 @@ app.post('/api/auth/login', async (req, res) => {
     // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
-    if (user.isBanned || user.accountStatus === 'suspended') return res.status(403).json({ error: '账号不可用或已被限制' });
+    if (user.isBanned || user.accountStatus === 'suspended' || user.accountDeletionPending) return res.status(403).json({ error: '账号不可用或已被限制' });
+    await holdAccountOperation(User, user.id);
+    user = await User.findOne({ id: user.id, password: user.password, accountDeletionPending: { $ne: true },
+      ...(user.passwordChangedAt ? { passwordChangedAt: user.passwordChangedAt } : { $or: [{ passwordChangedAt: { $exists: false } }, { passwordChangedAt: null }, { passwordChangedAt: 0 }] }),
+    });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    if (accountTotp.enabled(user)) return res.json(await accountTotp.startLoginChallenge(user));
     
     const token = issueToken(user);
     res.json({ ...sanitizeUserForClient(user), token });
@@ -1776,7 +1890,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 8 characters and include uppercase, lowercase, and a number' });
     }
     const tokenHash = hashResetToken(plainToken);
-    const user = await User.findOne({ passwordResetTokenHash: tokenHash });
+    const user = await User.findOne({ passwordResetTokenHash: tokenHash, accountDeletionPending: { $ne: true } });
     if (!user || !user.passwordResetExpires || user.passwordResetExpires <= Date.now()) {
       return res.status(400).json({ error: '重设链接无效或已过期。' });
     }
@@ -1785,9 +1899,10 @@ app.post('/api/auth/reset-password', async (req, res) => {
     const passwordHash = await bcrypt.hash(newPassword, 10);
     const changedAt = Date.now();
     const changed = await User.findOneAndUpdate(
-      { id: user.id, passwordResetTokenHash: tokenHash, passwordResetExpires: { $gt: changedAt } },
+      { id: user.id, passwordResetTokenHash: tokenHash, passwordResetExpires: { $gt: changedAt }, accountDeletionPending: { $ne: true } },
       {
         $set: { password: passwordHash, passwordResetUsedAt: changedAt, passwordChangedAt: changedAt },
+        $inc: { sessionRevision: 1 },
         $unset: { passwordResetTokenHash: '', passwordResetExpires: '' },
       },
       { new: true },
@@ -1800,7 +1915,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 });
 
 app.get('/api/users/:id', async (req, res) => {
-  const user = await User.findOne({ id: req.params.id }).select(PUBLIC_USER_FIELDS);
+  const user = await User.findOne({ id: req.params.id, isBanned: { $ne: true }, accountStatus: { $ne: 'suspended' }, accountDeletionPending: { $ne: true } }).select(PUBLIC_USER_FIELDS);
   if (!user) return res.status(404).json({ error: '用户不存在' });
   res.json({
     id: user.id,
@@ -1888,7 +2003,7 @@ app.delete('/api/users/:userId/block', authenticateToken, async (req, res) => {
 
 app.get('/api/users/:id/public', async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id }).select(PUBLIC_USER_FIELDS);
+    const user = await User.findOne({ id: req.params.id, isBanned: { $ne: true }, accountStatus: { $ne: 'suspended' }, accountDeletionPending: { $ne: true } }).select(PUBLIC_USER_FIELDS);
     if (!user) return res.status(404).json({ error: '用户不存在' });
     const viewerId = await getCurrentUserIdFromRequest(req);
     const blockRelation = viewerId ? await getBlockRelation(viewerId, user.id) : {};
@@ -2182,6 +2297,7 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, comme
   return {
     ...Object.fromEntries(['id', 'title', 'description', 'category', 'type', 'city', 'budget', 'timeInfo', 'authorId', 'authorNickname', 'authorAvatar', 'createdAt', 'updatedAt', 'confirmedAt', 'status', 'imageUrls', 'isFeatured', 'featuredAt', 'expiresAt', 'availability', 'serviceBooking', 'viewCount'].filter(key => Object.hasOwn(rest, key)).map(key => [key, rest[key]])),
     contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
+    availabilityState: publicPostAvailability(p),
     author: buildPostAuthor(p, authorById),
     comments: formatPublicComments(comments, commentRoleById, commentAuthorById),
     likesCount: likes ? likes.length : 0,
@@ -2203,7 +2319,7 @@ app.get('/api/posts/featured', async (req, res) => {
     const limitRaw = parseInt(req.query.limit, 10);
     const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 0;
     const currentUserId = await getCurrentUserIdFromRequest(req);
-    let query = { isDeleted: false, isFeatured: true, status: { $ne: 'closed' } };
+    let query = { ...publicPostFilters({ availability: 'current' }), isFeatured: true };
     await applyPublicPostVisibility(query, currentUserId);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
@@ -2244,7 +2360,7 @@ app.get('/api/posts', async (req, res) => {
       const kwResult = normalizeSearchKeyword(keyword);
       if (!kwResult.ok) return res.status(400).json({ error: kwResult.error });
       if (kwResult.keyword) {
-        try { Object.assign(query, keywordFilter(kwResult.keyword)); }
+        try { const keywordQuery = keywordFilter(kwResult.keyword); query.$and = [...(query.$and || []), ...(keywordQuery.$and || [])]; }
         catch (error) { return res.status(400).json({ error: error.message }); }
       }
     }
@@ -2536,7 +2652,16 @@ app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
     res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
-app.delete('/api/posts/:id', authenticateToken, async (req, res) => { const post = await Post.findOne({ id: req.params.id }); if (!post) return res.sendStatus(404); if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403); post.isDeleted = true; await post.save(); res.json({ success: true }); });
+app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
+  const post = await Post.findOne({ id: req.params.id });
+  if (!post) return res.sendStatus(404);
+  if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+  // Mark unavailable first, including on a retry; no contact endpoint can issue a fresh snapshot after removal.
+  post.isDeleted = true; post.contactPreference = { ...(post.contactPreference || {}), methods: [] };
+  await post.save();
+  await erasePostContacts({ Post, ContactRequest, Message }, [post.id]);
+  res.json({ success: true });
+});
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
   try {
     const accountPostErr = assertAccountCanPost(req.user);
@@ -2703,6 +2828,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
         contactSnapshot: [],
         createdAt: Date.now(),
       });
+      try { await notifications.enqueueEvent({ topic: 'contact_request', recipientId: post.authorId, actorId: req.user.id, sourceId: post.id, eventId: reqDoc.id, createdAt: reqDoc.createdAt }); } catch { /* Notification failure does not undo the saved request. */ }
       return res.json({ request: formatContactRequestForClient(reqDoc.toObject()), status: 'pending' });
     }
 
@@ -2729,6 +2855,10 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
     });
     reqDoc.messageId = msg.id;
     await reqDoc.save();
+    try {
+      await notifications.enqueueEvent({ topic: 'contact_request', recipientId: post.authorId, actorId: req.user.id, sourceId: post.id, eventId: reqDoc.id, createdAt: reqDoc.createdAt });
+      await notifications.enqueueEvent({ topic: 'message', recipientId: req.user.id, actorId: post.authorId, sourceId: conv.id, eventId: msg.id, createdAt: msg.createdAt });
+    } catch { /* Optional delivery; the contact request remains saved. */ }
 
     return res.json({
       request: formatContactRequestForClient(reqDoc.toObject()),
@@ -2949,6 +3079,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
     if (!targetUserId || targetUserId.length > 200 || targetUserId === req.user.id) {
       return res.status(400).json({ error: '无法与自己创建会话。' });
     }
+    await holdAccountOperation(User, targetUserId);
     const targetUser = await User.findOne({ id: targetUserId })
       .select('id nickname avatar isPhoneVerified isOfficialVerified role profileTheme statusText city profileVisibility')
       .lean();
@@ -2966,6 +3097,7 @@ app.post('/api/conversations/open-or-create', authenticateToken, async (req, res
       }
       conv = await openOrCreateConversationBetween(req.user.id, targetUserId);
     }
+    try { await conversationReplyMetric.bindPostContext({ conversation: conv, requesterId: req.user.id, postId: req.body?.postId, locale: req.body?.locale }); } catch { /* Optional aggregate metric. */ }
     res.json({
       id: conv.id,
       userIds: conv.userIds,
@@ -2995,7 +3127,7 @@ app.get('/api/conversations/:id/messages', authenticateToken, async (req, res) =
       return res.status(404).json({ error: '会话不存在。' });
     }
     const msgs = await Message.find({ conversationId: req.params.id }).sort({ createdAt: 1, _id: 1 });
-    res.json(msgs.map(publicMessage));
+    res.json(await formatPrivateMessages(msgs));
   } catch (e) {
     console.error('GET /api/conversations/:id/messages error:', e.message);
     res.status(500).json({ error: '加载失败，请稍后再试' });
@@ -3048,6 +3180,10 @@ app.post('/api/conversations/:id/messages', authenticateToken, async (req, res) 
       ...(replyTo ? { replyTo } : {}),
     });
     await Conversation.findOneAndUpdate({ id: req.params.id }, { updatedAt: Date.now() });
+    try { await conversationReplyMetric.recordMessage(msg); } catch { /* Optional aggregate metric. */ }
+    if (recipientId) {
+      try { await notifications.enqueueEvent({ topic: 'message', recipientId, actorId: req.user.id, sourceId: conv.id, eventId: msg.id, createdAt: msg.createdAt }); } catch { /* Message remains saved if queue fails. */ }
+    }
     if (recipientId) {
       await emitMessageToUser(recipientId, msg);
     }
@@ -3081,7 +3217,7 @@ app.put('/api/conversations/:id/messages/:messageId/reaction', authenticateToken
     );
     if (!message) return res.status(404).json({ error: '消息不存在。' });
     await Promise.all(conv.userIds.map(userId => emitMessageToUser(userId, message, 'message_updated')));
-    res.json(publicMessage(message));
+    res.json((await formatPrivateMessages([message]))[0]);
   } catch (e) {
     console.error('PUT message reaction error:', e.message);
     res.status(500).json({ error: '回应失败，请稍后重试。' });
@@ -3208,7 +3344,7 @@ app.patch('/api/admin/users/:userId/account-status', authenticateToken, requireA
       suspended: 'account_suspended',
       active: 'account_restored',
     };
-    void createModerationLog({
+    await createModerationLog({
       admin: req.user,
       action: accountActionMap[status],
       targetType: 'user',
@@ -3301,7 +3437,7 @@ app.patch('/api/admin/users/:userId/official-verification', authenticateToken, r
     const rejectionReason = status === 'rejected'
       ? trimProfileString(req.body?.rejectionReason, 500) || '资料不足，请补充后重新申请。'
       : '';
-    void createModerationLog({
+    await createModerationLog({
       admin: req.user,
       action: status === 'approved' ? 'official_verification_approved' : 'official_verification_rejected',
       targetType: 'official_verification',
@@ -3373,7 +3509,7 @@ app.patch('/api/admin/reports/:reportId', authenticateToken, requireAdmin, async
     else if (status === 'dismissed' && prevReportStatus !== 'dismissed') reportAction = 'report_dismissed';
     else if (status === 'open' && prevReportStatus !== 'open') reportAction = 'report_reopened';
     if (reportAction) {
-      void createModerationLog({
+      await createModerationLog({
         admin: req.user,
         action: reportAction,
         targetType: 'report',
@@ -3406,7 +3542,7 @@ app.patch('/api/admin/posts/:postId/hide', authenticateToken, requireAdmin, asyn
     post.adminHiddenReason = reason;
     await post.save();
 
-    void createModerationLog({
+    await createModerationLog({
       admin: req.user,
       action: 'post_hidden',
       targetType: 'post',
@@ -3435,7 +3571,7 @@ app.patch('/api/admin/posts/:postId/unhide', authenticateToken, requireAdmin, as
     post.adminHiddenReason = '';
     await post.save();
 
-    void createModerationLog({
+    await createModerationLog({
       admin: req.user,
       action: 'post_unhidden',
       targetType: 'post',
@@ -4648,10 +4784,11 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 app.use((error, _req, res, _next) => {
   const status = error.status || 500;
   if (res.headersSent) return res.end();
+  if (error.publicSafe === true) return res.status(status).json({ code: error.code, error: error.message });
   res.status(status).json({ ...(error.code?.startsWith('AI_') ? { code: error.code } : {}), error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : status === 429 ? '今日额度或请求频率已达到上限，请稍后重试。' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4670,8 +4807,12 @@ async function startProduction(config = process.env) {
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();
+  await application.models.AccountAuthChallenge.init();
+  await application.models.ConversationResponseMetric.init();
+  for (const Model of Object.values(application.notifications.models)) await Model.init();
   await application.models.SourceMonitorSnapshot.init();
   await application.models.SourceMonitorLease.init();
+  application.notifications.start();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
   application.sourceMonitor.start();
   return application;
