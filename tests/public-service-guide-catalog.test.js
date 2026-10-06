@@ -16,8 +16,32 @@ const PUBLIC_SERVICE_SLUGS = [
   'bay-area-free-tax-help-vita-calfile-guide',
   'bay-area-social-security-retirement-preparation-guide',
   'bay-area-naturalization-official-path-guide',
+  'bay-area-dental-care-insurance-low-cost-guide',
+  'bay-area-chinese-senior-services-referral-guide',
 ];
 const CASES = [
+  {
+    slug: 'bay-area-dental-care-insurance-low-cost-guide',
+    // Test the guide's primary inline appointment route. Medicare is a
+    // published metadata reference, not an inline link in the body excerpt.
+    officialUrl: 'https://www.dental.dhcs.ca.gov/Members/Medi-Cal_Dental/Find_A_Dentist/',
+    queries: {
+      'zh-Hans': '牙医牙科医保网络与低费牙科预约准备',
+      'zh-Hant': '牙醫牙科醫保網絡與低費牙科預約準備',
+      en: 'dental care dentist insurance network and lower-cost appointment preparation',
+    },
+    facts: { zh: '有医疗保险不代表所有牙科项目都被支付', en: 'Medical insurance does not mean every dental service is covered' },
+  },
+  {
+    slug: 'bay-area-chinese-senior-services-referral-guide',
+    officialUrl: 'https://aging.ca.gov/Find_Services_in_my_County/',
+    queries: {
+      'zh-Hans': '中文长者服务餐食日间照护与县级AAA转介',
+      'zh-Hant': '中文長者服務餐食日間照護與縣級AAA轉介',
+      en: 'Chinese senior services meals adult day care county AAA referral',
+    },
+    facts: { zh: '活动中心不自动提供医疗照护', en: 'An activity center does not automatically provide medical care' },
+  },
   {
     slug: 'bay-area-social-security-retirement-preparation-guide',
     officialUrl: 'https://www.ssa.gov/prepare/get-benefits-estimate',
@@ -40,10 +64,15 @@ const CASES = [
   },
 ];
 
-test('builtin Chinese, English and planner catalogs contain the same 134 guides and all five public-service additions', () => {
+// EvidenceStore canonicalizes public reference URLs by removing the trailing
+// slash. Keep exact source identity assertions against that existing contract;
+// an editorial reference still must remain catalog evidence, never a live read.
+const evidenceReferenceUrl = value => value.replace(/\/$/, '');
+
+test('builtin Chinese, English and planner catalogs contain the same 136 guides and all seven public-service additions', () => {
   for (const [name, rows] of [['Chinese', zh], ['English', en], ['planner', planner.guides]]) {
-    assert.equal(rows.length, 134, `${name}: published guide count`);
-    assert.equal(new Set(rows.map(row => row.slug)).size, 134, `${name}: guide IDs must be unique`);
+    assert.equal(rows.length, 136, `${name}: published guide count`);
+    assert.equal(new Set(rows.map(row => row.slug)).size, 136, `${name}: guide IDs must be unique`);
     for (const slug of PUBLIC_SERVICE_SLUGS) assert.ok(rows.some(row => row.slug === slug), `${name}: ${slug}`);
   }
   assert.deepEqual(en.map(row => row.slug).sort(), zh.map(row => row.slug).sort());
@@ -130,8 +159,9 @@ for (const item of CASES) {
         assert.ok(pageSource.text.includes(guide.title));
         assert.ok(pageSource.text.includes(guide.summary));
         const sourceText = [...input.evidence.map(row => `${row.url || ''}\n${row.text || ''}`), ...(input.sourceScopes || []).map(row => row.text || '')].join('\n');
-        assert.ok(sourceText.includes(item.officialUrl), 'the actual provider payload must carry this guide\'s official source');
-        const officialSource = input.evidence.find(row => row.url === item.officialUrl);
+        const expectedSourceUrl = evidenceReferenceUrl(item.officialUrl);
+        assert.ok(sourceText.includes(expectedSourceUrl), 'the actual provider payload must carry this guide\'s official source');
+        const officialSource = input.evidence.find(row => row.url === expectedSourceUrl);
         assert.ok(officialSource, 'published reference URLs must be registered as model-readable sources');
         assert.equal(officialSource.kind, 'web');
         assert.equal(officialSource.verification, 'catalog', 'a published official link is not a live page read');
@@ -215,8 +245,8 @@ for (const locale of ['zh-Hans', 'zh-Hant', 'en']) {
     assert.equal(result.status, 200);
     assert.deepEqual(result.body.contextUsed.references, [{ kind: 'guide', id: target.slug }]);
     const input = f.inputs[0];
-    assert.ok(input.evidence.some(row => row.url === target.officialUrl));
-    assert.ok(!input.evidence.some(row => row.url === physical.officialUrl), 'the physical page must not supply another guide\'s official references');
+    assert.ok(input.evidence.some(row => row.url === evidenceReferenceUrl(target.officialUrl)));
+    assert.ok(!input.evidence.some(row => row.url === evidenceReferenceUrl(physical.officialUrl)), 'the physical page must not supply another guide\'s official references');
     const bodies = input.evidence.filter(row => row.kind === 'guide' && row.url.startsWith('/guides/'));
     assert.ok(bodies.length > 0);
     assert.ok(bodies.every(row => row.url === `/guides/${target.slug}`));
