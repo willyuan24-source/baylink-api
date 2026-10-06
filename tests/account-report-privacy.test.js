@@ -57,6 +57,7 @@ test('actual :reportId review route holds target and reporter until delayed revi
     return query;
   };
   const review = f.review();
+  let reviewed;
   try {
     await saving.promise;
     assert.equal(f.models.User.rows.find(row => row.id === 'owner').activeAccountOperations, 1);
@@ -65,7 +66,8 @@ test('actual :reportId review route holds target and reporter until delayed revi
     assert.equal(blocked.status, 409);
     assert.equal(blocked.data.code, 'ACCOUNT_OPERATIONS_PENDING');
     assert.ok(f.models.User.rows.some(row => row.id === 'owner'));
-  } finally { proceed.resolve(); await review; }
+  } finally { proceed.resolve(); reviewed = await review; }
+  assert.equal(reviewed.status, 200);
   await nextTurn();
   assert.equal((await f.eraseOwner()).status, 200);
   assert.equal(f.models.User.rows.some(row => row.id === 'owner'), false);
