@@ -53,8 +53,13 @@ async function fixture(t, options = {}) {
 }
 
 test('public product events persist only daily event/locale buckets with no identity or action timestamps', async t => {
-  const { post, ProductMetric } = await fixture(t);
+  const ProductMetric = metricModel();
+  let { post } = await fixture(t, { model: ProductMetric });
+  let tested = 0;
   for (const event of PRODUCT_EVENTS) {
+    // Cover every allowlisted event without weakening the separate per-IP
+    // abuse test as the event vocabulary grows.
+    if (tested++ && tested % 20 === 0) ({ post } = await fixture(t, { model: ProductMetric }));
     assert.equal((await post({ event })).status, 200);
     assert.equal((await post({ event, locale: 'en' }, { as: 'member' })).status, 200);
   }

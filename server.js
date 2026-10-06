@@ -37,6 +37,10 @@ const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
+const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
+const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
+const { safetyResponse } = require('./lib/safetyRouting');
+const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
 
@@ -45,11 +49,17 @@ function createApplication(options = {}) {
 const config = { ...(options.config || process.env) };
 const injectedModels = options.models || {};
 const isTest = config.NODE_ENV === 'test';
+options = { ...options, ai: governProviders(options.ai) };
 if (!config.JWT_SECRET) throw new Error('JWT_SECRET is required');
 
 const app = express();
+// Express 4 does not forward rejected async route promises automatically.
+for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+  const register = app[method].bind(app);
+  app[method] = (...args) => register(...args.map(value => typeof value === 'function' && value.length < 4 ? function(req, res, next) { Promise.resolve().then(() => value(req, res, next)).catch(next); } : value));
+}
 app.disable('x-powered-by');
-app.set('trust proxy', 1);
+app.set('trust proxy', proxyTrust(config, isTest));
 
 const ALLOWED_ORIGINS = allowedOrigins(config);
 
@@ -95,9 +105,17 @@ const SEARCH_KEYWORD_MAX_LENGTH = 80;
 app.use(apiSecurityHeaders(config.NODE_ENV === 'production'));
 app.use(cors({ origin: corsOriginCheck, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'Authorization'], maxAge: 600 }));
 // Vision payloads have a dedicated bound; do not inherit the legacy upload limit.
+const largeJson = express.json({ limit: '20mb' });
 app.use('/api/ai/event-extract', express.json({ limit: '4200kb' }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use((req, res, next) => {
+  // Only authenticated image-writing contracts get a larger body. Authentication
+  // reads the bearer header and never needs to parse this body first.
+  const upload = ['POST', 'PUT', 'PATCH'].includes(req.method) && /^\/api\/(?:posts(?:\/[^/]+)?|ads(?:\/[^/]+)?|users\/me)$/.test(req.path);
+  if (!upload) return next();
+  authenticateToken(req, res, () => largeJson(req, res, next));
+});
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ limit: '100kb', extended: true }));
 
 // Read-only process/version probe; no account, database or configuration values.
 // Render documents RENDER_GIT_COMMIT at https://render.com/docs/environment-variables.
@@ -850,31 +868,13 @@ const validateDirectMessageContent = (type, content) => {
   return { ok: true, type: msgType, content: trimmed };
 };
 
-const authRateByKey = new Map();
-
-const getClientIp = (req) => {
-  const xf = req.headers['x-forwarded-for'];
-  if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
-  return req.ip || req.socket?.remoteAddress || 'unknown';
-};
+const authLimiter = createRateLimiter();
+const getClientIp = clientIp;
 
 const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
 
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
-  const rateKey = String(key);
-  const now = Date.now();
-  let entry = authRateByKey.get(rateKey);
-  if (!entry || now - entry.windowStart >= windowMs) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  authRateByKey.set(rateKey, entry);
-  if (authRateByKey.size > 5000) {
-    for (const [k, val] of authRateByKey) {
-      if (now - val.windowStart >= windowMs) authRateByKey.delete(k);
-    }
-  }
-  return entry.count <= maxRequests;
+  return authLimiter.check(key, { windowMs, maxRequests });
 };
 
 const requireAdmin = (req, res, next) => {
@@ -1444,6 +1444,7 @@ const sendPhoneVerificationViaTwilio = async (phoneNormalized, plainCode) => {
 };
 
 const persistPhoneVerificationState = async (user, normalized, plainCode) => {
+  if (user.phoneNormalized !== normalized.phoneNormalized) user.isPhoneVerified = false;
   user.phone = normalized.phone;
   user.phoneNormalized = normalized.phoneNormalized;
   user.phoneVerificationCodeHash = hashPhoneCode(plainCode);
@@ -1460,6 +1461,9 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
   if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
     return { ok: false, status: 429, error: '验证码发送太频繁，请稍后再试。' };
   }
+
+  const dayWindow = { windowMs: 86400000, maxRequests: 5 };
+  if (!checkAuthRateLimit(`phone-user:${user.id}`, dayWindow) || !checkAuthRateLimit(`phone-number:${normalized.phoneNormalized}`, dayWindow)) return { ok: false, status: 429, error: '今日验证码发送次数已达上限。' };
 
   const plainCode = generatePhoneCode();
   const hasTwilio = !!(twilioClient && TWILIO_PHONE);
@@ -1619,6 +1623,27 @@ const authenticateToken = async (req, res, next) => {
 
 // --- Routes ---
 
+const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
+const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest });
+app.get('/api/ai/usage', async (req, res) => {
+  res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
+  try { res.json(await aiGovernance.usage({ userId: await getCurrentUserIdFromRequest(req), ip: getClientIp(req) })); }
+  catch { res.status(503).json({ remaining: null, limit: null, degraded: true }); }
+});
+const governedAiRoute = req => req.method === 'POST' && (/^\/api\/ai\//.test(req.path) || /^\/api\/planner\/(?:recommend|web-search)$/.test(req.path) || /^\/api\/(?:conversations\/[^/]+\/ai|posts\/[^/]+\/translation)$/.test(req.path));
+app.use((req, res, next) => {
+  if (!governedAiRoute(req)) return next();
+  if (['/api/ai/guide-chat', '/api/planner/recommend', '/api/ai/post-assist', '/api/ai/outing-draft'].includes(req.path)) {
+    const safety = safetyResponse(req.body?.message || req.body?.intent, req.body?.locale);
+    if (safety) return res.json(safety);
+  }
+  return aiGovernance.middleware(getCurrentUserIdFromRequest)(req, res, next);
+});
+app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (_req, res) => {
+  const rows = await AiGovernance.find({}).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean();
+  res.set('Cache-Control', 'no-store'); res.json({ days: rows });
+});
+
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
 registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
 registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
@@ -1712,6 +1737,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
     const { email, password } = req.body;
     const trimmedEmail = String(email || '').trim();
+    if (!checkAuthRateLimit(`login-account:${trimmedEmail.toLowerCase()}`, { windowMs: 15 * 60 * 1000, maxRequests: 8 })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     let user = null;
     if (trimmedEmail === 'admin') {
       user = await User.findOne({ email: 'admin' });
@@ -1747,13 +1773,14 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format' });
     }
     const lowerEmail = trimmedEmail.toLowerCase();
+    if (!checkAuthRateLimit(`forgot-account:${lowerEmail}`, { windowMs: 60 * 60 * 1000, maxRequests: 3 })) return res.json({ message: FORGOT_PASSWORD_MESSAGE });
     let user = await User.findOne({ email: lowerEmail });
     if (!user && trimmedEmail === 'admin') {
       user = await User.findOne({ email: 'admin' });
     }
     let devResetLink;
     let devEmailError;
-    if (user) {
+    if (user && (!user.passwordResetRequestedAt || Date.now() - user.passwordResetRequestedAt >= 60000)) {
       const plainToken = generateResetToken();
       user.passwordResetTokenHash = hashResetToken(plainToken);
       user.passwordResetExpires = Date.now() + 30 * 60 * 1000;
@@ -2208,13 +2235,13 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, comme
     ...rest
   } = p;
   return {
-    ...rest,
+    ...Object.fromEntries(['id', 'title', 'description', 'category', 'type', 'city', 'budget', 'timeInfo', 'authorId', 'authorNickname', 'authorAvatar', 'createdAt', 'updatedAt', 'confirmedAt', 'status', 'imageUrls', 'isFeatured', 'featuredAt', 'expiresAt', 'availability', 'serviceBooking', 'viewCount'].filter(key => Object.hasOwn(rest, key)).map(key => [key, rest[key]])),
     contactPreference: sanitizeContactPreferenceForViewer(contactPreference, p.authorId, currentUserId, isAdmin),
     author: buildPostAuthor(p, authorById),
     comments: formatPublicComments(comments, commentRoleById, commentAuthorById),
     likesCount: likes ? likes.length : 0,
     commentsCount: countActiveComments(comments),
-    reportsCount: reports ? reports.length : 0,
+    ...(isAdmin ? { reportsCount: reports ? reports.length : 0, adminHidden: !!p.adminHidden, adminHiddenReason: p.adminHiddenReason || '' } : {}),
     hasLiked: currentUserId ? (likes || []).includes(currentUserId) : false,
     isReported: currentUserId ? (reports || []).some((r) => r.reporterId === currentUserId) : false,
   };
@@ -2385,6 +2412,24 @@ const validatePostImageUrls = (imageUrls) => {
   const urls = imageUrls.filter((img) => typeof img === 'string' && img.trim());
   if (urls.length > MAX_POST_IMAGES) {
     return { ok: false, status: 400, message: '最多上传 5 张照片' };
+  }
+  for (const url of urls) {
+    if (isDefaultCoverUrl(url) && /^\/default-covers\/[A-Za-z0-9_.-]+$/.test(url)) continue;
+    const encoded = /^data:image\/(png|jpeg|jpg|webp|gif|avif);base64,([A-Za-z0-9+/]+={0,2})$/.exec(url);
+    if (encoded && encoded[2].length % 4 === 0 && url.length <= 4800000) {
+      const bytes = Buffer.from(encoded[2], 'base64');
+      const signature = encoded[1] === 'png' ? bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+        : ['jpeg', 'jpg'].includes(encoded[1]) ? bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
+        : encoded[1] === 'webp' ? bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP'
+        : encoded[1] === 'gif' ? /^GIF8[79]a$/.test(bytes.toString('ascii', 0, 6))
+        : bytes.toString('ascii', 4, 8) === 'ftyp' && /avif|avis/.test(bytes.toString('ascii', 8, 32));
+      if (signature && bytes.toString('base64') === encoded[2]) continue;
+    }
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'https:' && parsed.hostname === 'res.cloudinary.com' && !parsed.username && !parsed.password && parsed.pathname.startsWith(`/${config.CLOUDINARY_CLOUD_NAME || 'baylink'}/image/upload/`)) continue;
+    } catch { /* invalid URLs never reach remote upload */ }
+    return { ok: false, status: 400, message: '图片须为大小受限的 JPEG、PNG、WebP、GIF、AVIF，或本站 Cloudinary 图片。' };
   }
   return { ok: true, urls };
 };
@@ -2663,6 +2708,8 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
 
     const pref = post.contactPreference || defaultContactPreference();
     const mode = pref.mode || 'dm_first';
+    if (!checkAuthRateLimit(`contact-account:${req.user.id}`, { windowMs: 86400000, maxRequests: 10 })) return res.status(429).json({ error: '今日联系方式请求次数已达上限。' });
+    if (mode === 'auto_send' && !req.user.isPhoneVerified) return res.status(403).json({ error: '请先验证手机号，再请求自动公开的联系方式。', code: 'VERIFIED_CONTACT_REQUIRED' });
     if (mode === 'dm_first') {
       return res.status(400).json({ error: '该帖子仅支持站内私信', status: 'dm_first' });
     }
@@ -4003,24 +4050,12 @@ const GUIDE_CHAT_FALLBACK_ANSWERS = {
   other: '可以先告诉我你想找房、找室友、买卖二手、找搬家清洁维修，还是需要本地生活建议。我可以帮你整理成更清楚的方向。',
 };
 
-const guideChatRateByIp = new Map();
+const guideChatLimiter = createRateLimiter({ capacity: 10000 });
 
 const checkGuideChatRateLimit = (ip) => {
-  const now = Date.now();
   const windowMs = 60000;
   const maxRequests = 8;
-  let entry = guideChatRateByIp.get(ip);
-  if (!entry || now - entry.windowStart >= windowMs) {
-    entry = { count: 0, windowStart: now };
-  }
-  entry.count += 1;
-  guideChatRateByIp.set(ip, entry);
-  if (guideChatRateByIp.size > 5000) {
-    for (const [key, val] of guideChatRateByIp) {
-      if (now - val.windowStart >= windowMs) guideChatRateByIp.delete(key);
-    }
-  }
-  return entry.count <= maxRequests;
+  return guideChatLimiter.check(ip, { windowMs, maxRequests });
 };
 
 const normalizeGuideChatMessage = (value) => {
@@ -4445,6 +4480,7 @@ const baybayAssistant = createBayBayAssistant({ config, catalog: options.planner
   fetchImpl: options.baybayFetch, routeCompute: options.plannerTravelCompute,
   monitorStatus: () => sourceMonitor.service.list(true),
 });
+const publicContext = createPublicContext({ catalog: options.plannerCatalog, guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG, discoveryCatalog: options.discoveryCatalog, discoveryCatalogEn: options.discoveryCatalogEn });
 app.get('/api/ai/baybay-capabilities', async (req, res) => {
   const webAccess = baybayWebAccess(await getCurrentUserIdFromRequest(req));
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
@@ -4496,6 +4532,9 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   const intent = inferBayBayIntent(resolvedRequest, categoryHint);
   const category = intentToGuideCategory(intent);
   const currentDatePacific = bayAreaDate(options.plannerNow);
+  let pageContext;
+  try { pageContext = publicContext.resolve({ context: req.body?.context || {}, currentPath, today: currentDatePacific, locale }); }
+  catch (error) { return res.status(400).json(errorResponse(error.message)); }
   const searchPlan = intent === 'school' ? null : planPostSearch(resolvedRequest, category);
   const providerRequest = intent !== 'school' && isProviderRequest(resolvedRequest);
   // Version negotiation keeps existing clients and specialized account/post flows
@@ -4516,16 +4555,16 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       }
       const assistantStartedAt = Date.now();
       if (req.body?.stream === true) progressStream = createBayBayProgressStream(res);
-      const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess,
+      const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess, pageContext, signal: req.aiSignal,
         sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
-        ...(progressStream ? { onProgress: progressStream.progress } : {}) });
+        ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard } : {}) });
       const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
       const assistantMs = Math.max(0, Date.now() - assistantStartedAt);
       const requestMs = Math.max(0, Date.now() - requestStartedAt);
       // Numeric duration aggregates explain time outside the model workflow
       // without logging the user's prompt, account, origin or session token.
       response.research = { ...response.research, timings: { ...response.research?.timings, preparationMs, assistantMs, requestMs } };
-      if (progressStream) return progressStream.result(decorateAccess(response));
+      if (progressStream) { progressStream.validatedText(response.answer); return progressStream.result(decorateAccess(response)); }
       res.set('Server-Timing', `baybay_prepare;dur=${preparationMs}, baybay_assistant;dur=${assistantMs}`);
       return res.json(response);
     } catch (error) {
@@ -4680,10 +4719,11 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 
 app.use((error, _req, res, _next) => {
   const status = error.status || 500;
-  res.status(status).json({ error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : '操作失败，请稍后再试' });
+  if (res.headersSent) return res.end();
+  res.status(status).json({ ...(error.code?.startsWith('AI_') ? { code: error.code } : {}), error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : status === 429 ? '今日额度或请求频率已达到上限，请稍后重试。' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4701,6 +4741,7 @@ async function startProduction(config = process.env) {
   await application.models.ProductMetric.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
+  await application.models.AiGovernance.init();
   await application.models.SourceMonitorSnapshot.init();
   await application.models.SourceMonitorLease.init();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
