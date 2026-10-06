@@ -26,7 +26,7 @@
 
 ## 真实24小时回复指标
 
-`ConversationResponseMetric` 由开聊请求中经 `Post.authorId` 核验的postId关联真实请求者/帖主。开聊本身不计数。持久私信保存后才原子记录首次请求消息时刻；真实帖主首次答复该请求者，且0–24小时内，才原子计 `owner_reply_24h`，分母 `message_request_started`。系统消息/自动联系卡不计。没有关联、没有真实首消息的旧会话不补算。每日ProductMetric仅day/event/locale/count，私有关联180天TTL并在删号时清除；不记录正文/IP，也不向客户端返回他人身份。
+`ConversationResponseMetric` 由开聊请求中经 `Post.authorId` 核验的postId关联真实请求者/帖主。开聊本身不计数。持久私信保存后核实其为真实首次请求才原子记录时刻；真实帖主首次答复该请求者，且0–24小时内，才原子计 `owner_reply_24h`，分母 `message_request_started`。两个事件均写首次请求的湾区日期cohort，跨午夜/月底回复不会使回复日分子超出分母。系统消息/自动联系卡不计。开聊关联前已经存在任何消息的旧会话不补算。每日ProductMetric仅day/event/locale/count，私有关联180天TTL并在删号时清除；不记录正文/IP，也不向客户端返回他人身份。
 
 可选统计失败不影响已成功发送的私信。先标记再计聚合可在数据库不确定失败时少计，不会通过重试重复计；因此此指标用于观察真实响应趋势，不是财务精确账本。前端必须在现有帖子发起开聊调用携带真实postId，服务端核验后才建立关联。
 

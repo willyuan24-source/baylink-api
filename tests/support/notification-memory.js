@@ -40,7 +40,7 @@ function memory(seed = []) {
     rows,
     find: (filter = {}) => query(filter),
     findOne: (filter = {}) => {
-      const result = query(filter), object = { select: () => object, lean: () => object, then: (yes, no) => result.then(items => items[0] || null).then(yes, no) }; return object;
+      const result = query(filter), object = { sort: order => { result.sort(order); return object; }, select: () => object, lean: () => object, then: (yes, no) => result.then(items => items[0] || null).then(yes, no) }; return object;
     },
     exists: async filter => [...rows.values()].some(row => matches(row, filter)),
     create: async row => { const key = row._id || row.id; if (rows.has(key)) throw Object.assign(new Error('Duplicate'), { code: 11000 }); rows.set(key, copy(row)); return copy(row); },
