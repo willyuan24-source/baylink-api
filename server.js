@@ -1623,8 +1623,9 @@ const authenticateToken = async (req, res, next) => {
           if (target?.authorId) await holdAccountOperation(User, target.authorId);
         }
       }
-      if (/^\/api\/admin\/reports\//.test(req.path) && req.params.id) {
-        const report = await Report.findOne({ id: req.params.id }).select('targetUserId reporterId').lean();
+      const reportId = req.params.reportId || req.params.id;
+      if (/^\/api\/admin\/reports\//.test(req.path) && reportId) {
+        const report = await Report.findOne({ id: reportId }).select('targetUserId reporterId').lean();
         if (report) for (const id of [...new Set([report.targetUserId, report.reporterId].filter(id => id && !id.startsWith('deleted_')))]) await holdAccountOperation(User, id);
       }
     }
@@ -1696,7 +1697,9 @@ const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQ
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
-registerPostTranslation(app, { Post, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
+registerPostTranslation(app, { Post, User, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken,
+  holdPost: id => holdPostOperation(Post, id), holdAccount: id => holdAccountOperation(User, id),
+  checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
 registerLocalAi(app, { Conversation, Message, UserBlock, Quota: PostTranslationQuota, authenticateToken, checkRateLimit: checkAuthRateLimit, config, ai: options.ai, isTest, now: options.localAiNow });
 registerServiceBookings(app, { Agenda: ServiceBookingAgenda, Post, User, UserBlock, Message, Conversation, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp,
   holdAccount: id => holdAccountOperation(User, id),

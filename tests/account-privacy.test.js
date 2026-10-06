@@ -61,6 +61,22 @@ test('account erasure clears own private data across real schema containers and 
   for (const name of ['ContactRequest', 'UserBlock', 'EventInterest', 'PlannerAccount', 'PostTranslation', 'AccountAuthChallenge']) assert.equal(models[name].rows.length, 0, name);
 });
 
+test('account erasure clears traceable owned translations and all unowned legacy hashes, retaining other traceable posts', async () => {
+  const models = modelsFor({ User: [{ ...own, accountDeletionPending: true }],
+    Post: [{ id: 'mine', authorId: 'me', title: 'Edited public title', description: 'Current body', likes: [], comments: [], reports: [] }],
+    PostTranslation: [
+      { id: 'post-translation:mine:current-hash', postId: 'mine', translation: { description: 'my-private-phone' } },
+      // The old source was edited: its hash cannot be recovered from the current post.
+      { id: 'f'.repeat(64), translation: { description: 'my-previous-private-phone' }, expiresAt: new Date('2027-01-01') },
+      { id: 'post-translation:someone:their-hash', postId: 'someone', translation: { description: 'keep-public-translation' } },
+    ],
+  });
+  await eraseAccountData(models, own);
+  assert.deepEqual(models.PostTranslation.rows.map(row => row.postId), ['someone']);
+  assert.equal(models.PostTranslation.rows[0].translation.description, 'keep-public-translation');
+  assert.ok(!JSON.stringify(models.PostTranslation.rows).includes('private-phone'));
+});
+
 function privacyRoutes(seed = {}, failTransaction = false) {
   const models = modelsFor({ User: [own], ...seed }), routes = new Map(), disconnected = [];
   const withTransaction = async work => {
