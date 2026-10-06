@@ -11,7 +11,7 @@
 ## 持久性与隐私
 
 - 独立 Mongo `NotificationAccount` / `NotificationToken` / `NotificationJob` / `NotificationWindow` / `NotificationBudget`。认证User不存通知令牌；token索引仅SHA-256摘要，发送所需原文用AES-256-GCM密文保存，密钥源于 `NOTIFICATION_TOKEN_KEY` 或 JWT_SECRET（切换会使旧密文失效）。密文、token永不进入用户DTO或日志。
-- 同会话、收件人、渠道30分钟窗口只有一份不变的通用提醒。持久发送窗口另做滚动30分钟节流，避免边界、延迟worker造成一分钟内两封。内容仅固定提示+经白名单站点构造的 `/messages/:id`、`/me`、`/together?outing=:id` 链接；不包含消息正文、申请备注、联系人、电话号码或其他用户身份。
+- 同会话、收件人、渠道30分钟窗口只有一份不变的通用提醒。持久发送窗口另做滚动30分钟节流，避免边界、延迟worker造成一分钟内两封。内容仅固定提示+经白名单站点构造的 `/messages/:id`、`/messages` 联系请求收件箱、`/together?outing=:id` 链接；不包含消息正文、申请备注、联系人、电话号码或其他用户身份。
 - worker原子claim；每次发送前重新检查账户可用性、待删除状态、屏蔽关系、当前邮箱/手机号绑定、验证状态、显式订阅及consentRevision。删号事务删除队列（含actor/recipient关联）、token、偏好与节流记录。已开始提交给第三方的请求无法撤回；关闭偏好阻止后续发送。
 - 验证token30分钟/退订token30天TTL；通知job最多1天（验证job30分钟）；发送窗口7天，额度摘要3天。系统拒绝恢复超过5分钟的旧事件。Mongo TTL清除异步，业务查询同时检查实际到期，避免依赖TTL时机。
 - 邮件重试始终使用同一Resend幂等键与相同正文，最大5次、只在创建后23小时内恢复，覆盖官方24小时幂等窗口。短信仅明确429拒绝可重试；超时、进程失联等不确定提交标 `unknown`，不自动重发。该方案不能宣称第三方严格exactly-once；unknown需要供应商查询核对。
