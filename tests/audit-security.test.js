@@ -75,6 +75,50 @@ test('usage reset honors winter Pacific midnight and aggregate usage exposes no 
   assert.deepEqual((await request('/admin/ai-metrics', { as: 'admin' })).data, { days: [] });
 });
 
+test('usage reads are limited by trusted client IP before identity or quota database reads', async t => {
+  const { request, models } = await fixture(t, { config: { TRUST_PROXY_HOPS: 1 } });
+  let reads = 0;
+  const find = models.AiGovernance.findOne.bind(models.AiGovernance);
+  models.AiGovernance.findOne = (...args) => { reads++; return find(...args); };
+  for (let i = 0; i < 120; i++) {
+    const response = await request('/ai/usage', { headers: { 'X-Forwarded-For': `203.0.113.${i + 1}, 198.51.100.20`, 'CF-Connecting-IP': `203.0.113.${i + 1}` } });
+    assert.equal(response.status, 200);
+  }
+  const blocked = await request('/ai/usage', { headers: { 'X-Forwarded-For': '203.0.113.200, 198.51.100.20' } });
+  assert.equal(blocked.status, 429);
+  assert.deepEqual(blocked.data, { remaining: null, limit: null, degraded: true, code: 'AI_USAGE_RATE_LIMIT' });
+  assert.equal(blocked.headers.get('cache-control'), 'no-store');
+  assert.equal(blocked.headers.get('retry-after'), '60');
+  assert.equal(reads, 120, 'rate rejection cannot query the quota document');
+  assert.equal(models.AiGovernance.rows.length, 0, 'reading usage cannot consume paid quota');
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.21' } })).status, 200);
+});
+
+test('post-assist denies new IPs at capacity without evicting restrictions or reserving paid quota', async t => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW });
+  const models = createMemoryModels({ User: [{ id: 'member', role: 'user', accountStatus: 'active' }] });
+  let calls = 0;
+  const { request } = await fixture(t, { models, testRateLimitCapacity: 2, config: { TRUST_PROXY_HOPS: 1 }, ai: { postAssist: async () => { calls++; return { title: 'Looking for a room', description: 'I am looking for a room in Fremont. Please share details.', category: 'rent', type: 'client', quickTags: ['Rental'] }; } } });
+  const post = ip => request('/ai/post-assist', { as: 'member', body: { intent: 'Looking for a room in Fremont', language: 'en' }, headers: { 'X-Forwarded-For': ip } });
+  for (let i = 0; i < 5; i++) assert.equal((await post('198.51.100.20')).status, 200);
+  assert.equal((await post('198.51.100.21')).status, 200);
+  assert.equal((await post('198.51.100.22')).status, 429);
+  assert.equal((await post('198.51.100.20')).status, 429, 'full capacity must not reset an existing exhausted minute');
+  assert.equal(calls, 6); assert.equal(models.AiGovernance.rows[0].count, 6);
+  t.mock.timers.tick(60001);
+  assert.equal((await post('198.51.100.22')).status, 200, 'expired identities free capacity naturally');
+  assert.equal(calls, 7); assert.equal(models.AiGovernance.rows[0].count, 7);
+});
+
+test('usage capacity cannot prevent a different interaction from admitting the same new client', async t => {
+  const models = createMemoryModels({ User: [{ id: 'member', role: 'user', accountStatus: 'active' }] });
+  const { request } = await fixture(t, { models, testRateLimitCapacity: 1, config: { TRUST_PROXY_HOPS: 1 }, ai: { postAssist: async () => ({ title: 'Looking for a room', description: 'I am looking for a room in Fremont. Please share details.', category: 'rent', type: 'client', quickTags: ['Rental'] }) } });
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.20' } })).status, 200);
+  assert.equal((await request('/ai/usage', { headers: { 'X-Forwarded-For': '198.51.100.21' } })).status, 429);
+  const assisted = await request('/ai/post-assist', { as: 'member', body: { intent: 'Looking for a room in Fremont', language: 'en' }, headers: { 'X-Forwarded-For': '198.51.100.21' } });
+  assert.equal(assisted.status, 200);
+});
+
 test('multilingual emergency and professional resources return before quota and paid providers', async t => {
   let calls = 0;
   const { request, models } = await fixture(t, { ai: { baybay: async () => { calls++; throw new Error('must not call'); } } });
