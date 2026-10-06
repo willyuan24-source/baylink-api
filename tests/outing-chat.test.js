@@ -18,6 +18,36 @@ test('explicit social searches produce only server filters and no invented outin
   assert.doesNotThrow(() => outingSearch(reply.outingSearch.filters, NOW, 'isolated-search-secret'));
 });
 
+test('looking for someone together routes to actual group discovery in three languages', () => {
+  for (const [message, locale, topic] of [
+    ['Fremont 周六想找人一起散步', 'zh-Hans', '散步'],
+    ['Fremont 週六想找人一起散步', 'zh-Hant', '散步'],
+    ['Looking for someone to walk in Fremont on Saturday', 'en', 'walk'],
+  ]) {
+    const reply = read(message, [], { locale });
+    assert.equal(reply.responseMode, 'outing-search', message);
+    assert.equal(reply.outingSearch.state, 'ready', message);
+    assert.deepEqual(reply.outingSearch.filters, { sort: 'soonest', city: 'Fremont', date: '2026-10-03', q: topic });
+    assert.equal(Object.hasOwn(reply, 'outings'), false, 'intent resolution cannot invent group records');
+  }
+  const undated = read('刚搬来 Fremont，想找人一起练练英语，口语不太好，也不知道哪天。');
+  assert.equal(undated.outingSearch.state, 'needs_clarification');
+  assert.deepEqual(undated.outingSearch.filters, { sort: 'soonest', city: 'Fremont', q: 'English practice' });
+  assert.deepEqual(undated.outingSearch.missing, ['date']);
+});
+
+test('finding someone wording retains refusal, advice and service boundaries', () => {
+  for (const message of [
+    'Fremont 周六不想找人一起散步，只想自己走走',
+    'Fremont 週六不要找人一起散步',
+    "Don't find someone to walk with in Fremont on Saturday",
+    '找人一起散步安全吗？', '找人一起散步要注意什麼？',
+    'Fremont 周六找人一起接机', 'Fremont 週六找人一起維修',
+    'Find someone to go with my children in Fremont on Saturday',
+    'Fremont 周六想散步',
+  ]) assert.equal(read(message), null, message);
+});
+
 test('casual English practice remains the group topic and survives an unrestricted-date followup', () => {
   for (const message of ['刚搬来 Fremont，想找人一起练英语，别太正式，平台上有这样的小队吗？', 'Find an English conversation group in Fremont']) {
     const first = read(message, [], { secret: TOKEN_SECRET });
@@ -54,7 +84,7 @@ test('bilingual names for one practice topic do not broaden the search to all ac
 });
 
 test('the real information-to-group followup inherits user city and activity without inventing a date', () => {
-  const initial = '刚搬来 Fremont，想找人一起练练英语，口语不太好，也不知道哪天。';
+  const initial = '刚搬来 Fremont，想练练英语，口语不太好，也不知道哪天。';
   const question = '我想看看平台上有没有这种小队，别太正式。';
   assert.equal(read(initial), null);
   const history = [{ role: 'user', content: initial }, { role: 'assistant', content: 'Fremont 有英语会话与 ESL 方向，具体场次尚未确认。也可考虑明天去 SF。' }];
@@ -199,10 +229,31 @@ async function fixture(t, ai) {
   return { request, models, setNow: value => { current = value; }, protectedRequest };
 }
 
+test('HTTP natural companion questions use public group filters without AI or writes', async t => {
+  let modelCalls = 0;
+  const { request, models } = await fixture(t, { guideChat: () => { modelCalls++; throw new Error('Companion searches must not use AI'); } });
+  const before = JSON.stringify({ posts: models.Post.rows, outings: models.Outing.rows });
+  for (const [message, locale, topic] of [
+    ['Fremont 周六想找人一起散步', 'zh-Hans', '散步'],
+    ['Fremont 週六想找人一起散步', 'zh-Hant', '散步'],
+    ['Looking for someone to walk in Fremont on Saturday', 'en', 'walk'],
+  ]) {
+    const response = await request({ message, locale, assistantVersion: 2, searchMode: 'site' });
+    assert.equal(response.status, 200, message);
+    assert.equal(response.data.responseMode, 'outing-search', message);
+    assert.deepEqual(response.data.outingSearch.filters, { sort: 'soonest', city: 'Fremont', date: '2026-10-03', q: topic });
+    assert.equal(Object.hasOwn(response.data, 'outings'), false);
+    assert.deepEqual(response.data.matchingPosts, []);
+    assert.match(response.cache, /no-store/);
+  }
+  assert.equal(modelCalls, 0);
+  assert.equal(JSON.stringify({ posts: models.Post.rows, outings: models.Outing.rows }), before);
+});
+
 test('HTTP moves from ordinary information to group search using only this conversation user context', async t => {
   let modelCalls = 0;
   const { request } = await fixture(t, { guideChat: async () => { modelCalls++; return { answer: '可以先了解 Fremont 的英语会话或 ESL 方向；这里没有确认具体场次。' }; } });
-  const initial = '刚搬来 Fremont，想找人一起练练英语，口语不太好，也不知道哪天。';
+  const initial = '刚搬来 Fremont，想练练英语，口语不太好，也不知道哪天。';
   const first = await request({ message: initial, assistantVersion: 2, searchMode: 'site' });
   assert.equal(first.status, 200); assert.notEqual(first.data.responseMode, 'outing-search');
   const initialModelCalls = modelCalls;

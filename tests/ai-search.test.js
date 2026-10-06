@@ -151,6 +151,62 @@ test('supplier and recruiter requests do not incorrectly search for competing pr
   assert.equal(planPostSearch('我在东湾找清洁服务', 'cleaning').query.type, 'provider');
 });
 
+test('ordinary listing existence questions use the same public search plan in three languages', () => {
+  const { normalizeGuideQuery } = require('../lib/guideLocale');
+  for (const [message, category] of [
+    ['Sunnyvale 有 Studio 吗？', 'rent'], ['Sunnyvale 有 Studio 嗎？', 'rent'],
+    ['Are there any rental Studios in Sunnyvale?', 'rent'],
+    ['Fremont 有清洁服务吗？', 'cleaning'], ['Fremont 有清潔服務嗎？', 'cleaning'],
+    ['Is there a cleaning service in Fremont?', 'cleaning'],
+  ]) {
+    const plan = planPostSearch(normalizeGuideQuery(message), category);
+    assert.ok(plan, message);
+    assert.equal(plan.query.type, 'provider');
+    assert.equal(plan.query.isDeleted, false);
+    assert.deepEqual(plan.query.adminHidden, { $ne: true });
+    assert.equal(plan.location, category === 'rent' ? 'Sunnyvale' : 'Fremont');
+  }
+});
+
+test('existence wording does not turn explicit refusal, policy, advice or supplier questions into listing searches', () => {
+  const { normalizeGuideQuery } = require('../lib/guideLocale');
+  for (const [message, category] of [
+    ['不要查 Sunnyvale 有 Studio 吗，只解释租约。', 'rent'],
+    ['不用找 Fremont 有清潔服務嗎，只想瞭解費用。', 'cleaning'],
+    ["Don't search for cleaning services in Fremont.", 'cleaning'],
+    ["Don't find a cleaner in Fremont.", 'cleaning'],
+    ['Fremont 有清洁服务吗，签合同要注意什么？', 'cleaning'],
+    ['加州有租客押金上限吗？', 'rent'],
+    ['我提供清洁，Fremont 有找服务的客户吗？', 'cleaning'],
+    ['We provide cleaning. Do you have customers in Fremont?', 'cleaning'],
+  ]) assert.equal(planPostSearch(normalizeGuideQuery(message), category), null, message);
+});
+
+test('HTTP existence questions check actual public records before answering without AI or account writes', async t => {
+  const { request, models } = await fixture(t, { posts: [
+    post('sunnyvale-studio', { city: 'Sunnyvale', title: 'Sunnyvale Studio' }),
+    post('hidden-studio', { city: 'Sunnyvale', title: 'Sunnyvale Studio', adminHidden: true }),
+    post('closed-studio', { city: 'Sunnyvale', title: 'Sunnyvale Studio', status: 'closed' }),
+    post('fremont-cleaner', { city: 'Fremont', title: 'Fremont 清洁服务', category: '清洁' }),
+  ], ai: { guideChat: () => { throw new Error('Existence questions must check public records, not call AI'); } } });
+  const before = JSON.stringify(models.Post.rows);
+  for (const [message, locale, expected] of [
+    ['Sunnyvale 有 Studio 吗？', 'zh-Hans', 'sunnyvale-studio'],
+    ['Sunnyvale 有 Studio 嗎？', 'zh-Hant', 'sunnyvale-studio'],
+    ['Are there any rental Studios in Sunnyvale?', 'en', 'sunnyvale-studio'],
+    ['Fremont 有清洁服务吗？', 'zh-Hans', 'fremont-cleaner'],
+    ['Fremont 有清潔服務嗎？', 'zh-Hant', 'fremont-cleaner'],
+    ['Is there a cleaning service in Fremont?', 'en', 'fremont-cleaner'],
+  ]) {
+    const response = await request('/api/ai/guide-chat', { message, locale, assistantVersion: 2, searchMode: 'site' });
+    assert.equal(response.status, 200, message);
+    assert.equal(response.data.responseMode, 'search', message);
+    assert.deepEqual(response.data.matchingPosts.map(row => row.id), [expected], message);
+    assert.doesNotMatch(JSON.stringify(response.data), /private-contact-value|private@example|415-555/);
+  }
+  assert.equal(JSON.stringify(models.Post.rows), before);
+});
+
 test('service search explains unverified language and availability without promising a provider', () => {
   const plan = planPostSearch('Sunnyvale 厨房水槽一直漏，想找今天能来的水管工，最好会中文，有靠谱的吗？', 'repair');
   const empty = summarizeMatches([], plan);

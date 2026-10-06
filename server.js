@@ -41,6 +41,7 @@ const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
+const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
 const { safetyResponse } = require('./lib/safetyRouting');
@@ -1710,7 +1711,8 @@ const governedAiRoute = req => req.method === 'POST' && (/^\/api\/ai\//.test(req
 app.use((req, res, next) => {
   if (!governedAiRoute(req)) return next();
   if (['/api/ai/guide-chat', '/api/planner/recommend', '/api/ai/post-assist', '/api/ai/outing-draft'].includes(req.path)) {
-    const safety = safetyResponse(req.body?.message || req.body?.intent, req.body?.locale);
+    const safety = safetyResponse(req.body?.message || req.body?.intent, req.body?.locale,
+      { guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG });
     if (safety) return res.json(safety);
   }
   return aiGovernance.middleware(getCurrentUserIdFromRequest)(req, res, next);
@@ -4709,18 +4711,25 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     : buildChatWebRequest({ message, history, searchMode, searchContext, locale, today: currentDatePacific, siteService: !!searchPlan || providerRequest, school: intent === 'school' });
   const requestScope = searchScope(webRequest.input || { query: resolvedRequest, locale, ...searchContext }, options.plannerNow);
   let actualGuideModel;
+  let communityPostSearch = { status: 'not_searched' };
   const send = async (payload, { preferCatalog = false } = {}) => {
     res.set('Cache-Control', 'no-store');
+    const respond = value => {
+      const guarded = guardCommunityAbsence({ answer: value.answer, locale, category, searches: { posts: communityPostSearch } });
+      return res.json(guarded.changed ? { ...value, answer: guarded.answer, degraded: true,
+        suggestedActions: guarded.suggestedActions,
+        research: { ...value.research, warnings: [...new Set([...(value.research?.warnings || []), guarded.warning])] } } : value);
+    };
     const scope = payload.responseMode === 'catalog' || selectedGuides.length || (searchPlan && !searchPlan.needsClarification) ? 'site' : 'none';
     const retrieval = { requestedMode: searchMode, scope, webStatus: webRequest.status || 'not_requested',
       requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area,
       ...(payload.catalogCheckedAt ? { catalogCheckedAt: payload.catalogCheckedAt } : {}),
       configuredModel: safeModel(config.OPENAI_MODEL || 'gpt-4o-mini'), ...(actualGuideModel ? { model: actualGuideModel } : {}) };
-    if (webRequest.question) return res.json({ ...payload, answer: webRequest.question, suggestedGuides: [], suggestedActions: [], interactiveCards: [], retrieval: { ...retrieval, scope: 'none' } });
+    if (webRequest.question) return respond({ ...payload, answer: webRequest.question, suggestedGuides: [], suggestedActions: [], interactiveCards: [], retrieval: { ...retrieval, scope: 'none' } });
     // Date/city matching is deterministic. A successful model search must not
     // overwrite it with a festival range, another city's listing or a guessed free day.
-    if (preferCatalog && searchMode === 'smart') return res.json({ ...payload, retrieval: { ...retrieval, webStatus: 'not_requested' } });
-    if (!webRequest.search) return res.json({ ...payload, retrieval });
+    if (preferCatalog && searchMode === 'smart') return respond({ ...payload, retrieval: { ...retrieval, webStatus: 'not_requested' } });
+    if (!webRequest.search) return respond({ ...payload, retrieval });
     try {
       const found = await plannerWebSearch.search(webRequest.input, getClientIp(req));
       if (payload.responseMode === 'catalog') {
@@ -4728,10 +4737,10 @@ app.post('/api/ai/guide-chat', async (req, res) => {
           ? 'Additional web references are listed separately. Their event dates, sessions and admission have not been independently confirmed, so they have not replaced the date-filtered site recommendations.'
           : locale === 'zh-Hant' ? '已列出額外聯網來源；其中新活動的日期、場次及票價未經獨立核實，因此未取代上方按日期篩選的站內推薦。'
             : '已列出额外联网来源；其中新活动的日期、场次及票价未经独立核实，因此未取代上方按日期筛选的站内推荐。';
-        return res.json({ ...payload, answer: `${payload.answer}\n\n${note}`, webSearchReferences: found.sources, coverage: found.coverage,
+        return respond({ ...payload, answer: `${payload.answer}\n\n${note}`, webSearchReferences: found.sources, coverage: found.coverage,
           retrieval: { ...retrieval, scope: 'site+web', webStatus: 'completed', checkedAt: found.checkedAt, cached: found.cached, sourceCount: found.sources.length, configuredModel: found.configuredModel, model: found.model }, matchNote: note });
       }
-      return res.json({ ...payload, answer: found.answer, responseMode: 'web', degraded: false,
+      return respond({ ...payload, answer: found.answer, responseMode: 'web', degraded: false,
         catalogSources: undefined,
         sources: found.sources, webCandidates: found.candidates || [], coverage: found.coverage,
         retrieval: { ...retrieval, scope: scope === 'site' ? 'site+web' : 'web', webStatus: 'completed', checkedAt: found.checkedAt, requestedDate: webRequest.input.date || requestScope.date, cached: found.cached, sourceCount: found.sources.length,
@@ -4739,7 +4748,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         matchNote: locale === 'en' ? 'Public web sources were searched. Check the sources for current availability and conditions.' : locale === 'zh-Hant' ? '已查詢公開網頁來源；當日名額與適用條件仍以原文為準。' : '已查询公开网页来源；当日名额与适用条件仍以原文为准。' });
     } catch (error) {
       const rejected = ['SEARCH_VERIFICATION_FAILED', 'web_verification_failed'].includes(error.code);
-      return res.json({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
+      return respond({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
         failureCode: normalizeWebSearchError(error).code,
         webConfiguredModel: safeModel(config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
         matchNote: rejected
@@ -4759,6 +4768,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       }
       const posts = await Post.find(searchPlan.query).select(POST_FIELDS).sort({ createdAt: -1 }).limit(MAX_CANDIDATES + 1).lean();
       const matches = summarizeMatches(posts, searchPlan);
+      communityPostSearch = { status: 'completed', matchingCount: matches.matchingPosts.length };
       return send(localized({
         ...buildGuideChatPayload(resolvedRequest, category), suggestedGuides: guideReferences, ...matches, interactiveCards: [], degraded: false, responseMode: 'search',
       }));
@@ -4813,6 +4823,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     if (payload.answer.length < 10) return send(localized(fallback()));
     return send(localized(withPostDirection(withGuideContext({ ...payload, matchingPosts: [], degraded: false, responseMode: 'ai' }))));
   } catch (e) {
+    if (searchPlan && !searchPlan.needsClarification) communityPostSearch = { status: 'unavailable' };
     console.error('POST /api/ai/guide-chat error:', e.message);
     return send(localized(fallback(searchPlan ? '目前无法完成站内检索，请稍后重试；以下基础建议不代表帖子查询结果。' : undefined)));
   }
