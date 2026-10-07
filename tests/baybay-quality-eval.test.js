@@ -8,11 +8,25 @@ const item = (id, extra = {}) => ({ id, request: { message: `Synthetic ${id}`, s
 const result = extra => ({ ok: true, responseMode: 'assistant', degraded: false, answer: 'A substantive synthetic response still needs a human factual review.', sources: [], evidence: [], answerCoverage: { status: 'unassessed', items: [] }, research: { timings: Object.fromEntries(['stateMs', 'siteMs', 'monitorMs', 'quotaMs', 'searchMs', 'readMs', 'modelMs', 'finalMs', 'routeMs', 'totalMs'].map(key => [key, 0])), warnings: [], steps: [] }, ...extra });
 
 test('casebook is synthetic, bounded and selects a followup together with its parent', () => {
-  assert.equal(cases.cases.length, 7);
+  assert.equal(cases.cases.length, 25);
+  for (const locale of ['zh-Hans', 'zh-Hant', 'en']) assert.ok(cases.cases.filter(row => row.request.locale === locale).length >= 6, locale);
   assert.deepEqual(selectCases(cases, ['strict-sf-child-followup']).map(row => row.id), ['strict-sf-family-plan', 'strict-sf-child-followup']);
   assert.ok(cases.cases.every(row => row.manualReview.length && ['site', 'smart', 'web'].includes(row.request.searchMode)));
   assert.throws(() => selectCases(cases, ['nonexistent']), /Unknown case/);
   assert.equal(MIN_SPACING_MS, 65000);
+});
+
+test('multilingual casebook state assertions remain reachable offline through signed continuation chains', () => {
+  const { resolveTaskState, encodeTaskToken, decodeTaskToken } = require('../lib/baybayState');
+  const catalog = require('../data/planner-catalog.json');
+  const signing = { secret: 'synthetic-casebook-state-only-secret', now: Date.parse('2026-10-07T19:00:00Z') };
+  const states = new Map();
+  for (const item of cases.cases.filter(row => /^(?:hans|hant|en)-(?:colloquial|no-itinerary)/.test(row.id))) {
+    const previous = states.get(item.follows);
+    const result = resolveTaskState({ message: item.request.message, previous: previous && decodeTaskToken(encodeTaskToken({ state: previous }, signing), signing), today: '2026-10-07', catalog });
+    for (const [field, value] of Object.entries(item.assertions.state || {})) assert.deepEqual(result.state[field], value, `${item.id}: ${field}`);
+    states.set(item.id, result.state);
+  }
 });
 
 test('live runner refuses wrong or absent release SHA before the first assistant request', async () => {

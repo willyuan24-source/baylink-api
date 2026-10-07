@@ -44,6 +44,7 @@ const { createBayBayAssistant } = require('./lib/baybayAgent');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
+const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { safetyResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
@@ -514,6 +515,8 @@ const Outing = createOutingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
 const AccountAuthChallenge = createAccountAuthChallengeModel(mongoose, injectedModels);
 const ConversationResponseMetric = createConversationResponseMetricModel(mongoose, injectedModels);
+const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModels);
+const contactAccessQuota = createContactAccessQuota({ Model: ContactAccessQuota, secret: config.JWT_SECRET, now: options.contactAccessNow || Date.now });
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -2832,8 +2835,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
 
     const pref = post.contactPreference || defaultContactPreference();
     const mode = pref.mode || 'dm_first';
-    if (!checkAuthRateLimit(`contact-account:${req.user.id}`, { windowMs: 86400000, maxRequests: 10 })) return res.status(429).json({ error: '今日联系方式请求次数已达上限。' });
-    if (mode === 'auto_send' && !req.user.isPhoneVerified) return res.status(403).json({ error: '请先验证手机号，再请求自动公开的联系方式。', code: 'VERIFIED_CONTACT_REQUIRED' });
+    if (mode === 'auto_send' && !verifiedContactPhone(req.user)) return res.status(403).json({ error: '请先验证手机号，再请求自动公开的联系方式。', code: 'VERIFIED_CONTACT_REQUIRED' });
     if (mode === 'dm_first') {
       return res.status(400).json({ error: '该帖子仅支持站内私信', status: 'dm_first' });
     }
@@ -2870,6 +2872,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
     }
 
     const requestMessage = trimProfileString(req.body?.requestMessage || '', 500);
+    await contactAccessQuota.claim(req.user, { requirePhone: mode === 'auto_send' });
 
     if (mode === 'manual_approve') {
       const reqDoc = await ContactRequest.create({
@@ -2920,6 +2923,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
       threadId: conv.id,
     });
   } catch (e) {
+    if (e.publicSafe && ['CONTACT_DAILY_LIMIT', 'CONTACT_QUOTA_UNAVAILABLE', 'VERIFIED_CONTACT_REQUIRED'].includes(e.code)) return res.status(e.status).json({ error: e.message, code: e.code });
     console.error('POST /api/posts/:postId/contact-requests error:', e);
     res.status(500).json({ error: '请求失败，请稍后再试' });
   }
@@ -4855,7 +4859,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ ...(error.code?.startsWith('AI_') ? { code: error.code } : {}), error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : status === 429 ? '今日额度或请求频率已达到上限，请稍后重试。' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4874,6 +4878,7 @@ async function startProduction(config = process.env) {
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();
+  await application.models.ContactAccessQuota.init();
   await application.models.AccountAuthChallenge.init();
   await application.models.ConversationResponseMetric.init();
   for (const Model of Object.values(application.notifications.models)) await Model.init();
