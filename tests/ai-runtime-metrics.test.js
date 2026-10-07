@@ -35,6 +35,7 @@ async function inRequest(governance, fn) {
 
 test('fixed dimensions, schema and finite TTL cannot store prompt, identifiers or arbitrary model labels', async () => {
   assert.equal(metricModel('gpt-4.1-mini-2025-04-14'), 'gpt-4.1-mini');
+  assert.equal(metricModel('claude-opus-5-5'), 'claude-opus-5-5');
   for (const value of ['private@account.test', 'none', 'mixed', '$set', 'unknown-model', { secret: true }]) assert.equal(metricModel(value), 'other');
   assert.equal(metricFeature('/api/posts/private-post/translation'), 'post_translation');
   assert.equal(metricFeature('/api/conversations/private-account/ai'), 'conversation_assist');
@@ -174,6 +175,26 @@ test('provider wrapper distinguishes success, malformed JSON, HTTP errors, incom
   assert.equal(Object.values(row.providerLatency).reduce((a, b) => a + b), 6);
   assert.doesNotMatch(JSON.stringify(models.AiRuntimeMetric.rows), /private|never-fetched|provider body/);
   assert.equal(models.AiGovernance.rows[0].expiresAt, new Date(NOW + 3 * 86400000).toISOString(), 'existing quota uses the original three-day retention');
+});
+
+test('Claude runtime metrics retain actual model, total cached input and incomplete/refusal outcomes', async () => {
+  const { models, metrics } = setup();
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW, metrics });
+  for (const stop_reason of ['end_turn', 'max_tokens', 'model_context_window_exceeded', 'refusal']) {
+    await inRequest(governance, async (_req, res) => {
+      await fetchAiJson('https://never-fetched.invalid', { body: JSON.stringify({ model: 'claude-opus-5-5' }) }, {
+        fetchImpl: async () => ({ ok: true, json: async () => ({ type: 'message', model: 'claude-opus-5-5', stop_reason,
+          usage: { input_tokens: 10, cache_creation_input_tokens: 20, cache_read_input_tokens: 30, output_tokens: 40, output_tokens_details: { thinking_tokens: 35 } } }) }),
+      });
+      res.json({ ok: true });
+    });
+  }
+  await metrics.flush();
+  const row = models.AiRuntimeMetric.rows.find(item => item.model === 'claude-opus-5-5');
+  assert.equal(row.providerCompleted, 1); assert.equal(row.providerIncomplete, 2); assert.equal(row.providerError, 1);
+  assert.equal(row.inputTokens, 240); assert.equal(row.outputTokens, 160);
+  assert.equal(models.AiGovernance.rows[0].inputTokens, 240);
+  assert.equal(models.AiGovernance.rows[0].outputTokens, 160);
 });
 
 test('duplicate insertion recovers once, ambiguous write failures are not retried and pending writes stay bounded', async () => {
