@@ -44,6 +44,7 @@ const { createBayBayAssistant } = require('./lib/baybayAgent');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
+const { createAiRuntimeMetricModel, createAiRuntimeMetrics } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { safetyResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
@@ -1699,7 +1700,9 @@ registerAccountPrivacy(app, { models: { User, Post, Message, Conversation, Conta
 });
 
 const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
-const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest });
+const AiRuntimeMetric = createAiRuntimeMetricModel(mongoose, injectedModels);
+const aiRuntimeMetrics = createAiRuntimeMetrics({ Model: AiRuntimeMetric, now: options.aiMetricsNow || Date.now, enabled: !isTest || !!injectedModels.AiRuntimeMetric });
+const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest, metrics: aiRuntimeMetrics });
 const aiUsageLimiter = createInteractionLimiter();
 app.get('/api/ai/usage', async (req, res) => {
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
@@ -1720,9 +1723,20 @@ app.use((req, res, next) => {
   }
   return aiGovernance.middleware(getCurrentUserIdFromRequest)(req, res, next);
 });
-app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (_req, res) => {
-  const rows = await AiGovernance.find({}).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean();
-  res.set('Cache-Control', 'no-store'); res.json({ days: rows });
+app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  if (Object.keys(req.query).length) return res.status(400).json({ error: 'Metrics use a fixed 30-day aggregate window.' });
+  if (!aiUsageLimiter.check(`admin:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: 'Please wait before reading metrics again.' });
+  try {
+    const [rows, runtime] = await Promise.all([
+      AiGovernance.find({}).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
+      aiRuntimeMetrics.report(),
+    ]);
+    const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
+    const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
+      ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
+    res.json({ days, runtime });
+  } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
 });
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
@@ -4680,7 +4694,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
         preferences = account?.preferences;
       }
       const assistantStartedAt = Date.now();
-      if (req.body?.stream === true) progressStream = createBayBayProgressStream(res);
+      if (req.body?.stream === true) progressStream = createBayBayProgressStream(res, req.aiRuntime);
       const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess, pageContext, signal: req.aiSignal,
         sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
         ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard } : {}) });
@@ -4859,7 +4873,7 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ ...(error.code?.startsWith('AI_') ? { code: error.code } : {}), error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : status === 429 ? '今日额度或请求频率已达到上限，请稍后重试。' : '操作失败，请稍后再试' });
 });
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4878,6 +4892,7 @@ async function startProduction(config = process.env) {
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();
+  await application.models.AiRuntimeMetric.init();
   await application.models.ContactAccessQuota.init();
   await application.models.AccountAuthChallenge.init();
   await application.models.ConversationResponseMetric.init();

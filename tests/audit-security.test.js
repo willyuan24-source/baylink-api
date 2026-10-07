@@ -135,7 +135,10 @@ test('usage reset honors winter Pacific midnight and aggregate usage exposes no 
   assert.equal(usage.status, 200); assert.equal(usage.data.resetAt, '2026-12-02T08:00:00.000Z');
   assert.equal(usage.headers.get('cache-control'), 'no-store');
   assert.equal((await request('/admin/ai-metrics')).status, 401);
-  assert.deepEqual((await request('/admin/ai-metrics', { as: 'admin' })).data, { days: [] });
+  const metrics = (await request('/admin/ai-metrics', { as: 'admin' })).data;
+  assert.deepEqual(metrics.days, []);
+  assert.deepEqual(metrics.runtime.daily, []);
+  assert.equal(metrics.runtime.retentionDays, 30);
 });
 
 test('usage reads are limited by trusted client IP before identity or quota database reads', async t => {

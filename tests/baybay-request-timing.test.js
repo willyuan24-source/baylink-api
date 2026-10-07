@@ -55,4 +55,12 @@ test('the public assistant reports bounded numeric request timing without privat
   assert.match(failedFrame, /event: error\ndata: /);
   assert.match(failedFrame, /INVALID_ASSISTANT_SESSION/);
   assert.doesNotMatch(failedFrame, /event: result/);
+  const aggregate = app.models.AiRuntimeMetric.rows.find(row => row.feature === 'guide_chat');
+  assert.equal(aggregate.requestCompleted, 2, 'JSON and SSE results both reach the aggregate');
+  assert.equal(aggregate.requestError, 1, 'an SSE error envelope is not an HTTP 200 success');
+  const observations = field => Object.values(aggregate[field] || {}).reduce((total, count) => total + count, 0);
+  assert.equal(observations('completeResult'), 2);
+  assert.equal(observations('firstValidatedText'), 1, 'JSON answers do not pretend to stream their first text');
+  assert.equal(observations('firstQuickCard'), Number(events.some(event => event.event === 'quick_card')));
+  assert.doesNotMatch(JSON.stringify(app.models.AiRuntimeMetric.rows), /Fremont|secret|fixture-api-key|session|firstToken/i);
 });
