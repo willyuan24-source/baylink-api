@@ -42,6 +42,7 @@ const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
 const { baybayProvider, anthropicAvailable, DEFAULT_ANTHROPIC_MODEL } = require('./lib/anthropicBaybay');
+const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJson');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
@@ -3992,7 +3993,15 @@ const normalizeAiPostDraft = (raw, defaults) => {
 
 const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) => {
   if (options.ai?.postAssist) return options.ai.postAssist({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide });
-  if (isTest) throw new Error('External AI requests are disabled in tests');
+  if (!selectedAiAvailable(config)) throw new Error('AI post assistance is not configured');
+  if (isTest && !options.postAssistFetch) throw new Error('External AI requests are disabled in tests');
+  const messages = [
+    { role: 'system', content: buildAiPostAssistSystem() },
+    { role: 'user', content: buildAiPostAssistUserMessage({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) },
+  ];
+  if (baybayProvider(config) === 'anthropic') {
+    return requestAnthropicJson(messages, { config, fetchImpl: options.postAssistFetch, maxTokens: 6000 });
+  }
   const model = config.OPENAI_MODEL || 'gpt-5.4-mini';
   const maxTokens = lengthGuide.max >= 350 ? 1100 : 900;
 
@@ -4007,25 +4016,11 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
       ...(/^(?:gpt-5(?:[.-]|$)|o[134](?:[.-]|$))/.test(model) ? { reasoning_effort: 'low' } : { temperature: 0.5 }),
       max_completion_tokens: maxTokens + 1000,
       response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: buildAiPostAssistSystem() },
-        {
-          role: 'user',
-          content: buildAiPostAssistUserMessage({
-            intent,
-            type,
-            categoryHint,
-            areaHint,
-            language,
-            tone,
-            rewriteMode,
-            lengthGuide,
-          }),
-        },
-      ],
+      messages,
     }),
-  });
+  }, { ...(options.postAssistFetch ? { fetchImpl: options.postAssistFetch } : {}) });
 
+  if (data?.choices?.[0]?.finish_reason !== 'stop') throw new Error('AI post draft did not finish completely');
   const content = data?.choices?.[0]?.message?.content;
   const parsed = extractJsonFromAiText(content);
   if (!parsed) throw new Error('Invalid JSON from model');
@@ -4034,7 +4029,7 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
 
 app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
   try {
-    if (!config.OPENAI_API_KEY && !options.ai?.postAssist) {
+    if (!['openai', 'anthropic'].includes(baybayProvider(config)) || !selectedAiAvailable(config) && !options.ai?.postAssist) {
       return res.status(503).json({ ok: false, error: 'AI 服务暂未配置，请稍后再试' });
     }
 
@@ -4596,7 +4591,10 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
   }
   if (isTest && !options.guideChatFetch) throw new Error('External AI requests are disabled in tests');
   const model = configuredGuideChatModel;
-  const system = `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}${intent === 'transit' ? `\n${transitInstruction}` : ''}`;
+  const answerLengthInstruction = locale === 'en'
+    ? 'Keep the answer concise: aim for 80–140 English words, with at most three short points. The answer must stay under 1200 characters, including spaces and punctuation. Do not list every feature or repeat the source summaries; finish all sentences.'
+    : '保持前述语言规则：中文回答以 200–400 字为目标；若用户要求英文消息或翻译，目标为 80–140 个英文词，不改成中文。最多三个短要点，无需罗列全部功能或重复资料摘要；含双语内容、标点、空格在内总共不得超过 1200 字符，每句完整结束。';
+  const system = `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}\n${answerLengthInstruction}${intent === 'transit' ? `\n${transitInstruction}` : ''}`;
   const messages = [...history, { role: 'user', content: `用户问题：\n${JSON.stringify(userPayload)}` }];
   if (guideChatUsesAnthropic) {
     if (!anthropicAvailable(config)) throw new Error('Anthropic guide chat is not configured or its use window has ended');
@@ -4609,12 +4607,15 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
       },
       body: JSON.stringify({
         model, system, messages, max_tokens: 4096,
-        output_config: { effort: 'medium', format: { type: 'json_schema', schema: {
-          type: 'object', properties: { answer: { type: 'string' }, safetyNote: { type: 'string' } },
+        output_config: { effort: config.ANTHROPIC_BAYBAY_EFFORT === 'low' ? 'low' : 'medium', format: { type: 'json_schema', schema: {
+          type: 'object', properties: { answer: { type: 'string', description: answerLengthInstruction }, safetyNote: { type: 'string', description: 'Optional concise caution, at most 60 characters; otherwise an empty string.' } },
           required: ['answer', 'safetyNote'], additionalProperties: false,
         } } },
       }),
-    }, { timeoutMs: 28000, ...(options.guideChatFetch ? { fetchImpl: options.guideChatFetch } : {}) });
+    }, { timeoutMs: 28000, fetchImpl: (url, request) => {
+      if (!anthropicAvailable(config)) throw new Error('Anthropic guide chat use window has ended');
+      return (options.guideChatFetch || fetch)(url, request);
+    } });
     // A valid-looking JSON fragment can still be a refusal or a truncated answer.
     if (data?.stop_reason !== 'end_turn' || !Array.isArray(data.content)) throw new Error('AI guide response did not finish completely');
     const text = data.content.filter(block => block?.type === 'text' && typeof block.text === 'string').map(block => block.text).join('');

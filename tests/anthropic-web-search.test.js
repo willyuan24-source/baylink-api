@@ -297,6 +297,30 @@ test('optional Claude expiry blocks new spend without OpenAI fallback but permit
   }
 });
 
+test('web expiry reached during quota reservation prohibits native transport without refund or fallback', async t => {
+  const expiry = Date.parse('2099-10-30T00:00:00Z');
+  let clock = expiry - 1, calls = 0;
+  t.mock.method(Date, 'now', () => clock);
+  const models = createMemoryModels();
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: 'isolated-web-expiry-test' }, now: () => clock });
+  const req = new EventEmitter(); req.path = '/api/planner/web-search'; req.ip = 'fixture';
+  const res = new EventEmitter(); res.writableEnded = false;
+  await new Promise((resolve, reject) => {
+    governance.middleware(async () => { await Promise.resolve(); clock = expiry; return 'fixture-user'; })(req, res, async () => {
+      try {
+        await assert.rejects(requestSearch(input, { config: { ...config, ANTHROPIC_USE_UNTIL: new Date(expiry).toISOString() }, lookup,
+          fetchImpl: async () => { calls++; return { ok: true, json: async () => native() }; },
+        }), { code: 'web_not_configured' });
+        assert.equal(calls, 0);
+        assert.equal(models.AiGovernance.rows[0].count, 1);
+        assert.equal(models.AiGovernance.rows[0].calls || 0, 0);
+        assert.equal(models.AiGovernance.rows[0].failures, 1);
+        res.writableEnded = true; res.emit('finish'); resolve();
+      } catch (error) { reject(error); }
+    }).catch(reject);
+  });
+});
+
 test('Claude search deadline aborts the actual governed provider request', async () => {
   let signal;
   await assert.rejects(requestSearch(input, { config, lookup, timeoutMs: 25,

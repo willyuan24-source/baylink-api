@@ -12,12 +12,12 @@ const completed = (extra = {}) => ({
   usage: { input_tokens: 80, output_tokens: 60 }, ...extra,
 });
 
-async function fixture(t, { config = {}, response = completed(), providerFetch, ai, authenticated = false } = {}) {
+async function fixture(t, { config = {}, response = completed(), providerFetch, ai, authenticated = false, models = createMemoryModels({ User: [member.user] }) } = {}) {
   const calls = [];
   const application = createApplication({
     config: { NODE_ENV: 'test', JWT_SECRET: 'isolated-claude-guide-chat-tests', BAYBAY_AI_PROVIDER: 'anthropic',
       ANTHROPIC_API_KEY: 'synthetic-claude-key', OPENAI_API_KEY: 'synthetic-openai-key', ...config },
-    models: createMemoryModels({ User: [member.user] }), plannerNow: () => Date.parse('2026-10-07T19:00:00Z'), ai,
+    models, plannerNow: () => Date.parse('2026-10-07T19:00:00Z'), ai,
     guideChatFetch: async (url, options) => {
       calls.push({ url, ...options, body: JSON.parse(options.body) });
       return providerFetch ? providerFetch(url, options) : { ok: true, json: async () => response };
@@ -121,6 +121,38 @@ test('expired or invalid Claude use windows prohibit new calls without falling b
   }
 });
 
+test('Claude expiry during a delayed quota reservation blocks the legacy guide transport', { timeout: 10000 }, async t => {
+  let current = Date.now();
+  const expiresAt = current + 60000;
+  t.mock.method(Date, 'now', () => current);
+  const models = createMemoryModels({ User: [member.user] });
+  const reserve = models.AiGovernance.findOneAndUpdate.bind(models.AiGovernance);
+  let enteredReservation, releaseReservation;
+  const entered = new Promise(resolve => { enteredReservation = resolve; });
+  const release = new Promise(resolve => { releaseReservation = resolve; });
+  let reservations = 0;
+  models.AiGovernance.findOneAndUpdate = async (...args) => {
+    const result = await reserve(...args);
+    reservations++;
+    enteredReservation();
+    await release;
+    return result;
+  };
+  const f = await fixture(t, { models, config: { ANTHROPIC_USE_UNTIL: new Date(expiresAt).toISOString() } });
+  const pending = f.ask();
+  try {
+    await Promise.race([entered, pending.then(() => assert.fail('The request must reach the quota reservation before the cutoff'))]);
+    current = expiresAt;
+  } finally { releaseReservation(); }
+  const result = await pending;
+  assert.equal(reservations, 1);
+  assert.equal(models.AiGovernance.rows[0].count, 1);
+  assert.equal(result.responseMode, 'fallback');
+  assert.equal(result.degraded, true);
+  assert.equal(result.retrieval.model, undefined);
+  assert.equal(f.calls.length, 0, 'Expiry must be checked after quota waiting and before either provider transport');
+});
+
 test('legacy Claude chat rejects refusal and incomplete output even when it contains valid JSON', async t => {
   for (const stopReason of ['refusal', 'max_tokens', 'model_context_window_exceeded', 'tool_use', 'stop_sequence', null]) {
     await t.test(String(stopReason), async t => {
@@ -147,6 +179,14 @@ test('malformed or thinking-only Claude output cannot become a successful guide 
       assert.equal(f.calls.length, 1);
     });
   }
+});
+
+test('guide chat retains its hard answer limit and never returns a clipped Claude answer', async t => {
+  const f = await fixture(t, { response: completed({ content: [{ type: 'text', text: JSON.stringify({ answer: 'A complete sentence. '.repeat(80), safetyNote: '' }) }] }) });
+  const result = await f.ask();
+  assert.equal(result.responseMode, 'fallback');
+  assert.equal(result.degraded, true);
+  assert.doesNotMatch(result.answer, /A complete sentence/);
 });
 
 test('Claude provider HTTP errors fall back locally without calling OpenAI', async t => {
