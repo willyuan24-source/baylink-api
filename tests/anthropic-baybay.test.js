@@ -1,7 +1,10 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { EventEmitter } = require('node:events');
 const { createAnthropicBaybay, anthropicSchema, normalizedResponse, baybayProvider, baybayModel, anthropicAvailable } = require('../lib/anthropicBaybay');
 const { parseDraft } = require('../lib/baybayAgent');
+const { createAiGovernance } = require('../lib/aiGovernance');
+const { createMemoryModels } = require('./support/memory-models');
 
 const tool = { type: 'function', name: 'search_site', description: 'Search site', strict: true, parameters: { type: 'object', properties: { query: { type: 'string', maxLength: 300 } }, required: ['query'], additionalProperties: false } };
 const schema = { type: 'object', properties: { answer: { type: 'string' }, candidateIds: { type: 'array', items: { type: 'string' }, maxItems: 6 } }, required: ['answer', 'candidateIds'], additionalProperties: false };
@@ -131,4 +134,28 @@ test('usage window accepts a future ISO deadline and fails closed on expiry or i
     const request = createAnthropicBaybay({ config: { ...config, ANTHROPIC_USE_UNTIL: until }, fetchImpl: async () => { calls++; return reply(textReply()); } });
     await assert.rejects(request(payload()), /unavailable|usage window/); assert.equal(calls, 0);
   }
+});
+
+test('Claude expiry reached during quota reservation blocks actual transport without refund or retry', async t => {
+  const expiry = Date.parse('2099-10-30T00:00:00Z');
+  let clock = expiry - 1, calls = 0;
+  t.mock.method(Date, 'now', () => clock);
+  const models = createMemoryModels();
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: 'isolated-adapter-expiry-test' }, now: () => clock });
+  const req = new EventEmitter(); req.path = '/api/ai/guide-chat'; req.ip = 'fixture';
+  const res = new EventEmitter(); res.writableEnded = false;
+  const request = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'synthetic-key', ANTHROPIC_USE_UNTIL: new Date(expiry).toISOString() },
+    fetchImpl: async () => { calls++; return reply(textReply()); } });
+  await new Promise((resolve, reject) => {
+    governance.middleware(async () => { await Promise.resolve(); clock = expiry; return 'fixture-user'; })(req, res, async () => {
+      try {
+        await assert.rejects(request(payload()), /unavailable|usage window/);
+        assert.equal(calls, 0);
+        assert.equal(models.AiGovernance.rows[0].count, 1);
+        assert.equal(models.AiGovernance.rows[0].calls || 0, 0);
+        assert.equal(models.AiGovernance.rows[0].failures, 1);
+        res.writableEnded = true; res.emit('finish'); resolve();
+      } catch (error) { reject(error); }
+    }).catch(reject);
+  });
 });
