@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-06",
+  "checkedAt": "2026-10-07",
   "items": [
     {
       "kind": "offer",
@@ -340,14 +340,14 @@
       "id": "svma-free-wednesdays-october",
       "title": "Sonoma 周三免费美术馆时光",
       "path": "/offers/svma-free-wednesdays-october",
-      "summary": "551 Broadway，靠近 Sonoma Town Plaza。十月周三为 10/7、14、21、28；现展 M. Louise Stanley 持续至 2027/1/24。工作坊另看票价。",
+      "summary": "551 Broadway，距 Sonoma Plaza 半个街区。十一月周三为 11/4、11、18、25，按现行每周免费规则换算；假日另查闭馆。官网另列 10/17 提前至 14:00 闭馆，10/22、29 全天闭馆，别把普通时段套用到特殊日期。",
       "details": [
         "周三普通入馆免费，无需会员或购买；仍需在前台登记，13 岁以下须成人陪同。"
       ],
       "dateLabel": "每周三 · 11:00–17:00",
       "costLabel": "无需购物",
       "status": "ongoing",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://svma.org/visit/",
       "sourceLabel": "Sonoma 美术馆免费周三与闭馆公告"
     },
@@ -1007,7 +1007,7 @@
       "id": "marin-transit-clean-air-oct7-2026",
       "title": "10/7 Marin Transit 本地公交免票",
       "path": "/offers/marin-transit-clean-air-oct7-2026",
-      "summary": "先查自己的线路、去回程班次和站点。免费公告不代表延长服务时间，也不自动涵盖整段跨湾行程；其他运营方票价须分别核对。",
+      "summary": "官网 2026/27 免票安排明确列出 10/7 Clean Air Day，本地公交当天对所有乘客免票。先查自己的去回程班次和站点；免票不延长服务时间，其他运营方票价另查。",
       "details": [
         "当天 Marin Transit 本地公交对所有乘客免票，无需购物；不自动包括 Golden Gate、SMART、渡轮或其他运营方的服务。"
       ],
@@ -1017,7 +1017,7 @@
       "dateLabel": "10/7 · 当日班次按各线路时刻表",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://marintransit.gov/fare-free-promotions",
       "sourceLabel": "Marin Transit 官方免票日"
     },
@@ -1045,7 +1045,7 @@
       "id": "sf-zoo-resident-free-oct7-2026",
       "title": "10/7 SF 居民凭证免费进动物园",
       "path": "/offers/sf-zoo-resident-free-oct7-2026",
-      "summary": "这是官网已公布的 2026 免费日，不是按往年月历推算。停车、餐饮及其他付费项目不包含；同行儿童或没有本人地址证件的家人，先向园方确认核验方式。",
+      "summary": "免费日活动页列 10/7 10:00–16:00；不要把网站通用的闭园时间当成免费日窗口。停车、餐饮及其他付费项目不包含；同行儿童或没有本人地址证件的家人，先向园方确认核验方式。",
       "details": [
         "仅 San Francisco 居民；在验票处出示能证明 SF 居住地址的政府签发证件，每份合格证件对应一人免费入场。"
       ],
@@ -1055,7 +1055,7 @@
       "dateLabel": "10/7 周三 · 官方免费日窗口 10:00–16:00",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-09-30",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.sfzoo.org/calendar/sf-resident-free-day-5/",
       "sourceLabel": "SF Zoo 官方 2026 免费日日历"
     },
@@ -2313,7 +2313,7 @@
       "id": "target-circle-deal-days-oct6-7-2026",
       "title": "10/6–7 会员促销：指定衣物六折、美妆七折",
       "path": "/offers/target-circle-deal-days-oct6-7-2026",
-      "summary": "Target 官方预告含指定家庭服饰减 40%、指定护肤／护发／彩妆减 30%，以及部分玩具、电子产品和家居优惠。湾区可按本店库存选自提或到店；结账核对会员价、排除商品及到手总价。",
+      "summary": "Target 公司公告明确列 10/6–7：指定家庭服饰减 40%、指定护肤／护发／彩妆减 30%。这是会员购物折扣，不是免费领取；本店库存、排除商品与结账总价须按所选商品确认。",
       "details": [
         "加入免费 Target Circle，在门店、官网或 App 购买指定商品。折扣限活动范围，并非全店统一降价；付费 Circle 360 会员可于 10/5 提前使用部分优惠。"
       ],
@@ -2322,7 +2322,7 @@
       "dateLabel": "10/6–7 · 免费 Circle 会员",
       "costLabel": "需消费",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.prnewswire.com/news-releases/target-circle-deal-days-returns-with-major-savings-on-stylish-fall-and-holiday-finds-302878903.html",
       "sourceLabel": "Target 公司发布的 2026 秋季促销预告"
     },
@@ -3598,6 +3598,82 @@
       "sourceLabel": "Dunkin’ 官方 2026 年 10 月优惠及细则"
     },
     {
+      "kind": "offer",
+      "id": "east-bay-green-friday-nov27-2026",
+      "title": "11/27 Green Friday：东湾区域公园免多项入园费用",
+      "path": "/offers/east-bay-green-friday-nov27-2026",
+      "summary": "任选一个区域公园走走即可。Tilden 旋转木马和 Redwood Valley Railway 小火车仍收费；免费不等于所有设施开放，先查所选公园的步道、天气与停车公告。",
+      "details": [
+        "免公园入口活动费用，包括停车、骑马、下水和钓鱼相关园区费用，也包括 Ardenwood 入场。州钓鱼证、船只检查和特许经营项目不包含。"
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-27",
+      "dateLabel": "11/27 周五 · 按各园当日开放时间",
+      "costLabel": "无需购物",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.ebparks.org/we-celebrate/green-friday",
+      "sourceLabel": "EBRPD 2026 Green Friday 官方费用豁免"
+    },
+    {
+      "kind": "offer",
+      "id": "yogurtland-anniversary-nov20-2026",
+      "title": "11/20 会员到店冰酸奶八折",
+      "path": "/offers/yogurtland-anniversary-nov20-2026",
+      "summary": "按品牌公布的 2026 年每月 20 日规则，十一月为 11/20。先确认附近门店参加；这是需付费购买的八折，不是免费送一杯。",
+      "details": [
+        "Real Rewards 会员出示 App 或账户手机号；可当天注册。仅参与门店到店消费，不叠加；网单、第三方配送、团餐及礼品卡不适用。"
+      ],
+      "startDate": "2026-11-20",
+      "endDate": "2026-11-20",
+      "dateLabel": "11/20 周五 · 参与门店营业时段",
+      "costLabel": "需消费",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.yogurtland.com/news_posts/view/86/celebrating-20-years-of-yogurtland-anniversary-promo-how-you-can-join-the-fun",
+      "sourceLabel": "Yogurtland 2026 全年会员日规则"
+    },
+    {
+      "kind": "offer",
+      "id": "botanical-thanksgiving-nov26-2026",
+      "title": "11/26 感恩节：旧金山植物园普通入园免费",
+      "path": "/offers/botanical-thanksgiving-nov26-2026",
+      "summary": "地址 1199 9th Avenue，位于金门公园。11/26 是按现行长期规则换算的 2026 日期，不表示另外两座花园也全天免费。",
+      "details": [
+        "官网将感恩节列为所有人普通入园免费日，不限旧金山居民。付费特别展览、活动及项目不包含，出发前再查当天开放与最后入场。"
+      ],
+      "region": "sf",
+      "startDate": "2026-11-26",
+      "endDate": "2026-11-26",
+      "dateLabel": "11/26 周四 · 按官网感恩节免费规则",
+      "costLabel": "无需购物",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://gggp.org/tickets/",
+      "sourceLabel": "Gardens of Golden Gate Park 官方免费入园规则"
+    },
+    {
+      "kind": "opening",
+      "id": "old-post-office-burlingame",
+      "title": "The Old Post Office",
+      "path": "/openings/old-post-office-burlingame",
+      "summary": "旧邮局改成餐厅，保留历史建筑氛围，供应带法式影响的加州菜。官网确认地址是 222 Park Road，晚餐每日 17:00–22:00。",
+      "details": [
+        "10/12 起周一至周五午餐 11:30–14:00；10/17 起周末早午餐 11:00–14:00。先查菜单与订位；本文是开业资讯，非亲测食评，也没有已核实的开业折扣。",
+        "222 Park Road, Burlingame, CA 94010",
+        "历史建筑里的新餐厅"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "startDate": "2026-10-01",
+      "dateLabel": "10/1 已开业 · 午餐 10/12、早午餐 10/17 起",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.oldpostofficeburlingame.com/",
+      "sourceLabel": "The Old Post Office · 官方入口"
+    },
+    {
       "kind": "opening",
       "id": "passdoor-santa-rosa-opening-2026",
       "title": "The Passdoor",
@@ -4443,22 +4519,79 @@
     },
     {
       "kind": "opening",
+      "id": "excelsior-san-rafael-announced",
+      "title": "Excelsior",
+      "path": "/openings/excelsior-san-rafael-announced",
+      "summary": "Hidden Splendor 官网页面确认旗舰餐酒馆落脚 San Rafael 市中心 1132 Fourth Street。品牌介绍食物与啤酒并重的社区空间；具体开门日期和营业时段仍未确认。",
+      "details": [
+        "10/6 的 Chronicle 报道预计十一月开业，仍以品牌后续公告为准。照片展示筹备中的建筑，不能据此判断已营业；不安排尚未确认的到店预约。",
+        "1132 Fourth Street, San Rafael, CA 94901",
+        "开业预告 · 社区餐酒馆"
+      ],
+      "region": "north-bay",
+      "city": "San Rafael",
+      "dateLabel": "新餐酒馆筹备中 · 十一月为媒体预计窗口",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.hiddensplendor.beer/the-wonder/the-wonder-begins",
+      "sourceLabel": "Excelsior · 官方入口"
+    },
+    {
+      "kind": "opening",
+      "id": "flora-santana-row-announced",
+      "title": "Flora",
+      "path": "/openings/flora-santana-row-announced",
+      "summary": "Flora 官网确认项目位于 Santana Row，主打季节美式餐桌；现阶段提供接收开业消息的入口。此前报道的夏季窗口已过，不把预计月份当成已开业。",
+      "details": [
+        "355 Santana Row #1060 为媒体报道地址。到访前等品牌确认开门日、时段与订位；目前没有核实到菜单价格或开业优惠。",
+        "355 Santana Row #1060, San Jose, CA 95128",
+        "开业预告 · 季节美式餐厅"
+      ],
+      "region": "south-bay",
+      "city": "San Jose",
+      "dateLabel": "官网仅确认 2026 年开业计划 · 具体日期待定",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.florasantanarow.com/",
+      "sourceLabel": "Flora · 官方入口"
+    },
+    {
+      "kind": "opening",
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku 官网公布 Burlingame 新店 10/11 11:00 开业庆典，地址为 225 Lorton Ave。门店页列午餐 11:00–14:00、晚餐 17:00–21:00；目前仍列为开业预告。",
+      "summary": "Burlingame 门店页已公布 10/11 Grand Opening 与当天两段营业时间，地址为 225 Lorton Avenue。核对时尚未到开业日，保留预告状态，不把其他分店营业状态当成本店已开门。",
       "details": [
-        "导航到 225 Lorton Ave, Burlingame。出发前查看官网当天安排；已公布的开业庆典不代表已经开始接客，也不保证无需排队。",
+        "官网页首为 10/11 开业预告，分店目录仍写 Coming Soon。临行前再次查看本店安排；没有核实到开业赠品、折扣或排队保证，也不把庆祝日期当作已证实的首次接客日。",
         "225 Lorton Ave, Burlingame, CA 94010",
         "拉面新店预告"
       ],
       "region": "peninsula",
       "city": "Burlingame",
-      "dateLabel": "官宣 10/11 11:00 开业庆典 · 仍为预告",
+      "dateLabel": "官网预告 10/11 Grand Opening · 11:00–14:00／17:00–21:00",
       "status": "announced",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.marufukuramen.com/burlingame",
       "sourceLabel": "Marufuku Ramen · Burlingame · 官方入口"
+    },
+    {
+      "kind": "opening",
+      "id": "shinka-the-jay-announced",
+      "title": "Shinka",
+      "path": "/openings/shinka-the-jay-announced",
+      "summary": "The Jay 酒店官宣由主厨 Fumio Yonezawa 带来的日法料理新项目。官网仍写 Coming Soon，没有把酒店其他餐饮的营业时段当成 Shinka 的时间。",
+      "details": [
+        "目前只适合关注开业消息。确认餐厅自己的订位入口、菜单和日期后再安排；酒店在营业不等于新餐厅已接客。",
+        "433 Clay Street, San Francisco, CA 94111",
+        "开业预告 · 日法料理"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "dateLabel": "官网预告 2026 年 10 月 · 具体开门日待公布",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://jayhotelsf.com/eat-drink/shinka/",
+      "sourceLabel": "Shinka · 官方入口"
     },
     {
       "kind": "opening",

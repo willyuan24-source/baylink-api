@@ -1266,14 +1266,16 @@
     "id": "november-north-healdsburg-market-2026",
     "title": "Healdsburg 周六农夫市集：新棚亭地址",
     "startDate": "2026-10-10",
-    "endDate": "2026-11-14",
+    "endDate": "2026-11-28",
     "occurrenceDates": [
       "2026-10-10",
       "2026-10-17",
       "2026-10-24",
       "2026-10-31",
       "2026-11-07",
-      "2026-11-14"
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28"
     ]
   },
   {
@@ -2859,12 +2861,37 @@
     ]
   },
   {
+    "id": "nov2026-fort-mason-farmers-market",
+    "title": "Fort Mason 周日农夫市集：11月五个周日",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-15",
+      "2026-11-22",
+      "2026-11-29"
+    ]
+  },
+  {
     "id": "nov2026-fruitvale-dia-muertos",
     "title": "Fruitvale 亡灵节：社区祭坛与街头庆典",
     "startDate": "2026-11-01",
     "endDate": "2026-11-01",
     "occurrenceDates": [
       "2026-11-01"
+    ]
+  },
+  {
+    "id": "nov2026-presidio-free-yoga",
+    "title": "Presidio 草地免费瑜伽：先预约再出门",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-15",
+      "2026-11-22"
     ]
   },
   {
@@ -2917,6 +2944,17 @@
     "title": "Don Omar：Back to Reggaeton",
     "startDate": "2026-11-05",
     "endDate": "2026-11-05"
+  },
+  {
+    "id": "octnov-marin-arts-crafts-2026",
+    "title": "Marin Arts & Crafts Show 手作展",
+    "startDate": "2026-11-06",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-06",
+      "2026-11-07",
+      "2026-11-08"
+    ]
   },
   {
     "id": "sj-mon-laferte-nov-2026",
@@ -2979,6 +3017,16 @@
     ]
   },
   {
+    "id": "nov2026-presidio-250-years-walk",
+    "title": "250 Years on the Presidio：护林员历史步行",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-08",
+      "2026-11-22"
+    ]
+  },
+  {
     "id": "november-north-sugarloaf-nature-talk-2026",
     "title": "Sugarloaf 自然桌边讲解：颜色、图案与信号",
     "startDate": "2026-11-08",
@@ -3010,6 +3058,16 @@
     "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
     "startDate": "2026-11-10",
     "endDate": "2026-11-10"
+  },
+  {
+    "id": "nov2026-arion-press-public-tours",
+    "title": "Arion Press：走进手工铸字与装订工坊",
+    "startDate": "2026-11-12",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-12",
+      "2026-11-21"
+    ]
   },
   {
     "id": "nov2026-mission-market-season-final",
@@ -3081,6 +3139,28 @@
     ]
   },
   {
+    "id": "nov2026-sf-renegade-craft-winter",
+    "title": "Renegade Craft 冬季手作市集",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-14",
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "octnov-pyt-wizard-oz-2026",
+    "title": "Mountain View 亲子音乐剧：绿野仙踪",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-21",
+      "2026-11-22"
+    ]
+  },
+  {
     "id": "san-carlos-gifts-kitchen-nov14-2026",
     "title": "San Carlos 食物保存实作：Gifts from the Kitchen",
     "startDate": "2026-11-14",
@@ -3102,10 +3182,280 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "octnov-opera-sj-fiddler-2026",
+    "title": "Opera San José：屋顶上的提琴手",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-15",
+      "2026-11-20",
+      "2026-11-22",
+      "2026-11-28",
+      "2026-11-29"
+    ]
+  },
+  {
     "id": "ravenswood-tidal-marsh-nov15-2026",
     "title": "Ravenswood 潮汐湿地慢走与观鸟",
     "startDate": "2026-11-15",
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "nov2026-presidio-campfire-history-talks",
+    "title": "Presidio 营火圈：半小时护林员故事",
+    "startDate": "2026-11-16",
+    "endDate": "2026-11-30",
+    "occurrenceDates": [
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22",
+      "2026-11-23",
+      "2026-11-24",
+      "2026-11-25",
+      "2026-11-26",
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29",
+      "2026-11-30"
+    ]
+  },
+  {
+    "id": "octnov-midpen-take-a-hike-dog-2026",
+    "title": "Windy Hill 全国徒步日：可携犬的7英里登山",
+    "startDate": "2026-11-17",
+    "endDate": "2026-11-17",
+    "occurrenceDates": [
+      "2026-11-17"
+    ]
+  },
+  {
+    "id": "octnov-san-jose-tommy-2026",
+    "title": "San José 百老汇巡演：The Who’s Tommy",
+    "startDate": "2026-11-17",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+    ]
+  },
+  {
+    "id": "octnov-midpen-return-to-green-2026",
+    "title": "Purisima 红杉林返绿徒步",
+    "startDate": "2026-11-18",
+    "endDate": "2026-11-18",
+    "occurrenceDates": [
+      "2026-11-18"
+    ]
+  },
+  {
+    "id": "octnov-midpen-turkey-trot-2026",
+    "title": "Rancho San Antonio：寻找野火鸡的自然徒步",
+    "startDate": "2026-11-18",
+    "endDate": "2026-11-18",
+    "occurrenceDates": [
+      "2026-11-18"
+    ]
+  },
+  {
+    "id": "nov2026-big-break-accessible-winter-birding",
+    "title": "Big Break 冬季观鸟：平缓铺装步道",
+    "startDate": "2026-11-19",
+    "endDate": "2026-11-19",
+    "occurrenceDates": [
+      "2026-11-19"
+    ]
+  },
+  {
+    "id": "octnov-midpen-sawmills-seminary-2026",
+    "title": "Bear Creek：从锯木厂、神学院走到开放空间",
+    "startDate": "2026-11-19",
+    "endDate": "2026-11-19",
+    "occurrenceDates": [
+      "2026-11-19"
+    ]
+  },
+  {
+    "id": "nov2026-fort-point-history-talks",
+    "title": "Fort Point 历史短讲：金门大桥下的15分钟",
+    "startDate": "2026-11-20",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22",
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29"
+    ]
+  },
+  {
+    "id": "nov2026-tilden-good-night-farm",
+    "title": "Tilden Little Farm：和农场动物道晚安",
+    "startDate": "2026-11-20",
+    "endDate": "2026-11-27",
+    "occurrenceDates": [
+      "2026-11-20",
+      "2026-11-27"
+    ]
+  },
+  {
+    "id": "nov2026-coyote-hills-tule-work-play",
+    "title": "Coyote Hills：认识 Tule 湿地植物并做手作",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "nov2026-foodwise-market-memories-demo",
+    "title": "Ferry Plaza 免费烹饪示范：Market Memories",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "octnov-hiller-weekend-aviation-2026",
+    "title": "Hiller 周末航空动手体验",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "octnov-midpen-banana-slugs-2026",
+    "title": "Purisima 亲子自然观察：寻找香蕉蛞蝓",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "octnov-midpen-windy-hill-berries-2026",
+    "title": "Windy Hill 秋冬浆果观察",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "nov2026-ardenwood-chestnut-treats",
+    "title": "Ardenwood 烤栗子：农场厨房里的季节味道",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-27",
+    "occurrenceDates": [
+      "2026-11-22",
+      "2026-11-27"
+    ]
+  },
+  {
+    "id": "nov2026-crab-cove-bay-bird-morning",
+    "title": "Crab Cove 海湾晨间观鸟：6岁起可报名",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-22"
+    ]
+  },
+  {
+    "id": "octnov-midpen-manzanita-morning-2026",
+    "title": "St. Joseph’s Hill：Manzanita 晨间登高",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-22",
+    "occurrenceDates": [
+      "2026-11-22"
+    ]
+  },
+  {
+    "id": "octnov-filoli-thanksgiving-flora-2026",
+    "title": "Filoli 感恩节餐桌花艺工作坊",
+    "startDate": "2026-11-23",
+    "endDate": "2026-11-24",
+    "occurrenceDates": [
+      "2026-11-23",
+      "2026-11-24"
+    ]
+  },
+  {
+    "id": "nov2026-redwood-green-friday-hike",
+    "title": "Redwood Green Friday：5.25英里山林徒步",
+    "startDate": "2026-11-27",
+    "endDate": "2026-11-27",
+    "occurrenceDates": [
+      "2026-11-27"
+    ]
+  },
+  {
+    "id": "octnov-marin-holiday-lights-2026",
+    "title": "Marin Center 免费节日灯光步道",
+    "startDate": "2026-11-27",
+    "endDate": "2026-11-30",
+    "occurrenceDates": [
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29",
+      "2026-11-30"
+    ]
+  },
+  {
+    "id": "octnov-point-reyes-open-studios-2026",
+    "title": "Point Reyes 感恩节开放工作室",
+    "startDate": "2026-11-27",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29"
+    ]
+  },
+  {
+    "id": "nov2026-redwood-saturday-stroll",
+    "title": "Redwood 周六山林环线：4英里含陡坡",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
+  },
+  {
+    "id": "octnov-healdsburg-tech-help-2026",
+    "title": "Healdsburg 一对一数字生活帮助",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
+  },
+  {
+    "id": "octnov-midpen-ferns-ancient-plants-2026",
+    "title": "Monte Bello：蕨类与古老植物导览",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
+  },
+  {
+    "id": "octnov-petaluma-ancestral-sounds-2026",
+    "title": "Petaluma 儿童音乐体验：中美洲古老乐器",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
   },
   {
     "id": "san-ramon-lip-balm-workshop-november-2026",
@@ -3124,6 +3474,15 @@
     "title": "Stanford 主场迎战 SMU",
     "startDate": "2026-11-28",
     "endDate": "2026-11-28"
+  },
+  {
+    "id": "octnov-los-altos-lights-parade-2026",
+    "title": "Los Altos 第50届节日灯光游行",
+    "startDate": "2026-11-29",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-29"
+    ]
   },
   {
     "id": "santa-clara-49ers-seahawks-nov-2026",
