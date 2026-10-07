@@ -50,6 +50,26 @@
     ]
   },
   {
+    "id": "source-0144473d4f1f83fa",
+    "title": "Healdsburg 一对一数字生活帮助",
+    "url": "https://events.sonomalibrary.org/event/one-one-tech-help-110761",
+    "kind": "event",
+    "contentIds": [
+      "octnov-healdsburg-tech-help-2026"
+    ],
+    "endDate": "2026-11-28"
+  },
+  {
+    "id": "source-0144643ba14a75e4",
+    "title": "11/26 停车咪表暂停执法；11/27 恢复",
+    "url": "https://www.sfmta.com/getting-around/drive-park/holiday-enforcement-schedule",
+    "kind": "bulletin",
+    "contentIds": [
+      "sf-thanksgiving-parking-nov2026"
+    ],
+    "endDate": "2026-11-27"
+  },
+  {
     "id": "source-01774f5a639d3447",
     "title": "旧金山学校与学区：从地址核对到 SFUSD 入学",
     "url": "https://www.sfusd.edu/schools/enroll/apply/requirements",
@@ -121,7 +141,7 @@
       "peets-cold-brew-pass-september",
       "peets-orange-friday-sep25"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-0216a93da09fcd4e",
@@ -194,7 +214,7 @@
       "bay-area-freebies-deals-2026-11",
       "history-smc-free-oct2"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-031a7ce248ab7e0b",
@@ -480,7 +500,7 @@
       "bay-area-freebies-deals-2026-11",
       "san-jose-airport-coffee-day-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-09701fca483593fc",
@@ -594,7 +614,7 @@
       "bay-area-freebies-deals-2026-11",
       "napa-costume-exchange-oct3-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-0b25c25454443932",
@@ -784,7 +804,7 @@
       "bay-area-freebies-deals-2026-11",
       "pixels-thirsty-thursday-20261001"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-0da0e0b3c7027aee",
@@ -792,6 +812,7 @@
     "url": "https://www.sfmoma.org/visit/",
     "kind": "offer",
     "contentIds": [
+      "sf-autumn-art-half-day-2026",
       "sf-family-rain-fog-car-free-october-2026",
       "sfmoma-free-public-art-spaces"
     ]
@@ -932,6 +953,16 @@
     ]
   },
   {
+    "id": "source-102af0a7a043e5b2",
+    "title": "The Old Post Office",
+    "url": "https://www.oldpostofficeburlingame.com/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "old-post-office-burlingame"
+    ]
+  },
+  {
     "id": "source-103f835323437974",
     "title": "Millbrae第21届日本文化节",
     "url": "https://www.japaneseculturefest-millbrae.org/",
@@ -968,6 +999,16 @@
     "contentIds": [
       "bay-area-outlets-malls-shopping-guide"
     ]
+  },
+  {
+    "id": "source-113c1535b609abc2",
+    "title": "Redwood 周六山林环线：4英里含陡坡",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60894",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-redwood-saturday-stroll"
+    ],
+    "endDate": "2026-11-28"
   },
   {
     "id": "source-118204f15040137f",
@@ -1026,6 +1067,7 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "botanical-thanksgiving-nov26-2026",
       "gggp-sf-resident-free-admission",
       "sf-free-culture-eligibility-october-2026"
     ]
@@ -1042,7 +1084,7 @@
       "bay-area-freebies-deals-2026-11",
       "target-beauty-sep26"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-12c0e94a730d",
@@ -1133,6 +1175,16 @@
     "contentIds": [
       "crumbl-silver-birthday-2026"
     ]
+  },
+  {
+    "id": "source-14218e324635a527",
+    "title": "Redwood Green Friday：5.25英里山林徒步",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60899",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-redwood-green-friday-hike"
+    ],
+    "endDate": "2026-11-27"
   },
   {
     "id": "source-1426af8658fd1599",
@@ -1276,6 +1328,16 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "source-16bec81a07757820",
+    "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
+    "url": "https://www.sfchronicle.com/food/restaurants/article/openings-new-bay-area-2026-21266878.php",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-new-openings-2026-09"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
     "id": "source-16c1889d40ab5710",
     "title": "Mission 半日慢走：Dolores Park 草坡与街区壁画",
     "url": "https://www.precitaeyes.org/og-classic-mural-tour.html",
@@ -1322,6 +1384,16 @@
       "bay-area-new-openings-2026-09",
       "yutori-palo-alto-restaurant"
     ]
+  },
+  {
+    "id": "source-17f1c3145b533d80",
+    "title": "Ardenwood 烤栗子：农场厨房里的季节味道",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60614",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-ardenwood-chestnut-treats"
+    ],
+    "endDate": "2026-11-27"
   },
   {
     "id": "source-183ee9735f486dda",
@@ -1379,6 +1451,16 @@
     "contentIds": [
       "bay-area-build-recurring-community-routine-2026"
     ]
+  },
+  {
+    "id": "source-19e36bcd03d6efdb",
+    "title": "Ferry Plaza 免费烹饪示范：Market Memories",
+    "url": "https://foodwise.org/events/ann-m-evans-and-georgeanne-brennan-market-memories-cookbook/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-foodwise-market-memories-demo"
+    ],
+    "endDate": "2026-11-21"
   },
   {
     "id": "source-19eca51eb19661b2",
@@ -1479,9 +1561,10 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "yogurtland-anniversary-nov20-2026",
       "yogurtland-anniversary-oct20"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-1ab0aed3d3c8",
@@ -1580,6 +1663,7 @@
     "url": "https://www.ebparks.org/parks/reinhardt-redwood",
     "kind": "guide",
     "contentIds": [
+      "east-bay-redwoods-green-friday-2026",
       "reinhardt-redwood-first-walk-guide"
     ]
   },
@@ -1650,7 +1734,7 @@
       "bay-area-freebies-deals-2026-11",
       "tech-teachers-tacos-oct23-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-1e7e3fdafb8d07eb",
@@ -1948,6 +2032,16 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-22931030ea7a3792",
+    "title": "Bear Creek：从锯木厂、神学院走到开放空间",
+    "url": "https://www.openspace.org/events/guided-activities/sawmills-seminary-open-space",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-sawmills-seminary-2026"
+    ],
+    "endDate": "2026-11-19"
+  },
+  {
     "id": "source-2352e53201c1ec5a",
     "title": "Pat Benatar & Neil Giraldo 圣罗莎演唱会",
     "url": "https://lutherburbankcenter.org/event/pat-benatar26/",
@@ -1987,7 +2081,7 @@
       "bay-area-freebies-deals-2026-11",
       "sjma-free-oct2"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-23e38feb5b1bd34c",
@@ -2099,6 +2193,16 @@
     ]
   },
   {
+    "id": "source-25c8cb3a23a10892",
+    "title": "Monte Bello：蕨类与古老植物导览",
+    "url": "https://www.openspace.org/events/guided-activities/ferns-other-ancient-plants-3",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-ferns-ancient-plants-2026"
+    ],
+    "endDate": "2026-11-28"
+  },
+  {
     "id": "source-25d66b1af5df",
     "title": "Silicon Valley African Film Festival",
     "url": "https://svaff.org/programs/annual-film-festival",
@@ -2130,6 +2234,16 @@
       "bay-area-freebies-deals-2026-11",
       "smcl-free-printing"
     ]
+  },
+  {
+    "id": "source-264a41b364241313",
+    "title": "Crab Cove 海湾晨间观鸟：6岁起可报名",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60889",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-crab-cove-bay-bird-morning"
+    ],
+    "endDate": "2026-11-22"
   },
   {
     "id": "source-2693a6fa585fe985",
@@ -2288,6 +2402,16 @@
     "endDate": "2026-09-27"
   },
   {
+    "id": "source-289e16bc1e82e5bb",
+    "title": "Windy Hill 秋冬浆果观察",
+    "url": "https://www.openspace.org/events/guided-activities/fall-winter-berries",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-windy-hill-berries-2026"
+    ],
+    "endDate": "2026-11-21"
+  },
+  {
     "id": "source-28ff8bac58c8b18a",
     "title": "南湾亲子半日：在 San José 找旧街景、农场和一片能慢玩的草地",
     "url": "https://www.sanjoseca.gov/Home/Components/FacilityDirectory/FacilityDirectory/2180/2028",
@@ -2386,6 +2510,16 @@
     ]
   },
   {
+    "id": "source-2ab6808373589c9e",
+    "title": "Hiller 周末航空动手体验",
+    "url": "https://www.hiller.org/event/weekend-events-2-2-2-2-2-2-2/2026-11-21/",
+    "kind": "event",
+    "contentIds": [
+      "octnov-hiller-weekend-aviation-2026"
+    ],
+    "endDate": "2026-11-21"
+  },
+  {
     "id": "source-2abdae52a4f4cbae",
     "title": "Mon Laferte 圣荷西演唱会",
     "url": "https://www.sapcenter.com/events/detail/mon-laferte",
@@ -2403,6 +2537,16 @@
     "contentIds": [
       "mountain-view-computer-history-shoreline-guide"
     ]
+  },
+  {
+    "id": "source-2b21941064978e6d",
+    "title": "Big Break 冬季观鸟：平缓铺装步道",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60936",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-big-break-accessible-winter-birding"
+    ],
+    "endDate": "2026-11-19"
   },
   {
     "id": "source-2b7b2a94af3a384e",
@@ -2481,7 +2625,7 @@
       "bay-area-freebies-deals-2026-11",
       "chilis-veterans-day-nov11-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-2e2b970df1587084",
@@ -2712,7 +2856,7 @@
       "bay-area-freebies-deals-2026-11",
       "sf-greyhound-trivia-happy-hour-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-32b0c206b758e3d4",
@@ -2838,7 +2982,7 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-35273c31b7516f0f",
@@ -2847,6 +2991,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-city-utilities-internet-phone-directory"
+    ]
+  },
+  {
+    "id": "source-35449fd218c84d2e",
+    "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+    "url": "https://www.vta.org/go/transit-app",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide"
     ]
   },
   {
@@ -2993,6 +3146,16 @@
     "contentIds": [
       "east-bay-school-district-enrollment-guide"
     ]
+  },
+  {
+    "id": "source-380cb7d0e214f94a",
+    "title": "Filoli 感恩节餐桌花艺工作坊",
+    "url": "https://filoli.org/whats-on/events/flora-party-thanksgiving-centerpieces/",
+    "kind": "event",
+    "contentIds": [
+      "octnov-filoli-thanksgiving-flora-2026"
+    ],
+    "endDate": "2026-11-24"
   },
   {
     "id": "source-3826cc3548aac2ae",
@@ -3609,7 +3772,7 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-43247be05261430a",
@@ -3774,6 +3937,16 @@
     "contentIds": [
       "sf-first-visit-tickets-waterfront-october-2026"
     ]
+  },
+  {
+    "id": "source-4637e1cb3264eb8c",
+    "title": "Marin Arts & Crafts Show 手作展",
+    "url": "https://www.beadagio.com/attendee/shows.php?d=185",
+    "kind": "event",
+    "contentIds": [
+      "octnov-marin-arts-crafts-2026"
+    ],
+    "endDate": "2026-11-08"
   },
   {
     "id": "source-464a152b81435588",
@@ -4193,9 +4366,10 @@
     "kind": "bulletin",
     "contentIds": [
       "bay-area-november-resident-dates-2026",
+      "caltrain-thanksgiving-nov2026",
       "caltrain-veterans-day-nov11-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-27"
   },
   {
     "id": "source-4ff94c27298b1b82",
@@ -4375,6 +4549,16 @@
     "endDate": "2026-10-15"
   },
   {
+    "id": "source-54262bb9c8ec6afb",
+    "title": "Tilden Little Farm：和农场动物道晚安",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60543",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-tilden-good-night-farm"
+    ],
+    "endDate": "2026-11-27"
+  },
+  {
     "id": "source-5471209d752dd98e",
     "title": "湾区成人英语课：找到免费课程，也找到能坚持的时间表",
     "url": "https://www.ccsf.edu/academics/schools/esl-international-ed-and-transitional-studies/english-second-language/steps-to-take-noncredit-ESL-classes",
@@ -4524,7 +4708,7 @@
       "north-bay-markets-nature-culture-through-november-15-2026",
       "november-north-healdsburg-market-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-28"
   },
   {
     "id": "source-56669d5f5cb8a5cc",
@@ -4708,6 +4892,15 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "source-5b61210f18ef79b0",
+    "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+    "url": "https://www.caltrain.com/rider-information/how-ride-caltrain",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide"
+    ]
+  },
+  {
     "id": "source-5b72a6e3923d33fd",
     "title": "Burlingame 免费秋季植物交换",
     "url": "https://www.burlingame.org/calendar.aspx?CID=0&month=10&view=list&year=2026",
@@ -4757,6 +4950,16 @@
     ]
   },
   {
+    "id": "source-5c862b2819fc8115",
+    "title": "250 Years on the Presidio：护林员历史步行",
+    "url": "https://presidio.gov/explore/events/presidio-guided-walk-250-years-on-the-presidio/2026-11-22/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-presidio-250-years-walk"
+    ],
+    "endDate": "2026-11-22"
+  },
+  {
     "id": "source-5cb550ab0cc91efe",
     "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
     "url": "https://www.newarkca.gov/departments/police/document-shredding-event",
@@ -4767,7 +4970,7 @@
       "newark-free-shredding-2026",
       "newark-resident-shredding-october-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-5cd5801d74b89004",
@@ -4851,7 +5054,17 @@
       "bay-area-freebies-deals-2026-11",
       "michaels-ghosts-sep26"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-5f27650a78f63129",
+    "title": "Marin Center 免费节日灯光步道",
+    "url": "https://www.marincounty.gov/departments/cultural-services/department-sponsored-events/holiday-light-spectacular",
+    "kind": "event",
+    "contentIds": [
+      "octnov-marin-holiday-lights-2026"
+    ],
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-5f4470f791e3a234",
@@ -5085,6 +5298,26 @@
       "target-circle-deal-days-oct6-7-2026",
       "target-circle-new-member-oct5-2026"
     ]
+  },
+  {
+    "id": "source-63a1a4385c25eae4",
+    "title": "Excelsior",
+    "url": "https://www.hiddensplendor.beer/the-wonder/the-wonder-begins",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "excelsior-san-rafael-announced"
+    ]
+  },
+  {
+    "id": "source-63aff7bff82a924f",
+    "title": "Renegade Craft 冬季手作市集",
+    "url": "https://www.renegadecraft.com/event/san-francisco-winter/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-sf-renegade-craft-winter"
+    ],
+    "endDate": "2026-11-15"
   },
   {
     "id": "source-63cbf5346b50eea3",
@@ -5447,7 +5680,7 @@
       "bay-area-freebies-deals-2026-11",
       "san-leandro-costume-swap-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-6a8be9211b4c77fe",
@@ -5520,6 +5753,16 @@
     "endDate": "2026-10-03"
   },
   {
+    "id": "source-6bfee771e7b4934b",
+    "title": "San José 百老汇巡演：The Who’s Tommy",
+    "url": "https://broadwaysanjose.com/shows/the-whos-tommy/",
+    "kind": "event",
+    "contentIds": [
+      "octnov-san-jose-tommy-2026"
+    ],
+    "endDate": "2026-11-22"
+  },
+  {
     "id": "source-6c134882146dab15",
     "title": "The MAC：Eames & Eames 现代设计展",
     "url": "https://napavalleymuseum.org/blogs/upcoming-exhibitions/eames-eames",
@@ -5529,6 +5772,16 @@
       "november-north-eames-exhibition-2026"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-6c59eabb0b79f4fd",
+    "title": "Shinka",
+    "url": "https://jayhotelsf.com/eat-drink/shinka/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "shinka-the-jay-announced"
+    ]
   },
   {
     "id": "source-6c6a6b8ba2d47284",
@@ -5708,7 +5961,7 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-7068690ed9aa2ca9",
@@ -5999,6 +6252,16 @@
       "bay-area-freebies-deals-2026-09",
       "sephora-birthday"
     ]
+  },
+  {
+    "id": "source-775248f03c536f18",
+    "title": "Coyote Hills：认识 Tule 湿地植物并做手作",
+    "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60474",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-coyote-hills-tule-work-play"
+    ],
+    "endDate": "2026-11-21"
   },
   {
     "id": "source-7767c4e238489067",
@@ -6360,7 +6623,20 @@
       "bay-area-freebies-deals-2026-11",
       "emeryville-restaurant-week-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-7de810c95004cdf5",
+    "title": "11/27 Green Friday：东湾区域公园免多项入园费用",
+    "url": "https://www.ebparks.org/we-celebrate/green-friday",
+    "kind": "offer",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "east-bay-green-friday-nov27-2026",
+      "east-bay-redwoods-green-friday-2026"
+    ],
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-7e0b1afc60495ff3",
@@ -6621,6 +6897,16 @@
     "endDate": "2026-10-18"
   },
   {
+    "id": "source-83924550a2f75b12",
+    "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
+    "url": "https://jayhotelsf.com/eat-drink/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-new-openings-2026-09"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
     "id": "source-83a40c981943b2bb",
     "title": "10/24 首 100 名会员领两只限定 Swarms",
     "url": "https://www.lowes.com/l/creator/mrbeast",
@@ -6680,6 +6966,16 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "passdoor-santa-rosa-opening-2026"
+    ]
+  },
+  {
+    "id": "source-8526fdda5d563820",
+    "title": "Flora",
+    "url": "https://www.florasantanarow.com/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "flora-santana-row-announced"
     ]
   },
   {
@@ -6814,7 +7110,7 @@
       "bay-area-freebies-deals-2026-11",
       "sf-moad-free-thursday-oct1-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-87c690f9e78333c4",
@@ -6858,7 +7154,7 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-885c1e8a288fa339",
@@ -6970,6 +7266,16 @@
     ]
   },
   {
+    "id": "source-8a844aa0b3f60528",
+    "title": "Windy Hill 全国徒步日：可携犬的7英里登山",
+    "url": "https://www.openspace.org/events/guided-activities/national-take-hike-day-dog-hike",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-take-a-hike-dog-2026"
+    ],
+    "endDate": "2026-11-17"
+  },
+  {
     "id": "source-8ab257464f308cef",
     "title": "10/2–4 金门公园音乐节：先留好散场路线",
     "url": "https://www.sfmta.com/travel-updates/hardly-strictly-bluegrass-october-2-4-2026",
@@ -7010,7 +7316,7 @@
       "sf-free-culture-eligibility-october-2026",
       "sfmoma-family-oct25"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-8b8309d8fb4a430d",
@@ -7034,6 +7340,16 @@
     ]
   },
   {
+    "id": "source-8bdaac8428856d9d",
+    "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
+    "url": "https://www.sfgate.com/food/article/old-post-office-burlingame-22449256.php",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-new-openings-2026-09"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
     "id": "source-8bee3f090c449509",
     "title": "FARR 前沿 AI 与机器人峰会",
     "url": "https://luma.com/FARRsummit",
@@ -7052,6 +7368,16 @@
       "bay-area-new-openings-2026-09"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-8bf7e38a7f2ae29c",
+    "title": "Fort Mason 周日农夫市集：11月五个周日",
+    "url": "https://fortmason.org/event/sunday-farmers-market/2026-11-29/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-fort-mason-farmers-market"
+    ],
+    "endDate": "2026-11-29"
   },
   {
     "id": "source-8c796c4408d01ef7",
@@ -7143,6 +7469,16 @@
       "sf-opera-manon-2026"
     ],
     "endDate": "2026-10-30"
+  },
+  {
+    "id": "source-8e1fd1c8393d1aef",
+    "title": "Mountain View 亲子音乐剧：绿野仙踪",
+    "url": "https://pytnet.org/shows/the-wizard-of-oz/",
+    "kind": "event",
+    "contentIds": [
+      "octnov-pyt-wizard-oz-2026"
+    ],
+    "endDate": "2026-11-22"
   },
   {
     "id": "source-8e2ed7115e22ff4c",
@@ -7395,7 +7731,7 @@
       "bay-area-freebies-deals-2026-11",
       "sjma-free-nov6-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-92894c1968f73a82",
@@ -7563,7 +7899,7 @@
       "bay-area-freebies-deals-2026-11",
       "station-house-happy-hour-20261002"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-954e6ed0a50074e0",
@@ -7925,7 +8261,7 @@
       "bay-area-freebies-deals-2026-11",
       "concord-taco-trail-challenge-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-9ba90453e07c8486",
@@ -7996,7 +8332,7 @@
       "bay-area-freebies-deals-2026-11",
       "sonoma-county-museum-family-oct10"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-9cd1bbf07729c8f9",
@@ -8006,6 +8342,16 @@
     "contentIds": [
       "bay-area-fastrak-bridge-express-lanes-guide"
     ]
+  },
+  {
+    "id": "source-9d059eab15c34be9",
+    "title": "Fort Point 历史短讲：金门大桥下的15分钟",
+    "url": "https://presidio.gov/explore/events/fort-point-history-2-2/2026-11-29/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-fort-point-history-talks"
+    ],
+    "endDate": "2026-11-29"
   },
   {
     "id": "source-9d6e0c8bc6b181c7",
@@ -8209,6 +8555,16 @@
       "cupertino-monster-mash-2026"
     ],
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-a227853cd6dbed4b",
+    "title": "南湾 Alviso 秋日湿地：一段木栈道，一次慢观察",
+    "url": "https://parks.santaclaracounty.gov/locations/alviso-marina-county-park",
+    "kind": "guide",
+    "contentIds": [
+      "alviso-autumn-wetlands-2026"
+    ],
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-a28d321cf2a3e09e",
@@ -8544,9 +8900,10 @@
     "url": "https://www.yogurtland.com/locations",
     "kind": "offer",
     "contentIds": [
+      "yogurtland-anniversary-nov20-2026",
       "yogurtland-anniversary-oct20"
     ],
-    "endDate": "2026-10-20"
+    "endDate": "2026-11-20"
   },
   {
     "id": "source-a76e01994f7cdd5f",
@@ -8711,6 +9068,16 @@
     ]
   },
   {
+    "id": "source-aa9327365c27a54a",
+    "title": "Rancho San Antonio：寻找野火鸡的自然徒步",
+    "url": "https://www.openspace.org/events/guided-activities/explorer-hike-annual-turkey-trot-3",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-turkey-trot-2026"
+    ],
+    "endDate": "2026-11-18"
+  },
+  {
     "id": "source-aab132d211a0",
     "title": "Menlo Park 万圣节游行与嘉年华",
     "url": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261024-Halloween-Hoopla-Parade-and-Carnival",
@@ -8780,7 +9147,7 @@
       "bay-area-freebies-deals-2026-11",
       "marin-transit-clean-air-oct7-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-abedacf1d4242c20",
@@ -8860,7 +9227,7 @@
       "bay-area-freebies-deals-2026-11",
       "onigilly-valley-fair-anniversary-sep26-27"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-adc316bdc58d72f1",
@@ -9031,7 +9398,7 @@
       "bay-area-freebies-deals-2026-11",
       "happy-hollow-senior-safari-oct22"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-afd62647c9effe8f",
@@ -9042,6 +9409,15 @@
       "uptown-jackson-dean-2026"
     ],
     "endDate": "2026-10-16"
+  },
+  {
+    "id": "source-b01c52362365ac60",
+    "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+    "url": "https://www.bart.gov/guide/apps",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide"
+    ]
   },
   {
     "id": "source-b061e212910e3db1",
@@ -9203,6 +9579,16 @@
     ]
   },
   {
+    "id": "source-b360b6952b08ed65",
+    "title": "St. Joseph’s Hill：Manzanita 晨间登高",
+    "url": "https://www.openspace.org/events/guided-activities/manzanita-morning-hike-0",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-manzanita-morning-2026"
+    ],
+    "endDate": "2026-11-22"
+  },
+  {
     "id": "source-b37cc67931a075e6",
     "title": "湾区遇到问题找谁：311 报修、211 转介与紧急求助",
     "url": "https://uwba.org/get-help/",
@@ -9221,7 +9607,7 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-b44b68eb47514b70",
@@ -9243,7 +9629,7 @@
       "chm-museums-on-us-nov7-8-2026",
       "chm-museums-on-us-oct3-4"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-b4c26bf858ec6d22",
@@ -9433,7 +9819,7 @@
       "bay-area-freebies-deals-2026-11",
       "sf-zoo-resident-free-oct7-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-b88ac6d367c512d7",
@@ -9565,7 +9951,7 @@
       "bay-area-freebies-deals-2026-11",
       "hayward-compost-giveaway-oct24-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-ba8aec416ca65fa6",
@@ -9677,6 +10063,16 @@
     "contentIds": [
       "bay-area-street-parking-first-time-guide"
     ]
+  },
+  {
+    "id": "source-bbe039ae54543229",
+    "title": "Presidio 营火圈：半小时护林员故事",
+    "url": "https://presidio.gov/explore/events/park-ranger-campfire-talks-2/2026-11-30/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-presidio-campfire-history-talks"
+    ],
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-bbf7ade2e14b8e46",
@@ -9795,6 +10191,7 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "sonoma-autumn-art-plaza-2026",
       "svma-free-wednesdays-october"
     ]
   },
@@ -10278,7 +10675,7 @@
       "bay-area-freebies-deals-2026-11",
       "conservatory-free-nov3-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-c850fdc61e7bf105",
@@ -10291,7 +10688,7 @@
       "moad-free-nov14-2026",
       "sf-moad-thrive-second-saturday-oct2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-c85ead6aed7acea7",
@@ -10323,7 +10720,7 @@
       "bay-area-freebies-deals-2026-11",
       "woodside-compost-workshop-gift-oct12-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-c91802b00c1bf17c",
@@ -10563,7 +10960,7 @@
       "bay-area-freebies-deals-2026-11",
       "san-leandro-fall-book-sale-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-ce75e7e40b53bf9c",
@@ -10672,6 +11069,16 @@
       "east-bay-gabriel-fluffy-iglesias-the-1976-tour-2026"
     ],
     "endDate": "2026-10-11"
+  },
+  {
+    "id": "source-cfb50fbfcb45f7d0",
+    "title": "Petaluma 儿童音乐体验：中美洲古老乐器",
+    "url": "https://events.sonomalibrary.org/event/ancestral-sounds-mesoamerica-kids-117141",
+    "kind": "event",
+    "contentIds": [
+      "octnov-petaluma-ancestral-sounds-2026"
+    ],
+    "endDate": "2026-11-28"
   },
   {
     "id": "source-cfbbc011d3a8169f",
@@ -11056,6 +11463,16 @@
     ]
   },
   {
+    "id": "source-d812c1373eb81fba",
+    "title": "Arion Press：走进手工铸字与装订工坊",
+    "url": "https://fortmason.org/event/arion-press-public-tours-2026/2026-11-21/1/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-arion-press-public-tours"
+    ],
+    "endDate": "2026-11-21"
+  },
+  {
     "id": "source-d8332865d1d67669",
     "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
     "url": "https://www.sonomacounty.com/media/whats-new/whats-new-in-sonoma-county-late-summer-early-fall-2026/",
@@ -11106,6 +11523,16 @@
     "contentIds": [
       "bay-area-phone-bank-first-bill-guide"
     ]
+  },
+  {
+    "id": "source-d91b8d052aba5cc4",
+    "title": "Purisima 红杉林返绿徒步",
+    "url": "https://www.openspace.org/events/guided-activities/return-green",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-return-to-green-2026"
+    ],
+    "endDate": "2026-11-18"
   },
   {
     "id": "source-d95fd6b03c65e4f5",
@@ -11394,6 +11821,16 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-de69b0781ebae19a",
+    "title": "Purisima 亲子自然观察：寻找香蕉蛞蝓",
+    "url": "https://www.openspace.org/events/guided-activities/counting-banana-slugs-0",
+    "kind": "event",
+    "contentIds": [
+      "octnov-midpen-banana-slugs-2026"
+    ],
+    "endDate": "2026-11-21"
+  },
+  {
     "id": "source-df1de42962b7",
     "title": "21+ · Napa Harvest After Dark 面具晚宴",
     "url": "https://www.theduckhorncollection.com/blogs/events/harvest-after-dark-a-halloween-masquerade-dinner",
@@ -11507,6 +11944,16 @@
     "endDate": "2026-10-03"
   },
   {
+    "id": "source-e121e559fe3a537d",
+    "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
+    "url": "https://sf.eater.com/restaurant-news/212458/flora-restaurant-opening-san-jose",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-new-openings-2026-09"
+    ],
+    "endDate": "2026-09-30"
+  },
+  {
     "id": "source-e153beed7917edf3",
     "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
     "url": "https://www.instagram.com/p/DddgD1VqMy2/",
@@ -11516,7 +11963,7 @@
       "bay-area-freebies-deals-2026-11",
       "chicha-berkeley-bogo-sep25"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-e1b1ffd1d1744c4a",
@@ -11776,6 +12223,17 @@
     ]
   },
   {
+    "id": "source-e963edc7c9fe20b3",
+    "title": "11/21 起，SFMOMA 一楼可免费看 Sarah Sze 新装置",
+    "url": "https://www.sfmoma.org/exhibition/sarah-sze/",
+    "kind": "bulletin",
+    "contentIds": [
+      "sf-autumn-art-half-day-2026",
+      "sfmoma-sarah-sze-nov21-2026"
+    ],
+    "endDate": "2026-11-30"
+  },
+  {
     "id": "source-e997b9b3c68608fc",
     "title": "Filoli 不只是一张花园照：把老宅、花径和林间留成半天",
     "url": "https://filoli.org/visit/directions-parking/",
@@ -11942,6 +12400,16 @@
     "endDate": "2026-10-12"
   },
   {
+    "id": "source-edef9f384f24d182",
+    "title": "Point Reyes 感恩节开放工作室",
+    "url": "https://www.visitmarin.org/event-calendar/2026/november-2025/point-reyes-open-studios-thanksgiving-weekend-1/",
+    "kind": "event",
+    "contentIds": [
+      "octnov-point-reyes-open-studios-2026"
+    ],
+    "endDate": "2026-11-29"
+  },
+  {
     "id": "source-ee2582e2cca4d489",
     "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
     "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/assembly-bill-ab-60-driver-licenses/",
@@ -11960,7 +12428,7 @@
       "bay-area-freebies-deals-2026-11",
       "sjpl-booktacular-oct24-31"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-eef560243688fffa",
@@ -12065,7 +12533,7 @@
       "bay-area-freebies-deals-2026-11",
       "pacific-catch-aloha-corte-madera-20261005"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-f05309873a4a36d5",
@@ -12134,6 +12602,7 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-visitor-coast-redwoods-return-plan-2026",
+      "half-moon-bay-autumn-coast-2026",
       "half-moon-bay-coastal-half-day-guide"
     ]
   },
@@ -12427,7 +12896,7 @@
       "omca-free-nov1-2026",
       "omca-free-oct4"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-f74baae04a5b5a76",
@@ -12530,6 +12999,16 @@
     ]
   },
   {
+    "id": "source-f9291b01c5edef4d",
+    "title": "Los Altos 第50届节日灯光游行",
+    "url": "https://www.losaltosparade.org/welcome",
+    "kind": "event",
+    "contentIds": [
+      "octnov-los-altos-lights-parade-2026"
+    ],
+    "endDate": "2026-11-29"
+  },
+  {
     "id": "source-f93d59179ecf473a",
     "title": "Trunk & Treat 分三场，只给儿童登记",
     "url": "https://www.cityoforinda.gov/m/newsflash/home/detail/310",
@@ -12549,6 +13028,16 @@
       "napa-costume-exchange-oct3-2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-f99972a656b557d3",
+    "title": "Opera San José：屋顶上的提琴手",
+    "url": "https://www.operasj.org/productions/fiddler",
+    "kind": "event",
+    "contentIds": [
+      "octnov-opera-sj-fiddler-2026"
+    ],
+    "endDate": "2026-11-29"
   },
   {
     "id": "source-f9b16c990dec6d7e",
@@ -12670,6 +13159,16 @@
     "contentIds": [
       "bay-area-k12-midyear-enrollment-guide"
     ]
+  },
+  {
+    "id": "source-fb5d0c14d3c045f0",
+    "title": "Presidio 草地免费瑜伽：先预约再出门",
+    "url": "https://presidio.gov/explore/events/free-yoga-in-the-park/2026-11-22/",
+    "kind": "event",
+    "contentIds": [
+      "nov2026-presidio-free-yoga"
+    ],
+    "endDate": "2026-11-22"
   },
   {
     "id": "source-fc28e5d4bcaebabb",
@@ -12811,7 +13310,7 @@
       "bay-area-freebies-deals-2026-11",
       "botanical-free-nov10-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-ffeb1683d03e46b5",

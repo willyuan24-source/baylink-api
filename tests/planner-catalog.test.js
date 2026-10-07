@@ -83,11 +83,14 @@ test('published AWS Builder Loft event cannot be recommended to an underage grou
   const event = checkedCatalog().events.find(row => row.id === 'surrealdb-mastra-shared-memory-2026');
   assert.ok(event, 'The AWS-hosted event must be present for this admission regression check.');
   assert.equal(event.planning?.minAge, 18);
-  const response = await request({ filters: { date: event.startDate, region: event.region, childAge: 17 } });
+  // This is a historical October 5 admission regression, independent of later
+  // catalog review dates. Keep exercising age checks instead of past-date rejection.
+  const historicalRequest = body => recommend({ body, catalog: checkedCatalog(), now: () => Date.parse('2026-10-05T19:00:00Z'), isTest: true });
+  const response = await historicalRequest({ filters: { date: event.startDate, region: event.region, childAge: 17 } });
   assert.ok(!response.suggestions.some(row => row.eventId === event.id));
   const otherRegionalIds = catalog.events.filter(row => row.region === event.region && row.id !== event.id).map(row => row.id);
   assert.ok(otherRegionalIds.length <= MAX_EVENT_IDS_PER_REQUEST);
-  const adults = await request({ filters: { date: event.startDate, region: event.region }, excludeEventIds: otherRegionalIds });
+  const adults = await historicalRequest({ filters: { date: event.startDate, region: event.region }, excludeEventIds: otherRegionalIds });
   assert.deepEqual(adults.suggestions.map(row => row.eventId), [event.id]);
 });
 

@@ -69,10 +69,10 @@ const CASES = [
 // an editorial reference still must remain catalog evidence, never a live read.
 const evidenceReferenceUrl = value => value.replace(/\/$/, '');
 
-test('builtin Chinese, English and planner catalogs contain the same 136 guides and all seven public-service additions', () => {
+test('builtin Chinese, English and planner catalogs retain the full guide library and all seven public-service additions', () => {
   for (const [name, rows] of [['Chinese', zh], ['English', en], ['planner', planner.guides]]) {
-    assert.equal(rows.length, 136, `${name}: published guide count`);
-    assert.equal(new Set(rows.map(row => row.slug)).size, 136, `${name}: guide IDs must be unique`);
+    assert.ok(rows.length >= 136, `${name}: retain at least the existing public-service release library while permitting new guides`);
+    assert.equal(new Set(rows.map(row => row.slug)).size, rows.length, `${name}: guide IDs must be unique`);
     for (const slug of PUBLIC_SERVICE_SLUGS) assert.ok(rows.some(row => row.slug === slug), `${name}: ${slug}`);
   }
   assert.deepEqual(en.map(row => row.slug).sort(), zh.map(row => row.slug).sort());

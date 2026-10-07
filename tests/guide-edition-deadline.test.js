@@ -10,7 +10,13 @@ const north = zh.find(guide => guide.slug === 'north-bay-markets-nature-culture-
 
 test('published half-month editions are searchable on November 15 and archived on November 16', () => {
   const dated = zh.filter(guide => guide.editionThroughDate === '2026-11-15');
-  assert.ok(dated.length >= 8, 'All published first-half regional and benefits editions export their deadline.');
+  const firstHalfSlugs = [
+    'bay-area-november-first-half-planner-2026', 'bay-area-november-resident-dates-2026',
+    'north-bay-markets-nature-culture-through-november-15-2026',
+    'peninsula-south-bay-november-nature-walks-2026', 'peninsula-south-bay-autumn-farmers-markets-2026',
+    'east-bay-november-nature-programs-2026', 'san-francisco-autumn-food-markets-2026',
+  ];
+  for (const slug of firstHalfSlugs) assert.ok(dated.some(guide => guide.slug === slug), `${slug}: retain the actual first-half cutoff`);
   for (const guide of dated) {
     assert.equal(isGuideArchived(guide, '2026-11-15'), false, guide.slug);
     assert.equal(isGuideArchived(guide, '2026-11-16'), true, guide.slug);
@@ -18,6 +24,15 @@ test('published half-month editions are searchable on November 15 and archived o
     assert.equal(selected[0]?.slug, guide.slug);
     assert.deepEqual(selectConversationGuides([guide], guide.title, 'other', '/', [], '2026-11-16'), []);
     assert.equal(en.find(row => row.slug === guide.slug)?.editionThroughDate, guide.editionThroughDate);
+  }
+  // The refreshed benefits edition now includes confirmed late-November offers;
+  // it must not inherit the still-current half-month articles' earlier cutoff.
+  for (const rows of [zh, en]) {
+    const benefits = rows.find(guide => guide.slug === 'bay-area-freebies-deals-2026-11');
+    assert.equal(benefits.editionThroughDate, '2026-11-30');
+    assert.equal(isGuideArchived(benefits, '2026-11-16'), false);
+    assert.equal(isGuideArchived(benefits, '2026-11-30'), false);
+    assert.equal(isGuideArchived(benefits, '2026-12-01'), true);
   }
 });
 

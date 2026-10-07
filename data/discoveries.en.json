@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-06",
+  "checkedAt": "2026-10-07",
   "items": [
     {
       "kind": "offer",
@@ -340,14 +340,14 @@
       "id": "svma-free-wednesdays-october",
       "title": "Free Wednesday art visits in Sonoma",
       "path": "/offers/svma-free-wednesdays-october",
-      "summary": "551 Broadway, near Sonoma Town Plaza. October Wednesdays are the 7th, 14th, 21st and 28th; the current M. Louise Stanley exhibition runs through January 24, 2027. Workshops have separate pricing.",
+      "summary": "551 Broadway, half a block from Sonoma Plaza. November Wednesdays are Nov 4, 11, 18 and 25, calculated from the current weekly free-admission rule; check holiday closures separately. The museum also lists a 2pm closing on Oct 17 and full closures on Oct 22 and 29. Special-date closures override regular hours.",
       "details": [
         "Wednesday general admission is free without membership or purchase. Check in at the desk; children under 13 need an adult."
       ],
       "dateLabel": "Every Wednesday · 11 AM–5 PM",
       "costLabel": "No purchase required",
       "status": "ongoing",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://svma.org/visit/",
       "sourceLabel": "Sonoma museum free Wednesdays and closure notice"
     },
@@ -1007,7 +1007,7 @@
       "id": "marin-transit-clean-air-oct7-2026",
       "title": "10/7: Fare-Free Marin Transit Local Buses",
       "path": "/offers/marin-transit-clean-air-oct7-2026",
-      "summary": "Check your route, outbound and return departures, and stops first. The fare-free announcement does not extend service hours or automatically cover an entire cross-bay trip. Verify other operators' fares separately.",
+      "summary": "The official 2026/27 schedule lists October 7 as Clean Air Day, with local buses free for all riders. Check your outbound and return departures and stops. Fare-free travel does not extend service hours; check other operators' fares separately.",
       "details": [
         "Marin Transit local buses are fare-free for everyone that day, with no purchase required. This does not automatically include Golden Gate, SMART, ferries, or other operators' services."
       ],
@@ -1017,7 +1017,7 @@
       "dateLabel": "10/7 · Services run according to each route's schedule that day",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://marintransit.gov/fare-free-promotions",
       "sourceLabel": "Marin Transit Official Fare-Free Days"
     },
@@ -1045,7 +1045,7 @@
       "id": "sf-zoo-resident-free-oct7-2026",
       "title": "October 7: free zoo admission for SF residents with proof",
       "path": "/offers/sf-zoo-resident-free-oct7-2026",
-      "summary": "This 2026 date is officially announced. Parking, food and other paid extras are excluded. Ask the zoo how accompanying children or relatives without their own address ID should prove eligibility.",
+      "summary": "The free-day event page lists October 7, 10 AM–4 PM; the site's general closing time does not define this offer's window. Parking, food and other paid extras are excluded. Ask the zoo how accompanying children or relatives without their own address ID should prove eligibility.",
       "details": [
         "San Francisco residents only. Show government-issued ID proving SF residency at ticket scanning; each qualifying ID admits one person free."
       ],
@@ -1055,7 +1055,7 @@
       "dateLabel": "Wed October 7 · Official free-day window 10 AM–4 PM",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-09-30",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.sfzoo.org/calendar/sf-resident-free-day-5/",
       "sourceLabel": "SF Zoo official 2026 free-day calendar"
     },
@@ -2313,7 +2313,7 @@
       "id": "target-circle-deal-days-oct6-7-2026",
       "title": "October 6–7: 40% off select apparel and 30% off select beauty",
       "path": "/offers/target-circle-deal-days-oct6-7-2026",
-      "summary": "Target announced 40% off select family apparel, 30% off select skincare, haircare and cosmetics, plus selected toy, tech and home deals. Check Bay Area store stock, exclusions and the final member price before buying.",
+      "summary": "Target's company announcement specifies October 6–7: 40% off selected family clothing and 30% off selected skincare, haircare and cosmetics. Purchases and membership are required. Check local stock, exclusions and checkout totals for your chosen items.",
       "details": [
         "Join free Target Circle and buy eligible items in store, online or in the app. Discounts apply to selected products, not everything. Paid Circle 360 members get early access to some deals on October 5."
       ],
@@ -2322,7 +2322,7 @@
       "dateLabel": "Oct 6–7 · Free Circle membership",
       "costLabel": "Purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.prnewswire.com/news-releases/target-circle-deal-days-returns-with-major-savings-on-stylish-fall-and-holiday-finds-302878903.html",
       "sourceLabel": "Target Corporation’s official fall 2026 sale announcement"
     },
@@ -3598,6 +3598,82 @@
       "sourceLabel": "Dunkin’ official October 2026 offers and terms"
     },
     {
+      "kind": "offer",
+      "id": "east-bay-green-friday-nov27-2026",
+      "title": "Nov 27 Green Friday: East Bay regional park fee waivers",
+      "path": "/offers/east-bay-green-friday-nov27-2026",
+      "summary": "Choose one regional park for an outing. The Tilden Merry-Go-Round and Redwood Valley Railway remain chargeable; check the chosen park's trail, weather and parking notices.",
+      "details": [
+        "Park entrance activity fees, including parking, horses, boat launching, fishing and Ardenwood admission, are waived. State fishing licenses, watercraft inspections and concessions are excluded."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-27",
+      "dateLabel": "Friday, Nov 27 · individual park hours apply",
+      "costLabel": "No purchase required",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.ebparks.org/we-celebrate/green-friday",
+      "sourceLabel": "EBRPD official 2026 Green Friday fee waiver"
+    },
+    {
+      "kind": "offer",
+      "id": "yogurtland-anniversary-nov20-2026",
+      "title": "Nov 20: 20% off in-store for Yogurtland members",
+      "path": "/offers/yogurtland-anniversary-nov20-2026",
+      "summary": "The published 2026 monthly rule places November's discount on Nov 20. Confirm local participation; this is a discount on a purchase, not a free cup.",
+      "details": [
+        "Show the app or account phone number as a Real Rewards member; same-day signup is allowed. Participating stores only, in-store purchases, no stacking; online, delivery, catering and gift cards excluded."
+      ],
+      "startDate": "2026-11-20",
+      "endDate": "2026-11-20",
+      "dateLabel": "Friday, Nov 20 · participating store hours",
+      "costLabel": "Purchase required",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.yogurtland.com/news_posts/view/86/celebrating-20-years-of-yogurtland-anniversary-promo-how-you-can-join-the-fun",
+      "sourceLabel": "Yogurtland 2026 member-day terms"
+    },
+    {
+      "kind": "offer",
+      "id": "botanical-thanksgiving-nov26-2026",
+      "title": "Nov 26 Thanksgiving: free general admission to SF Botanical Garden",
+      "path": "/offers/botanical-thanksgiving-nov26-2026",
+      "summary": "At 1199 9th Avenue in Golden Gate Park. Nov 26 is the 2026 date derived from the current recurring rule, not an all-day free offer at the other two gardens.",
+      "details": [
+        "Thanksgiving is listed as a free general-admission day for everyone, without an SF residency requirement. Special exhibitions, events and programs are excluded; recheck holiday hours and last entry."
+      ],
+      "region": "sf",
+      "startDate": "2026-11-26",
+      "endDate": "2026-11-26",
+      "dateLabel": "Thursday, Nov 26 · based on the official Thanksgiving rule",
+      "costLabel": "No purchase required",
+      "status": "dated",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://gggp.org/tickets/",
+      "sourceLabel": "Gardens of Golden Gate Park official free-admission rules"
+    },
+    {
+      "kind": "opening",
+      "id": "old-post-office-burlingame",
+      "title": "The Old Post Office",
+      "path": "/openings/old-post-office-burlingame",
+      "summary": "The former post office now serves French-influenced California cuisine. The official address is 222 Park Road, with dinner daily from 5–10 PM.",
+      "details": [
+        "Weekday lunch starts Oct 12, 11:30 AM–2 PM; weekend brunch starts Oct 17, 11 AM–2 PM. Check menus and reservations. This is opening news, not a dining review; no opening discount is confirmed.",
+        "222 Park Road, Burlingame, CA 94010",
+        "New restaurant in a historic building"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "startDate": "2026-10-01",
+      "dateLabel": "Open since Oct 1 · lunch from Oct 12, brunch from Oct 17",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.oldpostofficeburlingame.com/",
+      "sourceLabel": "The Old Post Office · Official website"
+    },
+    {
       "kind": "opening",
       "id": "passdoor-santa-rosa-opening-2026",
       "title": "The Passdoor",
@@ -4443,22 +4519,79 @@
     },
     {
       "kind": "opening",
+      "id": "excelsior-san-rafael-announced",
+      "title": "Excelsior",
+      "path": "/openings/excelsior-san-rafael-announced",
+      "summary": "Hidden Splendor's official announcement places its flagship pub at 1132 Fourth Street in downtown San Rafael. Food and beer anchor the neighborhood concept; an exact opening date and hours remain unconfirmed.",
+      "details": [
+        "The Chronicle's Oct 6 report forecasts November, subject to the brand's updates. The photo shows the future premises and does not prove the pub is open; no unconfirmed booking is suggested.",
+        "1132 Fourth Street, San Rafael, CA 94901",
+        "Upcoming · Neighborhood pub and restaurant"
+      ],
+      "region": "north-bay",
+      "city": "San Rafael",
+      "dateLabel": "New pub in preparation · November is a media forecast",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.hiddensplendor.beer/the-wonder/the-wonder-begins",
+      "sourceLabel": "Excelsior · Official website"
+    },
+    {
+      "kind": "opening",
+      "id": "flora-santana-row-announced",
+      "title": "Flora",
+      "path": "/openings/flora-santana-row-announced",
+      "summary": "Flora's official site places the seasonal American concept at Santana Row and offers opening updates. Earlier summer forecasts have passed; a projected month is not proof of opening.",
+      "details": [
+        "355 Santana Row #1060 is the reported address. Wait for the brand to confirm its opening date, hours and reservations; menu prices and opening offers are unverified.",
+        "355 Santana Row #1060, San Jose, CA 95128",
+        "Upcoming · Seasonal American restaurant"
+      ],
+      "region": "south-bay",
+      "city": "San Jose",
+      "dateLabel": "Official site confirms a 2026 opening plan · date pending",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.florasantanarow.com/",
+      "sourceLabel": "Flora · Official website"
+    },
+    {
+      "kind": "opening",
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku announces a Burlingame grand opening on October 11 at 11 AM, at 225 Lorton Ave. The store page lists lunch 11 AM–2 PM and dinner 5–9 PM; it remains an upcoming opening.",
+      "summary": "The Burlingame location page announces an Oct 11 grand opening with lunch and dinner hours at 225 Lorton Avenue. The date is still ahead as of this review, so this remains an announcement; other branches being open does not confirm this branch is operating.",
       "details": [
-        "Navigate to 225 Lorton Ave, Burlingame. Check the official schedule before visiting; an announced grand opening does not mean the shop is already operating or that there will be no queue.",
+        "The page header announces the Oct 11 grand opening while the location directory still says Coming Soon. Check this branch again before visiting. No opening gift, discount or queue guarantee was verified, and a celebration date does not establish the first day of public service.",
         "225 Lorton Ave, Burlingame, CA 94010",
         "Upcoming ramen restaurant"
       ],
       "region": "peninsula",
       "city": "Burlingame",
-      "dateLabel": "Grand opening announced for October 11 at 11 AM · Still upcoming",
+      "dateLabel": "Official grand opening announced for Oct 11 · 11am–2pm / 5pm–9pm",
       "status": "announced",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.marufukuramen.com/burlingame",
       "sourceLabel": "Marufuku Ramen · Burlingame · Official website"
+    },
+    {
+      "kind": "opening",
+      "id": "shinka-the-jay-announced",
+      "title": "Shinka",
+      "path": "/openings/shinka-the-jay-announced",
+      "summary": "The Jay has announced a Japanese-French concept by chef Fumio Yonezawa. Its page still says Coming Soon; the hotel's other dining hours do not establish Shinka's hours.",
+      "details": [
+        "Follow the announcement for now. Confirm this restaurant's own reservations, menu and date before planning a visit; an operating hotel does not prove its new restaurant is open.",
+        "433 Clay Street, San Francisco, CA 94111",
+        "Upcoming · Japanese-French dining"
+      ],
+      "region": "sf",
+      "city": "San Francisco",
+      "dateLabel": "Officially planned for October 2026 · exact opening date pending",
+      "status": "announced",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://jayhotelsf.com/eat-drink/shinka/",
+      "sourceLabel": "Shinka · Official website"
     },
     {
       "kind": "opening",
