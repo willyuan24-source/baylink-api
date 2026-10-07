@@ -1,6 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "title": "BAYBAY synthetic quality acceptance cases",
+  "reviewedAt": "2026-10-07",
   "validUntil": "2026-10-10",
   "privacy": "All personas and constraints below are synthetic. Never add a real account, address, library-card number or contact detail.",
   "cases": [
@@ -46,6 +47,114 @@
       "request": { "message": "假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。", "searchMode": "smart", "locale": "zh-Hans" },
       "assertions": { "coverageIds": ["driving_license", "vehicle_registration", "address_change", "documents", "deadlines", "official_entries"] },
       "manualReview": ["驾照、车辆登记和地址更新各有明确结论/适用条件；不混淆10天、20天或其他时限。", "规则必须适用于假设的外州搬入居民；有例外时保留，不把身份、车辆类型或REAL ID材料猜定。", "官方DMV链接支持各项材料与期限；一般说明不能当个人法律资格保证。"]
+    },
+    {
+      "id": "hans-colloquial-plan",
+      "request": { "message": "2026-10-10在Fremont，两位成人和一个6岁孩子，全家总预算80美元，开车。想逛半天，帮我排个顺路的走法。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 80, "budgetScope": "total", "travelMode": "drive" }, "webStatus": "not_requested" },
+      "manualReview": ["理解为半日规划，不要求用户换成特定关键词。", "保留人数、儿童年龄、全家预算；半天不擅自变成精确起止时间。", "草稿及正文互相一致；未核实交通、费用或开放时间不能保证可行。"]
+    },
+    {
+      "id": "hans-colloquial-correction", "follows": "hans-colloquial-plan",
+      "request": { "message": "改坐公交，总预算改为100美元，其他条件不变。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["只改变交通及全家总预算，不能丢城市、日期、人数或儿童年龄。", "没有实时公交依据时说清未知，不能沿用开车估时。"]
+    },
+    {
+      "id": "hans-colloquial-pause", "follows": "hans-colloquial-correction",
+      "request": { "message": "先别排了，只解释哪些费用还不确定。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "goal": "information", "city": "Fremont", "date": "2026-10-10", "budget": 100, "travelMode": "transit" }, "noPlan": true },
+      "manualReview": ["先解释已有选择的费用缺口，不生成或替换一份新行程。", "暂停没有清空已确认条件，不把未知价格说成免费。"]
+    },
+    {
+      "id": "hans-colloquial-resume", "follows": "hans-colloquial-pause",
+      "request": { "message": "继续规划，其他条件不变。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["恢复原半日任务，使用更新后的公交及100美元总预算。", "不重复索取已给条件；仍缺必要条件时最多问两个具体问题。"]
+    },
+    {
+      "id": "hans-sparse-food",
+      "request": { "message": "我在Fremont，想今晚吃点心。只用站内资料，哪家现在能吃到、肯定不用排队？", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "noPlan": true, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source"] },
+      "manualReview": ["不能凭餐饮目录保证今晚点心菜单、营业或排队情况。", "有候选时说明资料范围；没有可靠候选时给具体核对下一步，不把未知写成没有店。"]
+    },
+    {
+      "id": "hans-no-itinerary",
+      "request": { "message": "只比较Fremont和Oakland的图书馆办卡资格，不要给我安排一日游。", "searchMode": "site", "locale": "zh-Hans" },
+      "assertions": { "noPlan": true, "state": { "goal": "information" }, "webStatus": "not_requested" },
+      "manualReview": ["以两地对应图书馆系统为单位比较，不能让用户先选一个旅游目的地。", "清楚区分已经收录的资格与待官方确认的条件。"]
+    },
+    {
+      "id": "hant-colloquial-plan",
+      "request": { "message": "2026-10-10在Fremont，兩位成人和一個6歲孩子，全家總預算80美元，開車。想出門逛半天，幫我串成順路的遊程。", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 80, "budgetScope": "total", "travelMode": "drive" }, "webStatus": "not_requested" },
+      "manualReview": ["用繁體回答，理解遊程和出門逛半天的口語。", "保留人數、孩子年齡和全家預算，不編造精確起止時間。", "來源、正文及草稿對同一景點和條件一致。"]
+    },
+    {
+      "id": "hant-colloquial-correction", "follows": "hant-colloquial-plan",
+      "request": { "message": "改坐公車，總預算改為100美元，其他條件不變。", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["將公車理解為大眾運輸，保留原日期、地點和同行人。", "全家100美元不變成每人100美元，未核實車程不得沿用開車時間。"]
+    },
+    {
+      "id": "hant-colloquial-pause", "follows": "hant-colloquial-correction",
+      "request": { "message": "先別排了，只解釋哪些費用還不確定。", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "state": { "goal": "information", "city": "Fremont", "date": "2026-10-10", "budget": 100, "travelMode": "transit" }, "noPlan": true },
+      "manualReview": ["不再產生或替換行程，只解釋已有選擇的費用缺口。", "不清空已確認條件；未知價格不是免費。"]
+    },
+    {
+      "id": "hant-colloquial-resume", "follows": "hant-colloquial-pause",
+      "request": { "message": "繼續規劃，其他條件不變。", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["恢復半日遊程，沿用修正後的公車和全家100美元條件。", "不重問已知條件；只對缺乏的必要資料澄清。"]
+    },
+    {
+      "id": "hant-sparse-food",
+      "request": { "message": "我在Fremont，今晚想飲茶吃點心。只用站內資料，哪家現在能吃到、肯定不用排隊？", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "noPlan": true, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source"] },
+      "manualReview": ["能理解飲茶/點心，但不能凭目錄保證今晚菜單、營業或排隊情況。", "繁體答覆提供具體下一步，不將資料不足說成沒有餐廳。"]
+    },
+    {
+      "id": "hant-no-itinerary",
+      "request": { "message": "只比較Fremont和Oakland的圖書館辦卡資格，不要給我安排一日遊。", "searchMode": "site", "locale": "zh-Hant" },
+      "assertions": { "noPlan": true, "state": { "goal": "information" }, "webStatus": "not_requested" },
+      "manualReview": ["分別說明兩地圖書館系統的资格和未知條件，保持繁體。", "不要將比較問題變成旅遊規劃，或要求先選一個目的地。"]
+    },
+    {
+      "id": "en-colloquial-plan",
+      "request": { "message": "On 2026-10-10 in Fremont, two adults and one 6-year-old child, total family budget $80, driving. Could you put together a relaxed half-day outing for us?", "searchMode": "site", "locale": "en" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 80, "budgetScope": "total", "travelMode": "drive" }, "webStatus": "not_requested" },
+      "manualReview": ["Understand an outing request without requiring the word itinerary; reply in English.", "Retain three travelers, child age and total family budget. Do not invent precise clocks from half-day.", "Answer, citations and plan refer to the same choices; unverified admission and travel remain explicit."]
+    },
+    {
+      "id": "en-colloquial-correction", "follows": "en-colloquial-plan",
+      "request": { "message": "Use public transit instead. Change the total budget to $100. Keep the other requirements.", "searchMode": "site", "locale": "en" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["Change transport and total budget only, retaining the existing travelers, city and date.", "Do not reuse driving estimates as public transit times or represent the cap as a confirmed trip total."]
+    },
+    {
+      "id": "en-colloquial-pause", "follows": "en-colloquial-correction",
+      "request": { "message": "Pause the itinerary. Just explain which costs remain uncertain.", "searchMode": "site", "locale": "en" },
+      "assertions": { "state": { "goal": "information", "city": "Fremont", "date": "2026-10-10", "budget": 100, "travelMode": "transit" }, "noPlan": true },
+      "manualReview": ["Explain existing cost gaps without creating or replacing a plan.", "Keep confirmed constraints for later; unknown prices must not become zero."]
+    },
+    {
+      "id": "en-colloquial-resume", "follows": "en-colloquial-pause",
+      "request": { "message": "Resume planning. Keep the other requirements.", "searchMode": "site", "locale": "en" },
+      "assertions": { "state": { "goal": "day-plan", "city": "Fremont", "date": "2026-10-10", "partySize": 3, "childAges": [6], "budget": 100, "budgetScope": "total", "travelMode": "transit" } },
+      "manualReview": ["Resume the half-day outing using public transit and the corrected $100 family budget.", "Do not ask for facts already supplied; ask at most two missing essential details."]
+    },
+    {
+      "id": "en-sparse-food",
+      "request": { "message": "I am in Fremont and want dim sum tonight. Use site records only. Which restaurant can definitely serve it now with no wait?", "searchMode": "site", "locale": "en" },
+      "assertions": { "noPlan": true, "webStatus": "not_requested", "forbiddenTools": ["search_web", "read_source"] },
+      "manualReview": ["Do not guarantee live menu, opening or wait times from editorial records.", "Offer a specific way to check the missing facts; lack of records does not establish that no restaurants exist."]
+    },
+    {
+      "id": "en-no-itinerary",
+      "request": { "message": "Compare library card eligibility in Fremont and Oakland. Do not put together a day trip or itinerary.", "searchMode": "site", "locale": "en" },
+      "assertions": { "noPlan": true, "state": { "goal": "information" }, "webStatus": "not_requested" },
+      "manualReview": ["Compare the relevant library systems, their eligibility and unknown conditions.", "Do not turn the comparison into a leisure plan or demand one destination before answering."]
     }
   ]
 }
