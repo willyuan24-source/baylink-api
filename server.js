@@ -1729,7 +1729,7 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
   if (!aiUsageLimiter.check(`admin:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: 'Please wait before reading metrics again.' });
   try {
     const [rows, runtime] = await Promise.all([
-      AiGovernance.find({}).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
+      AiGovernance.find({ id: /^ai:\d{4}-\d{2}-\d{2}$/ }).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
       aiRuntimeMetrics.report(),
     ]);
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];

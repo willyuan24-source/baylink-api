@@ -43,6 +43,9 @@ test('fixed dimensions, schema and finite TTL cannot store prompt, identifiers o
   const Model = createAiRuntimeMetricModel(mongoose);
   assert.equal(Model.schema.options.strict, 'throw');
   assert.ok(Model.schema.indexes().some(([keys, options]) => keys.expiresAt === 1 && options.expireAfterSeconds === 0));
+  const expiryQuery = Model.find({ expiresAt: { $gt: new Date(NOW).toISOString() } });
+  expiryQuery.cast(Model);
+  assert.ok(expiryQuery.getFilter().expiresAt.$gt instanceof Date, 'production Mongoose casts the bounded expiry query to a date');
   assert.throws(() => new Model({ prompt: 'private' }), /strict mode/);
   const { models, metrics } = setup();
   const req = metrics.startRequest('private feature');
@@ -73,6 +76,30 @@ test('concurrent instances atomically accumulate into one day/function/model buc
   now += 1000;
   const run = b.startRequest('planner_recommend'); run.response({ ok: true }); run.end(); await b.flush();
   assert.equal(models.AiRuntimeMetric.rows[1].day, '2026-10-08'); assert.equal(models.AiRuntimeMetric.rows[1].model, 'none');
+});
+
+test('day-bucket TTL is bounded across Pacific DST and reports exclude expired rows before database cleanup', async () => {
+  let now;
+  const { models, metrics } = setup({ now: () => now });
+  for (const [timestamp, day, expiration] of [
+    ['2026-03-08T08:00:00Z', '2026-03-08', '2026-04-07T00:00:00.000Z'],
+    ['2026-03-09T06:59:59.999Z', '2026-03-08', '2026-04-07T00:00:00.000Z'],
+    ['2026-11-01T07:00:00Z', '2026-11-01', '2026-12-01T00:00:00.000Z'],
+    ['2026-11-02T07:59:59.999Z', '2026-11-01', '2026-12-01T00:00:00.000Z'],
+  ]) {
+    now = Date.parse(timestamp); metrics.startRequest('guide_chat').end(); await metrics.flush();
+    const row = models.AiRuntimeMetric.rows.find(row => row.day === day);
+    assert.equal(row.expiresAt, expiration);
+    assert.ok(Date.parse(row.expiresAt) - now <= 30 * 86400000);
+    assert.ok(Date.parse(row.expiresAt) > now);
+  }
+  now = Date.parse('2026-09-08T20:00:00Z'); metrics.startRequest('guide_chat').end(); await metrics.flush();
+  now = Date.parse('2026-10-07T23:59:59.999Z');
+  assert.equal((await metrics.report()).daily.length, 1);
+  now++;
+  assert.equal((await metrics.report()).from, '2026-09-08', 'oldest Pacific date remains in the query window');
+  assert.equal((await metrics.report()).daily.length, 0, 'its UTC expiration deadline is enforced even if TTL cleanup is late');
+  assert.equal(models.AiRuntimeMetric.rows.length, 3, 'read-only reporting does not delete stored rows');
 });
 
 test('zero usage is known, absent/invalid input and output are counted independently, retries keep model attribution', async () => {
@@ -174,9 +201,10 @@ test('duplicate insertion recovers once, ambiguous write failures are not retrie
 
 test('admin-only report has fixed retention and strict output fields; public usage never includes global runtime data', async t => {
   const models = createMemoryModels({ User: [{ id: 'admin', role: 'admin', accountStatus: 'active' }, { id: 'member', role: 'user', accountStatus: 'active' }] });
-  models.AiRuntimeMetric.rows.push({ _id: 'private-id', day: '2026-10-07', feature: 'guide_chat', model: 'gpt-6.1-sol', requestCompleted: 7, privateText: 'private', providerLatency: { le250: 1, privateField: 'private' } });
-  models.AiRuntimeMetric.rows.push({ _id: 'old', day: '2026-08-01', feature: 'guide_chat', model: 'gpt-6.1-sol', requestCompleted: 999 });
+  models.AiRuntimeMetric.rows.push({ _id: 'private-id', day: '2026-10-07', expiresAt: '2026-11-06T00:00:00.000Z', feature: 'guide_chat', model: 'gpt-6.1-sol', requestCompleted: 7, privateText: 'private', providerLatency: { le250: 1, privateField: 'private' } });
+  models.AiRuntimeMetric.rows.push({ _id: 'old', day: '2026-08-01', expiresAt: '2026-08-31T00:00:00.000Z', feature: 'guide_chat', model: 'gpt-6.1-sol', requestCompleted: 999 });
   models.AiGovernance.rows.push({ id: 'ai:2026-10-07', count: 5, identities: { private: 2 }, privateText: 'private' });
+  for (let index = 0; index < 40; index++) models.AiGovernance.rows.push({ id: `user:private-${index}`, count: 999, identities: { private: 999 } });
   const application = createApplication({ models, config: { NODE_ENV: 'test', JWT_SECRET: SECRET }, aiMetricsNow: () => NOW });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
