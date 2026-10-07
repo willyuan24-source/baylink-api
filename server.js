@@ -41,6 +41,7 @@ const { createOutingModel, registerOutings } = require('./lib/outings');
 const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
+const { baybayProvider, anthropicAvailable, DEFAULT_ANTHROPIC_MODEL } = require('./lib/anthropicBaybay');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
@@ -4577,15 +4578,48 @@ const parseGuideChatCompletion = (data) => {
   return parsed;
 };
 
+const guideChatProvider = baybayProvider(config);
+const guideChatProviderSupported = ['openai', 'anthropic'].includes(guideChatProvider);
+const guideChatUsesAnthropic = guideChatProvider === 'anthropic';
+const configuredGuideChatModel = guideChatUsesAnthropic
+  ? config.ANTHROPIC_BAYBAY_MODEL || DEFAULT_ANTHROPIC_MODEL
+  : config.OPENAI_MODEL || 'gpt-4o-mini';
+const guideChatApiKey = guideChatUsesAnthropic ? config.ANTHROPIC_API_KEY : config.OPENAI_API_KEY;
+
 const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale = 'zh-Hans', category, intent, currentPath, guideSources, history = [], currentDatePacific, matchingPosts = [], searchPerformed = false, searchScope: requestScope }) => {
+  if (!guideChatProviderSupported) throw new Error('Guide chat provider is not configured');
   const currentGuideTitle = guideSources.find(guide => guide.url === currentPath)?.title || '';
   const userPayload = { message, resolvedRequest, locale, inferredIntent: intent, inferredCategory: category, inferredPostType: isProviderRequest(resolvedRequest) ? 'provider' : 'client', currentPath: currentPath || '/', currentGuideTitle, currentDatePacific, searchScope: requestScope, guideSources, matchingPosts, searchPerformed, history };
   if (options.ai?.guideChat) {
     const result = await options.ai.guideChat(userPayload);
     return result?.choices ? { ...parseGuideChatCompletion(result), providerModel: safeModel(result.model) } : result;
   }
-  if (isTest) throw new Error('External AI requests are disabled in tests');
-  const model = config.OPENAI_MODEL || 'gpt-4o-mini';
+  if (isTest && !options.guideChatFetch) throw new Error('External AI requests are disabled in tests');
+  const model = configuredGuideChatModel;
+  const system = `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}${intent === 'transit' ? `\n${transitInstruction}` : ''}`;
+  const messages = [...history, { role: 'user', content: `用户问题：\n${JSON.stringify(userPayload)}` }];
+  if (guideChatUsesAnthropic) {
+    if (!anthropicAvailable(config)) throw new Error('Anthropic guide chat is not configured or its use window has ended');
+    const data = await fetchAiJson('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', Authorization: `Bearer ${guideChatApiKey}`,
+        'anthropic-version': '2023-06-01',
+        ...(config.ANTHROPIC_WORKSPACE_ID ? { 'anthropic-workspace-id': config.ANTHROPIC_WORKSPACE_ID } : {}),
+      },
+      body: JSON.stringify({
+        model, system, messages, max_tokens: 4096,
+        output_config: { effort: 'medium', format: { type: 'json_schema', schema: {
+          type: 'object', properties: { answer: { type: 'string' }, safetyNote: { type: 'string' } },
+          required: ['answer', 'safetyNote'], additionalProperties: false,
+        } } },
+      }),
+    }, { timeoutMs: 28000, ...(options.guideChatFetch ? { fetchImpl: options.guideChatFetch } : {}) });
+    // A valid-looking JSON fragment can still be a refusal or a truncated answer.
+    if (data?.stop_reason !== 'end_turn' || !Array.isArray(data.content)) throw new Error('AI guide response did not finish completely');
+    const text = data.content.filter(block => block?.type === 'text' && typeof block.text === 'string').map(block => block.text).join('');
+    return { ...parseGuideChatCompletion({ choices: [{ finish_reason: 'stop', message: { content: text } }] }), providerModel: safeModel(data.model) };
+  }
 
   const data = await fetchAiJson('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -4600,15 +4634,11 @@ const callOpenAiGuideChat = async ({ message, resolvedRequest = message, locale 
       max_completion_tokens: 2000,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: `${GUIDE_CHAT_SYSTEM}\n${guideLanguageInstruction(locale)}${intent === 'transit' ? `\n${transitInstruction}` : ''}` },
-        ...history,
-        {
-          role: 'user',
-          content: `用户问题：\n${JSON.stringify(userPayload)}`,
-        },
+        { role: 'system', content: system },
+        ...messages,
       ],
     }),
-  }, { timeoutMs: 20000 });
+  }, { timeoutMs: 20000, ...(options.guideChatFetch ? { fetchImpl: options.guideChatFetch } : {}) });
 
   return { ...parseGuideChatCompletion(data), providerModel: safeModel(data.model) };
 };
@@ -4761,7 +4791,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     const retrieval = { requestedMode: searchMode, scope, webStatus: webRequest.status || 'not_requested',
       requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area,
       ...(payload.catalogCheckedAt ? { catalogCheckedAt: payload.catalogCheckedAt } : {}),
-      configuredModel: safeModel(config.OPENAI_MODEL || 'gpt-4o-mini'), ...(actualGuideModel ? { model: actualGuideModel } : {}) };
+      configuredModel: safeModel(configuredGuideChatModel), ...(actualGuideModel ? { model: actualGuideModel } : {}) };
     if (webRequest.question) return respond({ ...payload, answer: webRequest.question, suggestedGuides: [], suggestedActions: [], interactiveCards: [], retrieval: { ...retrieval, scope: 'none' } });
     // Date/city matching is deterministic. A successful model search must not
     // overwrite it with a festival range, another city's listing or a guessed free day.
@@ -4787,7 +4817,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       const rejected = ['SEARCH_VERIFICATION_FAILED', 'web_verification_failed'].includes(error.code);
       return respond({ ...payload, retrieval: { ...retrieval, webStatus: rejected ? 'verification_failed' : 'unavailable',
         failureCode: normalizeWebSearchError(error).code,
-        webConfiguredModel: safeModel(config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
+        webConfiguredModel: safeModel(guideChatUsesAnthropic ? configuredGuideChatModel : config.OPENAI_WEB_SEARCH_MODEL || 'gpt-4.1-mini'), ...(error.model ? { rejectedWebModel: safeModel(error.model) } : {}) },
         matchNote: rejected
           ? locale === 'en' ? 'The web answer did not pass location/date checks. Only existing site guidance is shown.' : locale === 'zh-Hant' ? '聯網答覆未通過地點／日期檢查；以下僅保留站內參考資料。' : '联网答复未通过地点／日期检查；以下仅保留站内参考资料。'
           : locale === 'en' ? 'Web search is unavailable right now. Existing guidance is shown; no new web facts were retrieved.' : locale === 'zh-Hant' ? '本次聯網未完成；以下保留原有參考答覆，沒有取得新的網頁事實。' : '本次联网未完成；以下保留原有参考答复，没有取得新的网页事实。' });
@@ -4831,7 +4861,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
           retrieval: { requestedMode: searchMode, scope: 'none', webStatus: 'not_requested', requestedDate: requestScope.date, city: requestScope.city, area: requestScope.area } });
       }
     }
-    if (!config.OPENAI_API_KEY && !options.ai?.guideChat) return send(localized(fallback()));
+    if (!guideChatProviderSupported || !(guideChatUsesAnthropic ? anthropicAvailable(config) : guideChatApiKey) && !options.ai?.guideChat) return send(localized(fallback()));
     const guideSources = selectedGuides.map(guide => {
       const english = locale === 'en' && ENGLISH_GUIDE_CATALOG.get(guide.slug);
       return {

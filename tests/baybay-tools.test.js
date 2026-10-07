@@ -15,6 +15,19 @@ function setup(options = {}) {
 }
 const rawRoute = { routes: [{ duration: '1200s', distanceMeters: 9000 }] };
 
+test('Claude searches reserve their longer provider window before synthesis', async () => {
+  let calls = 0;
+  const webSearch = async () => { calls++; return { sources: [], candidates: [] }; };
+  const config = { BAYBAY_AI_PROVIDER: 'anthropic' };
+  const short = setup({ config, webSearch, deadline: Date.now() + 30000 });
+  assert.equal((await short.research.searchWeb('official museum information')).code, 'research_deadline');
+  assert.equal(calls, 0);
+  await setup({ config, webSearch, deadline: Date.now() + 42000 }).research.searchWeb('official museum information');
+  assert.equal(calls, 1);
+  await setup({ webSearch, deadline: Date.now() + 30000 }).research.searchWeb('official museum information');
+  assert.equal(calls, 2, 'existing OpenAI window remains 20 seconds');
+});
+
 test('school research rejects child identity and home addresses before any external search', async () => {
   let searches = 0;
   const { research } = setup({ webSearch: async () => { searches++; return { sources: [], candidates: [] }; } });
