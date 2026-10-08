@@ -1761,7 +1761,7 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
 });
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
-registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
+registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, discoveryCatalog: options.discoveryCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
 registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
 const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
