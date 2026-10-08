@@ -13,6 +13,8 @@ const { publicPostFilters, postLifecycleChanges, publicPostAvailability } = requ
 const { createAccountAuthChallengeModel, createAccountTotp } = require('./lib/accountTotp');
 const { registerAccountPrivacy, erasePostContacts, holdAccountOperation, holdPostOperation, runAccountHandler } = require('./lib/accountPrivacy');
 const { registerNotifications } = require('./lib/notifications');
+const { createServerErrors } = require('./lib/serverErrors');
+const { installProcessHandlers } = require('./lib/processLifecycle');
 const { createConversationResponseMetricModel, createConversationReplyMetric } = require('./lib/conversationReplyMetric');
 const { normalizeContact, allowedOrigins, apiSecurityHeaders, hashSessionToken } = require('./lib/security');
 const { keywordFilter } = require('./lib/postSearch');
@@ -68,6 +70,9 @@ for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
   const register = app[method].bind(app);
   app[method] = (...args) => register(...args.map(value => typeof value === 'function' && value.length < 4 ? function(req, res, next) { runAccountHandler(req, res, () => value(req, res, next)).catch(next); } : value));
 }
+// JSON error bodies and one structured log line per 5xx (lib/serverErrors.js).
+const serverErrors = createServerErrors({ config, log: options.serverErrorLog });
+app.use(serverErrors.middleware);
 app.disable('x-powered-by');
 app.set('trust proxy', proxyTrust(config, isTest));
 // Off by default; see docs/client-ip-rollout.md before setting CLIENT_IP_SOURCE.
@@ -1982,19 +1987,24 @@ app.post('/api/auth/reset-password', async (req, res) => {
   }
 });
 
-app.get('/api/users/:id', async (req, res) => {
-  const user = await User.findOne({ id: req.params.id, isBanned: { $ne: true }, accountStatus: { $ne: 'suspended' }, accountDeletionPending: { $ne: true } }).select(PUBLIC_USER_FIELDS);
-  if (!user) return res.status(404).json({ error: '用户不存在' });
-  res.json({
-    id: user.id,
-    nickname: user.nickname,
-    role: user.role,
-    avatar: user.avatar,
-    bio: user.bio,
-    isPhoneVerified: user.isPhoneVerified,
-    isOfficialVerified: user.isOfficialVerified,
-    ...formatPublicProfileFields(user),
-  });
+app.get('/api/users/:id', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ id: req.params.id, isBanned: { $ne: true }, accountStatus: { $ne: 'suspended' }, accountDeletionPending: { $ne: true } }).select(PUBLIC_USER_FIELDS);
+    if (!user) return res.status(404).json({ error: '用户不存在' });
+    res.json({
+      id: user.id,
+      nickname: user.nickname,
+      role: user.role,
+      avatar: user.avatar,
+      bio: user.bio,
+      isPhoneVerified: user.isPhoneVerified,
+      isOfficialVerified: user.isOfficialVerified,
+      ...formatPublicProfileFields(user),
+    });
+  } catch (error) {
+    // Public route (also behind the share-card page): a database error is a logged JSON 500, never a crash.
+    next(error);
+  }
 });
 
 app.get('/api/users/me/blocks', authenticateToken, async (req, res) => {
@@ -2739,15 +2749,20 @@ app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
     res.status(500).json({ error: '操作失败，请稍后再试' });
   }
 });
-app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
-  const post = await Post.findOne({ id: req.params.id });
-  if (!post) return res.sendStatus(404);
-  if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
-  // Mark unavailable first, including on a retry; no contact endpoint can issue a fresh snapshot after removal.
-  post.isDeleted = true; post.contactPreference = { ...(post.contactPreference || {}), methods: [] };
-  await post.save();
-  await erasePostContacts({ Post, ContactRequest, Message }, [post.id]);
-  res.json({ success: true });
+app.delete('/api/posts/:id', authenticateToken, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ id: req.params.id });
+    if (!post) return res.sendStatus(404);
+    if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+    // Mark unavailable first, including on a retry; no contact endpoint can issue a fresh snapshot after removal.
+    post.isDeleted = true; post.contactPreference = { ...(post.contactPreference || {}), methods: [] };
+    await post.save();
+    await erasePostContacts({ Post, ContactRequest, Message }, [post.id]);
+    res.json({ success: true });
+  } catch (error) {
+    // A retry is safe: the post is already marked unavailable before contacts are erased.
+    next(error);
+  }
 });
 app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
   try {
@@ -4916,12 +4931,9 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   }
 });
 
-app.use((error, _req, res, _next) => {
-  const status = error.status || 500;
-  if (res.headersSent) return res.end();
-  if (error.publicSafe === true) return res.status(status).json({ code: error.code, error: error.message });
-  res.status(status).json({ ...(error.code?.startsWith('AI_') ? { code: error.code } : {}), error: status === 403 ? '不允许此来源访问' : status === 413 ? '提交内容过大' : status === 400 ? '请求内容格式无效' : status === 429 ? '今日额度或请求频率已达到上限，请稍后重试。' : '操作失败，请稍后再试' });
-});
+// Always JSON; numeric driver codes (e.g. Mongo 40) are logged, never echoed or
+// passed to string methods (that TypeError used to fall through to Express's HTML 500).
+app.use(serverErrors.handler);
 
 return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
 }
@@ -4932,6 +4944,8 @@ async function startProduction(config = process.env) {
   const missing = required.filter(key => !config[key]);
   if (missing.length) throw new Error(`Missing environment keys: ${missing.join(', ')}`);
   const application = createApplication({ config });
+  // Log-and-continue on unhandled rejections; drain and close cleanly on SIGTERM/SIGINT.
+  installProcessHandlers({ application, disconnect: () => mongoose.disconnect() });
   await mongoose.connect(config.MONGO_URI);
   await application.models.RevokedSession.init();
   await application.models.EventInterest.init();
