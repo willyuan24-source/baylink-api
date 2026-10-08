@@ -36,6 +36,7 @@ const { registerPlannerTravel } = require('./lib/plannerTravel');
 const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset, hasPrivateSearchData } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
 const { createProductMetricModel, createProductRouteMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
+const { registerClientErrors } = require('./lib/clientErrors');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
@@ -1768,6 +1769,7 @@ const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQ
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
 registerProductMetrics(app, { ProductMetric, ProductRouteMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
+const clientErrors = registerClientErrors(app, { mongoose, models: injectedModels, authenticateToken, requireAdmin, getClientIp, now: options.productMetricsNow });
 registerPostTranslation(app, { Post, User, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken,
   holdPost: id => holdPostOperation(Post, id), holdAccount: id => holdAccountOperation(User, id),
   checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
@@ -4936,7 +4938,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4955,6 +4957,7 @@ async function startProduction(config = process.env) {
   await application.models.Outing.init();
   await application.models.ProductMetric.init();
   await application.models.ProductRouteMetric.init();
+  await application.models.ClientErrorMetric.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();
