@@ -4,14 +4,26 @@
 // CLIENT_IP_DIAGNOSTIC_UNTIL is open, GET /_diag/client-ip. --consume K makes
 // K real guest BayBay asks (paid, about $0.23 each) and runs only together
 // with --i-approve-spend. It never logs in and never sends credentials.
+//
+// Reads alone cannot prove the key: an unused or idle bucket reads the same
+// under any key. RESULT: PASS therefore needs at least one ask that reached the
+// model, dropped remaining by exactly 1, and was followed by --reads identical
+// plain reads and --reads identical forged-header reads of the now-used bucket.
+// That proof does not need the diagnostic window. A run without it is
+// INCONCLUSIVE at best.
 import http from 'node:http';
 import https from 'node:https';
 import crypto from 'node:crypto';
 
 const USAGE = `Usage: node scripts/canary-ai-usage.mjs --base <https://host/api> [--reads 10] [--family 4|6]
-       [--probe <8-24 lowercase letters/digits>] [--consume <1-4> --i-approve-spend]`;
+       [--probe <8-24 lowercase letters/digits>] [--consume <1-4> --i-approve-spend]
+Exit code: 0 PASS, 1 FAIL, 2 bad arguments, 3 INCONCLUSIVE (no ask reached the model).`;
 const ASK_COST_USD = 0.23;
 const MAX_CONSUME = 4;
+// GET /ai/usage allows 120 reads per key per minute. A run makes at most
+// 4 * reads + 2 * consume + 3 of them, so 20 keeps even a fast run under that.
+const MAX_READS = 20;
+const EXIT = { PASS: 0, FAIL: 1, INCONCLUSIVE: 3 };
 const ASKS = [
   '周末在湾区带孩子去哪里玩比较好？请简单推荐两个地方。',
   '湾区有什么适合老人散步的公园？请推荐两个。',
@@ -31,7 +43,7 @@ function parseArgs(argv) {
     else options[flag.slice(2)] = Number(value);
   }
   if (!options.base || !/^https?:\/\/[^/]+\/api$/.test(options.base)) throw new Error('--base is required and must end in /api, e.g. https://example.onrender.com/api');
-  if (!Number.isInteger(options.reads) || options.reads < 5 || options.reads > 30) throw new Error('--reads must be an integer from 5 to 30');
+  if (!Number.isInteger(options.reads) || options.reads < 5 || options.reads > MAX_READS) throw new Error(`--reads must be an integer from 5 to ${MAX_READS}`);
   if (![4, 6].includes(options.family)) throw new Error('--family must be 4 or 6');
   if (!Number.isInteger(options.consume) || options.consume < 0 || options.consume > MAX_CONSUME) throw new Error(`--consume must be an integer from 0 to ${MAX_CONSUME}`);
   if (options.consume && !options.approveSpend) throw new Error(`--consume ${options.consume} makes paid BayBay asks (about $${(options.consume * ASK_COST_USD).toFixed(2)}). Add --i-approve-spend only with the owner's approval.`);
@@ -102,21 +114,33 @@ async function diagnostics(options) {
     `${plain.length + forged.length} reads -> ${currentKeys} key(s) under the live mode (${mode}); more than one means the live key rotates`);
 }
 
-async function usageReads(options) {
+/**
+ * --reads plain reads, then --reads reads with forged XFF/CF-Connecting-IP/
+ * True-Client-IP/X-Real-IP. Any difference is a FAIL. Equal series prove the
+ * key only when the bucket is known to be in use, i.e. after an ask that
+ * reached the model; before that they are INCONCLUSIVE.
+ */
+async function stableReads(options, phase, proven) {
   const plain = [];
   for (let i = 0; i < options.reads; i++) plain.push(await readUsage(options));
   const forged = [];
-  for (let i = 0; i < options.reads; i++) forged.push(await readUsage(options, forgedHeaders()));
-  const series = plain.map(row => row.remaining), forgedSeries = forged.map(row => row.remaining);
-  const unused = series.every(value => value === plain[0].limit);
-  const verdict = ok => !ok ? 'FAIL' : unused ? 'WARN' : 'PASS';
-  const note = unused ? ' (bucket unused: every key reads the limit, so this proves nothing without a consuming ask or the diag fingerprints)' : '';
-  report('usage-reads-stable', verdict(new Set(series).size === 1), `remaining ${series.join(' ')} / limit ${plain[0].limit}${note}`);
-  report('usage-forged-reads', verdict(forgedSeries.every(value => value === series[0])), `remaining ${forgedSeries.join(' ')}${note}`);
+  for (let i = 0; i < options.reads; i++) forged.push((await readUsage(options, forgedHeaders())).remaining);
+  const series = plain.map(row => row.remaining);
+  const verdict = ok => (!ok ? 'FAIL' : proven ? 'PASS' : 'INCONCLUSIVE');
+  const note = proven ? '' : ' (reads alone cannot tell keys apart: an unused or idle bucket reads the same under any key)';
+  report(`${phase}-reads-stable`, verdict(new Set(series).size === 1), `remaining ${series.join(' ')} / limit ${plain[0].limit}${note}`);
+  report(`${phase}-forged-reads`, verdict(forged.every(value => value === series[0])), `remaining ${forged.join(' ')} vs plain ${series[0]}${note}`);
+  return series;
 }
 
+const usageReads = options => stableReads(options, 'usage', false);
+
+/** Paid asks, each between two reads. Returns { exact, wrong, last }. */
 async function consume(options) {
-  if (!options.consume) return report('consume', 'SKIP', 'no paid asks (pass --consume K --i-approve-spend with owner approval)');
+  if (!options.consume) {
+    report('consume', 'SKIP', 'no paid asks (pass --consume K --i-approve-spend with owner approval)');
+    return { exact: 0, wrong: 0 };
+  }
   const reads = [], steps = [];
   const read = async () => { const value = (await readUsage(options)).remaining; reads.push(value); steps.push(`r${value}`); return value; };
   let exact = 0, inconclusive = 0, wrong = 0;
@@ -139,8 +163,32 @@ async function consume(options) {
   while (reads.length < 5) await read();
   const increases = reads.slice(1).filter((value, i) => value > reads[i]).length;
   report('consume-monotonic', increases ? 'FAIL' : 'PASS', `${steps.join(' ')}${increases ? ` (${increases} increase(s): the key rotated)` : ''}`);
-  report('consume-exact-drop', wrong ? 'FAIL' : exact ? inconclusive ? 'WARN' : 'PASS' : 'INCONCLUSIVE',
+  report('consume-exact-drop', wrong ? 'FAIL' : exact ? 'PASS' : 'INCONCLUSIVE',
     `${exact} ask(s) dropped remaining by exactly 1, ${wrong} did not, ${inconclusive} did not reach the model`);
+  return { exact, wrong, last: reads.at(-1) };
+}
+
+/**
+ * After an exact drop the bucket is in use, so every read under the same key
+ * shows the same remaining, below the limit. A rotating key or a forged header
+ * that selects a key would show another bucket's value (often the limit).
+ */
+async function afterAskReads(options, { exact, wrong, last }) {
+  if (wrong || !exact) {
+    for (const check of ['after-ask-reads-stable', 'after-ask-forged-reads']) {
+      report(check, wrong ? 'SKIP' : 'INCONCLUSIVE', wrong ? 'skipped: consume-exact-drop already failed' : 'no ask reached the model, so no bucket is known to be in use');
+    }
+    return;
+  }
+  const plain = await stableReads(options, 'after-ask', true);
+  if (plain[0] !== last) report('after-ask-matches-consume', 'FAIL', `remaining ${plain[0]} after the asks vs ${last} at the end of consume`);
+}
+
+/** PASS only with the paid proof; FAIL on any failed row; otherwise INCONCLUSIVE. */
+function overall() {
+  if (rows.some(row => row.result === 'FAIL')) return 'FAIL';
+  const passed = check => rows.some(row => row.check === check && row.result === 'PASS');
+  return ['consume-monotonic', 'consume-exact-drop', 'after-ask-reads-stable', 'after-ask-forged-reads'].every(passed) ? 'PASS' : 'INCONCLUSIVE';
 }
 
 async function main() {
@@ -151,15 +199,19 @@ async function main() {
   try {
     await diagnostics(options);
     await usageReads(options);
-    await consume(options);
+    await afterAskReads(options, await consume(options));
   } catch (error) {
     report('run', 'FAIL', error.message);
   }
   const width = Math.max(...rows.map(row => row.check.length));
   for (const row of rows) console.log(`${row.result.padEnd(12)} ${row.check.padEnd(width)}  ${row.detail}`);
-  const failed = rows.some(row => row.result === 'FAIL');
-  console.log(failed ? 'RESULT: FAIL' : 'RESULT: no failures (WARN/INCONCLUSIVE/SKIP rows are not proof)');
-  process.exitCode = failed ? 1 : 0;
+  const result = overall();
+  console.log({
+    PASS: 'RESULT: PASS (an ask that reached the model dropped remaining by exactly 1, and plain and forged reads then agreed)',
+    FAIL: 'RESULT: FAIL',
+    INCONCLUSIVE: 'RESULT: INCONCLUSIVE (no failures, but no ask reached the model, so nothing proves the key; run --consume 2 --i-approve-spend with owner approval)',
+  }[result]);
+  process.exitCode = EXIT[result];
 }
 
 await main();
