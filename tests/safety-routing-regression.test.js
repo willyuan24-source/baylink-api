@@ -5,7 +5,7 @@ const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
 const member = require('./support/member-session');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
-const { safetyResponse, emergencyResponse, professionalTopics } = require('../lib/safetyRouting');
+const { safetyResponse, emergencyResponse, professionalTopics, strokeSignMentioned } = require('../lib/safetyRouting');
 const catalog = require('../data/planner-catalog.json');
 const guideCatalog = require('../data/guide-catalog.json');
 
@@ -229,6 +229,14 @@ test('FAST stroke wording routes to the 911-first stroke card in every language'
     ['zh-Hans', '我爸口齿不清，手也抬不起来'], ['zh-Hant', '我爸講話不清楚，胳膊抬不起來'], ['zh-Hant', '我外婆說話含糊，嘴角往下垂'],
     ['en', "Grandpa's speech is a bit slurred and he can't lift his left arm"], ['en', 'Sudden arm weakness and his speech sounds slurred'],
     ['en', 'His left side went numb'], ['en', 'She has numbness on one side'], ['en', 'My dad has a drooping face'], ['en', "My mom suddenly can't lift her arm"],
+    // Review of d5f8368: one-sided limb weakness, a recent speech change, a numb face,
+    // and English weakness or a droop with the body named.
+    ['zh-Hans', '我爸左手抬不起来了'], ['zh-Hans', '外婆刚才说话含糊不清'], ['zh-Hans', '他一侧脸麻'], ['zh-Hans', '我爸脸有一边垂下来了'],
+    ['zh-Hans', '我妈左手突然没力气，是不是颈椎病犯了'], ['zh-Hans', '我爸去年中风过，今天左手又抬不起来了'], ['zh-Hant', '外婆剛才說話含糊不清'],
+    ['zh-Hans', '我妈糖尿病很多年了，今天一边手脚无力'],
+    ['en', "My husband's left arm is numb and weak"], ['en', 'Dad has weakness in his left arm'], ['en', "Grandma can't lift her left arm this morning"],
+    ['en', 'The left side of his body is weak'], ['en', 'Her face is drooping on one side'], ['en', 'Sudden weakness on his left side'],
+    ['en', "Dad's left side is weak and his speech is slurred"],
   ]) {
     const result = emergencyResponse(message, locale);
     assert.equal(result?.emergencyTopic, 'stroke', message);
@@ -243,10 +251,32 @@ test('FAST stroke wording routes to the 911-first stroke card in every language'
 test('FAST wording does not fire on idioms, chronic or post-stroke context, warning-sign questions, dental numbness or everyday aches', () => {
   for (const message of [
     '这家店说话含糊其辞，靠谱吗', '他说话有点含糊其辞', '价格说得含糊，到底多少钱', '孩子说话口齿不清，是不是要去看医生',
-    '肩周炎手抬不起来，有推荐的理疗吗', '我爸左手抬不起来了', '我奶奶今天讲话有点含糊', "My grandpa's speech is a bit slurred today",
+    '肩周炎手抬不起来，有推荐的理疗吗', '我奶奶今天讲话有点含糊', "My grandpa's speech is a bit slurred today",
     '我妈三年前中风了，现在说话还是有点含糊，手抬不起来，有适合她的活动吗', '他说话一直含糊不清，从小就这样，手也没力气',
     '说话含糊、手抬不起来是中风的症状吗', '嘴角下垂怎么改善', '坐久了一边腿麻了', '拔完牙半边脸还是麻的', 'My face is numb on one side after the dentist',
     '一边手机一边走路很危险', '他嘴角歪着笑了一下', 'Arm weakness exercises for seniors in San Jose', 'The left side of the parking lot is closed',
     '纽扣电池吞下去会怎样？',
+    // Review of d5f8368: "weak" or "drooping" without a body, idioms, business talk,
+    // smirks, speechless, and benign or long-standing limb causes.
+    'The wifi is weak on one side of the house, any good router?', 'Cell signal is weak on the left side of the building', 'Our defense is weak on the right side',
+    'The tent is drooping on one side', 'Paint is drooping on one side of the wall', 'His left side is weak in basketball, any drills?',
+    '我睡觉压到了，左边手麻了', '左边手麻了，可能是颈椎病', '他讲话突然不清不楚的，是不是在骗我', '房东说话突然含糊起来，押金是不是有问题', '他一边嘴角歪着笑',
+    '这个房东说话不清不楚，押金能要回来吗', '客服说话含糊，退款怎么办', '他说话突然含糊起来，是不是在骗我', '我感动得突然说不出话', '这事一句话说不清',
+    '肩周炎右手抬不起来，有推荐的理疗吗', '我爸中风后左手抬不起来，有什么康复活动', '打完疫苗左手抬不起来', '他嘴歪着笑', '一边吃麻辣烫一边看电视',
+    'My left arm is weak after the gym, any stretches?', 'My arm went numb after sleeping on it', "Dad's left side is weak",
+    '我爸右手瘫痪多年，有什么适合他的活动', '手术后右手没力气', 'My left arm is weak after surgery',
   ]) assert.equal(emergencyResponse(message), null, message);
+});
+
+test('strokeSignMentioned (the degraded floor) covers every FAST sign and skips idioms, business talk and non-body words', () => {
+  for (const message of ['我爸话都说不清了', '我爸脸有一边垂下来了', 'Dad has weakness in his left arm', 'My mom has arm weakness', '我妈说话大舌头',
+    "My dad's speech sounds garbled", '我奶奶今天讲话有点含糊', '我妈嘴角往下垂', '左边手麻了', "Dad's left side is weak", '我爸中风后左手抬不起来，有什么康复活动']) {
+    assert.equal(strokeSignMentioned(message), true, message);
+  }
+  for (const message of ['这家店说话含糊其辞，靠谱吗', '这个房东说话不清不楚，押金能要回来吗', '客服说话含糊，退款怎么办', '房东说话突然含糊起来，押金是不是有问题',
+    'The wifi is weak on one side of the house, any good router?', 'The tent is drooping on one side', 'His left side is weak in basketball, any drills?',
+    '拔完牙半边脸还是麻的', '他一边嘴角歪着笑', '这事一句话说不清', '我感动得说不出话', '请翻译：我妈说话含糊', "The mayor's speech was unclear about housing",
+    '我妈三年前中风了，有适合她的活动吗']) {
+    assert.equal(strokeSignMentioned(message), false, message);
+  }
 });
