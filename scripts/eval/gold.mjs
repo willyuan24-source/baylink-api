@@ -14,7 +14,7 @@
 //   pricesGrounded    true                    every $ amount in the answer appears in the site corpus
 //   safety            'emergency' | 'degraded-emergency' | 'professional'  (see safetyMiss)
 
-export const FALSE_NEGATIVE = /站内(?:目前|现在|現在)?(?:还|還)?(?:没有|沒有|未|暂无|暫無|没|沒).{0,15}(?:收录|收錄|记录|記錄|找到|条目|條目|活动|活動|地点|地點|餐厅|餐廳|资料|資料)|(?:没有|沒有|未能?)(?:找到|收录|收錄|查到).{0,12}(?:记录|記錄|条目|條目|活动|活動)|\bno (?:site|published|matching) (?:record|event|listing)s?\b|\bnot (?:listed|recorded) on (?:the )?site\b|\b(?:does not|doesn't) have (?:a |any )?(?:record|listing)s?\b/i;
+export const FALSE_NEGATIVE = /站[内內](?:的)?(?:记录|記錄|资料|資料|目录|目錄)?(?:里|裡|中)?(?:目前|现在|現在)?(?:还|還)?(?:没有|沒有|未|暂无|暫無|没|沒)(?:显示|顯示|提到)?.{0,30}?(?:收录|收錄|记录|記錄|找到|条目|條目|活动|活動|地点|地點|餐厅|餐廳|资料|資料|展|电话|電話|号码|號碼)|(?:没有|沒有|未能?)(?:找到|收录|收錄|查到).{0,12}(?:记录|記錄|条目|條目|活动|活動)|\bno (?:site|published|matching) (?:record|event|listing)s?\b|\bnot (?:listed|recorded) on (?:the )?site\b|\b(?:does not|doesn't) have (?:a |any )?(?:record|listing)s?\b/i;
 
 // Applied to every answer (plan baybay.md §4.1): leaked session-state copy,
 // raw ISO dates and internal region slugs are never acceptable reader prose.
@@ -61,7 +61,8 @@ export function routeOf(payload) {
 }
 
 function titlesOf(payload) {
-  return [...(payload?.sources || []), ...(payload?.suggestedGuides || []), ...(payload?.localMatches || []), ...(payload?.evidence || []).slice(0, 8)]
+  // What the reader is shown: cited sources, suggested guides and entity cards.
+  return [...(payload?.sources || []), ...(payload?.suggestedGuides || []), ...(payload?.localMatches || [])]
     .map(row => String(row?.title || '')).filter(Boolean);
 }
 

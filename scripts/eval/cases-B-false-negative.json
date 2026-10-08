@@ -11,7 +11,7 @@
         "judge": { "expect": "先打 Alameda 县 AAA 510-577-1900，或 Family Bridges 510-839-2022（普通话/粤语探访）；来源是站内中文长者服务指南。" } } ] },
     { "id": "B-FN-FLEET", "block": "B", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn"], "turns": [
       { "id": "B-FN-BLUE-ANGELS", "message": "蓝天使这周末飞吗",
-        "gold": { "expectRoute": "assistant", "mustInclude": ["10\\s*[/／月]\\s*1[01]"], "goldEntity": "San Francisco Fleet Week 2026（航空展 10/9–11）" },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["10\\s*[/／月]\\s*1[01]", "10\\s*[/／月]\\s*9\\s*日?\\s*[–—~至到-]\\s*(?:10\\s*[/／月]\\s*)?1[01]"]], "goldEntity": "San Francisco Fleet Week 2026（航空展 10/9–11）" },
         "judge": { "expect": "会飞：Fleet Week 航空展 10/9–11 每天 12:00–16:00（这周末是 10/10–11），Marina Green 免费；蓝天使具体时段以官方为准。" } },
       { "id": "B-FN-FLEET-ALIAS", "message": "舰队周在哪看比较好？要钱吗？",
         "gold": { "expectRoute": "assistant", "mustInclude": ["Marina Green", ["免费", "免費"]], "goldEntity": "Fleet Week（别名：舰队周）" },

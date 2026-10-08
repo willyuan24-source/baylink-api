@@ -2,11 +2,35 @@
 // Summarise one local-eval run directory: per-arm code gold, safety misses,
 // false negatives, judge means, latency percentiles and dollars, plus the
 // R0SWITCH check from the overhaul plan (§3.1) against the baseline arm.
-//   node scripts/eval/report.mjs <run-dir> [--baseline opus-asis]
+//   node scripts/eval/report.mjs <run-dir> [--baseline opus-asis] [--rescore]
+// --rescore re-applies the current casebook golds to the stored answers (same
+// rules for every arm), e.g. after widening a regex that rejected a correct
+// phrasing. The summary records that it was rescored.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DIMENSIONS, dimensionMean } from './judge.mjs';
+import { scoreTurn } from './gold.mjs';
+
+const EVAL_DIR = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(EVAL_DIR, '..', '..');
+
+/** Re-score stored rows with the casebook currently on disk. */
+export function rescoreRun(run) {
+  const golds = new Map(readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file))
+    .flatMap(file => JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')).cases.flatMap(item => item.turns)).map(turn => [turn.id, turn.gold]));
+  const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json', 'discoveries.json', 'discoveries.en.json']
+    .map(file => readFileSync(path.join(ROOT, 'data', file), 'utf8')).join('\n');
+  for (const rows of Object.values(run.arms)) for (const row of rows) {
+    const gold = golds.get(row.turnId);
+    if (!gold || row.skipped || row.budgetStopped || row.error) continue;
+    row.gold = scoreTurn(gold, { answer: row.answer, responseMode: row.responseMode, safetyRoute: row.safetyRoute,
+      harnessRoute: ['outing', 'legacy'].includes(row.route) ? row.route : undefined, sources: row.sources, suggestedGuides: row.suggestedGuides,
+      localMatches: row.localMatches, research: { warnings: row.warnings } }, { corpus });
+  }
+  run.meta = { ...run.meta, rescored: true };
+  return run;
+}
 
 export const R0SWITCH = { goldSlack: 2, completeP50Ms: 10000 };
 
@@ -52,6 +76,8 @@ export function summarizeArm(rows, judgeRows = new Map()) {
     // Misses on turns this arm's model actually answered. Deterministic routes
     // (safety templates, degraded replays) are identical in every arm.
     safetyMissesModel: scored.filter(row => row.gold?.safetyMiss && row.route === 'assistant' && !row.degradedReplay).map(row => row.turnId),
+    // Diagnostic: safety misses whose answer never mentions 911 at all.
+    safetyNo911: scored.filter(row => row.gold?.safetyMiss && !/911/.test(row.answer || '')).map(row => row.turnId),
     falseNegatives: scored.filter(row => row.gold?.falseNegative).map(row => row.turnId),
     falseNegativesCaught: scored.filter(row => row.gold?.falseNegativeCaught).map(row => row.turnId),
     voidedAttempts: scored.reduce((total, row) => total + (row.voidedAttempts || 0), 0),
@@ -112,7 +138,7 @@ export function renderMarkdown(summary) {
   const { meta, arms, switches, baselineArm } = summary;
   const names = Object.keys(arms);
   const lines = [`# BayBay local eval: ${meta.runId}`, '',
-    `- Mode: ${meta.mode}. Pinned now: ${meta.pinnedNow}. Code: ${meta.gitHead || 'unknown'}. Blocks: ${meta.blocks.join(', ')}.`,
+    `- Mode: ${meta.mode}. Pinned now: ${meta.pinnedNow}. Code: ${meta.gitHead || 'unknown'}. Blocks: ${meta.blocks.join(', ')}.${meta.rescored ? ' Gold re-applied from the current casebook (--rescore).' : ''}`,
     `- Arms: ${names.map(arm => `${arm} (${meta.armLabels?.[arm] || ''})`).join('; ')}.`,
     `- Latency is measured on model-answered turns only (route = assistant). The current pipeline does not stream from the provider, so lead = complete unless the run recorded a draft event.`, '',
     '## Per arm', '',
@@ -122,6 +148,7 @@ export function renderMarkdown(summary) {
   row('Code-gold pass', arm => `${arm.goldPass}/${arm.turns}`);
   for (const block of [...new Set(names.flatMap(arm => Object.keys(arms[arm].blocks)))].sort()) row(`  block ${block}`, arm => arm.blocks[block] ? `${arm.blocks[block].pass}/${arm.blocks[block].total}` : '-');
   row('Safety misses: model-answered', arm => arm.safetyMissesModel.length ? `${arm.safetyMissesModel.length} (${arm.safetyMissesModel.join(', ')})` : '0');
+  row('Safety misses with no 911 anywhere (all routes)', arm => arm.safetyNo911.length ? `${arm.safetyNo911.length} (${arm.safetyNo911.join(', ')})` : '0');
   row('Safety misses: deterministic pipeline', arm => { const ids = arm.safetyMisses.filter(id => !arm.safetyMissesModel.includes(id)); return ids.length ? `${ids.length} (${ids.join(', ')})` : '0'; });
   row('False negatives (shown + caught by guard)', arm => `${arm.falseNegatives.length} + ${arm.falseNegativesCaught.length}`);
   row('Judge mean 1-5 (答到点/简洁/语气)', arm => arm.judge ? `${fmtN(arm.judge.mean3)} (${DIMENSIONS.map(([key]) => fmtN(arm.judge.dims[key], 1)).join('/')}) n=${arm.judge.n}` : 'n/a');
@@ -149,8 +176,9 @@ export function renderMarkdown(summary) {
   return `${lines.join('\n')}\n`;
 }
 
-export function writeReport(runDir, baselineArm) {
-  const summary = summarize(loadRun(runDir), baselineArm);
+export function writeReport(runDir, baselineArm, { rescore = false } = {}) {
+  const run = loadRun(runDir);
+  const summary = summarize(rescore ? rescoreRun(run) : run, baselineArm);
   writeFileSync(path.join(runDir, 'summary.json'), JSON.stringify(summary, null, 1));
   const markdown = renderMarkdown(summary);
   writeFileSync(path.join(runDir, 'summary.md'), markdown);
@@ -161,6 +189,6 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const [runDir, ...rest] = process.argv.slice(2);
   if (!runDir) { console.error('Usage: node scripts/eval/report.mjs <run-dir> [--baseline <arm>]'); process.exit(2); }
   const at = rest.indexOf('--baseline');
-  const { markdown } = writeReport(runDir, at >= 0 ? rest[at + 1] : undefined);
+  const { markdown } = writeReport(runDir, at >= 0 ? rest[at + 1] : undefined, { rescore: rest.includes('--rescore') });
   process.stdout.write(markdown);
 }

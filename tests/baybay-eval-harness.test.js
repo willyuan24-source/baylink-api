@@ -91,7 +91,7 @@ test('arms switch models through existing config keys only', () => {
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
 });
 
-test('dry run needs no key, makes no network call and writes only outside the repository', () => {
+test('dry run needs no key, makes no network call and writes only outside the repository', async () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-eval-'));
   const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
   const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
@@ -104,6 +104,10 @@ test('dry run needs no key, makes no network call and writes only outside the re
   assert.deepEqual(rows.map(row => row.turnId).sort(), ['B7', 'C-DEGRADED-STROKE', 'C08']);
   assert.ok(rows.every(row => row.calls.every(call => call.costUsd === 0)));
   assert.ok(fs.existsSync(path.join(out, 'dry-test', 'summary.md')));
+  const { writeReport } = await load('report.mjs');
+  const { summary } = writeReport(path.join(out, 'dry-test'), 'haiku-low', { rescore: true });
+  assert.equal(summary.meta.rescored, true);
+  assert.equal(summary.arms['haiku-low'].turns, 3);
 
   const live = spawnSync(process.execPath, [script, '--live', '--budget-usd', '1', '--out', out, '--run-id', 'no-key'], { cwd: ROOT, env, encoding: 'utf8', timeout: 60000 });
   assert.notEqual(live.status, 0);

@@ -13,9 +13,11 @@ node scripts/baybay-eval-local.mjs --items C08,B7 --arms haiku-low
 # Live v0 (blocks A, C, E, G x four arms). The key comes from a private env file, never from arguments.
 node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 20 --set v0 --run-id v0-1008
 
-# Re-render a report
-node scripts/eval/report.mjs <out>/<run-id>
+# Re-render a report; --rescore re-applies the casebook on disk to the stored answers
+node scripts/eval/report.mjs <out>/<run-id> [--rescore]
 ```
+
+`--rescore` exists for gold fixes found while reading results (for example a date regex that rejected the correct "10/9–11" form). It re-scores every arm with the same rules and the summary says so. Never edit a gold to favour one arm.
 
 Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`). The harness refuses an output directory inside the repository. Results are never committed.
 

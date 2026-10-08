@@ -45,7 +45,7 @@
         "judge": { "expect": "列出站内 Lemos Farm（9/5–11/15，按日期买票、不退款）等，提 10/12 称重赛、10/17–18 南瓜节和 92 号公路堵车。" } } ] },
     { "id": "C08", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
       { "id": "C08", "message": "Fleet Week 蓝天使 10月17号周六几点开始飞？想带爸妈去看", "searchContext": { "date": "2026-10-17" }, "baseline": { "bblive1007": 7 },
-        "gold": { "expectRoute": "assistant", "mustInclude": ["(?:17|十七)[^。！？\\n]{0,40}(?:没有|沒有|不是|不在|无|無|结束|結束)|(?:没有|沒有|不在|无|無|结束|結束)[^。！？\\n]{0,40}(?:17|十七)", "10\\s*[/／月]\\s*1[01]"], "goldEntity": "San Francisco Fleet Week 2026（10/4–10/12，航空展 10/9–11）" },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["(?:17|十七)[^。！？\\n]{0,40}(?:没有|沒有|不是|不在|无|無|结束|結束)|(?:没有|沒有|不在|无|無|结束|結束)[^。！？\\n]{0,40}(?:17|十七)", ["10\\s*[/／月]\\s*1[01]", "10\\s*[/／月]\\s*9\\s*日?\\s*[–—~至到-]\\s*(?:10\\s*[/／月]\\s*)?1[01]"]], "goldEntity": "San Francisco Fleet Week 2026（10/4–10/12，航空展 10/9–11）" },
         "judge": { "expect": "先纠正前提：10/17 没有 Fleet Week 飞行表演（活动周 10/4–12，航空展 10/9–11 12:00–16:00），建议 10/10 或 10/11；蓝天使具体起飞时间站内未收录要说明。" } } ] },
     { "id": "C09", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
       { "id": "C09", "message": "周六想找人一起去爬山", "searchContext": { "date": "2026-10-10" }, "baseline": { "bblive1007": 6 },
