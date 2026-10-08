@@ -6,10 +6,10 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 
 | Route | Used by today | Default `max_tokens` / deadline | Notes |
 | --- | --- | --- | --- |
-| `baybay_agent` | Unified BayBay research and synthesis loop (`lib/baybayAgent.js`) | caller's 6,000 / 9,000; 25 s / 28 s | `baybayModel()` and `/api/ai/baybay-capabilities` report this route's model |
+| `baybay_agent` | Unified BayBay research and synthesis loop (`lib/baybayAgent.js`) | caller's 6,000 / 9,000 (passed through, no ceiling); 25 s / 28 s | `baybayModel()` and `/api/ai/baybay-capabilities` report this route's model |
 | `baybay_web` | Native Claude web search (`lib/anthropicWebSearch.js`) | 4,096; caller's 35 s | Never resolves to Haiku 5.5 (web search on it is unverified) |
 | `baybay_fast` | Not wired yet (API-BB-ENGINE) | 4,000; 28 s | |
-| `baybay_professional` | Not wired yet; professional topics still use `baybay_agent` | 9,000; 28 s | RC-20: keep on Opus or Sonnet during R0 |
+| `baybay_professional` | Not wired yet; professional topics still use `baybay_agent` (see the R0 caveat below) | caller's value, no ceiling; 28 s | Never resolves to Haiku 5.5 (RC-20): Opus by default, `claude-sonnet-5-5` by override. On this route the adapter sends the route's model, not the agent's |
 | `baybay_legacy` | Not wired yet; `server.js` legacy guide chat still reads the legacy variables | 4,096; 28 s | |
 | `helper_translate`, `helper_post_assist`, `helper_outing`, `helper_planner`, `helper_event_extract`, `helper_conversation`, `helper_other` | `requestAnthropicJson` callers | caller's value (6,000; planner 4,000), capped at 9,000; 28 s | Callers name their route; post-assist (in `server.js`) is inferred from the governed request path |
 | `triage` | Not wired yet (API-FRESH-TRIAGE) | 4,000; 28 s | |
@@ -20,7 +20,7 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 
 | Variable | Accepted values | Effect |
 | --- | --- | --- |
-| `BAYBAY_MODEL_<ROUTE>` | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5` | Model for that route only. Any other value is ignored (reported by `describeAiModels()`) |
+| `BAYBAY_MODEL_<ROUTE>` | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5` | Model for that route only. Any other value is ignored: the route keeps its default, `describeAiModels()` reports it, and the first request on that route logs `[ai-models] ignored {"route","name","reason"}` once (variable name only, never the value) |
 | `BAYBAY_MODEL_HELPERS` | same | All `helper_*` routes; a route-specific value wins |
 | `BAYBAY_EFFORT_<ROUTE>`, `BAYBAY_EFFORT_HELPERS` | `low`, `medium`, `high` | Effort is always sent explicitly (Sonnet 5.5 would otherwise default to `high`). `xhigh`/`max` are not accepted |
 | `BAYBAY_MAX_TOKENS_<ROUTE>` | 256–32,000 | Replaces the caller's value. Haiku requests are always raised to at least 4,000 because Haiku 5.5 thinking counts toward `max_tokens` |
@@ -31,6 +31,8 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 
 Examples:
 - R0 switch of the agent to Haiku: `BAYBAY_MODEL_AGENT=claude-haiku-5-5`. One-variable rollback: `BAYBAY_MODEL_AGENT=claude-opus-5-5` (or remove the variable).
+  - **RC-20 caveat: the variable alone is not enough.** Today `lib/baybayAgent.js` creates every run with `createAnthropicBaybay({ config, fetchImpl })`, so guarded professional-topic runs (`safetyTopic`, model answers after API-BB-GUARD) also use `baybay_agent`, and the env switch would move them to Haiku. The R0SWITCH PR must also change that call to `createAnthropicBaybay({ config, fetchImpl, route: baybayRoute({ safetyTopic }) })` (one line in `baybayAgent.js`, which that file's hot-file owners land after API-BB-GUARD), with a test. The adapter then sends the professional route's own model and effort even though the agent passes `baybayModel(config)`. Professional answers stay on Opus, or on Sonnet low with `BAYBAY_MODEL_PROFESSIONAL=claude-sonnet-5-5` and `BAYBAY_EFFORT_PROFESSIONAL=low`.
+  - Check after the deploy: `curl -s https://baylink-api.onrender.com/api/ai/baybay-capabilities` must show `"configuredModel":"claude-haiku-5-5"`, and the Render log must have no `[ai-models] ignored` line for `BAYBAY_MODEL_AGENT` (a typo such as `claude-haiku-5.5` leaves the agent on Opus).
 - Helpers to Haiku at low effort: `BAYBAY_MODEL_HELPERS=claude-haiku-5-5`, `BAYBAY_EFFORT_HELPERS=low`.
 
 Changing a route's model or effort starts a new prompt cache for that route (caches are per model, and effort changes invalidate the messages cache). Pin settings per route; do not vary them per request.
@@ -39,7 +41,8 @@ Changing a route's model or effort starts a new prompt cache for that route (cac
 
 - **No sampling parameters.** No Claude payload ever carries `temperature`, `top_p` or `top_k` (Haiku 5.5 rejects non-default values with a 400). The agent's OpenAI-only fields are never forwarded. Unit test: `tests/anthropic-route-controls.test.js`; the legacy guide chat has its own check in `tests/claude-guide-chat.test.js`.
 - **Haiku refusal retry.** A Haiku 5.5 `stop_reason: "refusal"` is retried once, with the identical request, on `claude-sonnet-5-5` (which reads Haiku 5.5 thinking blocks). The rest of that agent run stays on Sonnet. One log line is written: `[ai-refusal] {"route":…,"from":"claude-haiku-5-5","to":"claude-sonnet-5-5","category":…}` with the sanitised `stop_details.category` and no prompt or answer text. Opus and Sonnet refusals are not retried client-side (use `BAYBAY_FALLBACKS=default` for those).
-- **Prompt cap on Haiku.** A Haiku request whose estimated prompt exceeds 60,000 tokens is refused before transport (estimate: UTF-8 bytes / 3, images 2,000 each). This keeps Haiku traffic clear of the 100K-token price cliff. Opus and Sonnet are not capped.
+- **Prompt cap on Haiku.** A Haiku request whose estimated prompt exceeds 60,000 tokens (estimate: UTF-8 bytes / 3, images 2,000 each) is sent to `claude-sonnet-5-5` instead, through the same path as the refusal retry; in the agent the rest of that run stays on Sonnet. One log line is written: `[ai-prompt-cap] {"route","from","to","estimate","cap"}` (sizes only, no text). This keeps Haiku traffic clear of the 100K-token price cliff without failing long day plans (H7 records final calls of up to 83.5K tokens). Opus and Sonnet are not capped. Evals should count cap escalations from these log lines or from `response.model`; they are not degraded answers.
+- **Output budget.** Helper routes cap the caller's `max_tokens` at 9,000, as `requestAnthropicJson` always did. BayBay routes (agent, professional, web, legacy, fast) pass the caller's value through unchanged; `BAYBAY_MAX_TOKENS_<ROUTE>` replaces it.
 - **Server-side fallback replies.** If fallbacks are enabled and a reply contains a `fallback` marker, only the serving model's blocks after the last marker (plus earlier text) are exposed or replayed; the declining model's tool calls are never executed.
 
 ## Prices (`lib/aiPricing.js`)
@@ -53,7 +56,7 @@ A dated table (`effectiveFrom: 2026-10-08`; source: claude-api skill, `shared/mo
 | `claude-haiku-5-5`, prompt ≤ 100,000 tokens | $0.10 | $0.50 | $0.01 | $0.125 | $0.20 |
 | `claude-haiku-5-5`, prompt > 100,000 tokens | $0.50 | $2.50 | $0.05 | $0.625 | $1.00 |
 
-Per million tokens. Web search: $0.01 per request (`usage.server_tool_use.web_search_requests`). The Haiku card is chosen by the whole prompt (uncached input + cache reads + cache writes); above 100,000 every token of that request, output included, uses the long-prompt card. Unknown models are reported as unpriced, never guessed. If a reply itemizes `usage.iterations` (server-side fallback), each attempt is priced at its own model. To change prices, add a new dated entry; do not edit an old one.
+Per million tokens. Web search: $0.01 per request (`usage.server_tool_use.web_search_requests`), charged once per response even when `usage.iterations` itemizes the tokens. The Haiku card is chosen by the whole prompt (uncached input + cache reads + cache writes); above 100,000 every token of that request, output included, uses the long-prompt card. Unknown models are reported as unpriced, never guessed. If a reply itemizes `usage.iterations` (server-side fallback), each attempt is priced at its own model. To change prices, add a new dated entry; do not edit an old one.
 
 ## Metrics and ledger
 
