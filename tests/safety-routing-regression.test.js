@@ -103,6 +103,34 @@ test('emergency lexicon does not fire on denials, history, slang or ordinary sit
   ]) assert.equal(emergencyResponse(message), null, message);
 });
 
+// Review-1 false positives: families asking about outings for a parent who
+// had an episode before, class lookups, idioms and shopping/English slang.
+test('emergency lexicon does not fire on past or recovered episodes, class lookups, idioms or slang', () => {
+  for (const message of [
+    '我爸去年心梗，现在想找适合老人的活动', '我妈三年前中风了，有适合她的中文活动吗', '我爸心梗出院后，周末能去哪里散步',
+    '我爸去年心脏病发作过，适合坐飞机吗', '奶奶有癫痫发作史，去博物馆要注意什么', '他晕倒过一次，医生说没事，周末可以去爬山吗',
+    '孩子去年吞了纽扣电池，现在还好，有什么亲子活动', 'My dad had a stroke last year, what activities suit him',
+    'My dad had a heart attack two years ago; any gentle walks?', 'My mom had a stroke and is recovering well; any quiet museums?',
+    '有没有 CPR 和心脏骤停急救课程', 'Is there a CPR class for cardiac arrest this weekend', '帮我写一条活动帖：本周六 CPR 和心脏骤停急救课程，免费',
+    '我爸没意识到今天是周末，带他去哪里玩', '孩子没意识到危险，怎么教他过马路', '好久没有呼吸到新鲜空气了，周末去哪里走走',
+    'The website is unresponsive, how do I book Fleet Week tickets?', 'I almost fainted when I saw the price of the tickets',
+    'seizing the opportunity, what events are on this weekend', '我这次大出血买了两张票', '她大出血买了一个包',
+  ]) assert.equal(emergencyResponse(message), null, message);
+});
+
+test('emergency lexicon still routes current episodes next to those exclusions', () => {
+  for (const [message, topic] of [
+    ['我妈嘴歪了，好像中风了', 'stroke'], ['我爸突然说话不清', 'stroke'], ['老人叫不醒', 'unconscious'], ['他晕倒了', 'unconscious'],
+    ['孩子吞了一个纽扣电池', 'ingestion'], ['他晕倒过去了', 'unconscious'], ['他晕倒后一直叫不醒', 'unconscious'],
+    // A previous episode does not hide a symptom that is happening now.
+    ['我妈三年前中风了，现在仍然这样', 'stroke'], ['我爸三年前中风过，现在又嘴歪了', 'stroke'], ['他心梗刚出院又胸痛了', 'cardiac'],
+    ['The chest pain started two hours ago', 'cardiac'],
+    // Being in a class or at training when it happens is not a class lookup.
+    ['My son is having a seizure in class', 'seizure'], ["He collapsed at football training and isn't breathing", 'breathing'], ['我爸在太极课程的时候晕倒了', 'unconscious'],
+    ['My dad is unresponsive', 'unconscious'], ['We found him unresponsive on the floor', 'unconscious'], ['My mom just fainted', 'unconscious'], ['He started seizing', 'seizure'],
+  ]) assert.equal(emergencyResponse(message, /[㐀-鿿]/u.test(message) ? 'zh-Hans' : 'en')?.emergencyTopic, topic, message);
+});
+
 test('BayBay keeps a guarded model answer for professional topics: guard rules, pillar guide, contact and no interception', async () => {
   const payloads = [];
   const assistant = createBayBayAssistant({ config: { JWT_SECRET: 'isolated-guard-fixture', BAYBAY_STATE_SECRET: 'isolated-guard-state' }, catalog, guideCatalog, isTest: true, now: () => Date.parse('2026-10-08T17:00:00Z'),
