@@ -26,7 +26,7 @@ One endpoint takes the footer feedback sheet, "这条信息有误？" on event, 
 | `kind` | yes | `page` (footer sheet), `content` (这条信息有误), `baybay` (👎 reasons) |
 | `reason` | yes | One chip from the kind's list below |
 | `routeTemplate` | no | Route template, mapped through `lib/routeTemplates.js`; anything else or absent becomes `other`. **Never the URL or query** |
-| `text` | no | What the reader typed, at most 500 characters (code points). Trimmed; control and bidi-override characters removed; line breaks kept |
+| `text` | no | What the reader typed, at most 500 characters (code points). Trimmed; control characters and bidirectional marks, embeddings, overrides and isolates (U+061C, U+200E–U+200F, U+202A–U+202E, U+2066–U+2069) removed; line breaks kept |
 | `contact` | no | Optional reply address the reader chose to give, at most 80 characters. Not validated as email or phone (WeChat ids are common) |
 | `entity` | no | `{kind, id}` of the item the report is about. kind ∈ event, place, guide, offer, opening, post; id is a catalog id. Content reports should always send it |
 | `locale` | no | `zh-Hans` (default), `zh-Hant`, `en` |
@@ -51,7 +51,7 @@ Errors carry a stable `code` for the web to localise.
 | Status | `code` | Meaning |
 | --- | --- | --- |
 | 202 | — | `{ "ok": true }`: stored. A filled honeypot gets the same answer and nothing is written |
-| 400 | `FEEDBACK_INVALID` | Unknown key, wrong reason for the kind, wrong type, or text/contact too long. Nothing is written and no quota is used |
+| 400 | `FEEDBACK_INVALID` | Unknown key, wrong reason for the kind, wrong type, or text/contact too long. Nothing is written and no daily quota is used; the attempt still counts toward the per-minute limit |
 | 429 | `FEEDBACK_RATE_LIMIT` | More than 5 submissions a minute from this visitor |
 | 429 | `FEEDBACK_DAILY_LIMIT` | This visitor already sent 10 today (Pacific day) |
 | 429 | `FEEDBACK_GLOBAL_LIMIT` | The site already accepted 500 today |
@@ -60,7 +60,7 @@ Errors carry a stable `code` for the web to localise.
 ## Limits and privacy
 
 - The per-minute limit is in memory, keyed by the visitor key (`req.ip`, see `docs/client-ip-rollout.md`), on its own limiter.
-- The daily limits are durable in Mongo (`FeedbackQuota`), so a deploy does not reset them. A visitor's counter id is `day:visitor:HMAC-SHA256(JWT_SECRET, "feedback:v1:" + day + ":" + visitor key)`. The visitor key itself is never stored, and the digest changes every day, so counters cannot be linked across days. Counters expire after 2 days.
+- The daily limits are durable in Mongo (`FeedbackQuota`), so a deploy does not reset them. A visitor's counter id is `day:visitor:HMAC-SHA256(JWT_SECRET, "feedback:v1:" + day + ":" + visitor key)`. The visitor key itself is never stored, and the digest changes every day, so counters cannot be linked across days. Counters expire after 2 days. The visitor counter is reserved before the site-wide one, so a visitor past their own limit cannot use up the site-wide cap; when the site-wide cap refuses a submission or storing it fails, the reserved slots are given back (best effort).
 - `Feedback` rows hold only the fields above plus `createdAt` and `expiresAt`. No IP, visitor key, user id, URL, user agent or referrer. Rows are deleted 90 days after submission by a TTL index (Mongo removes expired rows asynchronously).
 - Feedback is not linked to an account, so account deletion has nothing to erase here. A reader who asks to delete what they sent is handled by an administrator with the delete endpoint.
 

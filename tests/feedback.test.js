@@ -32,7 +32,13 @@ function quotaModel(seed = []) {
   const rows = seed.map(copy);
   return {
     rows,
-    async updateOne({ _id }, update, options) { if (!rows.some(row => row._id === _id) && options.upsert) rows.push({ _id, ...copy(update.$setOnInsert) }); return {}; },
+    async updateOne({ _id, count }, update, options = {}) {
+      const row = rows.find(item => item._id === _id);
+      if (!row && options.upsert) rows.push({ _id, ...copy(update.$setOnInsert) });
+      // A refund: { _id, count: { $gt: 0 } } with { $inc: { count: -1 } }.
+      else if (row && update.$inc && (!count || row.count > count.$gt)) row.count += update.$inc.count;
+      return {};
+    },
     async findOneAndUpdate({ _id, count }, update) {
       const row = rows.find(item => item._id === _id && item.count < count.$lt);
       if (!row) return null;
@@ -131,11 +137,14 @@ test('unknown fields, wrong types and overlong text are rejected before any writ
   assert.equal(server.Feedback.rows.length, 0);
 });
 
-test('text counts characters, keeps line breaks and drops control and bidi-override characters', async t => {
+test('text counts characters, keeps line breaks and drops control and bidirectional formatting characters', async t => {
   const { post, Feedback } = await fixture(t);
   assert.equal((await post({ ...page, text: '😀'.repeat(500) })).status, 202, '500 emoji are 500 characters');
-  assert.equal((await post({ ...page, text: 'ok\u0000\u0007 line‮⁦ two\n三' })).status, 202);
+  assert.equal((await post({ ...page, text: 'ok\u0000\u0007 line\u202e\u2066 two\u200f\u200e\u061c\n三' })).status, 202);
   assert.equal(Feedback.rows[1].text, 'ok line two\n三');
+  // The rule is written with escapes: neither file may carry hidden bidirectional text itself.
+  const hidden = /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/;
+  for (const file of ['../lib/feedback.js', __filename]) assert.ok(!hidden.test(require('node:fs').readFileSync(require.resolve(file), 'utf8')), file);
 });
 
 test('a filled honeypot looks accepted but writes nothing, not even a quota row', async t => {
@@ -170,21 +179,25 @@ test('a visitor gets 10 a day, keyed only by an HMAC of the day and visitor key'
   assert.ok(quota.rows.some(row => row._id.startsWith('2026-10-09:visitor:') && !row._id.endsWith(expected)));
 });
 
-test('the global daily cap answers 429 once 500 entries were accepted', async t => {
+test('the global daily cap answers 429 once 500 entries were accepted and gives the visitor slot back', async t => {
   const quota = quotaModel([{ _id: '2026-10-08:global', count: GLOBAL_DAILY_LIMIT, expiresAt: new Date(NOW + 2 * 86400000) }]);
   const { post, Feedback } = await quotaFixture(t, { quota });
-  const response = await post(page);
-  assert.equal(response.status, 429);
-  assert.equal(response.data.code, 'FEEDBACK_GLOBAL_LIMIT');
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const response = await post(page);
+    assert.equal(response.status, 429);
+    assert.equal(response.data.code, 'FEEDBACK_GLOBAL_LIMIT', 'refused attempts never exhaust the visitor quota');
+  }
   assert.equal(Feedback.rows.length, 0);
+  assert.deepEqual(quota.rows.map(row => [row._id.split(':')[1], row.count]), [['global', GLOBAL_DAILY_LIMIT], ['visitor', 0]]);
 });
 
-test('storage failures answer 503 without echoing the error', async t => {
-  const { post } = await fixture(t, { feedback: feedbackModel({ failCreate: true }) });
+test('storage failures answer 503 without echoing the error and give both daily slots back', async t => {
+  const { post, FeedbackQuota } = await fixture(t, { feedback: feedbackModel({ failCreate: true }) });
   const response = await post(page);
   assert.equal(response.status, 503);
   assert.equal(response.data.code, 'FEEDBACK_UNAVAILABLE');
   assert.ok(!JSON.stringify(response.data).includes('write concern'));
+  assert.deepEqual(FeedbackQuota.rows.map(row => row.count), [0, 0]);
 });
 
 test('admins page through feedback newest first, filter by kind and delete entries', async t => {
