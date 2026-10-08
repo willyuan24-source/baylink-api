@@ -57,6 +57,8 @@ test('tax (VITA) and immigration (USCIS) guards carry the same principle with th
   assert.match(immigration, /Professional-topic guard \(immigration\)/);
   assert.match(immigration, /USCIS 官方网站 \(https:\/\/www\.uscis\.gov\/\)/);
   assert.match(immigration, /naturalization \(Form N-400\)/);
+  assert.match(immigration, /sealed medical exam \(Form I-693\)/);
+  assert.match(immigration, /only the parts that match the question/);
   assert.match(immigration, /Forms, filing fees and processing times are published on uscis\.gov and change/);
   assert.match(immigration, /Only a licensed attorney or a DOJ-accredited representative/);
   assert.match(immigration, /decided by USCIS/);
