@@ -20,11 +20,13 @@ const rejectClientHeaders = (...names) => req => (names.some(name => req.headers
  * The fixture API behind a stand-in for Cloudflare and Render: Cloudflare
  * overwrites CF-Connecting-IP and appends the visitor to X-Forwarded-For,
  * then Render appends the Cloudflare edge, which rotates on every request.
- * Responses from the API carry Render's headers. `edge(req)` may answer a
- * request at Cloudflare instead; by default it rejects a client-sent
- * CF-Connecting-IP, as production did.
+ * With renderHops, a Render-internal proxy then appends its own rotating
+ * private hop, as production did on 2026-10-08 (the socket is loopback in
+ * both). Responses from the API carry Render's headers. `edge(req)` may
+ * answer a request at Cloudflare instead; by default it rejects a
+ * client-sent CF-Connecting-IP, as production did.
  */
-async function behindCloudflare(t, config = {}, { edge = rejectClientHeaders('cf-connecting-ip') } = {}) {
+async function behindCloudflare(t, config = {}, { edge = rejectClientHeaders('cf-connecting-ip'), renderHops = [] } = {}) {
   let calls = 0;
   const app = createApplication({ models: createMemoryModels(), config: { NODE_ENV: 'test', JWT_SECRET: SECRET, OPENAI_API_KEY: 'test-key-never-print', TRUST_PROXY_HOPS: 1, ...config },
     plannerNow: () => NOW, clientIpLog: () => {}, ai: { baybay: async () => { calls++; return final('已参考站内资料，这是测试回答。'); } } });
@@ -36,9 +38,12 @@ async function behindCloudflare(t, config = {}, { edge = rejectClientHeaders('cf
       res.writeHead(answer.status, { 'Content-Type': 'text/plain; charset=UTF-8', Server: 'cloudflare', 'CF-RAY': 'fixture-SJC' });
       return res.end(answer.body);
     }
-    const hop = EDGES[requests++ % EDGES.length];
+    const n = requests++;
+    const hop = EDGES[n % EDGES.length];
+    // Rotates out of step with the edge, so edge and hop pairs vary.
+    const internal = renderHops.length ? `, ${renderHops[Math.floor(n / 2) % renderHops.length]}` : '';
     const forwarded = req.headers['x-forwarded-for'];
-    const headers = { ...req.headers, 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${forwarded ? `${forwarded}, ` : ''}${VISITOR}, ${hop}` };
+    const headers = { ...req.headers, 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${forwarded ? `${forwarded}, ` : ''}${VISITOR}, ${hop}${internal}` };
     const upstream = http.request({ host: '127.0.0.1', port: app.server.address().port, method: req.method, path: req.url, headers }, response => {
       res.writeHead(response.statusCode, { ...response.headers, server: 'cloudflare', 'rndr-id': `fixture-${requests}`, 'x-render-origin-server': 'Render' });
       response.pipe(res);
@@ -59,6 +64,8 @@ const canary = args => new Promise(resolve => {
   });
 });
 const PAID = ['--reads', '5', '--consume', '2', '--i-approve-spend'];
+// Render-internal hops seen in production on 2026-10-08 (/24s; host parts invented).
+const RENDER_HOPS = ['10.27.25.14', '10.28.103.2', '10.30.203.99'];
 
 test('canary without the diagnostic window: two paid asks prove the default key, with CF-Connecting-IP rejected at the edge', async t => {
   const api = await behindCloudflare(t);
@@ -150,4 +157,29 @@ test('canary refuses paid asks without approval and keeps reads within the usage
     assert.equal(run.code, 2, args.join(' '));
     assert.equal(run.stdout, '', 'nothing is requested before the arguments are valid');
   }
+});
+
+test('canary passes behind a rotating Render-internal hop, the production chain since 2026-10-08', async t => {
+  // A diagnostic window open for this process, so the diag-* rows run too.
+  const api = await behindCloudflare(t, { CLIENT_IP_DIAGNOSTIC_UNTIL: new Date(Date.now() + 3600000).toISOString() }, { renderHops: RENDER_HOPS });
+  const run = await canary(['--base', api.base, ...PAID]);
+  assert.equal(run.code, 0, run.stdout);
+  assert.equal(run.result, 'PASS');
+  assert.equal(run.rows['consume-exact-drop'], 'PASS');
+  assert.equal(run.rows['after-ask-reads-stable'], 'PASS');
+  assert.equal(run.rows['after-ask-forged-reads'], 'PASS');
+  assert.match(run.stdout, /r15 r15 ask\(200\) r14 r14 ask\(200\) r13 r13/);
+  assert.match(run.stdout, /diag-window\s+mode=cloudflare reqIp=xff\[-1\]:private xffLength=3 cf-connecting-ip=public cf==xff\[-2\]=false cloudflareKeyFrom=cf-connecting-ip cloudflareEdgeFrom=xff\[-2\] colo=/);
+  assert.equal(run.rows['diag-cloudflare-key-stable'], 'PASS');
+  assert.equal(run.rows['diag-cloudflare-key-forged'], 'PASS');
+  assert.equal(run.rows['diag-current-key'], 'PASS');
+  assert.equal(api.calls(), 2, 'exactly the two approved asks reached the provider');
+});
+
+test('canary fails behind a rotating Render-internal hop when the source is off: the key follows the hop', async t => {
+  const api = await behindCloudflare(t, { CLIENT_IP_SOURCE: 'off' }, { renderHops: RENDER_HOPS });
+  const run = await canary(['--base', api.base, ...PAID]);
+  assert.equal(run.code, 1, run.stdout);
+  assert.equal(run.result, 'FAIL');
+  assert.equal(run.rows['consume-exact-drop'], 'FAIL');
 });
