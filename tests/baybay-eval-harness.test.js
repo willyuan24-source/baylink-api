@@ -108,6 +108,9 @@ test('dry run needs no key, makes no network call and writes only outside the re
   const { summary } = writeReport(path.join(out, 'dry-test'), 'haiku-low', { rescore: true });
   assert.equal(summary.meta.rescored, true);
   assert.equal(summary.arms['haiku-low'].turns, 3);
+  // B7 takes the emergency template and the degraded replay never calls the
+  // model, so only C08 counts toward latency, $/question and judge means.
+  assert.equal(summary.arms['haiku-low'].modelTurns, 1);
 
   // A resume re-runs nothing that is on disk and keeps the first run's provenance.
   const resumed = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-test', '--arms', 'haiku-low', '--items', 'C08,B7,C-DEGRADED-STROKE', '--resume'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });

@@ -57,7 +57,11 @@ export function loadRun(runDir) {
 
 export function summarizeArm(rows, judgeRows = new Map()) {
   const scored = rows.filter(row => !row.skipped && !row.budgetStopped);
-  const model = scored.filter(row => row.route === 'assistant');
+  // Model-answered = the assistant route AND at least one provider call. The
+  // assistant also answers some turns without the model (degraded replays,
+  // the out-of-region reply); those are identical in every arm and would pull
+  // latency, $/question and judge means toward each other.
+  const model = scored.filter(row => row.route === 'assistant' && (row.calls || []).length > 0);
   const judged = model.map(row => judgeRows.get(row.turnId)).filter(row => row?.scores);
   const blocks = {};
   for (const row of scored) {
@@ -140,7 +144,7 @@ export function renderMarkdown(summary) {
   const lines = [`# BayBay local eval: ${meta.runId}`, '',
     `- Mode: ${meta.mode}. Pinned now: ${meta.pinnedNow}. Code: ${meta.gitHead || 'unknown'}. Blocks: ${meta.blocks.join(', ')}.${meta.rescored ? ' Gold re-applied from the current casebook (--rescore).' : ''}`,
     `- Arms: ${names.map(arm => `${arm} (${meta.armLabels?.[arm] || ''})`).join('; ')}.`,
-    `- Latency is measured on model-answered turns only (route = assistant). The current pipeline does not stream from the provider, so lead = complete unless the run recorded a draft event.`, '',
+    `- Latency, $ per question and judge means use model-answered turns only (route = assistant with at least one provider call). The current pipeline does not stream from the provider, so lead = complete unless the run recorded a draft event.`, '',
     '## Per arm', '',
     `| | ${names.join(' | ')} |`, `|---|${names.map(() => '---').join('|')}|`];
   const row = (label, fn) => lines.push(`| ${label} | ${names.map(arm => fn(arms[arm])).join(' | ')} |`);
