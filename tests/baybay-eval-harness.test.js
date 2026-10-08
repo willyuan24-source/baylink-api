@@ -80,15 +80,35 @@ test('route mirror matches the server intent classifier and pre-dispatch follows
   assert.equal(preDispatch({ ...base, message: '我爸突然胸口很痛喘不过气' }).safetyRoute, 'emergency');
   assert.equal(preDispatch({ ...base, message: '周六想找人一起去爬山' }).harnessRoute, 'outing');
   assert.equal(preDispatch({ ...base, message: '这周末旧金山有什么免费活动？' }), null);
+  // server.js runs only the emergency check before the v2 assistant, which answers
+  // professional topics with a guarded model call (eval C-MEDICARE, C13).
+  assert.equal(preDispatch({ ...base, message: 'Medicare A 部分和 B 部分有什么区别？我该选哪个？' }), null);
+  assert.equal(preDispatch({ ...base, message: '绿卡面试要准备什么' }), null);
+  assert.equal(preDispatch({ ...base, message: '我妈说话突然含糊，一边脸往下垂，手也抬不起来' }).emergencyTopic, 'stroke');
+  // Off the v2 route (a post search) the server keeps the professional template.
+  assert.equal(preDispatch({ ...base, message: '找人帮忙搬家，房东要驱逐我' }).safetyRoute, 'professional');
+  assert.equal(preDispatch({ ...base, message: '找人帮忙搬家' }).harnessRoute, 'legacy');
 });
 
-test('arms switch models through existing config keys only', () => {
+test('arms switch models through runtime config keys; code-defaults sets nothing and runs the R0 routes', async () => {
+  const { armRoutes } = await load('arms.mjs');
   const book = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
+  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT']);
   for (const [name, arm] of Object.entries(book.arms)) {
-    assert.deepEqual(Object.keys(arm.config).sort(), ['ANTHROPIC_BAYBAY_EFFORT', 'ANTHROPIC_BAYBAY_MODEL'], name);
-    if (arm.requestOverrides) assert.match(arm.config.ANTHROPIC_BAYBAY_MODEL, /^claude-haiku-/, `${name}: disabled thinking is Haiku-only`);
+    for (const key of Object.keys(arm.config)) assert.ok(keys.has(key), `${name}: ${key}`);
+    assert.equal(arm.requestOverrides, undefined, `${name}: thinking goes through BAYBAY_THINKING_AGENT, which only Haiku receives`);
   }
+  const sonnetLow = { model: 'claude-sonnet-5-5', effort: 'low', thinking: 'adaptive' };
+  assert.deepEqual(book.arms['code-defaults'].config, {});
+  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow });
+  const opusMedium = { model: 'claude-opus-5-5', effort: 'medium', thinking: 'adaptive' };
+  assert.deepEqual(armRoutes(book.arms['opus-asis'].config), { agent: opusMedium, professional: opusMedium });
+  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow }, 'professional answers never run on Haiku');
+  assert.deepEqual(armRoutes(book.arms['haiku-low-nothink'].config).agent, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
+  assert.deepEqual(armRoutes(book.arms['haiku-medium'].config).agent, { model: 'claude-haiku-5-5', effort: 'medium', thinking: 'adaptive' });
+  assert.deepEqual(armRoutes(book.arms['sonnet-low'].config).agent, sonnetLow);
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
+  assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });
 
 test('dry run needs no key, makes no network call and writes only outside the repository', async () => {
@@ -100,6 +120,7 @@ test('dry run needs no key, makes no network call and writes only outside the re
   const meta = JSON.parse(fs.readFileSync(path.join(out, 'dry-test', 'meta.json'), 'utf8'));
   assert.equal(meta.mode, 'dry-run');
   assert.equal(meta.spentUsd, 0);
+  assert.equal(meta.armConfigs['haiku-low'].routes.agent.model, 'claude-haiku-5-5');
   const rows = fs.readFileSync(path.join(out, 'dry-test', 'results-haiku-low.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
   assert.deepEqual(rows.map(row => row.turnId).sort(), ['B7', 'C-DEGRADED-STROKE', 'C08']);
   assert.ok(rows.every(row => row.calls.every(call => call.costUsd === 0)));
@@ -108,9 +129,12 @@ test('dry run needs no key, makes no network call and writes only outside the re
   const { summary } = writeReport(path.join(out, 'dry-test'), 'haiku-low', { rescore: true });
   assert.equal(summary.meta.rescored, true);
   assert.equal(summary.arms['haiku-low'].turns, 3);
-  // B7 takes the emergency template and the degraded replay never calls the
+  // B7 and the C-DEGRADED-STROKE replay take the 911 template and never call the
   // model, so only C08 counts toward latency, $/question and judge means.
   assert.equal(summary.arms['haiku-low'].modelTurns, 1);
+  const degradedStroke = rows.find(row => row.turnId === 'C-DEGRADED-STROKE');
+  assert.equal(degradedStroke.safetyRoute, 'emergency'); assert.equal(degradedStroke.gold.pass, true);
+  assert.equal(rows.find(row => row.turnId === 'C08').model, 'claude-haiku-5-5');
 
   // A resume re-runs nothing that is on disk and keeps the first run's provenance.
   const resumed = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-test', '--arms', 'haiku-low', '--items', 'C08,B7,C-DEGRADED-STROKE', '--resume'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });

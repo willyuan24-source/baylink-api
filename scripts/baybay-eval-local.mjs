@@ -23,6 +23,7 @@ import { scoreTurn, validateCases, routeOf } from './eval/gold.mjs';
 import { preDispatch, serverIntentFingerprint, INTENT_MIRROR_FINGERPRINT } from './eval/route.mjs';
 import { createJudge, judgeCase, JUDGE_MODEL } from './eval/judge.mjs';
 import { writeReport } from './eval/report.mjs';
+import { armRoutes } from './eval/arms.mjs';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -39,7 +40,7 @@ const { normalizeGuideHistory } = require(path.join(ROOT, 'lib/guideConversation
 const { validateChatSearchContext } = require(path.join(ROOT, 'lib/guideWebSearch'));
 const { baybayWebAccess } = require(path.join(ROOT, 'lib/baybayAccess'));
 
-const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1] [--blocks A,C,E,G] [--arms a,b] [--items id,id]
+const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id]
        [--run-id <id>] [--out <dir outside the repo>] [--now <ISO>] [--concurrency 1-3] [--max-reruns N]
        [--no-judge] [--resume] [--live --budget-usd <USD>]
 Without --live it is a dry run (synthetic provider, no key, no network).
@@ -132,7 +133,8 @@ async function main() {
     const def = armsBook.arms[arm];
     if (!def) throw new Error(`Unknown arm ${arm}`);
     if (def.requestOverrides && Object.keys(def.requestOverrides).some(key => key !== 'thinking')) throw new Error(`${arm}: only a thinking override is allowed`);
-    if (def.requestOverrides?.thinking && !String(def.config.ANTHROPIC_BAYBAY_MODEL).startsWith('claude-haiku-')) throw new Error(`${arm}: disabled thinking is only valid on Haiku 5.5`);
+    // A body override reaches every call of the arm, professional route included.
+    if (def.requestOverrides?.thinking && Object.values(armRoutes(def.config)).some(route => !route.model.startsWith('claude-haiku-'))) throw new Error(`${arm}: disabled thinking is only valid on Haiku 5.5; use BAYBAY_THINKING_AGENT instead`);
   }
   const baselineArm = options.baseline || set.baselineArm;
   // Credentials: environment only. Name of the variable is recorded, never the value.
@@ -218,7 +220,8 @@ async function main() {
   }
 
   const armLabels = Object.fromEntries(armNames.map(arm => [arm, armsBook.arms[arm].label]));
-  const meta = { runId, mode: options.live ? 'live' : 'dry-run', set: options.set, blocks, arms: armNames, armLabels, baselineArm, pinnedNow: options.now,
+  const armConfigs = Object.fromEntries(armNames.map(arm => [arm, { config: armsBook.arms[arm].config, routes: armRoutes(armsBook.arms[arm].config) }]));
+  const meta = { runId, mode: options.live ? 'live' : 'dry-run', set: options.set, blocks, arms: armNames, armLabels, armConfigs, baselineArm, pinnedNow: options.now,
     concurrency: options.concurrency, maxReruns: options.maxReruns, budgetUsd: options.budgetUsd, judge: options.judge ? { model: JUDGE_MODEL, effort: 'low' } : null,
     gitHead: gitHead(), node: process.version, pricingDate: PRICING_DATE, keyEnvVar: keyVar || null, workspaceHeader: !!workspaceId,
     intentMirror: { expected: INTENT_MIRROR_FINGERPRINT, server: fingerprint, ok: fingerprint === INTENT_MIRROR_FINGERPRINT },
@@ -272,7 +275,7 @@ async function main() {
     const usage = ctx.calls.reduce((sum, call) => { for (const key of Object.keys(sum)) sum[key] += call.usage?.[key] || 0; return sum; }, { inputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0, outputTokens: 0, webSearches: 0 });
     const model = route === 'assistant';
     return {
-      runId, arm, model: armsBook.arms[arm].config.ANTHROPIC_BAYBAY_MODEL, effort: armsBook.arms[arm].config.ANTHROPIC_BAYBAY_EFFORT,
+      runId, arm, model: armConfigs[arm].routes.agent.model, effort: armConfigs[arm].routes.agent.effort, professionalModel: armConfigs[arm].routes.professional.model,
       caseId: item.id, turnId: turn.id, block: item.block, locale: item.locale, currentPath: item.currentPath, tags: [...new Set([...(item.tags || []), ...(turn.tags || [])])], message: turn.message,
       route, responseMode: payload?.responseMode, safetyRoute: payload?.safetyRoute, legacyReason: payload?.legacyReason,
       degraded: !!payload?.degraded, degradedReplay: !!item.degradedReplay, voidedAttempts: attempts - 1, voidFinal: !!outcome.voidFinal, budgetStopped: !!outcome.budgetStopped, error,
