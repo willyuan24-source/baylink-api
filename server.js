@@ -35,7 +35,9 @@ const { registerPlannerWebSearch, normalizeWebSearchError } = require('./lib/pla
 const { registerPlannerTravel } = require('./lib/plannerTravel');
 const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset, hasPrivateSearchData } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
-const { createProductMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
+const { createProductMetricModel, createProductRouteMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
+const { registerClientErrors } = require('./lib/clientErrors');
+const { registerFeedback } = require('./lib/feedback');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
@@ -527,6 +529,7 @@ const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 const ServiceBookingAgenda = createServiceBookingModel(mongoose, injectedModels);
 const Outing = createOutingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
+const ProductRouteMetric = createProductRouteMetricModel(mongoose, injectedModels);
 const AccountAuthChallenge = createAccountAuthChallengeModel(mongoose, injectedModels);
 const ConversationResponseMetric = createConversationResponseMetricModel(mongoose, injectedModels);
 const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModels);
@@ -1761,12 +1764,14 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
 });
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
-registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
+registerPlanner(app, { PlannerAccount, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, catalog: options.plannerCatalog, discoveryCatalog: options.discoveryCatalog, now: options.plannerNow, config, ai: options.ai?.planner, isTest });
 registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), catalog: options.plannerCatalog, now: options.plannerNow, isTest, compute: options.plannerTravelCompute, fetchImpl: options.plannerTravelFetch });
 const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
-registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
+registerProductMetrics(app, { ProductMetric, ProductRouteMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
+const clientErrors = registerClientErrors(app, { mongoose, models: injectedModels, authenticateToken, requireAdmin, getClientIp, now: options.productMetricsNow });
+const feedback = registerFeedback(app, { mongoose, models: injectedModels, secret: JWT_SECRET, authenticateToken, requireAdmin, getClientIp, now: options.feedbackNow });
 registerPostTranslation(app, { Post, User, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken,
   holdPost: id => holdPostOperation(Post, id), holdAccount: id => holdAccountOperation(User, id),
   checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
@@ -4935,7 +4940,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4953,6 +4958,10 @@ async function startProduction(config = process.env) {
   await application.models.ServiceBookingAgenda.init();
   await application.models.Outing.init();
   await application.models.ProductMetric.init();
+  await application.models.ProductRouteMetric.init();
+  await application.models.ClientErrorMetric.init();
+  await application.models.Feedback.init();
+  await application.models.FeedbackQuota.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();

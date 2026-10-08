@@ -8,6 +8,15 @@ Upgrade and restart **all API instances before publishing the new frontend**. In
 
 The production schemas persist private candidates and their revision in `PlannerAccount`, reschedule proposals/receipts/notification snapshots inside `ServiceBookingAgenda.bookings`, and covers/time polls in `Outing`. Existing records remain readable without a backfill or collection migration; optional values are initialized on first use. See [workflow deployment and persistence](docs/workflow-deployment.md) for compatibility, rollback and configuration details.
 
+## Saves, feedback and site analytics
+
+- Planner favorites accept `offer` and `opening` as well as `event`, `place` and `guide`. An id the API catalog copy does not have yet answers 404 `ITEM_NOT_IN_CATALOG`; the web keeps a local save and retries. See [`docs/planner-favorites.md`](docs/planner-favorites.md).
+- `POST /api/product-events` takes an optional route template, counted per day in `ProductRouteMetric` on its own limiter. See [`docs/product-metrics.md`](docs/product-metrics.md).
+- `POST /api/client-errors` keeps anonymous daily error counts by kind, route, release and fingerprint. See [`docs/client-errors.md`](docs/client-errors.md).
+- `POST /api/feedback` stores reader feedback for 90 days with HMAC-keyed daily limits; administrators list and delete it. See [`docs/feedback.md`](docs/feedback.md).
+
+The new collections (`ProductRouteMetric`, `ClientErrorMetric`, `Feedback`, `FeedbackQuota`) get their indexes at startup; existing collections are not migrated. Deploy the API before a web release that sends routes, beacons, feedback or offer saves. Old web clients keep working unchanged.
+
 ## Search and BayBay
 
 - BayBay and its related helpers can use direct Claude API: unified research/planning, legacy guide answers, shared web search, event screenshot extraction, private conversation assistance, post drafts/translation, planner ranking and outing drafts. Set `BAYBAY_AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`, `ANTHROPIC_WORKSPACE_ID` (required for organization-scoped keys), and `ANTHROPIC_BAYBAY_MODEL=claude-opus-5-5` on the server. `ANTHROPIC_BAYBAY_EFFORT` accepts `low` or `medium` (default); no sampling overrides or fast mode are sent. The default provider remains OpenAI. Claude failures never silently switch to OpenAI. Existing output validation, authentication and quotas still apply; drafts do not publish posts or send messages.
