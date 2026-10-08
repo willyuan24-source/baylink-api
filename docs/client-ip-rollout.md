@@ -75,6 +75,8 @@
 
 只有能改 Render 环境变量的人才用得上。金丝雀 FAIL、或者想知道生产链路具体是哪种情形时使用。
 
+**2026-10-09 前的自动窗口（店主 10/8 同意）**：店主这周没法改 Render 环境变量，所以在 Render 上（`RENDER=true`），2026-10-09 23:00 UTC 之前每次启动都会自动打开 90 分钟窗口（不会超过这个时间点），行为与下面设置 `CLIENT_IP_DIAGNOSTIC_UNTIL` 完全相同。过了这个时间点，这段代码不再起作用。本地和测试环境没有 `RENDER=true`，不会打开。
+
 - 设置 `CLIENT_IP_DIAGNOSTIC_UNTIL` 为 ISO UTC 结束时间，例如太平洋夏令时 10:00 等于 17:00 UTC，就填 `2026-10-08T18:00:00Z`，然后保存并部署。只有当它在未来、并且不晚于本次进程启动后 2 小时才生效，否则忽略，日志会写明原因。窗口按每次进程启动计算，每次重新部署都要重设。
 - 生效期间有两项诊断。①`GET /api/health` 和 `GET /api/ai/usage` 输出 `[client-ip-diag]` 日志行：带 `?probe=<8–24 位小写字母或数字>` 的请求一律记录，其他请求每 20 个抽 1 个，抽样每小时最多 60 行，总计每小时最多 600 行。②`GET /api/_diag/client-ip` 返回调用者本次请求的分类信息和计数键指纹，每个键每分钟 30 次、全站每分钟 300 次。窗口外该地址就是普通 404。
 - 诊断内容只有：地址类别（loopback/private/cgnat/link-local/pseudo-ipv4/cloudflare/public/invalid）、IPv4 /24 或 IPv6 /48 前缀、XFF 长度、从右到左的各项类别、`req.ip` 取自哪一项、`cf-connecting-ip`/`true-client-ip`/`x-real-ip` 等头是否存在、`cf-connecting-ip` 是否等于 XFF[-2]、CF-Ray 机房代码，以及 cloudflare 模式下键的来源。不包含完整 IP，也不写数据库。指纹是 `HMAC(JWT_SECRET, 键)` 的前 12 位十六进制，只能用来比较“两次是不是同一个键”。
