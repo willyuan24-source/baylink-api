@@ -58,13 +58,35 @@ const CASES = [
   } },
 ];
 
+function assertPreparation(example, locale, data, guide) {
+  if (locale === 'en') {
+    assert.doesNotMatch(data.answer + guide.title, /[\u3400-\u9fff]/u);
+    assert.match(data.answer, /not a live source check/);
+  } else if (locale === 'zh-Hant') {
+    assert.doesNotMatch(guide.title, /咨询|准备|报税/u);
+    assert.match(data.answer, /不是本次即時網頁核驗/u);
+  } else assert.match(data.answer, /不是本次即时网页核验/u);
+  if (example.slug === MEDICARE) {
+    assert.match(data.answer, /1-800-434-0222/);
+    assert.match(data.answer, /医生|醫生|doctors/);
+    assert.match(data.answer, /药物|藥物|medication/);
+    assert.match(data.answer, /不是对你个人资格的判定|不是對你個人資格的判定|does not determine your eligibility/);
+  } else {
+    assert.match(data.answer, /800-906-9887/);
+    assert.match(data.answer, /表格|forms/);
+    assert.match(data.answer, /不代表现在开门|不代表現在開門|does not guarantee that a site is open/);
+    assert.match(data.answer, /联邦免费不代表州申报也免费|聯邦免費不代表州申報也免費|free federal filing does not guarantee free state filing/);
+  }
+  assert.deepEqual(data.matchingPosts, []);
+  assert.deepEqual(data.interactiveCards, []);
+}
+
 for (const example of CASES) for (const locale of ['zh-Hans', 'zh-Hant', 'en']) {
-  test(`${locale}: HTTP safety response gives the published guide and official preparation for ${example.name}`, async t => {
+  test(`${locale}: legacy HTTP clients keep the deterministic template, published guide and official preparation for ${example.name}`, async t => {
     const f = await fixture(t);
     for (const message of [example.queries[locale]].flat()) {
       // An unrelated current page must not replace the actual requested topic.
-      const result = await f.ask({ message, locale, assistantVersion: 2, stream: true,
-        context: { currentPath: '/guides/bay-area-rental-scam-guide' } });
+      const result = await f.ask({ message, locale, context: { currentPath: '/guides/bay-area-rental-scam-guide' } });
       assert.equal(result.status, 200, message);
       assert.match(result.headers.get('content-type'), /application\/json/);
       assert.equal(result.data.safetyRoute, 'professional');
@@ -73,33 +95,41 @@ for (const example of CASES) for (const locale of ['zh-Hans', 'zh-Hant', 'en']) 
       assert.deepEqual(result.data.suggestedGuides.map(row => row.slug), [example.slug]);
       const guide = result.data.suggestedGuides[0];
       assert.equal(guide.url, zh.find(row => row.slug === example.slug).url);
-      if (locale === 'en') {
-        assert.equal(guide.title, english.find(row => row.slug === example.slug).title);
-        assert.doesNotMatch(result.data.answer + guide.title, /[\u3400-\u9fff]/u);
-        assert.match(result.data.answer, /not a live source check/);
-      } else if (locale === 'zh-Hant') {
-        assert.doesNotMatch(guide.title, /咨询|准备|报税/u);
-        assert.match(result.data.answer, /不是本次即時網頁核驗/u);
-      } else assert.match(result.data.answer, /不是本次即时网页核验/u);
-      if (example.slug === MEDICARE) {
-        assert.ok(result.data.sources.some(row => row.url === HICAP_URL));
-        assert.ok(result.data.sources.some(row => row.url === 'https://www.dhcs.ca.gov/medi-cal/'));
-        assert.match(result.data.answer, /1-800-434-0222/);
-        assert.match(result.data.answer, /医生|醫生|doctors/);
-        assert.match(result.data.answer, /药物|藥物|medication/);
-        assert.match(result.data.answer, /不是对你个人资格的判定|不是對你個人資格的判定|does not determine your eligibility/);
-      } else {
-        assert.ok(result.data.sources.some(row => row.url === VITA_URL));
-        assert.ok(result.data.sources.some(row => row.url === FTB_URL));
-        assert.match(result.data.answer, /800-906-9887/);
-        assert.match(result.data.answer, /表格|forms/);
-        assert.match(result.data.answer, /不代表现在开门|不代表現在開門|does not guarantee that a site is open/);
-        assert.match(result.data.answer, /联邦免费不代表州申报也免费|聯邦免費不代表州申報也免費|free federal filing does not guarantee free state filing/);
-      }
-      assert.deepEqual(result.data.matchingPosts, []);
-      assert.deepEqual(result.data.interactiveCards, []);
+      if (locale === 'en') assert.equal(guide.title, english.find(row => row.slug === example.slug).title);
+      assert.ok(result.data.sources.some(row => row.url === (example.slug === MEDICARE ? HICAP_URL : VITA_URL)));
+      assert.ok(result.data.sources.some(row => row.url === (example.slug === MEDICARE ? 'https://www.dhcs.ca.gov/medi-cal/' : FTB_URL)));
+      assertPreparation(example, locale, result.data, guide);
     }
     assert.deepEqual(f.attempts, { providers: 0, quota: 0, external: 0 });
+    assert.equal(f.models.AiGovernance.rows.length, 0);
+  });
+
+  test(`${locale}: BayBay v2 answers ${example.name} as a guarded model answer whose floor keeps the guide, contacts and preparation`, async t => {
+    const f = await fixture(t);
+    for (const message of [example.queries[locale]].flat()) {
+      const result = await f.ask({ message, locale, assistantVersion: 2, context: { currentPath: '/guides/bay-area-rental-scam-guide' } });
+      assert.equal(result.status, 200, message);
+      // Not an interception: an ordinary assistant answer with the safety topic
+      // and resource card attached. The model is unavailable in this fixture
+      // (quota storage offline), so the curated template is the visible floor.
+      assert.equal(result.data.responseMode, 'assistant');
+      assert.equal(result.data.safetyRoute, 'professional');
+      assert.equal(result.data.safetyTopic, example.topic);
+      assert.equal(result.data.degraded, true);
+      assert.equal(result.data.safety.kind, 'professional');
+      assert.deepEqual(result.data.suggestedGuides.map(row => row.slug), [example.slug]);
+      const guide = result.data.suggestedGuides[0];
+      assert.equal(guide.url, zh.find(row => row.slug === example.slug).url);
+      const resources = result.data.safety.resources;
+      if (example.slug === MEDICARE) assert.ok(resources.some(row => row.url === HICAP_URL && row.phone === '1-800-434-0222' && row.href === 'tel:+18004340222'));
+      else assert.ok(resources.some(row => row.url === VITA_URL && row.phone === '800-906-9887' && row.href === 'tel:+18009069887') && resources.some(row => row.url === FTB_URL));
+      // The floor cites the official contacts and the pillar guide as real evidence.
+      assert.ok(result.data.sources.some(row => row.url === guide.url));
+      assertPreparation(example, locale, result.data, guide);
+    }
+    // The guarded answer runs under AI governance; with quota storage offline
+    // no paid provider or external fetch is reached.
+    assert.equal(f.attempts.providers, 0); assert.equal(f.attempts.external, 0); assert.ok(f.attempts.quota > 0);
     assert.equal(f.models.AiGovernance.rows.length, 0);
   });
 }

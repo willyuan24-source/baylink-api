@@ -49,7 +49,7 @@ const { createClientIp } = require('./lib/clientIp');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
-const { safetyResponse } = require('./lib/safetyRouting');
+const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
@@ -1724,9 +1724,17 @@ app.get('/api/ai/usage', async (req, res) => {
 const governedAiRoute = req => req.method === 'POST' && (/^\/api\/ai\//.test(req.path) || /^\/api\/planner\/(?:recommend|web-search)$/.test(req.path) || /^\/api\/(?:conversations\/[^/]+\/ai|posts\/[^/]+\/translation)$/.test(req.path));
 app.use((req, res, next) => {
   if (!governedAiRoute(req)) return next();
-  if (['/api/ai/guide-chat', '/api/planner/recommend', '/api/ai/post-assist', '/api/ai/outing-draft'].includes(req.path)) {
-    const safety = safetyResponse(req.body?.message || req.body?.intent, req.body?.locale,
-      { guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG });
+  // A current emergency always returns the 911 card before quota or providers.
+  // Professional topics are no longer intercepted here: BayBay answers them with
+  // a guarded model call (the guide-chat route keeps the template for legacy
+  // clients), and post/outing drafting about rent near a medical center or a
+  // tax-service post is ordinary writing help. Only the planner keeps the
+  // deterministic professional template, because it has no guarded answer.
+  const safetyScope = { '/api/ai/guide-chat': 'emergency', '/api/planner/recommend': 'all', '/api/ai/post-assist': 'emergency', '/api/ai/outing-draft': 'emergency' }[req.path];
+  if (safetyScope) {
+    const message = req.body?.message || req.body?.intent;
+    const safety = safetyScope === 'all' ? safetyResponse(message, req.body?.locale, { guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG })
+      : emergencyResponse(message, req.body?.locale);
     if (safety) return res.json(safety);
   }
   return aiGovernance.middleware(getCurrentUserIdFromRequest)(req, res, next);
@@ -4685,7 +4693,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   if (!webAccess.allowed) searchMode = 'site';
   // Apply the same truthful access contract to legacy, early-return and fallback
   // responses. Streaming results are decorated separately below.
-  const decorateAccess = payload => withBaybayAccess(payload, { requestedMode, webAccess });
+  const decorateAccess = payload => withBaybayAccess(payload, { requestedMode, webAccess, credentialPresented: !!extractBearerToken(req.headers.authorization) });
   const sendJson = res.json.bind(res);
   res.json = payload => sendJson(decorateAccess(payload));
   res.set('Vary', 'Authorization');
@@ -4720,7 +4728,12 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   // public questions. Identifying school/address requests retain the private,
   // site-guidance path and cannot send those details to external search.
   const privateSchoolRequest = intent === 'school' && hasPrivateSearchData(message);
-  if (req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && !privateSchoolRequest) {
+  const assistantRoute = req.body?.assistantVersion === 2 && baybayAssistant.capabilities().enabled && !searchPlan && !providerRequest && !privateSchoolRequest;
+  // BayBay v2 answers professional topics with a guarded model call and a
+  // resource card. Legacy and specialized paths keep the deterministic template.
+  const professional = assistantRoute ? null : professionalResponse(message, locale, { guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG });
+  if (professional) { res.set('Cache-Control', 'no-store'); return res.json(professional); }
+  if (assistantRoute) {
     res.set('Cache-Control', 'no-store');
     let progressStream;
     try {
