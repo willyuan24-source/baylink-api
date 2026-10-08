@@ -1,16 +1,16 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createNotificationService, HALF_HOUR, trustedOrigin } = require('../lib/notifications');
+const { createNotificationService, HALF_HOUR, trustedOrigin, notificationOrigin } = require('../lib/notifications');
 const { memory } = require('./support/notification-memory');
 
-function fixture({ enabled = true, mail, sms, holdAccount, acquireAccount, config = {} } = {}) {
+function fixture({ enabled = true, mail, sms, holdAccount, acquireAccount, config = {}, log } = {}) {
   let at = Date.parse('2026-10-06T12:00:00Z');
   const sent = [], texts = [];
   const models = {
     User: memory([{ id: 'owner', email: 'owner@example.test', isPhoneVerified: true, phoneNormalized: '+16505550123' }, { id: 'guest', email: 'guest@example.test' }]),
     UserBlock: memory(), NotificationAccount: memory(), NotificationToken: memory(), NotificationJob: memory(), NotificationWindow: memory(), NotificationBudget: memory(),
   };
-  const service = createNotificationService({ ...models, isTest: true, isolated: true, holdAccount, acquireAccount, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
+  const service = createNotificationService({ ...models, isTest: true, isolated: true, holdAccount, acquireAccount, log, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
     sendEmail: mail || (async value => { sent.push(value); return { id: 'mock-email' }; }), sendSms: sms || (async value => { texts.push(value); return { sid: 'mock-sms' }; }) });
   const rawToken = value => value.text.match(/#token=([A-Za-z0-9_-]{43})/)[1];
   const verify = async () => { await service.startEmailVerification('owner'); await service.runOnce(); await service.verifyEmail(rawToken(sent.at(-1))); sent.length = 0; };
@@ -171,4 +171,35 @@ test('only trusted frontend origins are accepted; recovered historical events ne
   assert.throws(() => trustedOrigin({ NODE_ENV: 'production', NOTIFICATION_FRONTEND_URL: 'https://evil.test' }));
   assert.throws(() => trustedOrigin({ NODE_ENV: 'production', NOTIFICATION_FRONTEND_URL: 'https://www.baylink.us/redirect?url=evil' }));
   const f = fixture(); await f.verify(); await f.optIn(); assert.deepEqual(await f.service.enqueueEvent(f.event({ createdAt: f.now() - 10 * 60000 })), { skipped: true });
+});
+
+test('an invalid NOTIFICATION_FRONTEND_URL falls back to the canonical site with one warning instead of stopping the API', async () => {
+  const logs = [];
+  for (const value of ['https://evil.test', 'https://www.baylink.us/redirect?url=evil', 'not a url', 'https://user:pass@www.baylink.us/']) {
+    assert.equal(notificationOrigin({ NODE_ENV: 'production', NOTIFICATION_FRONTEND_URL: value }, line => logs.push(line)), 'https://www.baylink.us');
+  }
+  assert.equal(notificationOrigin({ NODE_ENV: 'production', NOTIFICATION_FRONTEND_URL: 'https://baylink.us' }, line => logs.push(line)), 'https://baylink.us');
+  assert.equal(logs.length, 4);
+  assert.deepEqual(logs[0], { level: 'warn', event: 'notification_origin_invalid', setting: 'NOTIFICATION_FRONTEND_URL', fallback: 'https://www.baylink.us' });
+  assert.ok(!JSON.stringify(logs).includes('evil') && !JSON.stringify(logs).includes('pass'));
+  // The service still starts and its links point at the canonical site, never the rejected host.
+  const warnings = [];
+  const f = fixture({ config: { NOTIFICATION_FRONTEND_URL: 'https://evil.test' }, log: line => warnings.push(line) });
+  assert.equal(warnings.length, 1);
+  await f.service.startEmailVerification('owner'); await f.service.runOnce();
+  assert.match(f.sent.at(-1).text, /https:\/\/www\.baylink\.us\//); assert.ok(!f.sent.at(-1).text.includes('evil'));
+});
+
+test('createApplication boots with an unparsable NOTIFICATION_FRONTEND_URL', t => {
+  const { createApplication } = require('../server');
+  const { createMemoryModels } = require('./support/memory-models');
+  const original = console.error, lines = [];
+  console.error = line => lines.push(String(line));
+  let application;
+  try {
+    application = createApplication({ models: createMemoryModels(), config: { NODE_ENV: 'test', JWT_SECRET: 'notification-boot-test-secret-thirty-two-chars', NOTIFICATION_FRONTEND_URL: 'not a url' } });
+  } finally { console.error = original; }
+  t.after(() => new Promise(resolve => application.io.close(resolve)));
+  assert.ok(application.app);
+  assert.equal(lines.filter(line => line.includes('notification_origin_invalid')).length, 1);
 });
