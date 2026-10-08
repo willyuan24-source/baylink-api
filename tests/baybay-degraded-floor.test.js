@@ -64,6 +64,22 @@ test('a health worry outside the lexicon gets "cannot answer now" with 911/211, 
   assert.ok(f.calls.model > 0, 'these questions did reach the (failing) model');
 });
 
+test('an ordinary question with no match keeps the plain no-match copy: no 911/211 prompt and no fallbackHelp', async () => {
+  const f = degradedAssistant();
+  const result = await f.ask('Any underwater basket weaving meetups?', 'en');
+  assert.equal(result.degraded, true);
+  assert.match(result.answer, /a missing match does not mean no events exist/);
+  assert.doesNotMatch(result.answer, /911|211/);
+  assert.equal(result.fallbackHelp, undefined);
+  // Figurative or non-body wording is not a health worry: these get site
+  // excerpts or the plain copy, never the 911/211 text.
+  for (const [locale, message] of [['zh-Hans', '停车很头疼，周末去哪'], ['en', "I'm confused about Clipper fares"]]) {
+    const worded = await f.ask(message, locale);
+    assert.doesNotMatch(worded.answer, /911/, message);
+    assert.equal(worded.fallbackHelp, undefined, message);
+  }
+});
+
 test('the relevance floor keeps genuine matches: a roommate question still gets the roommate guide when degraded', async () => {
   const f = degradedAssistant();
   const result = await f.ask('湾区找室友要注意什么');

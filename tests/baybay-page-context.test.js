@@ -42,7 +42,7 @@ test('B1: on the Fleet Week page "这个活动" is the current page, first in th
   assert.equal(page.temporalStatus, 'current'); assert.equal(page.temporalLabel, '进行中');
   assert.match(page.venue, /Pier 27/); assert.ok(page.details.length > 0); assert.ok(page.summary.length <= 400);
   // The frozen rule lives in the instructions; the page record leads the evidence.
-  assert.match(f.payloads[0].instructions, /If the user says 这个\/這個\/这里\/這裡\/这家\/這家\/这场\/這場\/它\/this\/here\/it without naming something else, they mean currentPage/);
+  assert.match(f.payloads[0].instructions, /If the user says 这个\/這個\/这里\/這裡\/这家\/這家\/这场\/這場\/它\/this\/here\/it without naming something else or referring to an item from recentConversation, they mean currentPage/);
   assert.match(f.payloads[0].instructions, /never ask which item they mean/);
   assert.equal(input.evidence[0].id, 'page');
   assert.equal(input.evidence[0].url, `https://www.baylink.us${FLEET}`);
