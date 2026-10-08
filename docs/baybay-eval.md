@@ -59,6 +59,7 @@ Multi-turn cases replay the client contract: last 4 complete turns of history (u
 Known differences from production:
 - Source-monitor status (`monitorStatus`) is not wired, so evidence carries no monitor flags.
 - Web search is not wired. Block F (signed-in web questions) is reported as `skipped_requires_web` until v1 adds a web provider.
+- Source reads are blocked. `read_source` reads pages through its own reader (`lib/sourceMonitor`), not `fetchImpl`, so the harness passes a `sourceFetch` that refuses every host and a member-mode read returns an error tool_result. (The first tool-round probe, `r0-tools-1008`, ran before this was wired: one member-mode read fetched the public Santa Clara city calendar page.)
 - Latency is measured from this machine to the API, not from Render.
 
 ### Voiding and reruns

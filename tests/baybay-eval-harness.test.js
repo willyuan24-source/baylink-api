@@ -189,7 +189,7 @@ test('request shape records tool rounds without content: tool_use, then tool_res
 test('the tool-round probe is outside the scored casebook, caps model rounds only and runs dry with request shapes', async () => {
   const { validateCases } = await load('gold.mjs');
   const probe = JSON.parse(fs.readFileSync(path.join(EVAL, 'probe-tool-rounds.json'), 'utf8'));
-  assert.equal(validateCases(probe.cases), 3);
+  assert.equal(validateCases(probe.cases), 5);
   assert.ok(!/^cases-/.test('probe-tool-rounds.json'), 'the scored loader never reads it');
   assert.ok(probe.cases.every(item => item.config.BAYBAY_MAX_MODEL_ROUNDS === '2' && item.webStub === true && item.member === true));
   for (const config of [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, { BAYBAY_EFFORT_AGENT: 'high' }, null]) {
@@ -203,7 +203,7 @@ test('the tool-round probe is outside the scored casebook, caps model rounds onl
   const meta = JSON.parse(fs.readFileSync(path.join(out, 'probe-dry', 'meta.json'), 'utf8'));
   assert.equal(meta.probe, 'tool-rounds'); assert.deepEqual(meta.blocks, ['T']);
   const rows = fs.readFileSync(path.join(out, 'probe-dry', 'results-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
-  assert.deepEqual(rows.map(row => row.turnId).sort(), ['T-DAY-PLAN', 'T-READ-SOURCE', 'T-WEB-BART']);
+  assert.deepEqual(rows.map(row => row.turnId).sort(), ['T-DAY-PLAN', 'T-READ-FLEET', 'T-READ-LIBRARY', 'T-READ-SOURCE', 'T-WEB-BART']);
   for (const call of rows.flatMap(row => row.calls)) {
     // Code defaults (R0): Sonnet 5.5, explicit effort low, no thinking field, no sampling fields.
     assert.deepEqual([call.model, call.request.effort, call.request.thinking, call.request.sampling, call.request.maxTokens, call.request.toolChoice], ['claude-sonnet-5-5', 'low', null, [], 6000, 'auto']);
@@ -212,4 +212,14 @@ test('the tool-round probe is outside the scored casebook, caps model rounds onl
   const bad = spawnSync(process.execPath, [script, '--probe', 'nope', '--out', out], { cwd: ROOT, env, encoding: 'utf8', timeout: 60000 });
   assert.notEqual(bad.status, 0); assert.match(bad.stderr, /--probe must be one of: tool-rounds/);
   fs.rmSync(out, { recursive: true, force: true });
+});
+
+test('the harness blocks the source reader as well as fetch: member-mode read_source fails closed', () => {
+  // read_source reads pages through lib/sourceMonitor, not fetchImpl, so the
+  // harness must pass its own refusing sourceFetch (the r0-tools-1008 probe
+  // showed a member-mode read reaching a public page before this was wired).
+  const source = fs.readFileSync(path.join(ROOT, 'scripts', 'baybay-eval-local.mjs'), 'utf8');
+  assert.match(source, /const blockedSourceFetch = async source => \{\s*throw new Error\(`eval harness blocks network access/);
+  assert.match(source, /fetchImpl: providerFetch, sourceFetch: blockedSourceFetch/);
+  assert.equal((source.match(/createBayBayAssistant\(/g) || []).length, 1, 'one place builds the assistant');
 });

@@ -350,8 +350,13 @@ async function main() {
     BAYBAY_STATE_SECRET: secret, BAYBAY_DAILY_RUN_LIMIT: '100000', BAYBAY_AGENT_ENABLED: 'true' };
   // A probe case's web search is a local stub: no network, one fixed lead without sources.
   const stubWebSearch = async () => ({ answer: 'Eval probe stub: no live web result is available in the local eval.', sources: [], candidates: [], checkedAt: new Date(nowMs).toISOString(), cached: false, model: 'eval-stub' });
+  // read_source has its own page reader (lib/sourceMonitor), not fetchImpl: block it
+  // too, so a member-mode read fails closed instead of fetching the page.
+  const blockedSourceFetch = async source => {
+    throw new Error(`eval harness blocks network access to ${(() => { try { return new URL(source?.url).host; } catch { return 'an invalid URL'; } })()}`);
+  };
   const buildAssistant = (config, { webStub } = {}) => createBayBayAssistant({ config, guideCatalog: catalogs.guideCatalog, englishGuideCatalog: catalogs.englishSearchCatalog,
-    isTest: false, Quota: createMemoryQuota(), now, fetchImpl: providerFetch, ...(webStub ? { webSearch: stubWebSearch } : {}) });
+    isTest: false, Quota: createMemoryQuota(), now, fetchImpl: providerFetch, sourceFetch: blockedSourceFetch, ...(webStub ? { webSearch: stubWebSearch } : {}) });
 
   // Preflight: one tiny Haiku request proves the key, workspace header and
   // credit before any arm starts (a bad key would otherwise burn reruns).
