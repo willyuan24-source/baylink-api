@@ -373,3 +373,14 @@ test('diagnostic endpoint: 404 outside the window, key fingerprints inside, rate
     assert.equal(flagged.fingerprints.cloudflare, rotated[0].fingerprints.cloudflare, 'fingerprints are stable across processes sharing JWT_SECRET');
   }
 });
+
+test('a Render boot before 2026-10-09T23:00Z opens a 90-minute window by itself; elsewhere or later it stays closed', () => {
+  const opened = (config, startedAt) => { const lines = []; createClientIp({ JWT_SECRET: SECRET, ...config }, { now: () => startedAt, log: line => lines.push(line) }); return lines; };
+  assert.deepEqual(opened({ RENDER: 'true' }, NOW), ['[client-ip-diag] window open until 2026-10-08T20:30:00.000Z; mode cloudflare']);
+  assert.deepEqual(opened({ RENDER: 'true' }, Date.parse('2026-10-09T22:00:00Z')), ['[client-ip-diag] window open until 2026-10-09T23:00:00.000Z; mode cloudflare'], 'never past the cut-off date');
+  assert.deepEqual(opened({ RENDER: 'true' }, Date.parse('2026-10-09T23:00:00Z')), [], 'inert from the cut-off date on');
+  assert.deepEqual(opened({}, NOW), [], 'local and test servers never open it');
+  assert.deepEqual(opened({ RENDER: 'false' }, NOW), []);
+  const explicit = new Date(NOW + 1800000).toISOString();
+  assert.deepEqual(opened({ RENDER: 'true', CLIENT_IP_DIAGNOSTIC_UNTIL: explicit }, NOW), ['[client-ip-diag] window open until 2026-10-08T19:30:00.000Z; mode cloudflare'], 'an explicit window wins');
+});
