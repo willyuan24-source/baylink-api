@@ -44,6 +44,6 @@ Cardinality is bounded: after 2,000 distinct buckets in one process on one Pacif
 }
 ```
 
-`groups` is ranked by count and capped at 200. A spike on one `release` right after a deploy is the signal to roll back. The `client_error` product event keeps counting separately for old clients.
+The report is grouped in Mongo, so `total` and `daily` count every stored row of the 30 days, however many fingerprints there are. `groups` is ranked by count (then most recent `lastDay`) and capped at 200; `groupsTruncated` says when more groups exist. A flood of one-off fingerprints can push small groups out of the top 200 but cannot hide a day. A spike on one `release` right after a deploy is the signal to roll back. The `client_error` product event keeps counting separately for old clients.
 
 Tests: `tests/client-errors.test.js`.

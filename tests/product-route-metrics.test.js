@@ -5,8 +5,9 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
+const { runPipeline } = require('./support/aggregate-pipeline');
 const { ROUTE_TEMPLATES, routeTemplate } = require('../lib/routeTemplates');
-const { PRODUCT_EVENTS, createProductRouteMetricModel, registerProductMetrics } = require('../lib/productMetrics');
+const { PRODUCT_EVENTS, REPORT_ROUTE_DAILY, createProductRouteMetricModel, registerProductMetrics } = require('../lib/productMetrics');
 
 const SECRET = 'isolated-product-route-metrics-test-secret';
 const NOW = Date.parse('2026-10-08T19:00:00Z');
@@ -24,11 +25,13 @@ function metricModel(seed = []) {
       if (row) row.count += update.$inc.count;
       return { acknowledged: true, matchedCount: existing ? 1 : 0, upsertedCount: !existing && row ? 1 : 0 };
     },
+    // ProductMetric totals are read with find(); the route breakdown is grouped with aggregate().
     find(query) {
       const chain = { select() { return chain; }, sort() { return chain; }, limit() { return chain; },
         async lean() { return rows.filter(row => row.day >= query.day.$gte && row.day <= query.day.$lte).map(copy); } };
       return chain;
     },
+    aggregate: async pipeline => runPipeline(rows, pipeline),
     init: async () => {},
   };
 }
@@ -172,12 +175,31 @@ test('admin report adds 30-day route totals and per-day route rows; totals survi
   assert.ok(!JSON.stringify(report.data).includes('leak'));
   assert.equal((await request('/admin/product-metrics', { as: 'member' })).status, 403);
 
-  const broken = metricModel(); broken.find = () => { throw new Error('offline'); };
+  const broken = metricModel(); broken.aggregate = async () => { throw new Error('offline'); };
   const degraded = await fixture(t, { rows, routeModel: broken });
   const result = await degraded.request('/admin/product-metrics', { as: 'admin' });
   assert.equal(result.status, 200);
   assert.equal(result.data.counts.page_view, 5);
   assert.equal(result.data.routes, null);
+});
+
+test('a full route window keeps every total and drops only the oldest per-day rows', async t => {
+  const routes = ROUTE_TEMPLATES.slice(0, 8), days = [];
+  for (let offset = 0; offset < 30; offset++) days.push(new Date(Date.parse('2026-09-09T12:00:00Z') + offset * 86400000).toISOString().slice(0, 10));
+  // 30 days x every event x 8 routes = 20,400 day/event/route rows, above the per-day cap.
+  const routeRows = days.flatMap(day => PRODUCT_EVENTS.flatMap(event => routes.map(route => ({ day, event, locale: 'en', route, count: 1 }))));
+  assert.ok(routeRows.length > REPORT_ROUTE_DAILY);
+  const { request } = await fixture(t, { routeRows });
+  const { data } = await request('/admin/product-metrics', { as: 'admin' });
+  assert.equal(data.routes.length, PRODUCT_EVENTS.length * routes.length);
+  assert.equal(data.routes.reduce((sum, row) => sum + row.count, 0), routeRows.length, 'route totals count every stored row');
+  assert.equal(data.routeDaily.length, REPORT_ROUTE_DAILY);
+  assert.equal(data.routesTruncated, true);
+  const perDay = day => data.routeDaily.filter(row => row.day === day).length;
+  assert.equal(perDay('2026-10-08'), PRODUCT_EVENTS.length * routes.length, 'the newest day is complete');
+  assert.ok(perDay('2026-09-09') < PRODUCT_EVENTS.length * routes.length, 'the cap falls on the oldest day');
+  assert.equal(data.routeDaily[0].day, '2026-09-09');
+  assert.equal(data.routeDaily.at(-1).day, '2026-10-08');
 });
 
 test('a route write failure answers 503 like any other storage failure', async t => {

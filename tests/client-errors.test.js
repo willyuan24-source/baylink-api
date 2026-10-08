@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { createApplication } = require('../server');
 const { createMemoryModels } = require('./support/memory-models');
-const { MAX_BUCKETS_PER_DAY, releaseLabel, createClientErrorMetricModel, registerClientErrors } = require('../lib/clientErrors');
+const { runPipeline } = require('./support/aggregate-pipeline');
+const { MAX_BUCKETS_PER_DAY, REPORT_GROUPS, releaseLabel, createClientErrorMetricModel, registerClientErrors } = require('../lib/clientErrors');
 
 const SECRET = 'isolated-client-error-test-secret';
 const NOW = Date.parse('2026-10-08T19:00:00Z');
@@ -23,11 +24,7 @@ function errorModel(seed = []) {
       if (row) row.count += update.$inc.count;
       return { acknowledged: true, matchedCount: existing ? 1 : 0 };
     },
-    find(query) {
-      const chain = { select() { return chain; }, sort() { return chain; }, limit() { return chain; },
-        async lean() { return rows.filter(row => row.day >= query.day.$gte && row.day <= query.day.$lte).map(copy); } };
-      return chain;
-    },
+    aggregate: async pipeline => runPipeline(rows, pipeline),
     init: async () => {},
   };
 }
@@ -139,6 +136,27 @@ test('admin report groups 30 days by fingerprint with first/last day and per-day
   assert.equal(report.data.groups.length, 2);
   assert.deepEqual(report.data.daily, [{ day: '2026-10-01', kind: 'render', count: 2 }, { day: '2026-10-08', kind: 'chunk', count: 1 }, { day: '2026-10-08', kind: 'render', count: 5 }]);
   assert.equal((await request('/admin/client-errors?days=90', { as: 'admin' })).status, 400);
+});
+
+test('a flood of old fingerprints never hides the newest days: every row counts and only groups are capped', async t => {
+  const rows = [];
+  // 25,000 distinct one-off buckets over 25 old days: more than the old 20,000-row read.
+  for (let day = 0; day < 25; day++) {
+    const date = new Date(Date.parse('2026-09-09T12:00:00Z') + day * 86400000).toISOString().slice(0, 10);
+    for (let index = 0; index < 1000; index++) rows.push({ day: date, kind: 'error', route: '/', release: 'old', fp: `f${String(day).padStart(2, '0')}${String(index).padStart(4, '0')}`, count: 1 });
+  }
+  // A release that broke one page today.
+  rows.push({ day: '2026-10-08', kind: 'render', route: '/events/:id', release: 'b1d2e3f4a5c6', fp: 'deadbeef', count: 40 });
+  rows.push({ day: '2026-10-07', kind: 'render', route: '/events/:id', release: 'b1d2e3f4a5c6', fp: 'deadbeef', count: 10 });
+  rows.push({ day: '2026-10-08', kind: 'error', route: '/', release: 'x', fp: 'abcdef12', count: 'corrupt' });
+  const { request } = await fixture(t, { rows });
+  const { data } = await request('/admin/client-errors', { as: 'admin' });
+  assert.equal(data.total, 25050, 'every valid stored row of the window is counted');
+  assert.deepEqual(data.groups[0], { kind: 'render', route: '/events/:id', release: 'b1d2e3f4a5c6', fp: 'deadbeef', count: 50, firstDay: '2026-10-07', lastDay: '2026-10-08' });
+  assert.equal(data.groups.length, REPORT_GROUPS);
+  assert.equal(data.groupsTruncated, true);
+  assert.deepEqual(data.daily.slice(-2), [{ day: '2026-10-07', kind: 'render', count: 10 }, { day: '2026-10-08', kind: 'render', count: 40 }]);
+  assert.equal(data.daily.length, 27);
 });
 
 test('ClientErrorMetric is a strict bucket with a unique key and a 30-day TTL', () => {

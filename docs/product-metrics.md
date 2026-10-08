@@ -51,7 +51,8 @@ No user ID, session ID, IP, message, URL, query, content ID, destination, reques
 ```
 
 - `counts` always has every event key; `daily` lists only nonempty day/event/locale rows.
-- `routes` sums each event × route template over the window (locales combined), sorted by event, then count. `routeDaily` is the same per day. Both read at most 20,000 stored rows; `routesTruncated` says when that cap was hit.
+- `routes` sums each event × route template over the window (locales combined), sorted by event, then count. It is grouped in Mongo, counts every stored row of the window and has at most one row per allowlisted event and template, so it is never capped.
+- `routeDaily` is the same per day, oldest first. It returns at most 20,000 day × event × route rows, chosen newest first, so when `routesTruncated` is true it is the oldest days that are incomplete; `routes` still covers all 30 days.
 - If the route collection cannot be read, `routes` and `routeDaily` are `null` and the totals still answer.
 
 Run `node --test tests/productMetrics.test.js tests/product-route-metrics.test.js` for validation, privacy allowlisting, route mapping, authorization, concurrent increments, Pacific-midnight, retention-index, limiter isolation, failure and rate-limit checks. Tests use injected isolated models and never contact production storage.
