@@ -17,6 +17,7 @@ All durations are **server observed**, measured with a monotonic clock. They exc
 | Field | Exact observation |
 | --- | --- |
 | `providerLatency` | A `fetchAiJson` HTTP attempt through complete JSON parsing or error/timeout/cancellation; includes all attempt outcomes. It excludes quota reservation and subsequent usage-counter writes. |
+| `providerTtft` | (2026-10-08) A `fetchAiJson` attempt from request start to provider response headers, kept only for completed or incomplete answers. For today's non-streaming calls this is close to `providerLatency`; it becomes the provider first-token time once streaming lands. |
 | `firstQuickCard` | First accepted SSE write of a validated site-record quick card; no sample when no card was sent. |
 | `firstValidatedText` | First SSE write of already validated answer text; no sample for ordinary JSON responses or answers without text. This is **not provider first-token time**: the current deltas are emitted only after answer validation. |
 | `completeResult` | JSON response preparation or complete SSE result write, retained only when the response subsequently ends successfully. It is separate from first text and request end. |
@@ -26,7 +27,9 @@ All durations are **server observed**, measured with a monotonic clock. They exc
 
 Provider counters describe the provider boundary: `providerCompleted` is parsed JSON without a reported failed/cancelled/incomplete/pending status; `providerIncomplete` includes explicit incomplete, queued and in-progress status; `providerError`, `providerTimeout` and `providerCancelled` are distinct. These are not final-answer quality grades: a failed first attempt may be recovered by a later model. Request buckets use all observed provider model families, including failed attempts. For a disconnect racing a provider response, request attribution uses the models observed at termination, while a later resolved provider attempt may still record its own outcome.
 
-Input and output token totals include only valid reported nonnegative integer counts. Zero is a known value. Missing/invalid input and output usage increment `inputUsageMissing` and `outputUsageMissing` independently, including when a failed or cancelled attempt supplies no usage. Such calls may still be billable. These are observed token totals, not a billing ledger or cost estimate; no prices are assumed.
+Input and output token totals include only valid reported nonnegative integer counts. Zero is a known value. Missing/invalid input and output usage increment `inputUsageMissing` and `outputUsageMissing` independently, including when a failed or cancelled attempt supplies no usage. Such calls may still be billable.
+
+Since 2026-10-08 (`docs/ai-models.md`), Claude responses also add `costMicroUsd` (integer micro-USD from the dated table in `lib/aiPricing.js`), `cacheReadTokens` and `cacheWriteTokens` (raw provider fields; `inputTokens` still counts the whole prompt) and `providerRefusal` (`stop_reason: "refusal"`, also counted in `providerError`). Calls whose model has no price (OpenAI, unknown Claude ids) increment `costUnpriced` instead of a guessed cost. Calls without usage (timeouts, cancellations, transport errors) have no cost here even though they may be billable.
 
 ## Coverage and reliability
 
