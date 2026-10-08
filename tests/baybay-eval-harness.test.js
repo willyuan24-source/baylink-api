@@ -11,14 +11,14 @@ const EVAL = path.join(ROOT, 'scripts', 'eval');
 const load = file => import(pathToFileURL(path.join(EVAL, file)).href);
 const casebooks = () => fs.readdirSync(EVAL).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).map(file => JSON.parse(fs.readFileSync(path.join(EVAL, file), 'utf8')));
 
-test('casebook has the planned 64 turns, valid golds and the RC-34 follow-up and thin-evidence quotas', async () => {
+test('casebook has the planned 66 turns, valid golds and the RC-34 follow-up and thin-evidence quotas', async () => {
   const { validateCases } = await load('gold.mjs');
   const cases = casebooks().flatMap(book => book.cases);
-  assert.equal(validateCases(cases), 64);
+  assert.equal(validateCases(cases), 66);
   const perBlock = {};
   for (const item of cases) perBlock[item.block] = (perBlock[item.block] || 0) + item.turns.length;
-  assert.deepEqual(perBlock, { A: 30, B: 6, C: 8, D: 10, E: 4, F: 2, G: 4 });
-  assert.equal(['A', 'C', 'E', 'G'].reduce((sum, block) => sum + perBlock[block], 0), 46);
+  assert.deepEqual(perBlock, { A: 30, B: 6, C: 10, D: 10, E: 4, F: 2, G: 4 });
+  assert.equal(['A', 'C', 'E', 'G'].reduce((sum, block) => sum + perBlock[block], 0), 48);
   assert.ok(cases.reduce((sum, item) => sum + item.turns.length - 1, 0) >= 6, 'at least six multi-turn follow-ups');
   const thin = cases.flatMap(item => item.turns.filter(turn => [...(item.tags || []), ...(turn.tags || [])].includes('thin-evidence')));
   assert.ok(thin.length >= 6, 'at least six thin-evidence turns');
@@ -80,15 +80,37 @@ test('route mirror matches the server intent classifier and pre-dispatch follows
   assert.equal(preDispatch({ ...base, message: '我爸突然胸口很痛喘不过气' }).safetyRoute, 'emergency');
   assert.equal(preDispatch({ ...base, message: '周六想找人一起去爬山' }).harnessRoute, 'outing');
   assert.equal(preDispatch({ ...base, message: '这周末旧金山有什么免费活动？' }), null);
+  // server.js runs only the emergency check before the v2 assistant, which answers
+  // professional topics with a guarded model call (eval C-MEDICARE, C13).
+  assert.equal(preDispatch({ ...base, message: 'Medicare A 部分和 B 部分有什么区别？我该选哪个？' }), null);
+  assert.equal(preDispatch({ ...base, message: '绿卡面试要准备什么' }), null);
+  assert.equal(preDispatch({ ...base, message: '我妈说话突然含糊，一边脸往下垂，手也抬不起来' }).emergencyTopic, 'stroke');
+  // Off the v2 route (a post search) the server keeps the professional template.
+  assert.equal(preDispatch({ ...base, message: '找人帮忙搬家，房东要驱逐我' }).safetyRoute, 'professional');
+  assert.equal(preDispatch({ ...base, message: '找人帮忙搬家' }).harnessRoute, 'legacy');
 });
 
-test('arms switch models through existing config keys only', () => {
+test('arms switch models through runtime config keys; code-defaults sets nothing and runs the R0 routes', async () => {
+  const { armRoutes } = await load('arms.mjs');
   const book = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
+  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT']);
   for (const [name, arm] of Object.entries(book.arms)) {
-    assert.deepEqual(Object.keys(arm.config).sort(), ['ANTHROPIC_BAYBAY_EFFORT', 'ANTHROPIC_BAYBAY_MODEL'], name);
-    if (arm.requestOverrides) assert.match(arm.config.ANTHROPIC_BAYBAY_MODEL, /^claude-haiku-/, `${name}: disabled thinking is Haiku-only`);
+    for (const key of Object.keys(arm.config)) assert.ok(keys.has(key), `${name}: ${key}`);
+    assert.equal(arm.requestOverrides, undefined, `${name}: thinking goes through BAYBAY_THINKING_AGENT, which only Haiku receives`);
   }
+  const sonnetLow = { model: 'claude-sonnet-5-5', effort: 'low', thinking: 'adaptive' };
+  assert.deepEqual(book.arms['code-defaults'].config, {});
+  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow });
+  const opusMedium = { model: 'claude-opus-5-5', effort: 'medium', thinking: 'adaptive' };
+  assert.deepEqual(armRoutes(book.arms['opus-asis'].config), { agent: opusMedium, professional: opusMedium });
+  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow }, 'professional answers never run on Haiku');
+  assert.deepEqual(armRoutes(book.arms['haiku-low-nothink'].config).agent, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
+  assert.deepEqual(armRoutes(book.arms['haiku-medium'].config).agent, { model: 'claude-haiku-5-5', effort: 'medium', thinking: 'adaptive' });
+  assert.deepEqual(armRoutes(book.arms['sonnet-low'].config).agent, sonnetLow);
+  const sonnetMedium = { model: 'claude-sonnet-5-5', effort: 'medium', thinking: 'adaptive' };
+  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium });
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
+  assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });
 
 test('dry run needs no key, makes no network call and writes only outside the repository', async () => {
@@ -100,6 +122,7 @@ test('dry run needs no key, makes no network call and writes only outside the re
   const meta = JSON.parse(fs.readFileSync(path.join(out, 'dry-test', 'meta.json'), 'utf8'));
   assert.equal(meta.mode, 'dry-run');
   assert.equal(meta.spentUsd, 0);
+  assert.equal(meta.armConfigs['haiku-low'].routes.agent.model, 'claude-haiku-5-5');
   const rows = fs.readFileSync(path.join(out, 'dry-test', 'results-haiku-low.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
   assert.deepEqual(rows.map(row => row.turnId).sort(), ['B7', 'C-DEGRADED-STROKE', 'C08']);
   assert.ok(rows.every(row => row.calls.every(call => call.costUsd === 0)));
@@ -108,9 +131,12 @@ test('dry run needs no key, makes no network call and writes only outside the re
   const { summary } = writeReport(path.join(out, 'dry-test'), 'haiku-low', { rescore: true });
   assert.equal(summary.meta.rescored, true);
   assert.equal(summary.arms['haiku-low'].turns, 3);
-  // B7 takes the emergency template and the degraded replay never calls the
+  // B7 and the C-DEGRADED-STROKE replay take the 911 template and never call the
   // model, so only C08 counts toward latency, $/question and judge means.
   assert.equal(summary.arms['haiku-low'].modelTurns, 1);
+  const degradedStroke = rows.find(row => row.turnId === 'C-DEGRADED-STROKE');
+  assert.equal(degradedStroke.safetyRoute, 'emergency'); assert.equal(degradedStroke.gold.pass, true);
+  assert.equal(rows.find(row => row.turnId === 'C08').model, 'claude-haiku-5-5');
 
   // A resume re-runs nothing that is on disk and keeps the first run's provenance.
   const resumed = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-test', '--arms', 'haiku-low', '--items', 'C08,B7,C-DEGRADED-STROKE', '--resume'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
@@ -130,4 +156,72 @@ test('dry run needs no key, makes no network call and writes only outside the re
   assert.match(inside.stderr, /outside the repository/);
   assert.equal(fs.existsSync(path.join(ROOT, 'tmp-eval')), false);
   fs.rmSync(out, { recursive: true, force: true });
+});
+
+// R0 review: the casebook's two single-sign items must stay model-answered (the
+// lexicon leaves one weak FAST sign to the model), or they would not test the model.
+test('the single stroke-sign items are left to the model by the lexicon and gold-check 911 first', () => {
+  const { emergencyResponse, strokeSignMentioned } = require('../lib/safetyRouting');
+  const items = casebooks().flatMap(book => book.cases).filter(item => (item.tags || []).includes('single-sign'));
+  assert.deepEqual(items.map(item => item.id), ['C-SIGN-SPEECH-ZH', 'C-SIGN-SPEECH-EN']);
+  for (const turn of items.flatMap(item => item.turns)) {
+    assert.equal(emergencyResponse(turn.message), null, turn.id);
+    assert.equal(strokeSignMentioned(turn.message), true, `${turn.id}: the degraded floor still treats it as a stroke sign`);
+    assert.equal(turn.gold.firstSentence, '911'); assert.equal(turn.gold.safety, 'emergency');
+  }
+});
+
+test('request shape records tool rounds without content: tool_use, then tool_result with tool_choice none', async () => {
+  const { requestShape, responseShape, toolRounds } = await load('request-shape.mjs');
+  const research = { model: 'claude-sonnet-5-5', max_tokens: 6000, tool_choice: { type: 'auto' }, output_config: { effort: 'low' }, tools: [{ name: 'search_site' }],
+    messages: [{ role: 'user', content: [{ type: 'text', text: 'secret question text' }] }] };
+  const final = { ...research, max_tokens: 9000, tool_choice: { type: 'none' }, messages: [...research.messages,
+    { role: 'assistant', content: [{ type: 'thinking', thinking: '', signature: 'sig' }, { type: 'tool_use', id: 'tu_1', name: 'search_site', input: { query: 'x' } }] },
+    { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'tu_1', content: '{}' }] }, { role: 'user', content: [{ type: 'text', text: 'Research is complete.' }] }] };
+  assert.deepEqual(requestShape(final), { maxTokens: 9000, toolChoice: 'none', effort: 'low', thinking: null, sampling: [], tools: 1, messages: 4, replayedThinking: 1, replayedToolUse: 1, toolResults: 1 });
+  assert.doesNotMatch(JSON.stringify(requestShape(final)), /secret|query|sig/);
+  assert.deepEqual(requestShape({ temperature: 0.2, thinking: { type: 'disabled' } }).sampling, ['temperature']);
+  assert.deepEqual(responseShape({ content: [{ type: 'thinking' }, { type: 'tool_use' }] }), ['thinking', 'tool_use']);
+  const calls = [{ kind: 'assistant', status: 200, model: 'claude-sonnet-5-5', stopReason: 'tool_use', request: requestShape(research) },
+    { kind: 'assistant', status: 200, responseModel: 'claude-sonnet-5-5', stopReason: 'end_turn', request: requestShape(final) }, { kind: 'judge', stopReason: 'end_turn' }];
+  assert.deepEqual(toolRounds(calls), [{ toolUse: { status: 200, model: 'claude-sonnet-5-5', toolChoice: 'auto', maxTokens: 6000 },
+    next: { status: 200, model: 'claude-sonnet-5-5', stopReason: 'end_turn', toolChoice: 'none', maxTokens: 9000, toolResults: 1, replayedThinking: 1, replayedToolUse: 1 } }]);
+});
+
+test('the tool-round probe is outside the scored casebook, caps model rounds only and runs dry with request shapes', async () => {
+  const { validateCases } = await load('gold.mjs');
+  const probe = JSON.parse(fs.readFileSync(path.join(EVAL, 'probe-tool-rounds.json'), 'utf8'));
+  assert.equal(validateCases(probe.cases), 5);
+  assert.ok(!/^cases-/.test('probe-tool-rounds.json'), 'the scored loader never reads it');
+  assert.ok(probe.cases.every(item => item.config.BAYBAY_MAX_MODEL_ROUNDS === '2' && item.webStub === true && item.member === true));
+  for (const config of [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, { BAYBAY_EFFORT_AGENT: 'high' }, null]) {
+    assert.throws(() => validateCases([{ ...probe.cases[0], config }]), /config may only set BAYBAY_MAX_MODEL_ROUNDS/);
+  }
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-probe-'));
+  const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
+  const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
+  const run = spawnSync(process.execPath, [script, '--probe', 'tool-rounds', '--arms', 'code-defaults', '--no-judge', '--out', out, '--run-id', 'probe-dry'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(run.status, 0, run.stderr);
+  const meta = JSON.parse(fs.readFileSync(path.join(out, 'probe-dry', 'meta.json'), 'utf8'));
+  assert.equal(meta.probe, 'tool-rounds'); assert.deepEqual(meta.blocks, ['T']);
+  const rows = fs.readFileSync(path.join(out, 'probe-dry', 'results-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  assert.deepEqual(rows.map(row => row.turnId).sort(), ['T-DAY-PLAN', 'T-READ-FLEET', 'T-READ-LIBRARY', 'T-READ-SOURCE', 'T-WEB-BART']);
+  for (const call of rows.flatMap(row => row.calls)) {
+    // Code defaults (R0): Sonnet 5.5, explicit effort low, no thinking field, no sampling fields.
+    assert.deepEqual([call.model, call.request.effort, call.request.thinking, call.request.sampling, call.request.maxTokens, call.request.toolChoice], ['claude-sonnet-5-5', 'low', null, [], 6000, 'auto']);
+  }
+  assert.ok(rows.every(row => Array.isArray(row.toolRounds)));
+  const bad = spawnSync(process.execPath, [script, '--probe', 'nope', '--out', out], { cwd: ROOT, env, encoding: 'utf8', timeout: 60000 });
+  assert.notEqual(bad.status, 0); assert.match(bad.stderr, /--probe must be one of: tool-rounds/);
+  fs.rmSync(out, { recursive: true, force: true });
+});
+
+test('the harness blocks the source reader as well as fetch: member-mode read_source fails closed', () => {
+  // read_source reads pages through lib/sourceMonitor, not fetchImpl, so the
+  // harness must pass its own refusing sourceFetch (the r0-tools-1008 probe
+  // showed a member-mode read reaching a public page before this was wired).
+  const source = fs.readFileSync(path.join(ROOT, 'scripts', 'baybay-eval-local.mjs'), 'utf8');
+  assert.match(source, /const blockedSourceFetch = async source => \{\s*throw new Error\(`eval harness blocks network access/);
+  assert.match(source, /fetchImpl: providerFetch, sourceFetch: blockedSourceFetch/);
+  assert.equal((source.match(/createBayBayAssistant\(/g) || []).length, 1, 'one place builds the assistant');
 });

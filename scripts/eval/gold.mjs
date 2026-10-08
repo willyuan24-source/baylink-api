@@ -120,11 +120,17 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
   return { pass, checks, route, falseNegative, falseNegativeCaught, safetyMiss };
 }
 
+export const CASE_CONFIG_KEYS = new Set(['BAYBAY_MAX_MODEL_ROUNDS']);
+
 /** Validate a casebook without running it. Throws on the first malformed case. */
 export function validateCases(cases) {
   const ids = new Set();
   for (const item of cases) {
-    if (!/^[A-G]$/.test(item.block)) throw new Error(`${item.id}: block must be A-G`);
+    // A-G is the scored casebook; T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
+    if (!/^[A-GT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-G (or T for the probe)`);
+    // A case may only cap the agent's model rounds; models and effort come from the arm.
+    if (item.config !== undefined && (!item.config || typeof item.config !== 'object' || Object.keys(item.config).some(key => !CASE_CONFIG_KEYS.has(key)))) throw new Error(`${item.id}: config may only set ${[...CASE_CONFIG_KEYS].join(', ')}`);
+    if (item.webStub !== undefined && typeof item.webStub !== 'boolean') throw new Error(`${item.id}: webStub must be true or false`);
     if (!['zh-Hans', 'zh-Hant', 'en'].includes(item.locale)) throw new Error(`${item.id}: bad locale`);
     if (!Array.isArray(item.turns) || !item.turns.length) throw new Error(`${item.id}: turns required`);
     for (const turn of item.turns) {

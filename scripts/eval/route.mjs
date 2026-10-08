@@ -1,7 +1,8 @@
 // Pre-dispatch for the local eval, in the order POST /api/ai/guide-chat uses:
-// safety middleware -> deterministic outing search -> legacy post/provider/
-// private-school path -> v2 BayBay assistant. Everything except the intent
-// classifier is imported from lib/. inferBayBayIntent lives inside
+// emergency middleware -> deterministic outing search -> legacy post/provider/
+// private-school path (with the professional template in front of it) -> v2
+// BayBay assistant, which answers professional topics with a guarded model call.
+// Everything except the intent classifier is imported from lib/. inferBayBayIntent lives inside
 // createApplication() in server.js, so it is mirrored below and fingerprinted:
 // the harness warns when the server copy changes.
 import { createRequire } from 'node:module';
@@ -12,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const { safetyResponse } = require(path.join(ROOT, 'lib/safetyRouting'));
+const { emergencyResponse, professionalResponse } = require(path.join(ROOT, 'lib/safetyRouting'));
 const { outingChatIntent } = require(path.join(ROOT, 'lib/outingChatIntent'));
 const { isProviderRequest, planPostSearch } = require(path.join(ROOT, 'lib/baybaySearch'));
 const { resolveConversationRequest, isSchoolRequest } = require(path.join(ROOT, 'lib/guideConversation'));
@@ -69,8 +70,9 @@ export function serverIntentFingerprint(serverSource = readFileSync(path.join(RO
  * guide-chat model path is a different pipeline and is not run by this eval.
  */
 export function preDispatch({ message, history, locale, nowMs, secret, guideCatalog, englishGuideCatalog }) {
-  const safety = safetyResponse(message, locale, { guideCatalog, englishGuideCatalog });
-  if (safety) return safety;
+  // server.js: the governed-AI middleware runs only the emergency check for guide-chat.
+  const emergency = emergencyResponse(message, locale);
+  if (emergency) return emergency;
   const outing = outingChatIntent({ message, history, locale, now: nowMs, secret });
   if (outing) return { ...outing, harnessRoute: 'outing' };
   const analysisMessage = normalizeGuideQuery(message);
@@ -82,7 +84,11 @@ export function preDispatch({ message, history, locale, nowMs, secret, guideCata
   const providerRequest = intent !== 'school' && isProviderRequest(resolvedRequest);
   const privateSchoolRequest = intent === 'school' && hasPrivateSearchData(message);
   if (searchPlan || providerRequest || privateSchoolRequest) {
+    // Off the v2 route the server answers a professional topic with its template.
+    const professional = professionalResponse(message, locale, { guideCatalog, englishGuideCatalog });
+    if (professional) return professional;
     return { ok: true, harnessRoute: 'legacy', answer: '', legacyReason: searchPlan ? 'post_search' : providerRequest ? 'provider_request' : 'private_school' };
   }
+  // v2 assistant: professional topics get a guarded model answer (lib/baybayAgent.js).
   return null;
 }

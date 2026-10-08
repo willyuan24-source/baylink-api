@@ -16,10 +16,15 @@ test('provider defaults stay OpenAI; Claude config uses the verified model and b
   assert.equal(baybayProvider({}), 'openai');
   assert.equal(baybayModel({}), 'gpt-6.1-sol');
   assert.equal(baybayProvider({ BAYBAY_AI_PROVIDER: ' ANTHROPIC ' }), 'anthropic');
-  assert.equal(baybayModel({ BAYBAY_AI_PROVIDER: 'anthropic' }), 'claude-opus-5-5');
-  assert.equal(baybayModel({ BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_BAYBAY_MODEL: 'fixture-claude' }), 'fixture-claude');
-  for (const [effort, expected] of [[undefined, 'medium'], ['low', 'low'], ['high', 'medium']]) {
-    const request = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'test-key-only', ANTHROPIC_BAYBAY_EFFORT: effort }, fetchImpl: async (url, init) => {
+  // R0: the agent defaults to Sonnet 5.5; the legacy all-route variable no longer moves it.
+  assert.equal(baybayModel({ BAYBAY_AI_PROVIDER: 'anthropic' }), 'claude-sonnet-5-5');
+  assert.equal(baybayModel({ BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_BAYBAY_MODEL: 'fixture-claude' }), 'claude-sonnet-5-5');
+  assert.equal(baybayModel({ BAYBAY_AI_PROVIDER: 'anthropic', BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }), 'claude-opus-5-5');
+  // The R0 default sends effort low whatever the legacy variable says; the rollback
+  // (BAYBAY_MODEL_AGENT=claude-opus-5-5) keeps the legacy low-or-medium mapping.
+  for (const [extra, effort, expected] of [[{}, undefined, 'low'], [{}, 'high', 'low'], [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, undefined, 'medium'],
+    [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, 'low', 'low'], [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, 'high', 'medium']]) {
+    const request = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'test-key-only', ANTHROPIC_BAYBAY_EFFORT: effort, ...extra }, fetchImpl: async (url, init) => {
       assert.equal(url, 'https://api.anthropic.com/v1/messages');
       assert.equal(init.headers.Authorization, 'Bearer test-key-only');
       assert.equal(init.headers['anthropic-version'], '2023-06-01');

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  DEFAULT_MODEL, KNOWN_MODELS, EFFORTS, ROUTES, ROUTE_NAMES, HAIKU_MIN_MAX_TOKENS, SERVER_FALLBACK_BETA,
+  DEFAULT_MODEL, R0_MODEL, R0_EFFORT, KNOWN_MODELS, EFFORTS, ROUTES, ROUTE_NAMES, HAIKU_MIN_MAX_TOKENS, SERVER_FALLBACK_BETA,
   aiRoute, routeForFeature, modelFamily, serverFallbacksAllowed, maxTokensFor, timeoutFor, firstByteFor, requestControls,
   anthropicHeaders, estimatePromptTokens, promptOverCap, logPromptCap, warnIgnoredSettings, logRefusalRetry, describeAiModels,
 } = require('../lib/aiModels');
@@ -11,20 +11,33 @@ const LEGACY_DEFAULTS = { baybay_agent: [9000, 28000], baybay_web: [4096, 35000]
   helper_post_assist: [6000, 28000], helper_outing: [6000, 28000], helper_planner: [4000, 28000], helper_event_extract: [6000, 28000],
   helper_conversation: [6000, 28000], helper_other: [6000, 28000] };
 
-test('the plan routes exist and every default equals the pre-route request (legacy model, legacy effort, caller budgets)', () => {
+// R0: the agent loop and guarded professional answers have their own default.
+const R0_ROUTES = new Set(['baybay_agent', 'baybay_professional']);
+
+test('the plan routes exist; R0 routes default to Sonnet 5.5 low, every other default equals the pre-route request', () => {
   for (const name of ['baybay_fast', 'baybay_agent', 'baybay_professional', 'baybay_web', 'triage', 'helper_translate', 'helper_planner']) assert.ok(ROUTE_NAMES.includes(name), name);
-  for (const config of [{}, { ANTHROPIC_BAYBAY_EFFORT: 'low' }, { ANTHROPIC_BAYBAY_EFFORT: 'high' }, { ANTHROPIC_BAYBAY_MODEL: 'fixture-claude' }]) {
+  assert.deepEqual([R0_MODEL, R0_EFFORT], ['claude-sonnet-5-5', 'low']);
+  for (const config of [{}, { ANTHROPIC_BAYBAY_EFFORT: 'low' }, { ANTHROPIC_BAYBAY_EFFORT: 'high' }, { ANTHROPIC_BAYBAY_MODEL: 'fixture-claude' }, { ANTHROPIC_BAYBAY_MODEL: 'claude-opus-5-5', ANTHROPIC_BAYBAY_EFFORT: 'medium' }]) {
     for (const name of ROUTE_NAMES) {
       const route = aiRoute(name, config);
-      assert.equal(route.model, config.ANTHROPIC_BAYBAY_MODEL || 'claude-opus-5-5', name);
-      // The legacy variable only ever produced low or medium.
-      assert.equal(route.effort, config.ANTHROPIC_BAYBAY_EFFORT === 'low' ? 'low' : 'medium', name);
+      if (R0_ROUTES.has(name)) {
+        // The legacy all-route variables (production sets ANTHROPIC_BAYBAY_MODEL) no longer move these routes.
+        assert.deepEqual([route.model, route.modelSource, route.effort, route.effortSource], ['claude-sonnet-5-5', 'route', 'low', 'route'], name);
+      } else {
+        assert.equal(route.model, config.ANTHROPIC_BAYBAY_MODEL || 'claude-opus-5-5', name);
+        // The legacy variable only ever produced low or medium.
+        assert.equal(route.effort, config.ANTHROPIC_BAYBAY_EFFORT === 'low' ? 'low' : 'medium', name);
+      }
       assert.equal(route.fallbacks, 'off'); assert.equal(route.firstByteMs, null); assert.equal(route.maxPromptTokens, null);
+      assert.equal(route.thinking, 'adaptive');
       assert.deepEqual(route.ignored, []);
       if (LEGACY_DEFAULTS[name]) assert.deepEqual([route.maxTokens, route.totalMs], LEGACY_DEFAULTS[name], name);
     }
   }
   assert.equal(DEFAULT_MODEL, 'claude-opus-5-5');
+  // Web search and the helpers keep today's defaults (and the legacy variables).
+  assert.deepEqual(['baybay_web', 'baybay_legacy', 'helper_translate', 'helper_planner'].map(name => [aiRoute(name, {}).model, aiRoute(name, {}).effort]),
+    Array(4).fill(['claude-opus-5-5', 'medium']));
   assert.throws(() => aiRoute('baybay_unknown', {}), /Unknown AI route/);
   // Caller-supplied budgets pass through unchanged by default (agent research/final, helpers, planner).
   const agent = aiRoute('baybay_agent', {}), helper = aiRoute('helper_other', {});
@@ -43,18 +56,36 @@ test('per-route model overrides change one route; the helper group override cove
   const config = { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5', BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_MODEL_HELPER_PLANNER: 'claude-sonnet-5-5', ANTHROPIC_BAYBAY_MODEL: 'claude-opus-5-5' };
   assert.equal(aiRoute('baybay_agent', config).model, 'claude-haiku-5-5');
   assert.equal(aiRoute('baybay_agent', config).modelSource, 'BAYBAY_MODEL_AGENT');
-  assert.equal(aiRoute('baybay_professional', config).model, 'claude-opus-5-5', 'professional is not moved by the agent override');
+  assert.equal(aiRoute('baybay_professional', config).model, 'claude-sonnet-5-5', 'professional is not moved by the agent override');
   assert.equal(aiRoute('helper_translate', config).model, 'claude-haiku-5-5');
   assert.equal(aiRoute('helper_planner', config).model, 'claude-sonnet-5-5');
   assert.equal(aiRoute('baybay_fast', config).model, 'claude-opus-5-5', 'the helper group never applies to BayBay routes');
-  // The RC-20 rollback is one variable.
-  assert.equal(aiRoute('baybay_agent', { ...config, BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }).model, 'claude-opus-5-5');
+  // The R0 rollback is one variable per route, and it restores the pre-R0 request:
+  // the model from the variable and the effort from the legacy rule (medium unless
+  // ANTHROPIC_BAYBAY_EFFORT=low), unless BAYBAY_EFFORT_<ROUTE> says otherwise.
+  const rollback = aiRoute('baybay_agent', { ...config, BAYBAY_MODEL_AGENT: 'claude-opus-5-5' });
+  assert.deepEqual([rollback.model, rollback.modelSource, rollback.effort, rollback.effortSource], ['claude-opus-5-5', 'BAYBAY_MODEL_AGENT', 'medium', 'default']);
+  assert.equal(aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: 'claude-opus-5-5', ANTHROPIC_BAYBAY_EFFORT: 'low' }).effort, 'low');
+  assert.equal(aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: 'claude-opus-5-5', BAYBAY_EFFORT_AGENT: 'high' }).effort, 'high');
+  const professionalRollback = aiRoute('baybay_professional', { BAYBAY_MODEL_PROFESSIONAL: 'claude-opus-5-5' });
+  assert.deepEqual([professionalRollback.model, professionalRollback.effort], ['claude-opus-5-5', 'medium']);
+  // An effort-only override keeps the R0 model.
+  assert.deepEqual(['model', 'effort'].map(key => aiRoute('baybay_agent', { BAYBAY_EFFORT_AGENT: 'medium' })[key]), ['claude-sonnet-5-5', 'medium']);
   for (const typo of ['claude-haiku', 'haiku', 'claude-haiku-5-5-latest', 'gpt-6.1-sol']) {
     const route = aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: typo });
-    assert.equal(route.model, 'claude-opus-5-5', typo);
+    assert.equal(route.model, 'claude-sonnet-5-5', `${typo}: the route keeps its R0 default`);
     assert.deepEqual(route.ignored, [{ name: 'BAYBAY_MODEL_AGENT', reason: 'unknown_model' }]);
   }
   assert.equal(aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: '  claude-sonnet-5-5  ' }).model, 'claude-sonnet-5-5');
+  // Pinning the default model is a no-op: the route keeps its own effort, even
+  // next to the legacy effort variable production sets.
+  for (const [name, variable] of [['baybay_agent', 'BAYBAY_MODEL_AGENT'], ['baybay_professional', 'BAYBAY_MODEL_PROFESSIONAL']]) {
+    for (const extra of [{}, { ANTHROPIC_BAYBAY_EFFORT: 'medium' }]) {
+      const pinned = aiRoute(name, { [variable]: 'claude-sonnet-5-5', ...extra });
+      assert.deepEqual([pinned.model, pinned.modelSource, pinned.effort, pinned.effortSource], ['claude-sonnet-5-5', variable, 'low', 'route'], `${name} ${JSON.stringify(extra)}`);
+    }
+    assert.equal(aiRoute(name, { [variable]: 'claude-sonnet-5-5', [variable.replace('MODEL', 'EFFORT')]: 'medium' }).effort, 'medium');
+  }
 });
 
 test('native web search never resolves to Haiku 5.5, from its own override or from the legacy all-route variable', () => {
@@ -63,13 +94,14 @@ test('native web search never resolves to Haiku 5.5, from its own override or fr
   assert.deepEqual(own.ignored, [{ name: 'BAYBAY_MODEL_WEB', reason: 'haiku_not_verified_for_route' }]);
   const legacy = aiRoute('baybay_web', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' });
   assert.equal(legacy.model, 'claude-opus-5-5');
-  assert.equal(aiRoute('baybay_agent', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-haiku-5-5');
+  assert.equal(aiRoute('baybay_agent', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-sonnet-5-5', 'the legacy variable no longer moves the agent');
+  assert.equal(aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }).model, 'claude-haiku-5-5');
   assert.equal(aiRoute('baybay_web', { BAYBAY_MODEL_WEB: 'claude-sonnet-5-5' }).model, 'claude-sonnet-5-5');
   // RC-20: guarded professional answers never resolve to Haiku, whichever variable names it.
-  assert.equal(aiRoute('baybay_professional', { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }).model, 'claude-opus-5-5', 'the agent switch does not move professional answers');
-  assert.equal(aiRoute('baybay_professional', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-opus-5-5');
+  assert.equal(aiRoute('baybay_professional', { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }).model, 'claude-sonnet-5-5', 'the agent switch does not move professional answers');
+  assert.equal(aiRoute('baybay_professional', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-sonnet-5-5');
   const professional = aiRoute('baybay_professional', { BAYBAY_MODEL_PROFESSIONAL: 'claude-haiku-5-5' });
-  assert.equal(professional.model, 'claude-opus-5-5');
+  assert.deepEqual([professional.model, professional.effort], ['claude-sonnet-5-5', 'low']);
   assert.deepEqual(professional.ignored, [{ name: 'BAYBAY_MODEL_PROFESSIONAL', reason: 'haiku_not_verified_for_route' }]);
   assert.equal(aiRoute('baybay_professional', { BAYBAY_MODEL_PROFESSIONAL: 'claude-sonnet-5-5' }).model, 'claude-sonnet-5-5');
 });
@@ -84,7 +116,8 @@ test('effort is explicit on every route and model; overrides accept only low, me
   assert.equal(aiRoute('helper_outing', { BAYBAY_EFFORT_HELPERS: 'low', BAYBAY_EFFORT_HELPER_OUTING: 'high' }).effort, 'high');
   for (const unsupported of ['xhigh', 'max', 'HIGH', 'fast']) {
     const route = aiRoute('baybay_agent', { BAYBAY_EFFORT_AGENT: unsupported });
-    assert.equal(route.effort, 'medium');
+    assert.equal(route.effort, 'low', 'an ignored override keeps the route default');
+    assert.equal(aiRoute('baybay_web', { BAYBAY_EFFORT_WEB: unsupported }).effort, 'medium');
     assert.deepEqual(route.ignored, [{ name: 'BAYBAY_EFFORT_AGENT', reason: 'unsupported_effort' }]);
   }
 });

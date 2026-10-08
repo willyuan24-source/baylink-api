@@ -13,6 +13,12 @@ node scripts/baybay-eval-local.mjs --items C08,B7 --arms haiku-low
 # Live v0 (blocks A, C, E, G x four arms). The key comes from a private env file, never from arguments.
 node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 20 --set v0 --run-id v0-1008
 
+# What this checkout ships (code-defaults arm), e.g. the R0 check: blocks C and E plus A's C01-C10
+node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 3 --set r0 --items C01,...,C10,C-STROKE-ZH,...,E-SENIOR-OAKLAND --run-id r0-check-1008
+
+# Tool-round probe (code defaults): forces a model tool round, then the tool_choice:none synthesis
+node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 1 --probe tool-rounds --arms code-defaults --no-judge --run-id r0-tools-1008
+
 # Re-render a report; --rescore re-applies the casebook on disk to the stored answers
 node scripts/eval/report.mjs <out>/<run-id> [--rescore]
 ```
@@ -23,8 +29,9 @@ Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`)
 
 | Flag | Meaning |
 |---|---|
-| `--set v0\|v1` | Block and arm preset from `scripts/eval/arms.json` (v0 = A, C, E, G on four arms) |
+| `--set v0\|v1\|r0` | Block and arm preset from `scripts/eval/arms.json` (v0 = A, C, E, G on four arms; r0 = A, C, E on `code-defaults`) |
 | `--blocks`, `--arms`, `--items` | Narrow the run (`--items` takes case or turn ids) |
+| `--probe tool-rounds` | Run `scripts/eval/probe-tool-rounds.json` (block T) instead of the casebook. Each probe item caps the agent at two model rounds (`BAYBAY_MAX_MODEL_ROUNDS=2`, the only key a case may set) and uses a local web-search stub, so a `tool_use` answer is followed by the final call with `tool_choice: none` and `max_tokens` 9,000 that replays the thinking and `tool_use` blocks with their `tool_result`. The gold only checks the route; the evidence is the recorded request shapes (`toolRounds` in each row) |
 | `--now` | Pinned clock, default `2026-10-08T10:00:00-07:00`. The harness warns when it differs from the casebook's `pinnedNow` |
 | `--concurrency` | 1-3, default 2 (a new workspace may sit on a low rate tier) |
 | `--max-reruns` | Reruns of a provider-degraded turn, default 2 |
@@ -42,16 +49,17 @@ Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`)
 
 For each turn the harness follows the order of `POST /api/ai/guide-chat`:
 
-1. **Safety** (`lib/safetyRouting.js`): emergency and professional templates answer before any model.
+1. **Emergency** (`lib/safetyRouting.js`): the 911-first template answers before any model. As in the server's guide-chat middleware, only the emergency check runs here.
 2. **Outing search** (`lib/outingChatIntent.js`): "找人一起…" requests go to the deterministic squad search.
-3. **Legacy routes**: post search, provider requests and private school requests. The eval records the route (`legacy`) but does not run the legacy guide-chat model. The intent classifier lives inside `server.js`, so `scripts/eval/route.mjs` mirrors it and a test fails when the server copy changes.
-4. **v2 assistant**: `createBayBayAssistant(...).run(...)` with the same catalogs as the server, `publicContext.resolve()` page context, an in-memory Quota stub, a pinned `now`, and guest access (site-only) unless the case is marked `member`.
+3. **Legacy routes**: post search, provider requests and private school requests. On this path a professional topic gets the deterministic professional template, as on the server; otherwise the eval records the route (`legacy`) but does not run the legacy guide-chat model. The intent classifier lives inside `server.js`, so `scripts/eval/route.mjs` mirrors it and a test fails when the server copy changes.
+4. **v2 assistant**: `createBayBayAssistant(...).run(...)` with the same catalogs as the server (a professional topic gets the guarded model answer on the `baybay_professional` route), `publicContext.resolve()` page context, an in-memory Quota stub, a pinned `now`, and guest access (site-only) unless the case is marked `member`.
 
 Multi-turn cases replay the client contract: last 4 complete turns of history (user ≤500, answer ≤1200 characters) plus the signed `assistantSessionToken`.
 
 Known differences from production:
 - Source-monitor status (`monitorStatus`) is not wired, so evidence carries no monitor flags.
 - Web search is not wired. Block F (signed-in web questions) is reported as `skipped_requires_web` until v1 adds a web provider.
+- Source reads are blocked. `read_source` reads pages through its own reader (`lib/sourceMonitor`), not `fetchImpl`, so the harness passes a `sourceFetch` that refuses every host and a member-mode read returns an error tool_result. (The first tool-round probe, `r0-tools-1008`, ran before this was wired: one member-mode read fetched the public Santa Clara city calendar page.)
 - Latency is measured from this machine to the API, not from Render.
 
 ### Voiding and reruns
@@ -60,17 +68,30 @@ A turn is **void** when the assistant degraded because of the provider or transp
 
 ### Arms
 
-`scripts/eval/arms.json` switches models through the existing runtime keys only: `ANTHROPIC_BAYBAY_MODEL` and `ANTHROPIC_BAYBAY_EFFORT` (the adapter maps anything except `low` to `medium`). The current adapter sends no `thinking` field, so the `haiku-low-nothink` arm adds `thinking: {type: "disabled"}` to the outgoing body in the harness fetch wrapper. That is valid on Haiku 5.5 at effort high or below and a 400 on Opus 5.5 and Sonnet 5.5; the harness rejects it for other models.
+`scripts/eval/arms.json` switches models through runtime config keys (`lib/aiModels.js`). Since R0 the agent and professional routes default to Sonnet 5.5 at effort low and ignore the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT`, so the arms name `BAYBAY_MODEL_AGENT` / `BAYBAY_MODEL_PROFESSIONAL`. A route whose model a variable changes to another model takes the legacy effort rule (anything except `low` is `medium`) unless `BAYBAY_EFFORT_<ROUTE>` is set; pinning the default model keeps effort low.
+
+| Arm | Agent route | Professional route |
+|---|---|---|
+| `code-defaults` | No config: whatever this checkout ships (R0: Sonnet 5.5 low) | Same |
+| `opus-asis` | Opus 5.5 medium (production before R0) | Opus 5.5 medium |
+| `sonnet-low` | Sonnet 5.5 low | Sonnet 5.5 low (default) |
+| `haiku-low`, `haiku-medium` | Haiku 5.5 low / medium | Sonnet 5.5 low (never Haiku, RC-20) |
+| `haiku-low-nothink` | Haiku 5.5 low with `BAYBAY_THINKING_AGENT=disabled` (sent to Haiku only; a 400 on Opus 5.5 and Sonnet 5.5) | Sonnet 5.5 low |
+| `sonnet-medium` | Sonnet 5.5 medium (`BAYBAY_EFFORT_AGENT=medium`): makes adaptive thinking likelier, so the tool-round probe can show thinking blocks replayed with a `tool_result` | Sonnet 5.5 medium |
+
+`meta.json` (`armConfigs`) and every result row record the resolved agent and professional model and effort. Harness-level `requestOverrides` still accept a thinking override, but only on an arm whose agent and professional routes both resolve to Haiku, which no arm does since R0.
+
+Runs before 2026-10-09 (`v0-20261008`, `c-guard-1008`) used the old pre-dispatch, which answered professional topics (C-MEDICARE, C13) with the deterministic template instead of the guarded model answer the server gives. Compare those turns with care.
 
 ## Casebook
 
-`scripts/eval/cases-<block>-*.json`, 64 scored turns, golds dated for **Thu 2026-10-08 10:00 PT** (tomorrow = 10/9, this weekend = 10/10–11).
+`scripts/eval/cases-<block>-*.json`, 66 scored turns, golds dated for **Thu 2026-10-08 10:00 PT** (tomorrow = 10/9, this weekend = 10/10–11).
 
 | Block | Turns | Content |
 |---|---|---|
 | A | 30 | The 10-07 BBLIVE guest turns with their 1-10 human scores (`baseline.bblive1007`), golds re-dated |
 | B | 6 | Retrieval false-negative probes (the site has the answer) |
-| C | 8 | Safety: 5 emergencies, 2 degraded-mode replays (`ANTHROPIC_USE_UNTIL` in the past), 1 guarded professional topic |
+| C | 10 | Safety: 5 emergencies, 2 single stroke signs the lexicon leaves to the model (the gold checks that the model still says 911 first), 2 degraded-mode replays (`ANTHROPIC_USE_UNTIL` in the past), 1 guarded professional topic |
 | D | 10 | Traditional Chinese and English |
 | E | 4 | Page context: offer, opening, past event, senior guide |
 | F | 2 | Signed-in web questions (v1) |
@@ -100,7 +121,7 @@ Latency percentiles, $/question and judge means use model-answered turns only: t
 
 ## Files written per run
 
-`meta.json` (settings, git head, key variable name, mirror check), `results-<arm>.jsonl` (one row per turn: route, answer, sources, cards, warnings, provider calls with status and usage, timings, gold checks), `judge-<arm>.jsonl`, `ledger.jsonl` (every priced call and the running total), `summary.json` and `summary.md` (per-arm table, R0SWITCH check, per-turn pass/fail matrix).
+`meta.json` (settings, git head, key variable name, mirror check), `results-<arm>.jsonl` (one row per turn: route, answer, sources, cards, warnings, provider calls with status, usage, stop reason, response block types and the request's shape without content (`max_tokens`, `tool_choice`, effort, thinking type, sampling fields, replayed thinking and `tool_use` blocks, `tool_result` count), the turn's `toolRounds`, timings, gold checks), `judge-<arm>.jsonl`, `ledger.jsonl` (every priced call and the running total), `summary.json` and `summary.md` (per-arm table, R0SWITCH check, per-turn pass/fail matrix).
 
 ## R0SWITCH check
 
