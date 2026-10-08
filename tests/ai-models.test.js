@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const {
   DEFAULT_MODEL, KNOWN_MODELS, EFFORTS, ROUTES, ROUTE_NAMES, HAIKU_MIN_MAX_TOKENS, SERVER_FALLBACK_BETA,
   aiRoute, routeForFeature, modelFamily, serverFallbacksAllowed, maxTokensFor, timeoutFor, firstByteFor, requestControls,
-  anthropicHeaders, estimatePromptTokens, assertPromptWithinCap, logRefusalRetry, describeAiModels,
+  anthropicHeaders, estimatePromptTokens, promptOverCap, logPromptCap, warnIgnoredSettings, logRefusalRetry, describeAiModels,
 } = require('../lib/aiModels');
 const { FEATURES } = require('../lib/aiRuntimeMetrics');
 
@@ -30,6 +30,10 @@ test('the plan routes exist and every default equals the pre-route request (lega
   const agent = aiRoute('baybay_agent', {}), helper = aiRoute('helper_other', {});
   assert.deepEqual([6000, 9000].map(value => maxTokensFor(agent, value)), [6000, 9000]);
   assert.deepEqual([4000, 6000, 50000, undefined, 0, 'bad'].map(value => maxTokensFor(helper, value)), [4000, 6000, 9000, 6000, 6000, 6000]);
+  // Only helper callers were ever capped at 9,000; the agent passes a larger thinking budget through.
+  assert.equal(maxTokensFor(agent, 16000), 16000);
+  assert.equal(maxTokensFor(aiRoute('baybay_professional', {}), 16000), 16000);
+  for (const name of ROUTE_NAMES) assert.equal(aiRoute(name, {}).callerMaxTokensCeiling, name.startsWith('helper_') ? 9000 : null, name);
   assert.deepEqual([18000, 25000, 28000, undefined].map(value => timeoutFor(agent, value)), [18000, 25000, 28000, 28000]);
   assert.equal(timeoutFor(aiRoute('baybay_web', {}), 20000), 20000); assert.equal(timeoutFor(aiRoute('baybay_web', {}), 35000), 35000);
   assert.equal(firstByteFor(agent, 28000), undefined);
@@ -61,6 +65,13 @@ test('native web search never resolves to Haiku 5.5, from its own override or fr
   assert.equal(legacy.model, 'claude-opus-5-5');
   assert.equal(aiRoute('baybay_agent', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-haiku-5-5');
   assert.equal(aiRoute('baybay_web', { BAYBAY_MODEL_WEB: 'claude-sonnet-5-5' }).model, 'claude-sonnet-5-5');
+  // RC-20: guarded professional answers never resolve to Haiku, whichever variable names it.
+  assert.equal(aiRoute('baybay_professional', { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }).model, 'claude-opus-5-5', 'the agent switch does not move professional answers');
+  assert.equal(aiRoute('baybay_professional', { ANTHROPIC_BAYBAY_MODEL: 'claude-haiku-5-5' }).model, 'claude-opus-5-5');
+  const professional = aiRoute('baybay_professional', { BAYBAY_MODEL_PROFESSIONAL: 'claude-haiku-5-5' });
+  assert.equal(professional.model, 'claude-opus-5-5');
+  assert.deepEqual(professional.ignored, [{ name: 'BAYBAY_MODEL_PROFESSIONAL', reason: 'haiku_not_verified_for_route' }]);
+  assert.equal(aiRoute('baybay_professional', { BAYBAY_MODEL_PROFESSIONAL: 'claude-sonnet-5-5' }).model, 'claude-sonnet-5-5');
 });
 
 test('effort is explicit on every route and model; overrides accept only low, medium or high', () => {
@@ -142,11 +153,16 @@ test('Haiku prompts are capped at an estimated 60K tokens; images count as a fix
   const route = aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' });
   assert.equal(route.maxPromptTokens, 60000);
   const small = { model: 'claude-haiku-5-5', system: 'Rules', messages: [{ role: 'user', content: [{ type: 'text', text: '问'.repeat(1000) }] }] };
-  assert.doesNotThrow(() => assertPromptWithinCap(small));
+  assert.equal(promptOverCap(small), null);
   const large = { ...small, messages: [{ role: 'user', content: [{ type: 'text', text: '问'.repeat(61000) }] }] };
-  assert.throws(() => assertPromptWithinCap(large), error => error.code === 'AI_PROMPT_TOO_LARGE' && error.cap === 60000);
-  assert.doesNotThrow(() => assertPromptWithinCap({ ...large, model: 'claude-sonnet-5-5' }), 'the Sonnet retry has no Haiku cap');
-  assert.doesNotThrow(() => assertPromptWithinCap({ ...large, model: 'claude-opus-5-5' }), 'no cap by default');
+  const over = promptOverCap(large);
+  assert.equal(over.cap, 60000); assert.ok(over.estimate > 60000 && over.estimate < 62000, String(over.estimate));
+  assert.equal(promptOverCap({ ...large, model: 'claude-sonnet-5-5' }), null, 'the Sonnet escalation has no Haiku cap');
+  assert.equal(promptOverCap({ ...large, model: 'claude-opus-5-5' }), null, 'no cap by default');
+  const lines = [];
+  logPromptCap({ route: 'baybay_agent', from: 'claude-haiku-5-5', to: 'claude-sonnet-5-5', ...over, prompt: 'private' }, line => lines.push(line));
+  assert.deepEqual(JSON.parse(lines[0].replace('[ai-prompt-cap] ', '')), { route: 'baybay_agent', from: 'claude-haiku-5-5', to: 'claude-sonnet-5-5', ...over });
+  assert.doesNotThrow(() => logPromptCap({}, () => { throw new Error('log sink down'); }));
   const image = { type: 'image', source: { type: 'base64', media_type: 'image/png', data: 'A'.repeat(3_000_000) } };
   assert.ok(estimatePromptTokens({ system: '', messages: [{ role: 'user', content: [image] }] }) < 2100);
 });
@@ -159,6 +175,21 @@ test('refusal logging carries route, models and a sanitized category only', () =
   assert.deepEqual(lines.map(line => JSON.parse(line.replace('[ai-refusal] ', '')).category), ['general_harms', 'unrecognized', null]);
   assert.doesNotMatch(lines.join('\n'), /private/);
   assert.doesNotThrow(() => logRefusalRetry({ route: 'x', response: {} }, () => { throw new Error('log sink down'); }));
+});
+
+test('ignored settings are logged once per process by variable name and reason, never by value', () => {
+  const lines = [], log = line => lines.push(line);
+  const config = { BAYBAY_MODEL_AGENT: 'claude-haiku-5.5-typo-value', BAYBAY_EFFORT_AGENT: 'max', BAYBAY_MAX_TOKENS_AGENT: '99' };
+  warnIgnoredSettings(aiRoute('baybay_agent', config), log);
+  warnIgnoredSettings(aiRoute('baybay_agent', config), log);
+  warnIgnoredSettings(aiRoute('baybay_agent', {}), log);
+  assert.deepEqual(lines.map(line => JSON.parse(line.replace('[ai-models] ignored ', ''))), [
+    { route: 'baybay_agent', name: 'BAYBAY_MODEL_AGENT', reason: 'unknown_model' },
+    { route: 'baybay_agent', name: 'BAYBAY_EFFORT_AGENT', reason: 'unsupported_effort' },
+    { route: 'baybay_agent', name: 'BAYBAY_MAX_TOKENS_AGENT', reason: 'out_of_range' },
+  ]);
+  assert.doesNotMatch(lines.join(' '), /typo-value|max"|99/);
+  assert.doesNotThrow(() => warnIgnoredSettings(aiRoute('helper_other', { BAYBAY_EFFORT_HELPERS: 'xhigh' }), () => { throw new Error('log sink down'); }));
 });
 
 test('route description is complete and secret-free', () => {

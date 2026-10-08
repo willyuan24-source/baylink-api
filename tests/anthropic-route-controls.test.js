@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createAnthropicBaybay, replayableContent, baybayModel } = require('../lib/anthropicBaybay');
+const { createAnthropicBaybay, replayableContent, baybayModel, baybayRoute } = require('../lib/anthropicBaybay');
 const { requestAnthropicJson } = require('../lib/anthropicJson');
 const { searchPayload, requestAnthropicSearch } = require('../lib/anthropicWebSearch');
 const { parseDraft } = require('../lib/baybayAgent');
@@ -141,13 +141,66 @@ test('JSON helpers retry a Haiku refusal once on Sonnet and keep their 502 refus
   assert.equal(sent.length, 1);
 });
 
-test('an oversized Haiku prompt fails before transport instead of crossing the 100K price cliff', async () => {
-  let calls = 0;
+test('an over-cap Haiku prompt is answered by Sonnet 5.5 (sticky for the run) instead of failing or crossing the 100K cliff', async () => {
   const huge = [{ role: 'user', content: '活动'.repeat(40000) }];
-  await assert.rejects(requestAnthropicJson(huge, { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, fetchImpl: async () => { calls++; } }), { status: 503, code: 'AI_PROMPT_TOO_LARGE' });
-  const agent = createAnthropicBaybay({ config: { ...base, BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }, fetchImpl: async () => { calls++; } });
-  await assert.rejects(agent(agentPayload('claude-haiku-5-5', { input: huge })), /exceeds the configured size/);
-  assert.equal(calls, 0);
+  const logs = [];
+  let sent = [];
+  const parsed = await requestAnthropicJson(huge, { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_THINKING_HELPER_OTHER: 'disabled' }, log: line => logs.push(line),
+    fetchImpl: capture([answer('claude-sonnet-5-5')], sent) });
+  assert.equal(parsed.answer, 'Supported answer.');
+  assert.equal(sent.length, 1); assert.equal(sent[0].body.model, 'claude-sonnet-5-5');
+  assert.equal(sent[0].body.thinking, undefined, 'Sonnet never receives disabled thinking');
+  assertClaudeBody(sent[0].body, { family: 'sonnet' });
+  const line = JSON.parse(logs[0].replace('[ai-prompt-cap] ', ''));
+  assert.deepEqual([line.route, line.from, line.to, line.cap], ['helper_other', 'claude-haiku-5-5', 'claude-sonnet-5-5', 60000]);
+  assert.ok(line.estimate > 60000); assert.doesNotMatch(logs[0], /活动/);
+  // Agent: the over-cap research call goes to Sonnet and the rest of the run stays there,
+  // even once a later prompt would fit under the cap again.
+  sent = []; logs.length = 0;
+  const agent = createAnthropicBaybay({ config: { ...base, BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }, log: line => logs.push(line),
+    fetchImpl: capture([{ ...answer('claude-sonnet-5-5'), stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'call-1', name: 'search_site', input: { query: 'x' } }] }, answer('claude-sonnet-5-5')], sent) });
+  const payload = agentPayload('claude-haiku-5-5', { input: huge });
+  const first = await agent(payload);
+  assert.equal(first.status, 'completed');
+  payload.input.push(...first.output, { type: 'function_call_output', call_id: 'call-1', output: '{}' });
+  const second = await agent(payload);
+  assert.equal(second.status, 'completed');
+  assert.deepEqual(sent.map(item => item.body.model), ['claude-sonnet-5-5', 'claude-sonnet-5-5']);
+  assert.equal(logs.length, 1); assert.match(logs[0], /^\[ai-prompt-cap\] .*"route":"baybay_agent"/);
+  // Under the cap nothing changes: Haiku is called directly and nothing is logged.
+  sent = []; logs.length = 0;
+  await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, log: line => logs.push(line), fetchImpl: capture([answer('claude-haiku-5-5')], sent) });
+  assert.equal(sent[0].body.model, 'claude-haiku-5-5'); assert.equal(logs.length, 0);
+});
+
+test('a non-agent route decides its own model; the agent switch never moves professional answers to Haiku', async () => {
+  assert.equal(baybayRoute({ safetyTopic: true }), 'baybay_professional');
+  assert.equal(baybayRoute({ safetyTopic: false }), 'baybay_agent'); assert.equal(baybayRoute(), 'baybay_agent');
+  const run = async (config, model) => {
+    const sent = [];
+    const agent = createAnthropicBaybay({ config: { ...base, ...config }, route: 'baybay_professional', log: () => {}, fetchImpl: capture([answer('served')], sent) });
+    await agent(agentPayload(model));
+    return sent[0].body;
+  };
+  // baybayAgent sends baybayModel(config), the agent route's model, on every run.
+  const r0 = { ...base, BAYBAY_MODEL_AGENT: 'claude-haiku-5-5', BAYBAY_EFFORT_AGENT: 'low' };
+  let body = await run(r0, baybayModel(r0));
+  assert.equal(body.model, 'claude-opus-5-5'); assert.equal(body.output_config.effort, 'medium');
+  const sonnetLow = { ...r0, BAYBAY_MODEL_PROFESSIONAL: 'claude-sonnet-5-5', BAYBAY_EFFORT_PROFESSIONAL: 'low' };
+  body = await run(sonnetLow, baybayModel(sonnetLow));
+  assert.equal(body.model, 'claude-sonnet-5-5'); assert.equal(body.output_config.effort, 'low');
+  assert.equal(baybayModel(sonnetLow, 'baybay_professional'), 'claude-sonnet-5-5');
+  body = await run(sonnetLow, 'claude-sonnet-5-5');
+  assert.equal(body.model, 'claude-sonnet-5-5');
+  body = await run(sonnetLow, undefined);
+  assert.equal(body.model, 'claude-sonnet-5-5');
+  // Any other model is an error, never one route's model mixed with another route's controls.
+  const agent = createAnthropicBaybay({ config: { ...sonnetLow, ...base }, route: 'baybay_professional', fetchImpl: async () => assert.fail('no transport') });
+  await assert.rejects(agent(agentPayload('claude-opus-4-1')), /must come from the route configuration/);
+  // The agent route keeps today's behaviour: the caller's model is sent as given.
+  const sent = [];
+  await createAnthropicBaybay({ config: base, fetchImpl: capture([answer('fixture')], sent) })(agentPayload('fixture-claude'));
+  assert.equal(sent[0].body.model, 'fixture-claude');
 });
 
 test('server-side fallback responses replay only the serving model blocks after the last fallback marker', async () => {

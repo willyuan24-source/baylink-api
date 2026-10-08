@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { PRICE_TABLE, HAIKU_LONG_PROMPT_THRESHOLD, claudeUsage, claudeCost, priceEntry, pricedModel, microUsdToUsd } = require('../lib/aiPricing');
+const { PRICE_TABLE, HAIKU_LONG_PROMPT_THRESHOLD, WEB_SEARCH_NANO_USD, claudeUsage, claudeCost, priceEntry, pricedModel, microUsdToUsd } = require('../lib/aiPricing');
 
 const cost = (model, usage, day = '2026-10-08') => claudeCost({ model, usage, day });
 
@@ -97,6 +97,21 @@ test('server-side fallback iterations are priced per attempt at each attempt mod
   assert.equal(cost('claude-sonnet-5-5', { input_tokens: 1, iterations: [{ input_tokens: 10 }] }).nanoUsd, 10 * 2000);
   assert.equal(cost('claude-sonnet-5-5', { input_tokens: 1, iterations: [{ type: 'message' }] }).nanoUsd, 2000);
   assert.equal(cost('claude-sonnet-5-5', { input_tokens: 1, iterations: [{ model: 'gpt-6.1-sol', input_tokens: 10 }] }).priced, false);
+});
+
+test('web-search fees are charged once when iterations itemize the tokens', () => {
+  const tokensOnly = 50 * 4000 + 100 * 4000 + 10 * 20000;
+  const iterations = [{ type: 'message', input_tokens: 50, output_tokens: 0 }, { type: 'fallback_message', input_tokens: 100, output_tokens: 10 }];
+  // Top-level server_tool_use only (the documented shape): two searches, charged once.
+  const withSearch = cost('claude-opus-5-5', { input_tokens: 100, output_tokens: 10, server_tool_use: { web_search_requests: 2 }, iterations });
+  assert.equal(withSearch.nanoUsd, tokensOnly + 2 * WEB_SEARCH_NANO_USD);
+  assert.equal(withSearch.microUsd, 20800);
+  assert.equal(withSearch.microUsd, cost('claude-opus-5-5', { input_tokens: 150, output_tokens: 10, server_tool_use: { web_search_requests: 2 } }).microUsd);
+  // Entries that carry their own server_tool_use are charged per attempt, never twice.
+  const perAttempt = cost('claude-opus-5-5', { input_tokens: 100, output_tokens: 10, server_tool_use: { web_search_requests: 3 }, iterations: [
+    { ...iterations[0], server_tool_use: { web_search_requests: 1 } }, { ...iterations[1], server_tool_use: { web_search_requests: 2 } }] });
+  assert.equal(perAttempt.nanoUsd, tokensOnly + 3 * WEB_SEARCH_NANO_USD);
+  assert.equal(cost('claude-opus-5-5', { input_tokens: 100, output_tokens: 10, iterations }).nanoUsd, tokensOnly, 'no searches, no fee');
 });
 
 test('stored micro-USD stays within 1% of usage x list price over randomized usage', () => {
