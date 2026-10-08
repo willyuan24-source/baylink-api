@@ -25,6 +25,8 @@ const set = (row, path, value, remove = false) => {
   const keys = path.split('.'), last = keys.pop(), target = keys.reduce((value, key) => value[key] ||= {}, row);
   if (remove) delete target[last]; else target[last] = clone(value);
 };
+// update() applies operators one after another; reject conflicting paths first, as MongoDB does.
+const { conflictingUpdatePath, assertNoUpdateConflict: assertNoConflict } = require('./update-conflicts');
 const update = (row, changes) => {
   if (!Object.keys(changes).some(key => key.startsWith('$'))) return Object.assign(row, clone(changes));
   for (const [key, value] of Object.entries(changes.$set || {})) set(row, key, value);
@@ -50,12 +52,12 @@ function accountMemory(seed = []) {
     find: (filter = {}) => query(filter, false), findOne: (filter = {}) => query(filter, true),
     exists: async filter => rows.some(row => matches(row, filter)), countDocuments: async filter => rows.filter(row => matches(row, filter)).length,
     create: async value => { if (rows.some(row => row.id && row.id === value.id)) throw Object.assign(new Error('Duplicate'), { code: 11000 }); rows.push(clone(value)); return doc(value); },
-    findOneAndUpdate: async (filter, changes) => { const row = rows.find(row => matches(row, filter)); if (!row) return null; update(row, changes); return doc(row); },
-    updateOne: async (filter, changes) => { const row = rows.find(row => matches(row, filter)); if (!row) return { matchedCount: 0, modifiedCount: 0 }; const before = JSON.stringify(row); update(row, changes); return { matchedCount: 1, modifiedCount: before !== JSON.stringify(row) ? 1 : 0 }; },
-    updateMany: async (filter, changes) => { const selected = rows.filter(row => matches(row, filter)); selected.forEach(row => update(row, changes)); return { matchedCount: selected.length, modifiedCount: selected.length }; },
+    findOneAndUpdate: async (filter, changes) => { assertNoConflict(changes); const row = rows.find(row => matches(row, filter)); if (!row) return null; update(row, changes); return doc(row); },
+    updateOne: async (filter, changes) => { assertNoConflict(changes); const row = rows.find(row => matches(row, filter)); if (!row) return { matchedCount: 0, modifiedCount: 0 }; const before = JSON.stringify(row); update(row, changes); return { matchedCount: 1, modifiedCount: before !== JSON.stringify(row) ? 1 : 0 }; },
+    updateMany: async (filter, changes) => { assertNoConflict(changes); const selected = rows.filter(row => matches(row, filter)); selected.forEach(row => update(row, changes)); return { matchedCount: selected.length, modifiedCount: selected.length }; },
     deleteMany: async filter => { for (let index = rows.length - 1; index >= 0; index--) if (matches(rows[index], filter)) rows.splice(index, 1); },
     deleteOne: async filter => { const index = rows.findIndex(row => matches(row, filter)); if (index >= 0) rows.splice(index, 1); },
     init: async () => {},
   };
 }
-module.exports = { accountMemory };
+module.exports = { accountMemory, conflictingUpdatePath };

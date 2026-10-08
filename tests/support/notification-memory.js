@@ -1,3 +1,4 @@
+const { assertNoUpdateConflict } = require('./update-conflicts');
 const copy = value => value === undefined ? undefined : structuredClone(value);
 const get = (row, path) => path.split('.').reduce((value, key) => value?.[key], row);
 const set = (row, path, value, remove = false) => {
@@ -45,6 +46,7 @@ function memory(seed = []) {
     exists: async filter => [...rows.values()].some(row => matches(row, filter)),
     create: async row => { const key = row._id || row.id; if (rows.has(key)) throw Object.assign(new Error('Duplicate'), { code: 11000 }); rows.set(key, copy(row)); return copy(row); },
     findOneAndUpdate: async (filter, changes, options = {}) => {
+      assertNoUpdateConflict(changes);
       let found = [...rows.entries()].find(([, row]) => matches(row, filter));
       if (!found && options.upsert) {
         const row = { ...copy(filter), ...copy(changes.$setOnInsert || {}) }, key = row._id || row.id;
@@ -55,7 +57,7 @@ function memory(seed = []) {
       update(found[1], changes); return copy(found[1]);
     },
     updateOne: async function(filter, changes, options = {}) { const row = await this.findOneAndUpdate(filter, changes, options); return { matchedCount: row ? 1 : 0 }; },
-    updateMany: async (filter, changes) => { for (const row of rows.values()) if (matches(row, filter)) update(row, changes); },
+    updateMany: async (filter, changes) => { assertNoUpdateConflict(changes); for (const row of rows.values()) if (matches(row, filter)) update(row, changes); },
     deleteMany: async filter => { for (const [key, row] of rows) if (matches(row, filter)) rows.delete(key); },
   };
 }

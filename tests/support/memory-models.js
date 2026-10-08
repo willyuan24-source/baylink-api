@@ -1,5 +1,6 @@
 // Deliberately small storage adapter for route tests. No database, credentials or provider SDK calls.
 const bcrypt = require('bcryptjs');
+const { assertNoUpdateConflict } = require('./update-conflicts');
 const copy = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 let nextObjectId = 0;
 const objectId = () => (++nextObjectId).toString(16).padStart(24, '0');
@@ -149,13 +150,15 @@ function memoryModel(name, seed = [], registry = {}) {
     countDocuments: async query => rows.filter(row => matches(row, query)).length,
     create: async value => new Document({ _id: objectId(), createdAt: Date.now(), isDeleted: false, likes: [], comments: [], reports: [], ...value }).save(),
     updateOne: async (query, update, options = {}) => {
+      assertNoUpdateConflict(update);
       const index = rows.findIndex(row => matches(row, query));
       if (index >= 0) applyUpdate(rows[index], update);
       else if (options.upsert) { const row = { _id: objectId(), ...copy(query), ...copy(update.$setOnInsert || {}) }; applyUpdate(row, update); rows.push(row); }
       return { acknowledged: true };
     },
-    updateMany: async (query, update) => { rows.filter(row => matches(row, query)).forEach(row => applyUpdate(row, update)); return { acknowledged: true }; },
+    updateMany: async (query, update) => { assertNoUpdateConflict(update); rows.filter(row => matches(row, query)).forEach(row => applyUpdate(row, update)); return { acknowledged: true }; },
     findOneAndUpdate: async (query, update, options = {}) => {
+      assertNoUpdateConflict(update);
       let row = rows.find(row => matches(row, query));
       if (!row && options.upsert) { row = { _id: objectId(), ...copy(query), ...copy(update.$setOnInsert || {}) }; rows.push(row); }
       if (!row) return null;

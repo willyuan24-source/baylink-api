@@ -1,8 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
-const { accountMemory } = require('./support/account-memory');
-const { buildAccountExport, erasePostContacts, eraseAccountData, acquireAccountOperation, holdAccountOperation, holdPostOperation, runAccountHandler, registerAccountPrivacy } = require('../lib/accountPrivacy');
+const { accountMemory, conflictingUpdatePath } = require('./support/account-memory');
+const { buildAccountExport, erasePostContacts, eraseAccountData, acquireAccountOperation, holdAccountOperation, holdPostOperation, runAccountHandler, registerAccountPrivacy, confirmsDeletion, DELETE_CONFIRMATIONS } = require('../lib/accountPrivacy');
 const { reactionKey } = require('../lib/memberSocial');
 
 const names = ['User', 'Post', 'Message', 'Conversation', 'ContactRequest', 'UserBlock', 'EventInterest', 'PlannerAccount', 'Outing', 'ServiceBookingAgenda', 'PostTranslation', 'Report', 'ModerationLog', 'AccountAuthChallenge'];
@@ -81,11 +81,11 @@ function privacyRoutes(seed = {}, failTransaction = false) {
   const models = modelsFor({ User: [own], ...seed }), routes = new Map(), disconnected = [];
   const withTransaction = async work => {
     const snapshot = Object.fromEntries(Object.entries(models).map(([name, model]) => [name, structuredClone(model.rows)]));
-    try { const result = await work('mock-session'); if (failTransaction) throw new Error('Mock transaction unavailable'); return result; }
+    try { const result = await work('mock-session'); if (failTransaction) throw failTransaction instanceof Error ? failTransaction : new Error('Mock transaction unavailable'); return result; }
     catch (failure) { for (const [name, model] of Object.entries(models)) model.rows.splice(0, Infinity, ...snapshot[name]); throw failure; }
   };
   registerAccountPrivacy({ post: (path, ...handlers) => routes.set(path, handlers.at(-1)), delete: (path, ...handlers) => routes.set(path, handlers.at(-1)) }, {
-    models, authenticateToken: () => {}, limit: () => {}, withTransaction, disconnectUser: id => disconnected.push(id),
+    models, authenticateToken: () => {}, limit: () => {}, withTransaction, disconnectUser: id => disconnected.push(id), reopenDelayMs: 0,
     confirmCredentials: async req => { if (req.body.password !== 'current-password') throw Object.assign(new Error('Unconfirmed credentials'), { code: 'CREDENTIAL_CONFIRMATION_REQUIRED' }); return structuredClone(models.User.rows[0]); },
   });
   const call = async (path, body) => { let result; await routes.get(path)({ user: { id: 'me' }, body }, { json: value => { result = value; }, set: () => {} }); return result; };
@@ -141,13 +141,71 @@ test('shared post mutation gate prevents account erasure from racing a whole com
   await eraseAccountData(models, own); assert.deepEqual(models.Post.rows[0].comments, []);
 });
 
-test('failed deletion transaction restores all authored data, reopens login and keeps old sessions revoked', async () => {
-  const f = privacyRoutes({ Post: [{ id: 'p', authorId: 'me', description: 'must-stay', contactPreference: { methods: ['must-stay-private'] } }] }, true);
-  await assert.rejects(f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT' }), /Mock transaction/);
-  assert.equal(f.models.User.rows[0].accountDeletionPending, false); assert.equal(f.models.User.rows[0].sessionRevision, 1);
+test('failed deletion transaction restores all authored data, reopens the account and keeps the owner signed in', async () => {
+  const f = privacyRoutes({ Post: [{ id: 'p', authorId: 'me', description: 'must-stay', contactPreference: { methods: ['must-stay-private'] } }] },
+    Object.assign(new Error('Mock transaction unavailable'), { name: 'MongoServerError', code: 112 }));
+  await assert.rejects(f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT' }), failure => {
+    assert.equal(failure.status, 500); assert.equal(failure.code, 'ACCOUNT_DELETE_FAILED'); assert.equal(failure.publicSafe, true);
+    assert.match(failure.message, /仍保持登录/); assert.deepEqual(failure.cause, { name: 'MongoServerError', code: 112 });
+    assert.ok(!failure.message.includes('Mock transaction'));
+    return true;
+  });
+  const user = f.models.User.rows[0];
+  assert.equal(user.accountDeletionPending, false); assert.equal(user.accountDeletionClaim, undefined);
+  // No session rotation: the token that asked for deletion still verifies after a failure.
+  assert.equal(user.sessionRevision, undefined); assert.equal(user.sessionsRevokedAt, undefined);
   assert.equal(f.models.Post.rows[0].description, 'must-stay'); assert.deepEqual(f.models.Post.rows[0].contactPreference.methods, ['must-stay-private']);
   const pending = modelsFor({ User: [{ ...own, accountDeletionPending: true }] });
   await assert.rejects(acquireAccountOperation(pending.User, 'me', new EventEmitter()), { code: 'ACCOUNT_CHANGED' });
+});
+
+test('the Mongo mock rejects conflicting operator paths the way MongoDB does (code 40), even when nothing matches', async () => {
+  assert.equal(conflictingUpdatePath({ $pull: { userIds: 'me' }, $addToSet: { userIds: 'deleted_x' } }), 'userIds');
+  assert.equal(conflictingUpdatePath({ $set: { profile: {} }, $unset: { 'profile.phone': 1 } }), 'profile');
+  assert.equal(conflictingUpdatePath({ $set: { 'a.b': 1, 'a.bc': 2 }, $inc: { ab: 1 } }), null);
+  const Conversation = accountMemory([]);
+  await assert.rejects(Conversation.updateMany({ userIds: 'nobody' }, { $pull: { userIds: 'me' }, $addToSet: { userIds: 'deleted_x' } }), { code: 40, codeName: 'ConflictingUpdateOperators' });
+  await assert.rejects(Conversation.updateOne({}, { $set: { a: 1 }, $inc: { 'a.b': 1 } }), { code: 40 });
+  await assert.rejects(Conversation.findOneAndUpdate({}, { $set: { a: 1 }, $unset: { a: 1 } }), { code: 40 });
+});
+
+test('deleting an account with a direct-message thread succeeds and the other member keeps the thread', async () => {
+  const f = privacyRoutes({
+    Conversation: [{ id: 'conv', userIds: ['me', 'other'] }, { id: 'unrelated', userIds: ['other', 'third'] }],
+    Message: [{ id: 'mine', conversationId: 'conv', senderId: 'me', content: 'my-message' }, { id: 'theirs', conversationId: 'conv', senderId: 'other', content: 'keep-message', readBy: ['me', 'other'] }],
+  });
+  const result = await f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: '注销我的账号' });
+  assert.equal(result.success, true); assert.equal(f.models.User.rows.length, 0);
+  const [conv, unrelated] = f.models.Conversation.rows;
+  assert.equal(conv.userIds.length, 2); assert.equal(conv.userIds[0], 'other'); assert.match(conv.userIds[1], /^deleted_/);
+  assert.deepEqual(unrelated.userIds, ['other', 'third']);
+  assert.deepEqual(f.models.Message.rows.map(row => [row.id, row.content, row.readBy]), [['theirs', 'keep-message', ['other']]]);
+});
+
+test('deletion accepts the confirmation phrase in each site language and explains the phrase in the reader’s language', async () => {
+  for (const phrase of [...Object.values(DELETE_CONFIRMATIONS), '注销我的帐号', '註銷我的賬號', ' delete  my account ', '注销 我的账号']) assert.equal(confirmsDeletion(phrase), true, phrase);
+  for (const phrase of ['', 'delete', 'DELETE MY ACCOUNTS', '删除我的账号', '注销账号', null, 42]) assert.equal(confirmsDeletion(phrase), false, String(phrase));
+  for (const [locale, pattern] of [['zh-Hans', /注销我的账号/], ['zh-Hant', /註銷我的帳號/], ['en', /^Type DELETE MY ACCOUNT/], [undefined, /注销我的账号/]]) {
+    const f = privacyRoutes();
+    await assert.rejects(f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'delete', locale }), failure => failure.code === 'DELETE_CONFIRMATION_REQUIRED' && failure.status === 400 && pattern.test(failure.message));
+    assert.equal(f.models.User.rows[0].accountDeletionPending, undefined);
+  }
+  const hant = privacyRoutes();
+  assert.equal((await hant.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: '註銷我的帳號', locale: 'zh-Hant' })).success, true);
+  assert.equal(hant.models.User.rows.length, 0);
+});
+
+test('a refused reopen after a failed erasure reports an interrupted deletion instead of a generic error', async () => {
+  const f = privacyRoutes({}, true);
+  const reopen = f.models.User.updateOne; let attempts = 0;
+  f.models.User.updateOne = async (filter, changes) => { if (filter.accountDeletionClaim) { attempts++; throw new Error('primary stepped down'); } return reopen(filter, changes); };
+  await assert.rejects(f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT', locale: 'en' }),
+    failure => failure.status === 503 && failure.code === 'ACCOUNT_DELETE_INTERRUPTED' && /temporarily unavailable/.test(failure.message));
+  assert.equal(attempts, 3);
+  // A public, retryable refusal from inside erasure keeps its own status and code.
+  const busy = privacyRoutes({ Post: [{ id: 'shared', authorId: 'other', likes: ['me'], activePostOperations: 1 }] });
+  await assert.rejects(busy.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT' }), { status: 409, code: 'ACCOUNT_OPERATIONS_PENDING' });
+  assert.equal(busy.models.User.rows[0].accountDeletionPending, false);
 });
 
 test('revoke-all requires current credentials and rotates the session revision without deleting the account', async () => {
