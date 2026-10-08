@@ -130,6 +130,12 @@ test('BayBay keeps a guarded model answer for professional topics: guard rules, 
   assert.equal(result.answer.match(/1-800-434-0222/g).length, 1);
   assert.ok(result.safety.resources.some(row => row.href === 'tel:+18004340222'));
   assert.equal(result.suggestedGuides[0].slug, 'bay-area-medicare-hicap-medi-cal-guide');
+  // Fleet Week destroyer tours are not eviction questions.
+  for (const message of ['Fleet Week 有驱逐舰开放参观吗？', '艦隊週的驅逐艦幾點開放？']) assert.deepEqual(professionalTopics(message), [], message);
+  assert.deepEqual(professionalTopics('房东要驱逐我'), ['legal']);
+  // A repair-cafe "diagnosis" is not a medical decision; a doctor's one still is.
+  assert.deepEqual(professionalTopics('Redwood City 免费维修诊断：Fixit Clinic'), []);
+  assert.deepEqual(professionalTopics('医生的诊断我看不懂'), ['medical']);
   // USCIS is the immigration contact; there is no phone to append.
   const immigration = safetyResponse('绿卡面试要准备什么').safety;
   assert.ok(immigration.resources.some(row => row.url === 'https://www.uscis.gov/'));
