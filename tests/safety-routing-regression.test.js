@@ -213,3 +213,40 @@ test('legacy guide chat and the planner keep the deterministic professional temp
   assert.notEqual(outing.data.safetyRoute, 'professional');
   assert.equal(f.calls.planner, 0);
 });
+
+// R0 (eval C-DEGRADED-STROKE): FAST stroke wording in zh-Hans, zh-Hant and en.
+// Strong signs route alone (sudden speech change, one-sided face or limb); weaker
+// signs route when sudden or when two different signs are described together.
+test('FAST stroke wording routes to the 911-first stroke card in every language', () => {
+  for (const [locale, message] of [
+    ['zh-Hans', '我妈说话突然含糊，一边脸往下垂，手也抬不起来'],
+    ['zh-Hant', '我媽說話突然含糊，一邊臉往下垂，手也抬不起來'],
+    ['zh-Hans', '我妈说话突然含糊不清，一边嘴角往下歪，右手也抬不起来'],
+    ['zh-Hans', '我妈忽然说不清话'], ['zh-Hans', '我爸讲话突然不清楚了'], ['zh-Hans', '他突然手抬不起来了'],
+    ['zh-Hans', '我婆婆嘴角往下歪了'], ['zh-Hans', '她一边脸麻了'], ['zh-Hant', '爺爺一側手腳無力'],
+    ['zh-Hans', '奶奶一边手脚无力'], ['zh-Hans', '外公半边身体麻木'], ['zh-Hans', '我爸右边身子没力气'], ['zh-Hans', '爷爷一侧手抬不起来'],
+    // Two weaker signs together.
+    ['zh-Hans', '我爸口齿不清，手也抬不起来'], ['zh-Hant', '我爸講話不清楚，胳膊抬不起來'], ['zh-Hant', '我外婆說話含糊，嘴角往下垂'],
+    ['en', "Grandpa's speech is a bit slurred and he can't lift his left arm"], ['en', 'Sudden arm weakness and his speech sounds slurred'],
+    ['en', 'His left side went numb'], ['en', 'She has numbness on one side'], ['en', 'My dad has a drooping face'], ['en', "My mom suddenly can't lift her arm"],
+  ]) {
+    const result = emergencyResponse(message, locale);
+    assert.equal(result?.emergencyTopic, 'stroke', message);
+    assert.ok(result.answer.startsWith(FIRST_SENTENCE[locale]), `${message}: ${result.answer}`);
+    assert.equal(result.safety.actions[0].href, 'tel:911');
+  }
+  // The swallowed-battery replay names the object first (eval C-BATTERY).
+  assert.equal(emergencyResponse('孩子好像把纽扣电池吞下去了，现在看着还挺正常')?.emergencyTopic, 'ingestion');
+  assert.equal(emergencyResponse('宝宝把磁铁吞了')?.emergencyTopic, 'ingestion');
+});
+
+test('FAST wording does not fire on idioms, chronic or post-stroke context, warning-sign questions, dental numbness or everyday aches', () => {
+  for (const message of [
+    '这家店说话含糊其辞，靠谱吗', '他说话有点含糊其辞', '价格说得含糊，到底多少钱', '孩子说话口齿不清，是不是要去看医生',
+    '肩周炎手抬不起来，有推荐的理疗吗', '我爸左手抬不起来了', '我奶奶今天讲话有点含糊', "My grandpa's speech is a bit slurred today",
+    '我妈三年前中风了，现在说话还是有点含糊，手抬不起来，有适合她的活动吗', '他说话一直含糊不清，从小就这样，手也没力气',
+    '说话含糊、手抬不起来是中风的症状吗', '嘴角下垂怎么改善', '坐久了一边腿麻了', '拔完牙半边脸还是麻的', 'My face is numb on one side after the dentist',
+    '一边手机一边走路很危险', '他嘴角歪着笑了一下', 'Arm weakness exercises for seniors in San Jose', 'The left side of the parking lot is closed',
+    '纽扣电池吞下去会怎样？',
+  ]) assert.equal(emergencyResponse(message), null, message);
+});
