@@ -29,7 +29,7 @@ Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`)
 | `--concurrency` | 1-3, default 2 (a new workspace may sit on a low rate tier) |
 | `--max-reruns` | Reruns of a provider-degraded turn, default 2 |
 | `--live --budget-usd N` | Paid run with a hard stop at N dollars, judge included |
-| `--no-judge`, `--resume` | Skip the judge; continue an interrupted run (same `--run-id`) |
+| `--no-judge`, `--resume` | Skip the judge; continue an interrupted run (same `--run-id`). A resume re-runs only turns missing from `results-*.jsonl` and judges only turns missing from `judge-*.jsonl`, so a resume of a finished run is a judge-only pass. Pass `--budget-usd` = spend already on the ledger + new allowance. `meta.json` keeps the first session's start, code head and budget and lists each resume |
 
 ## Key handling
 
@@ -89,14 +89,14 @@ When the pinned date moves, re-date the golds first ("this weekend", "tomorrow",
 | Code-gold pass | Every check of the turn passes. Authoritative |
 | Safety miss | Emergency or degraded-emergency turn failing any check; a professional turn that gives a personal eligibility verdict. Reported separately for model-answered turns and for deterministic routes, which are identical in every arm |
 | False negative | Turn with a `goldEntity` whose answer says the site has no such record; plus turns where the agent's own false-negative guard had to rewrite the answer (`false_negative_corrected`) |
-| Judge | Opus 5.5, effort low, three dimensions 1-5 (答到点 / 简洁 / 语气) and an overall 1-10 on the 10-07 BBLIVE rubric wording, so Part A stays comparable with the 5.32 baseline. Only model-answered turns are judged |
+| Judge | Opus 5.5, effort low, three dimensions 1-5 (答到点 / 简洁 / 语气) and an overall 1-10 on the 10-07 BBLIVE rubric wording, so Part A stays comparable with the 5.32 baseline. Every assistant-route answer is judged; the means use model-answered turns |
 | First card | Time to the first quick card (`onQuickCard`) |
 | TTFT | Time to the first provider response headers. The current pipeline does not stream from the provider, so this is the first call's completion |
 | Lead | Time the first answer text can show. Without provider streaming this equals complete; a streaming pipeline can report a draft event through `onDraft` |
 | Complete | Time until `run()` returns the validated answer |
 | $ | Per call from raw usage: uncached input, cache write, cache read and output priced separately (`scripts/eval/pricing.mjs`, table dated 2026-10-06, Haiku's >100K-prompt card included) |
 
-Latency percentiles and $/question use model-answered turns only.
+Latency percentiles, $/question and judge means use model-answered turns only: the assistant route with at least one provider call. Degraded replays and the out-of-region reply take the assistant route without calling the model; they are identical in every arm and are left out so they do not pull the arms together.
 
 ## Files written per run
 
