@@ -75,7 +75,7 @@ const serverErrors = createServerErrors({ config, log: options.serverErrorLog })
 app.use(serverErrors.middleware);
 app.disable('x-powered-by');
 app.set('trust proxy', proxyTrust(config, isTest));
-// Off by default; see docs/client-ip-rollout.md before setting CLIENT_IP_SOURCE.
+// Cloudflare-gated visitor keys are on by default; CLIENT_IP_SOURCE=off restores req.ip (docs/client-ip-rollout.md).
 const clientIpKeys = createClientIp(config, { now: options.clientIpNow, log: options.clientIpLog });
 app.use(clientIpKeys.middleware);
 
