@@ -166,10 +166,19 @@ test('a mixed museum/food request and a non-food question preserve the ordinary 
 });
 
 test('food words cannot intercept an emergency or professional-service boundary', async () => {
-  let calls = 0;
-  const assistant = createBayBayAssistant(options({ ai: async () => { calls++; throw new Error('Safety must return before model'); } }));
+  const payloads = [];
+  const assistant = createBayBayAssistant(options({ ai: async payload => { payloads.push(payload); throw new Error('Model unavailable in this fixture'); } }));
   const emergency = await assistant.run({ message: 'I have chest pain and cannot breathe after eating dim sum.', locale: 'en', searchMode: 'site' });
-  assert.equal(emergency.safetyRoute, 'emergency'); assert.match(emergency.answer, /911/);
+  assert.equal(emergency.safetyRoute, 'emergency'); assert.match(emergency.answer, /^Call 911 now\./); assert.equal(payloads.length, 0);
+  // A professional topic is a guarded model answer; the food-evidence gap and
+  // food rules never replace the professional guard.
   const professional = await assistant.run({ message: '餐厅报税应该准备什么材料', locale: 'zh-Hans', searchMode: 'site' });
-  assert.equal(professional.safetyRoute, 'professional'); assert.equal(calls, 0);
+  assert.equal(professional.safetyRoute, 'professional'); assert.equal(professional.safetyTopic, 'tax');
+  assert.ok(payloads.length > 0, 'the guarded professional answer reaches the model');
+  assert.match(payloads[0].instructions, /Professional-topic guard \(tax\)/);
+  assert.doesNotMatch(payloads[0].instructions, /Food evidence is scoped/);
+  assert.ok(!professional.research.warnings.includes('food_evidence_unconfirmed'));
+  // With the model unavailable, the curated template with the VITA contact is the floor.
+  assert.equal(professional.degraded, true); assert.match(professional.answer, /800-906-9887/);
+  assert.ok(professional.safety.resources.some(row => row.href === 'tel:+18009069887'));
 });

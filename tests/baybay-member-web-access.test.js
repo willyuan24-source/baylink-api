@@ -52,15 +52,25 @@ test('guest cannot force smart/web through JSON, SSE, body flags, or undeclared 
   let sentHidden = false;
   const f = await fixture(t, { ai: async (payload, context) => {
     assert.deepEqual((payload.tools || []).map(item => item.name), ['search_site', 'create_plan']);
-    assert.match(payload.instructions, /signing in is required/);
-    assert.doesNotMatch(payload.instructions, /suggest switching to Smart or Web/);
+    // Guests keep site-only evidence, but the answer is not a sign-up pitch.
+    assert.match(payload.instructions, /Do not mention signing in, logging in, accounts, registration, quotas or search modes/);
+    assert.doesNotMatch(payload.instructions, /suggest switching to Smart or Web|enables live web lookup|signing in is required/);
     if (!sentHidden) { sentHidden = true; return { status: 'completed', output: [invoke('search_web', { query }), invoke('read_source', { sourceId: context.evidence[0]?.id }, 'read'), invoke('get_weather', { candidateId: 'pier39' }, 'weather'), invoke('get_route', { fromId: 'pier39', toId: 'exploratorium', time: '10:00' }, 'route'), invoke('verify_candidate', {}, 'verify')] }; }
     return final(`请按站内资料确认；登录后可联网查询。 [[${context.evidence[0].id}]]`);
   } });
   for (const [searchMode, stream] of [['web', false], ['smart', true]]) {
     const result = await f.request('/ai/guide-chat', { message: query, locale: 'en', assistantVersion: 2, searchMode, stream, isRegistered: true, userId: 'web-member', webAccess: { allowed: true } });
     assert.equal(result.status, 200); assert.equal(result.data.retrieval.requestedMode, searchMode); assert.equal(result.data.retrieval.effectiveMode, 'site');
-    assert.equal(result.data.retrieval.webStatus, 'auth_required'); assert.deepEqual(result.data.retrieval.webAccess, guestAccess);
+    if (searchMode === 'web') {
+      // An explicit web request without a session still reports that sign-in is required.
+      assert.equal(result.data.retrieval.webStatus, 'auth_required'); assert.deepEqual(result.data.retrieval.webAccess, guestAccess);
+    } else {
+      // A guest who never signed in is not "signed out": no auth_required label.
+      assert.notEqual(result.data.retrieval.webStatus, 'auth_required');
+      assert.deepEqual(result.data.retrieval.webAccess, { authenticated: false, allowed: false, reason: 'guest' });
+    }
+    assert.doesNotMatch(result.data.answer, /登录后可联网查询/, 'a guest answer never carries the login pitch');
+    assert.ok(result.data.research.warnings.includes('guest_login_pitch_removed'));
     assert.ok(result.data.evidence.every(source => !['page-read', 'search-result', 'api'].includes(source.verification)));
     assert.doesNotMatch(result.text, /LIVE-WEB-MARKER/);
   }
