@@ -82,7 +82,11 @@ function privacyRoutes(seed = {}, failTransaction = false) {
   const withTransaction = async work => {
     const snapshot = Object.fromEntries(Object.entries(models).map(([name, model]) => [name, structuredClone(model.rows)]));
     try { const result = await work('mock-session'); if (failTransaction) throw failTransaction instanceof Error ? failTransaction : new Error('Mock transaction unavailable'); return result; }
-    catch (failure) { for (const [name, model] of Object.entries(models)) model.rows.splice(0, Infinity, ...snapshot[name]); throw failure; }
+    catch (failure) {
+      // 'committed' models an unknown commit result: the writes landed but the driver still threw.
+      if (failTransaction !== 'committed') for (const [name, model] of Object.entries(models)) model.rows.splice(0, Infinity, ...snapshot[name]);
+      throw failure;
+    }
   };
   registerAccountPrivacy({ post: (path, ...handlers) => routes.set(path, handlers.at(-1)), delete: (path, ...handlers) => routes.set(path, handlers.at(-1)) }, {
     models, authenticateToken: () => {}, limit: () => {}, withTransaction, disconnectUser: id => disconnected.push(id), reopenDelayMs: 0,
@@ -202,6 +206,12 @@ test('a refused reopen after a failed erasure reports an interrupted deletion in
   await assert.rejects(f.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT', locale: 'en' }),
     failure => failure.status === 503 && failure.code === 'ACCOUNT_DELETE_INTERRUPTED' && /temporarily unavailable/.test(failure.message));
   assert.equal(attempts, 3);
+  // The erasure committed but the driver still reported a failure: the User row is gone,
+  // so the answer must not claim that nothing changed (and no retries are needed).
+  const committed = privacyRoutes({}, 'committed');
+  await assert.rejects(committed.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT', locale: 'en' }),
+    failure => failure.status === 503 && failure.code === 'ACCOUNT_DELETE_INTERRUPTED' && /could not confirm/.test(failure.message) && !/Nothing was changed/.test(failure.message));
+  assert.equal(committed.models.User.rows.length, 0);
   // A public, retryable refusal from inside erasure keeps its own status and code.
   const busy = privacyRoutes({ Post: [{ id: 'shared', authorId: 'other', likes: ['me'], activePostOperations: 1 }] });
   await assert.rejects(busy.call('/api/users/me/privacy/account', { password: 'current-password', confirmation: 'DELETE MY ACCOUNT' }), { status: 409, code: 'ACCOUNT_OPERATIONS_PENDING' });
