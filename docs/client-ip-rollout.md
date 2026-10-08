@@ -25,30 +25,45 @@
 - 如果 Render 收到的可信一跳不是 Cloudflare 地址（下文决策表的 B、D 情形），计数键自动退回这一跳本身，和部署前一样，只是 IPv6 按 /64、`::ffff:` 地址按 IPv4 合并。所以最坏情况是“没有改善”，不会比现在更差。
 - 金丝雀运行期间不要跑审计或压测脚本（REG+4）。它们会占用共享桶和全站 BayBay 每日 200 次上限。
 
-## 部署后验证
+## 验证（部署前后）
 
-由工程师执行。第 2 步要真实提问，**需要店主事先同意花费约 $0.46**。不要在部署前对生产运行。
+由工程师执行，**不要和审计、截图、压测同时跑**。第 0、2、4 步只读，不花钱；第 3 步要真实提问，**需要店主事先同意花费约 $0.46**。
 
+金丝雀的四种结果和对应动作：
+
+| 结果（退出码） | 含义 | 动作 |
+| --- | --- | --- |
+| `RESULT: PASS`（0） | 真正调用模型的提问让 remaining 恰好减 1，之后普通读取和伪造请求头读取都一致 | 保持默认 |
+| `RESULT: INCONCLUSIVE`（3） | 没有失败，但还没有证据（只读运行一定是这个结果；付费运行时提问没到达模型，或没有任何伪造请求头到达 API） | 只读运行：正常，进入下一步。付费运行：稍后重跑 |
+| `RESULT: FAIL`（1） | 某一行 FAIL：计数键在跳，或伪造请求头换掉了计数键 | 重跑一次（同一出口有人同时提问会误报）；再 FAIL 就按“回退”处理，并把整段输出发给工程师 |
+| `RESULT: ERROR`（4） | 运行没跑完：DNS、网络、超时或意外的 HTTP 状态码，只出现 `run` 这一行 ERROR | **不是回退理由**，说明不了计数键。先看 `/api/health` 是否正常，稍后重跑；重复出现就把输出发给工程师。只有 `/api/health` 本身也异常时，才是部署出了问题，按“回退”处理 |
+
+伪造请求头每次只带一种：`x-forwarded-for`、`cf-connecting-ip`、`true-client-ip`、`x-real-ip`，以及除 `cf-connecting-ip` 以外三种合在一起的一种。Cloudflare 会自己拒绝客户端发来的 `CF-Connecting-IP`（2026-10-08 实测：`403`，正文 `error code: 1000`，没有 Render 的 `rndr-id` 响应头），这种请求根本到不了 API，也就不可能换掉计数键。脚本把它列在 `forged-edge-rejected` 这一行，结果是 INFO，不算失败。PASS 要求至少有一种伪造请求头真正到达 API 并且读数不变。
+
+0. **部署前，免费冒烟（建议）**：合并前对生产跑一次只读：
+   ```
+   node scripts/canary-ai-usage.mjs --base https://baylink-api.onrender.com/api --family 4
+   ```
+   目的只是确认脚本能和生产正常往来：结果不能是 ERROR；`forged-edge-rejected` 只列出 `cf-connecting-ip`；`usage-forged-reads` 里其余四种都有数字（说明到达了 API）。这时生产还是旧计数键（随 Cloudflare 出口跳动），所以 `usage-*` 两行出现 FAIL（读数不一致）是旧问题本身，不是脚本问题。如果是 ERROR，先不要合并，把输出发给工程师。2026-10-08 已用单独的只读请求逐个核对过：普通请求和 `x-forwarded-for`、`true-client-ip`、`x-real-ip` 都由 Render 返回 200，只有 `cf-connecting-ip` 在 Cloudflare 被拒（1000）。
 1. **确认部署**：`GET https://baylink-api.onrender.com/api/health` 返回的 `commit` 等于合并后的 SHA。
-2. **付费金丝雀（IPv4，2 次提问）**：
+2. **部署后，免费只读（付费前的前提）**：再跑一次第 0 步的命令。期望 `RESULT: INCONCLUSIVE`（退出码 3）、没有 FAIL 行、`forged-edge-rejected` 只列出 `cf-connecting-ip`。不是这个结果就不要进行第 3 步，按上表处理。
+3. **付费金丝雀（2 次提问）**：
    ```
    node scripts/canary-ai-usage.mjs --base https://baylink-api.onrender.com/api --family 4 --consume 2 --i-approve-spend
    ```
    不需要诊断窗口。期望最后一行是 `RESULT: PASS`（退出码 0），并且下面四行都是 PASS：
    - `consume-monotonic`：remaining 从不回升。
    - `consume-exact-drop`：每次真正调用模型的提问让 remaining 恰好减 1。
-   - `after-ask-reads-stable`：提问后连续 N 次读取（默认 10）的 remaining 完全相同，并且低于上限。
-   - `after-ask-forged-reads`：再用伪造的 XFF、CF-Connecting-IP、True-Client-IP、X-Real-IP 读 N 次，remaining 和上一行相同。
+   - `after-ask-reads-stable`：提问后连续 N 次读取（默认 10）的 remaining 完全相同，并且低于上限。记下这个值，第 4 步要用。
+   - `after-ask-forged-reads`：再带伪造请求头读 N 次，所有到达 API 的读数都和上一行相同，`cf-connecting-ip` 显示 `edge-403`。
 
    为什么必须提问：没用过的桶在任何键下都显示上限 15，只读结果再整齐也证明不了键是对的。所以开头的 `usage-reads-stable`、`usage-forged-reads` 显示 INCONCLUSIVE 是正常的；`diag-window` 显示 SKIP 也正常。
-   - `RESULT: INCONCLUSIVE`（退出码 3）：提问没有到达模型，例如全站 BayBay 上限已用完或模型容量不足。这不算通过，稍后重跑。
-   - `RESULT: FAIL`（退出码 1）：按“回退”处理，并把整段输出发给工程师。
-3. **第二个网络（手机热点，常是 IPv6）**：
-   - 只读运行 `node scripts/canary-ai-usage.mjs --base https://baylink-api.onrender.com/api --family 6`。结果一定是 `RESULT: INCONCLUSIVE`（退出码 3），这是设计如此。要看的是 `usage-reads-stable` 那一行：所有读数相同，并且是这个网络自己的值（没用过就是 15），不是第 2 步提问后的值。
-   - 如果店主同意再花约 $0.23，可以运行 `--family 6 --consume 1 --i-approve-spend`，得到 IPv6 的 `RESULT: PASS`。没有这一步，IPv6 和蜂窝访客只有间接证据。
-4. **观察 1 小时**：网站上 BayBay 的剩余次数应该每问一次减 1，不再跳动。应用本身不统计登录、注册的 429，如果 Render 有 HTTP 请求日志，可以在那里看 429 有没有突增。
+4. **独立性检查（第二个网络，免费）**：用另一个网络（例如手机热点）的电脑运行第 0 步的只读命令（仍是 `--family 4`）。期望 `RESULT: INCONCLUSIVE`。要看的是 `usage-reads-stable`：所有读数相同，而且是**这个网络自己的值**（没用过就是 15），**不是**第 3 步记下的值。第 3 步只证明“同一访客读数稳定、伪造不了”，这一步才证明“不同访客不是同一个键”。如果读数正好等于第 3 步的值并且低于 15，可能所有访客被并成了一个键（全站访客共用 15 次），马上告诉工程师：工程师在店主同意下（约 $0.23）从第 3 步的网络再问 1 次，如果热点这边的读数也跟着减 1，就是共用一个键，按“回退”处理。
+5. **观察 1 小时**：网站上 BayBay 的剩余次数应该每问一次减 1，不再跳动。应用本身不统计登录、注册的 429，如果 Render 有 HTTP 请求日志，可以在那里看 429 有没有突增。
 
-金丝雀脚本的其他规则：`--reads` 取 5–20（额度读取限速是每个键每分钟 120 次）；`--consume` 取 1–4，必须同时带 `--i-approve-spend`，否则脚本直接退出（退出码 2），不发任何请求。脚本不登录，也不发送任何凭据。
+关于 IPv6：截至 2026-10-08，`baylink-api.onrender.com` 只有 IPv4 地址（A 记录 216.24.57.16/.18，没有 AAAA 记录），所以 `--family 6` 只会得到 `RESULT: ERROR`（“no IPv6 (AAAA) address”）。只有 IPv6 的手机网络通过运营商的 NAT64/CLAT 以 IPv4 访问，所以第 4 步一律用 `--family 4`，也没有 IPv6 的付费证明可做。IPv6 按 /64 计数的逻辑只在测试里验证。
+
+金丝雀脚本的其他规则：`--reads` 取 5–20（每种伪造请求头每阶段至少发一次；额度读取限速是每个键每分钟 120 次）；`--consume` 取 1–4，必须同时带 `--i-approve-spend`，否则脚本直接退出（退出码 2），不发任何请求。脚本不登录，也不发送任何凭据。
 
 ## 回退
 
