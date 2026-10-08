@@ -105,7 +105,8 @@ test('plan stops still accept only events and places', async t => {
 test('the shipped discoveries catalog backs the default: every offer and opening id is saveable', async t => {
   const { request } = await fixture(t, { discoveryCatalog: undefined });
   const offers = shipped.items.filter(row => row.kind === 'offer'), openings = shipped.items.filter(row => row.kind === 'opening');
-  assert.ok(offers.length >= 100 && openings.length >= 30, 'catalog shape changed; update this guard');
+  // Only the shape is guarded: an API-SYNC that prunes expired items must not fail this test.
+  assert.ok(offers.length >= 1 && openings.length >= 1, 'the shipped catalog has no offers or no openings');
   for (const row of [offers[0], offers.at(-1), openings[0], openings.at(-1)]) {
     assert.equal((await request(`/favorites/${row.kind}/${row.id}`, { method: 'PUT' })).status, 200, `${row.kind}:${row.id}`);
   }

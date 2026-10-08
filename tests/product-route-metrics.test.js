@@ -64,7 +64,9 @@ test('route strings map to locale-free allowlisted templates and never to a raw 
     '/guides/:slug': '/guides/:slug', '/en/guides/dmv-real-id-guide': '/guides/:slug', '/category/:categorySlug': '/category/:slug',
     '/messages/:threadId': '/messages/:id', '/me/bookings': '/me/bookings', '/posts/:postId': '/posts/:id', '/users/abc123': '/users/:id',
     '/opus-bay?from=nav': '/opus-bay', '/calendar?region=sf': '/calendar', '/this-week': '/this-week', '/my-week': '/my-week',
-    other: 'other', '/play': 'other', '/recommend': 'other', '/events/a/b': 'other', '/unknown-page': 'other', '/EN/events': 'other',
+    '/reset-password?token=secret-reset-token': '/reset-password', '/en/verify-email?token=secret-verify-token': '/verify-email',
+    '/notifications/unsubscribe?token=secret-unsub-token': '/notifications/unsubscribe', '/play?from=share': '/play', '/recommend': '/recommend',
+    other: 'other', '/notifications': 'other', '/play/x': 'other', '/events/a/b': 'other', '/unknown-page': 'other', '/EN/events': 'other',
     'https://www.baylink.us/events': 'other', '//evil.example/events': 'other', 'events': 'other', '': 'other', '/events/a b': 'other',
     '/guides/\\..\\x': 'other', [`/events/${'x'.repeat(161)}`]: 'other', [`/${'a'.repeat(400)}`]: 'other',
   };
@@ -98,6 +100,15 @@ test('a route adds one route-template bucket with no path, id, query or identity
   }
   const written = JSON.stringify([ProductMetric.writes, ProductRouteMetric.writes]);
   for (const secret of ['fleet-week-secret-id', 'another-id', 'email', '2026-10-10', 'member', '127.0.0.1']) assert.ok(!written.includes(secret), secret);
+});
+
+test('account e-mail pages are counted by template and their query tokens are never stored', async t => {
+  const { post, ProductRouteMetric } = await fixture(t);
+  for (const route of ['/reset-password?token=secret-reset-token', '/zh-Hant/verify-email?token=secret-verify-token', '/notifications/unsubscribe?token=secret-unsub-token&kind=all']) {
+    assert.equal((await post({ event: 'page_view', route })).status, 200, route);
+  }
+  assert.deepEqual(ProductRouteMetric.rows.map(row => row.route), ['/reset-password', '/verify-email', '/notifications/unsubscribe']);
+  assert.ok(!/secret-|token/.test(JSON.stringify(ProductRouteMetric.writes)));
 });
 
 test('a route that is not a string is rejected before any write', async t => {

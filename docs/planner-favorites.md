@@ -10,7 +10,9 @@
 | `offer` | `data/discoveries.json` items with `kind: "offer"` | offer id (`/offers/:id`) |
 | `opening` | `data/discoveries.json` items with `kind: "opening"` | opening id (`/openings/:id`) |
 
-`offer` and `opening` were added for the single save model (D19, gate G15). Old clients filter favorites by kind when they read `/api/planner/me`, so an offer saved from a new tab is simply not shown in an old one.
+`offer` and `opening` were added for the single save model (D19, gate G15). Web builds from before WEB-SAVES do not know these kinds. A guest list read from browser storage filters them out, but the signed-in path shows `/api/planner/me` (and the lists returned by `PUT`/`DELETE`) as it is, so a stale signed-in tab shows an offer or opening saved elsewhere with its raw id as the title and a `/guides/` link until it is reloaded onto the WEB-SAVES build. Nothing breaks, and no such favorite can exist before WEB-SAVES ships.
+
+**For WEB-SAVES:** every consumer of server favorites (saved-items lists, ♡ state, title and link helpers, guest import) must handle `offer` and `opening`, and should skip, not mislabel, any kind it does not recognise.
 
 ## Responses
 
