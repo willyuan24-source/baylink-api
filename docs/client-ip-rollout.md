@@ -62,6 +62,7 @@
 
 ## 风险与容量评估
 
+- **直连源站**：Cloudflare 网段校验的前提是 Render 的负载均衡只接受经由 Cloudflare 的连接。如果它也接受直连，而请求方自己的地址恰好在 Cloudflare 网段内（例如 WARP 出口），就可以自选计数键。最坏情况是出现很多访客身份，但仍受全站每日 1000 次 AI 请求和 BayBay 每日 200 次上限约束。
 - **Cloudflare Worker**：Cloudflare 文档（HTTP headers 参考页）说明，跨 zone 的 Worker 子请求带的 `CF-Connecting-IP` 固定为 `2a06:98c0:3600::103`。这类请求只能共用一个键，不能自选身份。XFF 条目能否被 Worker 控制未经验证，所以 `CF-Connecting-IP` 优先。
 - **键含义变化**：开启后 `req.ip` 是计数键，不是原始地址，IPv6 形如 `2001:db8:abcd:12::/64`。现有代码只把它用作限速和额度键。以后需要真实地址的代码不要读 `req.ip`。
 - **共享出口**：运营商 CGNAT 和共享的 IPv6 /64 仍会让几个真人共用一个键，但比现在每个 Cloudflare 出口一个桶小得多。
