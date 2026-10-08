@@ -14,6 +14,12 @@ const MESSAGES = ['周末带孩子去哪里玩比较好？', '湾区有什么适
 const final = answer => ({ model: 'fixture-baybay', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer, candidateIds: [], followups: [] }) }] }] });
 // What Render receives behind Cloudflare: Cloudflare appends the visitor, Render appends the edge.
 const viaCloudflare = (edge, visitor = VISITOR, extra = {}) => ({ 'X-Forwarded-For': `${visitor}, ${edge}`, 'CF-Connecting-IP': visitor, 'CF-Ray': '8c0000000000abcd-SJC', ...extra });
+// CLIENT_IP_SOURCE settings that mean "cloudflare": the default (key absent), empty, and explicit.
+const UNSET = Symbol('unset');
+const ON = [UNSET, '', '  ', 'cloudflare'];
+const OFF = ['off', ' OFF ', 'express'];
+const sourceConfig = source => (source === UNSET ? {} : { CLIENT_IP_SOURCE: source });
+const label = source => (source === UNSET ? 'unset' : JSON.stringify(source));
 
 async function fixture(t, options = {}) {
   const models = options.models || createMemoryModels();
@@ -83,17 +89,25 @@ test('Cloudflare ranges: dated published list, IPv4-mapped edges and an explicit
   assert.equal(override.check(EDGES[0], 'ipv4'), false, 'the override replaces the published list');
   assert.equal(cloudflareRanges('').check(EDGES[0], 'ipv4'), true, 'empty override keeps the published list');
   for (const bad of ['198.51.100.0/33', '198.51.100.0', 'not-a-cidr/8', '2001:db8::/129', '198.51.100.0/24/1']) assert.throws(() => cloudflareRanges(bad), /CLOUDFLARE_IP_CIDRS/, bad);
-  assert.equal(clientIpSource({}), null);
-  assert.equal(clientIpSource({ CLIENT_IP_SOURCE: '' }), null);
+});
+
+test('CLIENT_IP_SOURCE: unset or empty means cloudflare, off/express disable it, anything else stops startup', () => {
+  for (const source of ON) assert.equal(clientIpSource(sourceConfig(source)), 'cloudflare', label(source));
+  assert.equal(clientIpSource(), 'cloudflare');
+  assert.equal(clientIpSource({ CLIENT_IP_SOURCE: undefined }), 'cloudflare');
+  assert.equal(clientIpSource({ CLIENT_IP_SOURCE: null }), 'cloudflare');
   assert.equal(clientIpSource({ CLIENT_IP_SOURCE: ' Cloudflare ' }), 'cloudflare');
-  for (const bad of ['true', 'cloudflare-xff', 'x-forwarded-for']) assert.throws(() => clientIpSource({ CLIENT_IP_SOURCE: bad }), /CLIENT_IP_SOURCE/);
-  assert.throws(() => createApplication({ models: createMemoryModels(), config: { NODE_ENV: 'test', JWT_SECRET: SECRET, CLIENT_IP_SOURCE: 'yes' } }), /CLIENT_IP_SOURCE/);
+  for (const source of [...OFF, 'Off', 'EXPRESS']) assert.equal(clientIpSource({ CLIENT_IP_SOURCE: source }), null, source);
+  for (const bad of ['true', 'false', 'on', '0', '1', 'none', 'disabled', 'cloudflare-xff', 'x-forwarded-for', 'cf-connecting-ip', 'cloudflare,off', 'toString', '__proto__', 'hasOwnProperty']) {
+    assert.throws(() => clientIpSource({ CLIENT_IP_SOURCE: bad }), /CLIENT_IP_SOURCE must be empty, "cloudflare", "off" or "express"/, bad);
+  }
+  for (const bad of ['yes', 'disabled']) assert.throws(() => createApplication({ models: createMemoryModels(), config: { NODE_ENV: 'test', JWT_SECRET: SECRET, CLIENT_IP_SOURCE: bad } }), /CLIENT_IP_SOURCE/, bad);
 });
 
 test('resolver honours client headers only behind a published Cloudflare hop', () => {
   const on = { source: 'cloudflare' };
   const resolve = (shape, settings = on) => resolveClientIp(fakeRequest(shape), settings);
-  // Flag off: Express req.ip verbatim, including IPv6 and mapped forms.
+  // Source off (null): Express req.ip verbatim, including IPv6 and mapped forms.
   for (const ip of ['2001:db8:abcd:12::1', '::ffff:203.0.113.9', 'forged']) assert.deepEqual(resolve({ ip, headers: { 'cf-connecting-ip': VISITOR } }, {}), { key: ip, from: 'express', address: ip });
   assert.equal(resolve({ ip: EDGES[0], headers: { 'cf-connecting-ip': VISITOR } }).key, VISITOR);
   assert.equal(resolve({ ip: '2606:4700:10::6816:1', headers: { 'cf-connecting-ip': '2001:db8:abcd:12::1' } }).key, '2001:db8:abcd:12::/64');
@@ -118,18 +132,19 @@ test('resolver honours client headers only behind a published Cloudflare hop', (
   assert.equal(resolve({ ip: EDGES[0], ips: [EDGES[1]], headers: { 'x-forwarded-for': `${VISITOR}, ${EDGES[1]}` } }).from, 'edge-without-client');
 });
 
-test('one visitor behind rotating Cloudflare edges keeps one quota bucket; the current key jumps', async t => {
-  for (const [source, expected] of [['', [15, 15, 13, 15]], ['cloudflare', [13, 13, 13, 13]]]) {
-    const f = await fixture(t, { config: { CLIENT_IP_SOURCE: source } });
+test('one visitor behind rotating Cloudflare edges keeps one quota bucket by default; off makes the key jump', async t => {
+  const cases = [...ON.map(source => [source, [13, 13, 13, 13]]), ...OFF.map(source => [source, [15, 15, 13, 15]])];
+  for (const [source, expected] of cases) {
+    const f = await fixture(t, { config: sourceConfig(source) });
     await f.ask(viaCloudflare(EDGES[0]));
     await f.ask(viaCloudflare(EDGES[0]));
     const reads = [await f.read(viaCloudflare(EDGES[1])), await f.read(viaCloudflare(EDGES[2])), await f.read(viaCloudflare(EDGES[0])), await f.read(viaCloudflare('162.158.200.7'))];
-    assert.deepEqual(reads, expected, source || 'flag off reproduces the 9/1/4 jumps');
+    assert.deepEqual(reads, expected, `${label(source)}${expected[0] === 15 ? ': off reproduces the 9/1/4 jumps' : ''}`);
   }
 });
 
 test('remaining decreases by exactly one per ask and never jumps across five interleaved reads', async t => {
-  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare' } });
+  const f = await fixture(t);
   const reads = [];
   reads.push(await f.read(viaCloudflare(EDGES[0])));
   await f.ask(viaCloudflare(EDGES[1]));
@@ -145,43 +160,47 @@ test('remaining decreases by exactly one per ask and never jumps across five int
 });
 
 test('forged X-Forwarded-For and CF-Connecting-IP never change the counting key', async t => {
-  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare' } });
-  await f.ask(viaCloudflare(EDGES[0]));
-  // Behind Cloudflare: forged leftmost XFF entries, with and without the CF header.
-  for (let i = 1; i <= 4; i++) {
-    assert.equal(await f.read({ 'X-Forwarded-For': `198.18.0.${i}, ${VISITOR}, ${EDGES[i % 3]}`, 'CF-Connecting-IP': VISITOR }), 14);
-    assert.equal(await f.read({ 'X-Forwarded-For': `198.18.0.${i}, 198.18.1.${i}, ${VISITOR}, ${EDGES[i % 3]}` }), 14);
+  for (const source of [UNSET, 'cloudflare']) {
+    const f = await fixture(t, { config: sourceConfig(source) });
+    await f.ask(viaCloudflare(EDGES[0]));
+    // Behind Cloudflare: forged leftmost XFF entries, with and without the CF header.
+    for (let i = 1; i <= 4; i++) {
+      assert.equal(await f.read({ 'X-Forwarded-For': `198.18.0.${i}, ${VISITOR}, ${EDGES[i % 3]}`, 'CF-Connecting-IP': VISITOR }), 14, label(source));
+      assert.equal(await f.read({ 'X-Forwarded-For': `198.18.0.${i}, 198.18.1.${i}, ${VISITOR}, ${EDGES[i % 3]}` }), 14, label(source));
+    }
+    // Not behind Cloudflare (fail closed): the forged header and leftmost XFF cannot pick a key, the edge is the key.
+    await f.ask({ 'X-Forwarded-For': `203.0.113.1, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': '203.0.113.1' });
+    for (let i = 2; i <= 6; i++) {
+      assert.equal(await f.read({ 'X-Forwarded-For': `203.0.113.${i}, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': `203.0.113.${i}`, 'True-Client-IP': `203.0.113.${i}` }), 14, label(source));
+    }
+    assert.equal(await f.read({ 'X-Forwarded-For': '203.0.113.1, 198.51.100.21' }), 15, 'a different non-Cloudflare edge is a different key');
+    assert.deepEqual(f.identities(), [1, 1], `${label(source)}: forged values never minted new identities`);
   }
-  // Not behind Cloudflare: the forged header and leftmost XFF cannot pick a key, the edge is the key.
-  await f.ask({ 'X-Forwarded-For': `203.0.113.1, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': '203.0.113.1' });
-  for (let i = 2; i <= 6; i++) {
-    assert.equal(await f.read({ 'X-Forwarded-For': `203.0.113.${i}, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': `203.0.113.${i}`, 'True-Client-IP': `203.0.113.${i}` }), 14);
-  }
-  assert.equal(await f.read({ 'X-Forwarded-For': '203.0.113.1, 198.51.100.21' }), 15, 'a different non-Cloudflare edge is a different key');
-  assert.deepEqual(f.identities(), [1, 1], 'forged values never minted new identities');
 });
 
-test('forged headers at a non-Cloudflare hop still cannot evade the login limit with the flag on', async t => {
-  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare' } });
-  for (let i = 0; i < 10; i++) {
-    const result = await f.request('/auth/login', { body: { email: `unknown${i}@example.test`, password: 'bad' }, headers: { 'X-Forwarded-For': `203.0.113.${i + 1}, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': `203.0.113.${i + 1}` } });
-    assert.equal(result.status, 401);
+test('forged headers at a non-Cloudflare hop still cannot evade the login limit, on by default or explicitly', async t => {
+  for (const source of [UNSET, 'cloudflare']) {
+    const f = await fixture(t, { config: sourceConfig(source) });
+    for (let i = 0; i < 10; i++) {
+      const result = await f.request('/auth/login', { body: { email: `unknown${i}@example.test`, password: 'bad' }, headers: { 'X-Forwarded-For': `203.0.113.${i + 1}, ${NOT_CLOUDFLARE}`, 'CF-Connecting-IP': `203.0.113.${i + 1}` } });
+      assert.equal(result.status, 401, label(source));
+    }
+    assert.equal((await f.request('/auth/login', { body: { email: 'another@example.test', password: 'bad' }, headers: { 'X-Forwarded-For': `203.0.113.99, ${NOT_CLOUDFLARE}` } })).status, 429, label(source));
   }
-  assert.equal((await f.request('/auth/login', { body: { email: 'another@example.test', password: 'bad' }, headers: { 'X-Forwarded-For': `203.0.113.99, ${NOT_CLOUDFLARE}` } })).status, 429);
 });
 
-test('two visitors behind the same Cloudflare edge are counted independently', async t => {
-  for (const [source, otherRemaining] of [['', 13], ['cloudflare', 15]]) {
-    const f = await fixture(t, { config: { CLIENT_IP_SOURCE: source } });
+test('two visitors behind the same Cloudflare edge are counted independently unless the source is off', async t => {
+  for (const [source, otherRemaining] of [[UNSET, 15], ['cloudflare', 15], ['off', 13], ['express', 13]]) {
+    const f = await fixture(t, { config: sourceConfig(source) });
     await f.ask(viaCloudflare(EDGES[0]));
     await f.ask(viaCloudflare(EDGES[0]));
-    assert.equal(await f.read(viaCloudflare(EDGES[0], OTHER_VISITOR)), otherRemaining, source || 'flag off shares one bucket between strangers');
+    assert.equal(await f.read(viaCloudflare(EDGES[0], OTHER_VISITOR)), otherRemaining, `${label(source)}${otherRemaining === 13 ? ': off shares one bucket between strangers' : ''}`);
     assert.equal(await f.read(viaCloudflare(EDGES[0])), 13);
   }
 });
 
 test('login and register limits are per visitor behind one Cloudflare edge', async t => {
-  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare' } });
+  const f = await fixture(t);
   const login = (visitor, i) => f.request('/auth/login', { body: { email: `nobody${i}@example.test`, password: 'bad' }, headers: viaCloudflare(EDGES[i % 3], visitor) });
   for (let i = 0; i < 10; i++) assert.equal((await login(VISITOR, i)).status, 401);
   assert.equal((await login(OTHER_VISITOR, 10)).status, 401, 'another visitor at the same edges keeps its own 10/15min');
@@ -193,7 +212,7 @@ test('login and register limits are per visitor behind one Cloudflare edge', asy
 });
 
 test('IPv6 visitors share one key per /64 and IPv4-mapped equals IPv4', async t => {
-  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare' } });
+  const f = await fixture(t);
   await f.ask(viaCloudflare('2606:4700:10::6816:1', '2001:db8:abcd:12::1'));
   assert.equal(await f.read(viaCloudflare(EDGES[0], '2001:db8:abcd:12::ffff')), 14);
   assert.equal(await f.read(viaCloudflare(EDGES[1], '2001:db8:abcd:13::1')), 15);
@@ -201,13 +220,12 @@ test('IPv6 visitors share one key per /64 and IPv4-mapped equals IPv4', async t 
   assert.equal(await f.read(viaCloudflare(EDGES[2], '::ffff:203.0.113.50')), 14);
 });
 
-test('flag off leaves Express req.ip untouched', async t => {
+test('CLIENT_IP_SOURCE=off is a strict no-op that leaves Express req.ip untouched', async t => {
   let passed = 0;
-  createClientIp({ JWT_SECRET: SECRET }).middleware(untouchable(), untouchable(), () => passed++);
-  createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_SOURCE: '' }).middleware(untouchable(), untouchable(), () => passed++);
-  assert.equal(passed, 2, 'no read, normalisation or defineProperty on the request');
+  for (const source of OFF) createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_SOURCE: source }, { log: () => assert.fail('no log line while off') }).middleware(untouchable(), untouchable(), () => passed++);
+  assert.equal(passed, OFF.length, 'no read, normalisation or defineProperty on the request');
   // Raw hop strings stay distinct keys: no /64 collapse and no ::ffff: unwrapping.
-  const f = await fixture(t);
+  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'off' } });
   await f.ask({ 'X-Forwarded-For': `${VISITOR}, 2001:db8:abcd:12::1` });
   assert.equal(await f.read({ 'X-Forwarded-For': `${VISITOR}, 2001:db8:abcd:12::ffff` }), 15);
   assert.equal(await f.read({ 'X-Forwarded-For': `${VISITOR}, 2001:db8:abcd:12::1` }), 14);
@@ -216,23 +234,42 @@ test('flag off leaves Express req.ip untouched', async t => {
   assert.deepEqual(f.lines, []);
 });
 
-test('flag on shadows req.ip with the resolved key only', () => {
-  const { middleware } = createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_SOURCE: 'cloudflare' }, { log: () => assert.fail('no diagnostics without a window') });
-  const proto = { get ip() { return EDGES[0]; } };
-  const req = Object.assign(Object.create(proto), { ips: [EDGES[0]], socket: { remoteAddress: '10.1.2.3' }, headers: { 'cf-connecting-ip': '2001:db8:abcd:12::1', 'x-forwarded-for': `2001:db8:abcd:12::1, ${EDGES[0]}` }, method: 'GET', path: '/api/ai/usage', query: {} });
-  let passed = 0;
-  middleware(req, {}, () => passed++);
-  assert.equal(passed, 1);
-  assert.equal(req.ip, '2001:db8:abcd:12::/64');
-  assert.equal(Object.getOwnPropertyDescriptor(req, 'ip').configurable, true);
-  assert.equal(proto.ip, EDGES[0], 'the Express getter itself is not changed');
+test('unset, empty or "cloudflare" shadows req.ip with the resolved key only', () => {
+  for (const source of ON) {
+    const { middleware } = createClientIp({ JWT_SECRET: SECRET, ...sourceConfig(source) }, { log: () => assert.fail('no diagnostics without a window') });
+    const proto = { get ip() { return EDGES[0]; } };
+    const req = Object.assign(Object.create(proto), { ips: [EDGES[0]], socket: { remoteAddress: '10.1.2.3' }, headers: { 'cf-connecting-ip': '2001:db8:abcd:12::1', 'x-forwarded-for': `2001:db8:abcd:12::1, ${EDGES[0]}` }, method: 'GET', path: '/api/ai/usage', query: {} });
+    let passed = 0;
+    middleware(req, {}, () => passed++);
+    assert.equal(passed, 1, label(source));
+    assert.equal(req.ip, '2001:db8:abcd:12::/64', label(source));
+    assert.equal(Object.getOwnPropertyDescriptor(req, 'ip').configurable, true);
+    assert.equal(proto.ip, EDGES[0], 'the Express getter itself is not changed');
+  }
+});
+
+test('unset source fails closed at a non-Cloudflare hop and changes keys only by normalising them', () => {
+  const { middleware } = createClientIp({ JWT_SECRET: SECRET });
+  const run = shape => { const req = fakeRequest(shape); middleware(req, {}, () => {}); return req.ip; };
+  // A forged CF-Connecting-IP or leftmost XFF entry is ignored when the trusted hop is not Cloudflare.
+  assert.equal(run({ ip: NOT_CLOUDFLARE, headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${VISITOR}, ${NOT_CLOUDFLARE}` } }), NOT_CLOUDFLARE);
+  assert.equal(run({ ip: '127.0.0.1', ips: [], socket: '127.0.0.1', headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': VISITOR } }), '127.0.0.1', 'trust disabled: the socket is the key');
+  // Today's hop key, normalised: IPv4-mapped unwrapped and IPv6 per /64.
+  assert.equal(run({ ip: '::ffff:198.51.100.30', headers: { 'cf-connecting-ip': VISITOR } }), '198.51.100.30');
+  assert.equal(run({ ip: '2001:db8:abcd:12::1', headers: { 'cf-connecting-ip': VISITOR } }), '2001:db8:abcd:12::/64');
+  // A value Express would never produce is kept as-is rather than dropped.
+  assert.equal(run({ ip: 'unknown', ips: [], socket: undefined }), 'unknown');
 });
 
 test('diagnostics: time-boxed, probe-first, sampled, capped and never a full address', () => {
   let now = NOW - 1800000;
   const lines = [];
   const until = new Date(NOW + 1800000).toISOString();
-  const { middleware } = createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_DIAGNOSTIC_UNTIL: until }, { now: () => now, log: line => lines.push(line) });
+  // The default mode is named in the window-open line.
+  createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_DIAGNOSTIC_UNTIL: until }, { now: () => now, log: line => lines.push(line) });
+  assert.deepEqual(lines.splice(0), ['[client-ip-diag] window open until 2026-10-08T19:30:00.000Z; mode cloudflare']);
+  // Off, so the assertions below can show that diagnostics alone never change req.ip.
+  const { middleware } = createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_SOURCE: 'off', CLIENT_IP_DIAGNOSTIC_UNTIL: until }, { now: () => now, log: line => lines.push(line) });
   assert.match(lines.shift(), /^\[client-ip-diag\] window open until 2026-10-08T19:30:00\.000Z; mode express$/);
   const run = shape => { const req = fakeRequest({ ip: EDGES[0], headers: viaCloudflare(EDGES[0]), ...shape }); const headers = Object.fromEntries(Object.entries(req.headers).map(([k, v]) => [k.toLowerCase(), v])); req.headers = headers; middleware(req, {}, () => {}); return req; };
   const req = run({ query: { probe: 'abcd1234efgh' } });
@@ -291,7 +328,7 @@ test('diagnostic window is ignored when malformed, in the past or more than 2h a
   for (const bad of ['2026-10-08 20:00', '2026-10-08T20:00:00+00:00', '2026-10-08T20:00:00', '2026-02-30T20:00Z', 'tomorrow', 1791435600000]) assert.equal(diagnosticWindow(bad, NOW).reason, 'malformed', String(bad));
   for (const [until, reason] of [['2026-10-08T23:00:00Z', 'more-than-2h-after-start'], ['2026-10-08T18:00:00Z', 'past'], ['soon', 'malformed']]) {
     const lines = [];
-    const { middleware } = createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_DIAGNOSTIC_UNTIL: until }, { now: () => NOW, log: line => lines.push(line) });
+    const { middleware } = createClientIp({ JWT_SECRET: SECRET, CLIENT_IP_SOURCE: 'off', CLIENT_IP_DIAGNOSTIC_UNTIL: until }, { now: () => NOW, log: line => lines.push(line) });
     assert.deepEqual(lines, [`[client-ip-diag] CLIENT_IP_DIAGNOSTIC_UNTIL ignored: ${reason}`]);
     let passed = 0;
     middleware(untouchable(), untouchable(), () => passed++);
@@ -304,7 +341,8 @@ test('diagnostic endpoint: 404 outside the window, key fingerprints inside, rate
   assert.equal((await closed.raw('/_diag/client-ip', { headers: viaCloudflare(EDGES[0]) })).status, 404);
   let now = NOW;
   const until = new Date(NOW + 3600000).toISOString();
-  const f = await fixture(t, { config: { CLIENT_IP_DIAGNOSTIC_UNTIL: until }, clientIpNow: () => now });
+  // Off: the live ("current") key follows the edge, as it did before the default changed.
+  const f = await fixture(t, { config: { CLIENT_IP_SOURCE: 'off', CLIENT_IP_DIAGNOSTIC_UNTIL: until }, clientIpNow: () => now });
   const diag = async headers => { const result = await f.request('/_diag/client-ip', { headers }); assert.equal(result.status, 200); assert.equal(result.headers.get('cache-control'), 'no-store'); return result.data; };
   const rotated = [await diag(viaCloudflare(EDGES[0])), await diag(viaCloudflare(EDGES[1])), await diag(viaCloudflare(EDGES[2], VISITOR, { 'X-Forwarded-For': `198.18.0.1, ${VISITOR}, ${EDGES[2]}` }))];
   assert.equal(new Set(rotated.map(row => row.fingerprints.cloudflare)).size, 1, 'cloudflare mode: one key across edges and forged leftmost XFF');
@@ -326,10 +364,12 @@ test('diagnostic endpoint: 404 outside the window, key fingerprints inside, rate
   for (const [name, model] of Object.entries(f.models)) if (Array.isArray(model?.rows)) assert.equal(model.rows.length, 0, `${name} must stay empty`);
   now = Date.parse(until);
   assert.equal((await f.raw('/_diag/client-ip', { headers: viaCloudflare(EDGES[1]) })).status, 404, 'closes at CLIENT_IP_DIAGNOSTIC_UNTIL');
-  // With the flag on, the current key is the Cloudflare-mode key.
-  const on = await fixture(t, { config: { CLIENT_IP_SOURCE: 'cloudflare', CLIENT_IP_DIAGNOSTIC_UNTIL: until }, clientIpNow: () => NOW });
-  const flagged = (await on.request('/_diag/client-ip', { headers: viaCloudflare(EDGES[0]) })).data;
-  assert.equal(flagged.mode, 'cloudflare');
-  assert.equal(flagged.fingerprints.current, flagged.fingerprints.cloudflare);
-  assert.equal(flagged.fingerprints.cloudflare, rotated[0].fingerprints.cloudflare, 'fingerprints are stable across processes sharing JWT_SECRET');
+  // On (by default or explicitly), the current key is the Cloudflare-mode key.
+  for (const source of [UNSET, 'cloudflare']) {
+    const on = await fixture(t, { config: { ...sourceConfig(source), CLIENT_IP_DIAGNOSTIC_UNTIL: until }, clientIpNow: () => NOW });
+    const flagged = (await on.request('/_diag/client-ip', { headers: viaCloudflare(EDGES[0]) })).data;
+    assert.equal(flagged.mode, 'cloudflare', label(source));
+    assert.equal(flagged.fingerprints.current, flagged.fingerprints.cloudflare);
+    assert.equal(flagged.fingerprints.cloudflare, rotated[0].fingerprints.cloudflare, 'fingerprints are stable across processes sharing JWT_SECRET');
+  }
 });
