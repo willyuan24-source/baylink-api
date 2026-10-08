@@ -107,6 +107,8 @@ test('arms switch models through runtime config keys; code-defaults sets nothing
   assert.deepEqual(armRoutes(book.arms['haiku-low-nothink'].config).agent, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
   assert.deepEqual(armRoutes(book.arms['haiku-medium'].config).agent, { model: 'claude-haiku-5-5', effort: 'medium', thinking: 'adaptive' });
   assert.deepEqual(armRoutes(book.arms['sonnet-low'].config).agent, sonnetLow);
+  const sonnetMedium = { model: 'claude-sonnet-5-5', effort: 'medium', thinking: 'adaptive' };
+  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium });
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
   assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });

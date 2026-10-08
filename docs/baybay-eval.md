@@ -77,6 +77,7 @@ A turn is **void** when the assistant degraded because of the provider or transp
 | `sonnet-low` | Sonnet 5.5 low | Sonnet 5.5 low (default) |
 | `haiku-low`, `haiku-medium` | Haiku 5.5 low / medium | Sonnet 5.5 low (never Haiku, RC-20) |
 | `haiku-low-nothink` | Haiku 5.5 low with `BAYBAY_THINKING_AGENT=disabled` (sent to Haiku only; a 400 on Opus 5.5 and Sonnet 5.5) | Sonnet 5.5 low |
+| `sonnet-medium` | Sonnet 5.5 medium (`BAYBAY_EFFORT_AGENT=medium`): makes adaptive thinking likelier, so the tool-round probe can show thinking blocks replayed with a `tool_result` | Sonnet 5.5 medium |
 
 `meta.json` (`armConfigs`) and every result row record the resolved agent and professional model and effort. Harness-level `requestOverrides` still accept a thinking override, but only on an arm whose agent and professional routes both resolve to Haiku, which no arm does since R0.
 

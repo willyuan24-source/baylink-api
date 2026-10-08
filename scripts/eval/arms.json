@@ -13,7 +13,8 @@
     "haiku-low": { "label": "Haiku 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
     "haiku-low-nothink": { "label": "Haiku 5.5, effort low, thinking disabled", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5", "BAYBAY_THINKING_AGENT": "disabled" } },
     "haiku-medium": { "label": "Haiku 5.5, effort medium", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
-    "sonnet-low": { "label": "Sonnet 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-sonnet-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-sonnet-5-5", "BAYBAY_EFFORT_AGENT": "low" } }
+    "sonnet-low": { "label": "Sonnet 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-sonnet-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-sonnet-5-5", "BAYBAY_EFFORT_AGENT": "low" } },
+    "sonnet-medium": { "label": "Sonnet 5.5 (R0 default model), effort medium: adaptive thinking more likely, for the tool-round probe", "config": { "BAYBAY_EFFORT_AGENT": "medium", "BAYBAY_EFFORT_PROFESSIONAL": "medium" } }
   },
   "sets": {
     "v0": { "blocks": ["A", "C", "E", "G"], "arms": ["haiku-low", "haiku-low-nothink", "sonnet-low", "opus-asis"], "baselineArm": "opus-asis" },
