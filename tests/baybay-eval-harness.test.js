@@ -109,6 +109,16 @@ test('dry run needs no key, makes no network call and writes only outside the re
   assert.equal(summary.meta.rescored, true);
   assert.equal(summary.arms['haiku-low'].turns, 3);
 
+  // A resume re-runs nothing that is on disk and keeps the first run's provenance.
+  const resumed = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-test', '--arms', 'haiku-low', '--items', 'C08,B7,C-DEGRADED-STROKE', '--resume'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(resumed.status, 0, resumed.stderr);
+  assert.match(resumed.stdout, /\[haiku-low\] already complete/);
+  const metaAfter = JSON.parse(fs.readFileSync(path.join(out, 'dry-test', 'meta.json'), 'utf8'));
+  assert.equal(metaAfter.startedAt, meta.startedAt);
+  assert.equal(metaAfter.gitHead, meta.gitHead);
+  assert.equal(metaAfter.resumes.length, 1);
+  assert.equal(fs.readFileSync(path.join(out, 'dry-test', 'results-haiku-low.jsonl'), 'utf8').trim().split('\n').length, 3);
+
   const live = spawnSync(process.execPath, [script, '--live', '--budget-usd', '1', '--out', out, '--run-id', 'no-key'], { cwd: ROOT, env, encoding: 'utf8', timeout: 60000 });
   assert.notEqual(live.status, 0);
   assert.match(live.stderr, /BAYLINK_EVAL_ANTHROPIC_KEY/);

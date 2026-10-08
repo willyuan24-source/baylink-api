@@ -223,7 +223,15 @@ async function main() {
     gitHead: gitHead(), node: process.version, pricingDate: PRICING_DATE, keyEnvVar: keyVar || null, workspaceHeader: !!workspaceId,
     intentMirror: { expected: INTENT_MIRROR_FINGERPRINT, server: fingerprint, ok: fingerprint === INTENT_MIRROR_FINGERPRINT },
     cases: selected.map(item => item.id), turns: selected.reduce((sum, item) => sum + item.turns.length, 0), startedAt: new Date().toISOString() };
-  writeFileSync(path.join(runDir, 'meta.json'), scrub(JSON.stringify(meta, null, 1)));
+  // A resume keeps the provenance of the answers already on disk (first start,
+  // code head, budget) and appends this session, e.g. a judge-only pass.
+  const metaPath = path.join(runDir, 'meta.json');
+  if (options.resume && existsSync(metaPath)) {
+    const first = JSON.parse(readFileSync(metaPath, 'utf8'));
+    Object.assign(meta, { startedAt: first.startedAt, gitHead: first.gitHead, budgetUsd: first.budgetUsd,
+      resumes: [...(first.resumes || []), { at: meta.startedAt, gitHead: meta.gitHead, budgetUsd: options.budgetUsd, spentBeforeUsd: +ledger.spentUsd.toFixed(4), arms: armNames, judge: options.judge }] });
+  }
+  writeFileSync(metaPath, scrub(JSON.stringify(meta, null, 1)));
   console.log(`Run ${runId} (${meta.mode}) -> ${runDir}`);
   console.log(`${selected.length} cases / ${meta.turns} turns x ${armNames.length} arms; pinned now ${options.now}; budget ${options.live ? `$${options.budgetUsd}` : '$0 (dry run)'}; spent so far $${ledger.spentUsd.toFixed(3)}`);
 
@@ -390,7 +398,7 @@ async function main() {
     }
   }
 
-  writeFileSync(path.join(runDir, 'meta.json'), scrub(JSON.stringify({ ...meta, finishedAt: new Date().toISOString(), spentUsd: +ledger.spentUsd.toFixed(4), budgetExhausted: ledger.exhausted }, null, 1)));
+  writeFileSync(metaPath, scrub(JSON.stringify({ ...meta, finishedAt: new Date().toISOString(), spentUsd: +ledger.spentUsd.toFixed(4), budgetExhausted: ledger.exhausted }, null, 1)));
   const { markdown } = writeReport(runDir, baselineArm);
   console.log(`\n${markdown}`);
   console.log(`Spent $${ledger.spentUsd.toFixed(3)}${options.live ? ` of $${options.budgetUsd}` : ' (dry run)'}${ledger.exhausted ? ' - BUDGET EXHAUSTED, run stopped early' : ''}. Results: ${runDir}`);
