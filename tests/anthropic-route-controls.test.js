@@ -62,10 +62,51 @@ test('Anthropic payloads never carry temperature/top_p/top_k, always carry effor
   }
 });
 
-test('default configuration sends the same agent request as before: Opus 5.5, medium effort, caller max_tokens, no beta header', async () => {
+// Sonnet 5.5 rejects thinking {type: "disabled"}, forced tool_choice (any/tool) and
+// sampling parameters, and defaults to effort high; max_tokens must cover thinking too.
+function assertSonnet55Body(body, { maxTokens, toolChoice }) {
+  assert.deepEqual(Object.keys(body).sort(), ['max_tokens', 'messages', 'model', 'output_config', 'system', 'tool_choice', 'tools']);
+  assert.equal(body.model, 'claude-sonnet-5-5');
+  assert.deepEqual(Object.keys(body.output_config).sort(), ['effort', 'format']);
+  assert.equal(body.output_config.effort, 'low', 'effort is explicit: Sonnet 5.5 would default to high');
+  assert.equal(body.output_config.format.type, 'json_schema');
+  assert.equal(body.thinking, undefined, 'adaptive thinking: the field is omitted ({type: "disabled"} is a 400 on Sonnet 5.5)');
+  for (const field of SAMPLING) assert.equal(body[field], undefined, field);
+  assert.equal(body.fallbacks, undefined, 'server-side fallbacks stay opt-in');
+  assert.deepEqual(body.tool_choice, { type: toolChoice }, 'only auto or none: forced tool_choice is a 400 on Sonnet 5.5');
+  assert.ok(body.tools.every(item => item.strict === true && !item.input_schema.properties?.query?.maxLength));
+  assert.equal(body.max_tokens, maxTokens); assert.ok(body.max_tokens >= 4000, 'room for adaptive thinking plus the answer');
+}
+
+test('R0 default: agent and professional runs send a valid Sonnet 5.5 request (effort low, no thinking field, no sampling, auto/none tools, >= 4,000 max_tokens)', async () => {
+  for (const route of ['baybay_agent', 'baybay_professional']) {
+    const sent = [];
+    const toolTurn = { ...answer('claude-sonnet-5-5'), stop_reason: 'tool_use', content: [{ type: 'thinking', thinking: '', signature: 'sig-sonnet' }, { type: 'tool_use', id: 'call-1', name: 'search_site', input: { query: 'museums' } }] };
+    const agent = createAnthropicBaybay({ config: base, route, fetchImpl: capture([toolTurn, answer('claude-sonnet-5-5')], sent) });
+    // The agent asks for baybayModel(config) and 6,000 (research) / 9,000 (final) tokens.
+    const payload = agentPayload(baybayModel(base), { tool_choice: 'auto' });
+    assert.equal(payload.model, 'claude-sonnet-5-5');
+    const first = await agent(payload, { timeoutMs: 25000 });
+    payload.input.push(...first.output, { type: 'function_call_output', call_id: 'call-1', output: '{"sources":[]}' }, { role: 'user', content: 'Research is complete.' });
+    Object.assign(payload, { tool_choice: 'none', max_output_tokens: 9000 });
+    assert.equal(parseDraft(await agent(payload, { timeoutMs: 28000 })).answer, 'Supported answer.');
+    assertSonnet55Body(sent[0].body, { maxTokens: 6000, toolChoice: 'auto' });
+    assertSonnet55Body(sent[1].body, { maxTokens: 9000, toolChoice: 'none' });
+    // Sonnet's own thinking block is replayed unchanged within the run.
+    assert.deepEqual(sent[1].body.messages[1].content[0], { type: 'thinking', thinking: '', signature: 'sig-sonnet' });
+    for (const { headers } of sent) assert.deepEqual(Object.keys(headers).sort(), ['Authorization', 'Content-Type', 'anthropic-version'], route);
+  }
+  // Even an override asking for disabled thinking is never sent to Sonnet 5.5.
   const sent = [];
-  const agent = createAnthropicBaybay({ config: base, fetchImpl: capture([answer('claude-opus-5-5')], sent) });
-  await agent(agentPayload('claude-opus-5-5'), { timeoutMs: 25000 });
+  await createAnthropicBaybay({ config: { ...base, BAYBAY_THINKING_AGENT: 'disabled' }, fetchImpl: capture([answer('claude-sonnet-5-5')], sent) })(agentPayload(baybayModel(base)));
+  assert.equal(sent[0].body.thinking, undefined);
+});
+
+test('R0 rollback: BAYBAY_MODEL_AGENT=claude-opus-5-5 sends the pre-R0 agent request (Opus 5.5, legacy effort, caller max_tokens)', async () => {
+  const sent = [];
+  const config = { ...base, BAYBAY_MODEL_AGENT: 'claude-opus-5-5' };
+  const agent = createAnthropicBaybay({ config, fetchImpl: capture([answer('claude-opus-5-5')], sent) });
+  await agent(agentPayload(baybayModel(config)), { timeoutMs: 25000 });
   const { body, headers } = sent[0];
   assert.deepEqual(Object.keys(body).sort(), ['max_tokens', 'messages', 'model', 'output_config', 'system', 'tool_choice', 'tools']);
   assert.equal(body.model, 'claude-opus-5-5'); assert.equal(body.max_tokens, 6000); assert.deepEqual(Object.keys(body.output_config).sort(), ['effort', 'format']);
@@ -182,9 +223,16 @@ test('a non-agent route decides its own model; the agent switch never moves prof
     await agent(agentPayload(model));
     return sent[0].body;
   };
-  // baybayAgent sends baybayModel(config), the agent route's model, on every run.
+  // baybayAgent sends baybayModel(config, route) on every run; the professional route
+  // also accepts the agent route's model and replaces it with its own.
   const r0 = { ...base, BAYBAY_MODEL_AGENT: 'claude-haiku-5-5', BAYBAY_EFFORT_AGENT: 'low' };
   let body = await run(r0, baybayModel(r0));
+  assert.equal(body.model, 'claude-sonnet-5-5'); assert.equal(body.output_config.effort, 'low');
+  body = await run(base, baybayModel(base, 'baybay_professional'));
+  assert.equal(body.model, 'claude-sonnet-5-5'); assert.equal(body.output_config.effort, 'low');
+  // Professional rollback: its own variable, effort from the legacy rule.
+  const opus = { ...base, BAYBAY_MODEL_PROFESSIONAL: 'claude-opus-5-5' };
+  body = await run(opus, baybayModel(opus));
   assert.equal(body.model, 'claude-opus-5-5'); assert.equal(body.output_config.effort, 'medium');
   const sonnetLow = { ...r0, BAYBAY_MODEL_PROFESSIONAL: 'claude-sonnet-5-5', BAYBAY_EFFORT_PROFESSIONAL: 'low' };
   body = await run(sonnetLow, baybayModel(sonnetLow));

@@ -17,14 +17,15 @@ test('Claude site research preserves signed tool context through final synthesis
   const assistant = createBayBayAssistant(options({ fetchImpl: async (url, init) => {
     assert.equal(url, 'https://api.anthropic.com/v1/messages');
     const body = JSON.parse(init.body); sent.push(body);
-    assert.equal(body.model, 'claude-opus-5-5');
+    // R0 default route: Claude Sonnet 5.5 at effort low.
+    assert.equal(body.model, 'claude-sonnet-5-5'); assert.equal(body.output_config.effort, 'low');
     assert.ok(body.tools.every(tool => ['search_site', 'create_plan'].includes(tool.name)));
     return reply(sent.length === 1 ? toolResponse('call-site', 'search_site', { query: 'San Francisco library card' }) : final('Use the recorded library reference and verify current eligibility.'));
   } }));
   const result = await assistant.run(request);
   assert.equal(sent.length, 2); assert.equal(result.degraded, false);
   assert.equal(assistant.capabilities().configuredProvider, 'anthropic');
-  assert.equal(assistant.capabilities().configuredModel, 'claude-opus-5-5');
+  assert.equal(assistant.capabilities().configuredModel, 'claude-sonnet-5-5');
   assert.equal(sent[1].system, sent[0].system); assert.deepEqual(sent[1].tools, sent[0].tools);
   assert.deepEqual(sent[1].tool_choice, { type: 'none' });
   assert.equal(sent[1].messages[1].content[0].signature, 'signed-call-site');
@@ -43,7 +44,7 @@ test('Claude token-limit output recovers on the same model without accepting a v
   } }));
   const result = await assistant.run(request);
   assert.equal(sent.length, 2); assert.equal(result.degraded, false);
-  assert.ok(sent.every(body => body.model === 'claude-opus-5-5'));
+  assert.ok(sent.every(body => body.model === 'claude-sonnet-5-5'));
   assert.ok(result.research.warnings.includes('model_response_incomplete_max_output_tokens'));
   assert.ok(result.research.warnings.includes('final_synthesis_recovered'));
   assert.doesNotMatch(JSON.stringify(result), /UNSAFE TRUNCATED/);
@@ -139,4 +140,35 @@ test('the expiry guard also blocks an injected provider callback', async () => {
   const assistant = createBayBayAssistant(options({ config: { ...config, ANTHROPIC_USE_UNTIL: '2000-01-01T00:00:00Z' }, ai: async () => { calls++; return {}; } }));
   const result = await assistant.run(request);
   assert.equal(calls, 0); assert.equal(result.degraded, true);
+});
+
+test('R0 routing: an ordinary run uses baybay_agent, a professional topic uses baybay_professional (never Haiku), and env overrides roll either back', async () => {
+  const medicareGuide = { slug: 'bay-area-medicare-hicap-medi-cal-guide', url: '/guides/bay-area-medicare-hicap-medi-cal-guide', title: 'Medicare 与 HICAP 咨询准备', content: 'HICAP 提供免费 Medicare 咨询，电话 1-800-434-0222。', keywords: ['Medicare', 'HICAP'], summary: 'Medicare 咨询', updatedAt: '2026-10-02' };
+  const ask = async (extra, message) => {
+    const sent = [];
+    const assistant = createBayBayAssistant(options({ config: { ...config, ...extra }, guideCatalog: [guide, medicareGuide], fetchImpl: async (_url, init) => {
+      const body = JSON.parse(init.body); sent.push(body);
+      return reply(final('Part A 是住院保险，Part B 是门诊和医生；多数人两部分都有，个人选择请找 HICAP。'));
+    } }));
+    const result = await assistant.run({ message, locale: 'zh-Hans', searchMode: 'site' });
+    return { sent, result };
+  };
+  const medicare = 'Medicare A 部分和 B 部分有什么区别？我该选哪个？';
+  // Defaults: both routes on Sonnet 5.5 low.
+  let run = await ask({}, medicare);
+  assert.equal(run.result.safetyRoute, 'professional');
+  assert.ok(run.sent.length >= 1 && run.sent.every(body => body.model === 'claude-sonnet-5-5' && body.output_config.effort === 'low'));
+  assert.match(run.sent[0].system, /Professional-topic guard \(medicare\)/);
+  // A Haiku agent switch moves ordinary questions only; professional answers stay on Sonnet (RC-20).
+  run = await ask({ BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }, medicare);
+  assert.ok(run.sent.every(body => body.model === 'claude-sonnet-5-5'), 'professional answers never run on Haiku');
+  run = await ask({ BAYBAY_MODEL_AGENT: 'claude-haiku-5-5' }, 'San Francisco library card information');
+  assert.ok(run.sent.every(body => body.model === 'claude-haiku-5-5'));
+  assert.equal(run.result.safetyRoute, undefined);
+  // Rollback variables restore Opus with the legacy effort.
+  run = await ask({ BAYBAY_MODEL_AGENT: 'claude-opus-5-5', BAYBAY_MODEL_PROFESSIONAL: 'claude-opus-5-5' }, medicare);
+  assert.ok(run.sent.every(body => body.model === 'claude-opus-5-5' && body.output_config.effort === 'medium'));
+  run = await ask({ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, 'San Francisco library card information');
+  assert.ok(run.sent.every(body => body.model === 'claude-opus-5-5' && body.output_config.effort === 'medium'));
+  assert.equal(run.result.retrieval.configuredModel, 'claude-opus-5-5');
 });
