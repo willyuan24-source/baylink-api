@@ -160,7 +160,7 @@ async function diagnostics(options) {
   }
   if ([...plain, ...forged].some(row => !row?.fingerprints)) return report('diag-window', 'FAIL', 'a diagnostic read was rate limited or malformed; wait a minute and retry');
   const { mode, reqIp, reqIpFrom, xffLength, cfConnectingIp, cfConnectingIpEqualsXffMinus2, cloudflareMode, cfColo } = first.data;
-  report('diag-window', 'PASS', `mode=${mode} reqIp=${reqIpFrom}:${reqIp.class} xffLength=${xffLength} cf-connecting-ip=${cfConnectingIp ? cfConnectingIp.class : 'absent'} cf==xff[-2]=${cfConnectingIpEqualsXffMinus2} cloudflareKeyFrom=${cloudflareMode.keyFrom} colo=${cfColo}`);
+  report('diag-window', 'PASS', `mode=${mode} reqIp=${reqIpFrom}:${reqIp.class} xffLength=${xffLength} cf-connecting-ip=${cfConnectingIp ? cfConnectingIp.class : 'absent'} cf==xff[-2]=${cfConnectingIpEqualsXffMinus2} cloudflareKeyFrom=${cloudflareMode.keyFrom}${cloudflareMode.edgeFrom === undefined ? '' : ` cloudflareEdgeFrom=${cloudflareMode.edgeFrom ?? 'none'}`} colo=${cfColo}`);
   const distinct = (list, field) => new Set(list.map(row => row.fingerprints[field])).size;
   const plainKeys = distinct(plain, 'cloudflare');
   const sources = [...new Set(plain.map(row => row.cloudflareMode.keyFrom))];
