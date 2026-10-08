@@ -1,0 +1,19 @@
+{
+  "version": "2026-10-08",
+  "notes": [
+    "An arm is a set of existing runtime config keys (lib/anthropicBaybay.js reads ANTHROPIC_BAYBAY_MODEL and ANTHROPIC_BAYBAY_EFFORT, where any effort other than 'low' becomes 'medium').",
+    "The current adapter sends no `thinking` field, so no config key can turn thinking off. The nothink arm adds thinking:{type:'disabled'} to the outgoing request body inside the harness fetch wrapper (requestOverrides). This is legal on Haiku 5.5 at effort high or below and a 400 on Opus 5.5 and Sonnet 5.5, so the harness only allows it for Haiku.",
+    "Opus 'as-is' is today's production setting (effort medium)."
+  ],
+  "arms": {
+    "opus-asis": { "label": "Opus 5.5, effort medium (production today)", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-opus-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium" } },
+    "haiku-low": { "label": "Haiku 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low" } },
+    "haiku-low-nothink": { "label": "Haiku 5.5, effort low, thinking disabled", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low" }, "requestOverrides": { "thinking": { "type": "disabled" } } },
+    "haiku-medium": { "label": "Haiku 5.5, effort medium", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium" } },
+    "sonnet-low": { "label": "Sonnet 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-sonnet-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low" } }
+  },
+  "sets": {
+    "v0": { "blocks": ["A", "C", "E", "G"], "arms": ["haiku-low", "haiku-low-nothink", "sonnet-low", "opus-asis"], "baselineArm": "opus-asis" },
+    "v1": { "blocks": ["A", "B", "C", "D", "E", "F", "G"], "arms": ["haiku-low", "haiku-medium", "sonnet-low", "opus-asis"], "baselineArm": "opus-asis" }
+  }
+}

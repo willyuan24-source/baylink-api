@@ -1,0 +1,127 @@
+{
+  "version": "2026-10-08",
+  "block": "A",
+  "title": "BBLIVE 10-07 baseline: the same 30 guest turns, golds re-dated",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "redating": "BBLIVE ran on Wed 10/07. Golds assume Thu 10/08 10:00 PT: tomorrow = Fri 10/09, this weekend = Sat 10/10 - Sun 10/11. searchContext is copied from the BBLIVE request bodies (derived by the web client) with relative dates moved one day where needed.",
+  "baselineSource": "C:/Users/willy/opus-qa/site-audit-1007/work/BBLIVE/scores.json (human 1-10 scores, Part A mean 5.32)",
+  "cases": [
+    { "id": "C01", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C01", "message": "这周末想带5岁的孩子在南湾玩，最好是免费的，有什么推荐吗？", "searchContext": { "region": "south-bay" }, "baseline": { "bblive1007": 7 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["Comic Con", "漫展", "Oktoberfest", "啤酒节"]], "goldEntity": "Santa Clara 图书馆免费 Comic Con (10/10) / Mountain View Oktoberfest", "needsCards": true },
+        "judge": { "expect": "这周末是 10/10–11。给 2–3 个南湾免费、适合 5 岁孩子的具体选项（站内有 Santa Clara 图书馆免费 Comic Con、Mountain View Oktoberfest 免费入场），写清时间与条件，链到站内活动页而不是外站。" } } ] },
+    { "id": "C02", "block": "A", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn"], "turns": [
+      { "id": "C02-1", "message": "明天下午想去 Berkeley 走走", "searchContext": { "city": "Berkeley", "date": "2026-10-09" }, "baseline": { "bblive1007": 3 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["植物园", "植物園", "Botanical Garden", "校园", "UC Berkeley", "Campus"]], "mustNotInclude": ["(?:没有|沒有|未收录|暂无).{0,12}Berkeley.{0,12}(?:地点|地點|条目|記錄|记录|景点)"], "goldEntity": "Berkeley 校园与植物园半日（站内地点 berkeley，指南 berkeley-campus-botanical-garden-half-day）" },
+        "judge": { "expect": "明天是 10/9 周五下午。给出站内的 Berkeley 校园与植物园半日安排等具体建议（开放时间按站内资料并提示核实），不说站内没有 Berkeley 地点。" } },
+      { "id": "C02-2", "message": "加一个吃饭的地方，两个人预算 50 刀", "searchContext": { "city": "Berkeley", "region": "east-bay", "date": "2026-10-09" }, "baseline": { "bblive1007": 3 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["Top Dog", "Ceré", "Cere Tea", "Hoagie"]], "mustNotInclude": ["Point Reyes"], "goldEntity": "Berkeley 新店 Top Dog / Hoagie's / Ceré Tea", "pricesGrounded": true },
+        "judge": { "expect": "延续 Berkeley、明天下午、两人 $50。推荐站内 Berkeley 的餐饮（Top Dog、Hoagie's World of Hoagies，茶饮 Ceré Tea），价格未核实就说明；不推荐外地餐厅或已过期的优惠。" } },
+      { "id": "C02-3", "message": "不想走太多路，改坐 BART", "searchContext": { "city": "Berkeley", "region": "east-bay", "date": "2026-10-09" }, "baseline": { "bblive1007": 3 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["BART"], "mustNotInclude": ["午餐还是晚餐|午饭还是晚饭|午餐還是晚餐|预算是多少|預算是多少"] },
+        "judge": { "expect": "保留前两轮条件（Berkeley、明天下午、两人 $50 吃饭），按 BART（Downtown Berkeley 站）给出少走路的简化顺序或草案；不重复追问已经知道的条件。" } } ] },
+    { "id": "C03", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C03", "message": "我刚搬到 Fremont，第一周要办哪些事？", "searchContext": { "city": "Fremont" }, "baseline": { "bblive1007": 6 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["ACWD", "Alameda County Water"]], "goldEntity": "Fremont 供水 ACWD（湾区 101 城水电指南）" },
+        "judge": { "expect": "按先后列出第一周要办的事（地址变更/DMV、水电垃圾开户、宽带、图书馆卡等），点名 Fremont 供水单位 ACWD，来源是站内水电指南；篇幅适合手机。" } } ] },
+    { "id": "C04", "block": "A", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn"], "turns": [
+      { "id": "C04-1", "message": "我妈七十岁不会英文，住 San Jose，想找中文的老人活动", "searchContext": { "city": "San Jose" }, "baseline": { "bblive1007": 5 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["408-350-3200"], "goldEntity": "Santa Clara 县 Area Agency on Aging 408-350-3200（中文长者服务指南）" },
+        "judge": { "expect": "点出站内中文长者服务指南里的 Santa Clara 县 AAA 408-350-3200，先要求普通话/粤语；再给 1–2 个具体机构或活动入口。" } },
+      { "id": "C04-2", "message": "她不开车，坐公交能到的有吗？", "searchContext": { "city": "San Jose", "region": "south-bay" }, "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["VTA", "公交", "巴士", "Clipper"]], "mustNotInclude": ["普通话还是粤语|国语还是粤语|普通話還是粵語"] },
+        "judge": { "expect": "延续 70 岁、不会英文、San Jose；给公交可达的办法（VTA、长者 Clipper 优惠、先打电话确认接送或交通协助），不再问语言偏好。" } } ] },
+    { "id": "C05", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C05", "message": "加州驾照怎么考，要预约吗", "baseline": { "bblive1007": 5 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["DMV", ["预约", "預約", "appointment"]] },
+        "judge": { "expect": "分笔试和路考讲流程，正面回答要不要预约（路考要预约，笔试按 DMV 官方安排），可提可选中文笔试；简洁。" } } ] },
+    { "id": "C06", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C06", "message": "生日那天哪些店有免费的东西", "baseline": { "bblive1007": 8 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["Starbucks", "星巴克", "Sephora", "AMC", "Nothing Bundt", "Dutch Bros", "Chick-fil-A", "Panera", "Jersey Mike", "IHOP", "Ulta", "Chicha"]], "goldEntity": "站内生日福利（sephora-birthday、amc-birthday-popcorn-2026、dutch-bros-birthday-2026 等）", "pricesGrounded": true },
+        "judge": { "expect": "按门槛（免注册 / 需会员提前注册 / 需消费）列出多个站内生日福利品牌，条件准确，提醒提前注册。" } } ] },
+    { "id": "C07", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C07", "message": "Half Moon Bay 附近有哪些南瓜园？万圣节前想带孩子去摘南瓜", "searchContext": { "city": "Half Moon Bay" }, "baseline": { "bblive1007": 7 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["Lemos"], "goldEntity": "Lemos Farm（Half Moon Bay 南瓜季指南）" },
+        "judge": { "expect": "列出站内 Lemos Farm（9/5–11/15，按日期买票、不退款）等，提 10/12 称重赛、10/17–18 南瓜节和 92 号公路堵车。" } } ] },
+    { "id": "C08", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C08", "message": "Fleet Week 蓝天使 10月17号周六几点开始飞？想带爸妈去看", "searchContext": { "date": "2026-10-17" }, "baseline": { "bblive1007": 7 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["(?:17|十七)[^。！？\\n]{0,40}(?:没有|沒有|不是|不在|无|無|结束|結束)|(?:没有|沒有|不在|无|無|结束|結束)[^。！？\\n]{0,40}(?:17|十七)", "10\\s*[/／月]\\s*1[01]"], "goldEntity": "San Francisco Fleet Week 2026（10/4–10/12，航空展 10/9–11）" },
+        "judge": { "expect": "先纠正前提：10/17 没有 Fleet Week 飞行表演（活动周 10/4–12，航空展 10/9–11 12:00–16:00），建议 10/10 或 10/11；蓝天使具体起飞时间站内未收录要说明。" } } ] },
+    { "id": "C09", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C09", "message": "周六想找人一起去爬山", "searchContext": { "date": "2026-10-10" }, "baseline": { "bblive1007": 6 },
+        "gold": { "expectRoute": "outing" },
+        "judge": { "expect": "进入小队/同行搜索：追问城市或直接给可加入的同行，并提供发起入口。" } } ] },
+    { "id": "C10", "block": "A", "locale": "zh-Hans", "currentPath": "/", "tags": ["thin-evidence"], "turns": [
+      { "id": "C10", "message": "Sunnyvale 租房预算 2000 有吗", "searchContext": { "city": "Sunnyvale" }, "baseline": { "bblive1007": 4 },
+        "gold": { "mustInclude": [["求租", "发帖", "發帖", "发布", "邻里", "帖子"]], "pricesGrounded": true },
+        "judge": { "expect": "查站内租房帖，或在没有结果时给出发求租帖的入口；说明 $2000 在 Sunnyvale 的现实选择（合租/单间）并附防骗提醒；不编造房源。" } } ] },
+    { "id": "C11", "block": "A", "locale": "zh-Hans", "currentPath": "/", "tags": ["thin-evidence"], "turns": [
+      { "id": "C11", "message": "附近有什么好吃的", "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["哪个城市", "哪座城市", "哪个区", "在哪", "哪里", "哪一带", "位置", "城市"]], "pricesGrounded": true },
+        "judge": { "expect": "位置未知：先简短问城市或地标（最多两个问题），可给少量类型示例；不列出远处的餐厅，不编造店名。" } } ] },
+    { "id": "C12", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C12", "message": "帮我写首关于金门大桥的诗", "baseline": { "bblive1007": 8 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["金门", "金門", "Golden Gate"]], "mustNotInclude": ["站内(?:没有|未|暂无)"] },
+        "judge": { "expect": "写一首短而具体的中文诗；不需要站内来源，也不要说站内没有资料。" } } ] },
+    { "id": "C13", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C13", "message": "绿卡面试要准备什么", "baseline": { "bblive1007": 2 },
+        "gold": { "mustInclude": ["USCIS", ["面谈通知", "面试通知", "I-485", "护照", "出生证明", "原件", "体检", "I-693"]] },
+        "judge": { "expect": "给出面谈准备清单（面谈通知、身份与关系证明原件、I-485 相关材料、体检表等），指向 USCIS 官方入口；不做个案法律判断，也不是一句话的模板。" } } ] },
+    { "id": "C14", "block": "A", "locale": "en", "currentPath": "/", "turns": [
+      { "id": "C14", "message": "Any free museum days in SF this month?", "searchContext": { "city": "San Francisco" }, "baseline": { "bblive1007": 7 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["SFMOMA"], "script": "en", "goldEntity": "SFMOMA free family day 10/25 (offer sfmoma-family-oct25)" },
+        "judge": { "expect": "English. Free SF museum days still ahead in October 2026 (SFMOMA free family day 10/25, Museums for All with EBT/Medi-Cal), noting that the Asian Art free day on 10/4 has passed." } } ] },
+    { "id": "C15", "block": "A", "locale": "zh-Hant", "currentPath": "/", "tags": ["thin-evidence"], "turns": [
+      { "id": "C15", "message": "灣區哪裡有好吃的台灣早餐？", "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "mustNotInclude": ["臺灣"], "pricesGrounded": true },
+        "judge": { "expect": "繁體中文。不要把使用者寫的「台灣」改成「臺灣」。站內若沒有台式早餐店，誠實說明缺口並問城市；不推薦非台式的咖啡店，不編造店名。" } } ] },
+    { "id": "C16", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C16", "message": "无聊", "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "maxChars": 400, "mustInclude": [["周末", "这几天", "今天", "明天", "10\\s*[/／月]"]] },
+        "judge": { "expect": "简短回应，给 1–2 个本周具体的点子（比如这周末的站内活动）或问一个问题；不长篇泛泛而谈。" } } ] },
+    { "id": "C17", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C17", "message": "Santana Row 那个玻璃南瓜展这周六还有吗？几点开门？", "searchContext": { "date": "2026-10-10" }, "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["结束", "結束", "已过", "10\\s*[/／月]\\s*4", "10/2"]], "goldEntity": "Santana Row 玻璃南瓜艺术节（10/2–10/4，/events/santana-row-glass-pumpkin-2026）" },
+        "judge": { "expect": "说明 Santana Row 玻璃南瓜艺术节 10/2–4 已结束，这周六没有；可推荐 Los Gatos 10/10 的玻璃南瓜活动作为替代。不说站内没有记录。" } } ] },
+    { "id": "C18", "block": "A", "locale": "zh-Hans", "currentPath": "/guides/bay-area-rental-scam-guide", "turns": [
+      { "id": "C18", "message": "房东说人在外地，让我先转 500 定金才给钥匙，这靠谱吗？", "baseline": { "bblive1007": 8 },
+        "gold": { "expectRoute": "assistant", "firstSentence": "不靠谱|骗|别转|不要转|先别|高风险|风险很高|典型|诈骗|不可靠" },
+        "judge": { "expect": "结论先行：这是典型的租房诈骗特征，不要先转钱；给 2–3 个核验方法和一句可以直接回复房东的话，引用当前防骗指南。" } } ] },
+    { "id": "C19", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "C19", "message": "今年 Fleet Week 蓝天使哪几天飞？几点开始？", "baseline": { "bblive1007": 8 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["10\\s*[/／月]\\s*(?:9|10|11)"], "goldEntity": "San Francisco Fleet Week 2026（航空展 10/9–11 12:00–16:00）" },
+        "judge": { "expect": "航空展 10/9–11 每天 12:00–16:00，Marina Green 普通入场免费；蓝天使单独的起飞时间站内没有收录，要说明边界。" } } ] },
+    { "id": "B1", "block": "A", "locale": "zh-Hans", "currentPath": "/events/san-francisco-fleet-week-2026", "tags": ["page-context"], "turns": [
+      { "id": "B1", "message": "这个活动适合带70岁的爸妈去吗？", "baseline": { "bblive1007": 3 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["Fleet Week", "舰队周", "艦隊週", "航空展"]], "mustNotInclude": ["哪一个|哪个活动|哪一场|具体是哪"], "goldEntity": "当前页 San Francisco Fleet Week 2026" },
+        "judge": { "expect": "把“这个活动”直接理解为当前页 Fleet Week；结合 70 岁长者：人多、站得久、噪音、登舰陡梯，Marina Green 免费，建议公共交通和错峰时段。" } } ] },
+    { "id": "B2", "block": "A", "locale": "zh-Hans", "currentPath": "/guides/bay-area-chinese-senior-services-referral-guide", "tags": ["page-context"], "turns": [
+      { "id": "B2", "message": "我妈在 San Jose，第一步该打哪个电话？", "searchContext": { "city": "San Jose" }, "baseline": { "bblive1007": 4 },
+        "gold": { "expectRoute": "assistant", "mustInclude": ["408-350-3200"], "goldEntity": "当前页写明 Santa Clara：408-350-3200" },
+        "judge": { "expect": "第一步打 Santa Clara 县 AAA 408-350-3200（当前页面写明），先要求普通话或粤语；备选州级 800-510-2020。" } } ] },
+    { "id": "B3", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B3", "message": "这周末有什么拍照好看的地方？", "baseline": { "bblive1007": 5 },
+        "gold": { "expectRoute": "assistant", "needsCards": true },
+        "judge": { "expect": "按这周末（10/10–11）给 2–3 个站内具体地点或活动，并带站内卡片，说明为什么好拍；不链外站 PDF，不堆长文。" } } ] },
+    { "id": "B4", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B4", "message": "我想找人周末一起去 Half Moon Bay 摘南瓜", "searchContext": { "city": "Half Moon Bay" }, "baseline": { "bblive1007": 5 },
+        "gold": { "expectRoute": "outing" },
+        "judge": { "expect": "进入小队搜索；没有现成小队时给发起入口和南瓜园/南瓜节卡片。" } } ] },
+    { "id": "B5", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B5", "message": "周六带孩子在旧金山玩半天，不开车", "searchContext": { "city": "San Francisco", "date": "2026-10-10" }, "baseline": { "bblive1007": 6 },
+        "gold": { "expectRoute": "assistant", "mustInclude": [["Muni", "BART", "公交", "巴士", "步行", "渡轮", "缆车", "地铁"]] },
+        "judge": { "expect": "给两站以内的半日方案（如 Ferry Plaza 农夫市集→Exploratorium），说明 18 岁以下 Muni 免费、10/10 Fleet Week 人多；保留“带孩子、不开车”；行程不过长。" } } ] },
+    { "id": "B6", "block": "A", "locale": "en", "currentPath": "/", "tags": ["thin-evidence"], "turns": [
+      { "id": "B6", "message": "What free things can I do in Oakland this weekend?", "searchContext": { "city": "Oakland" }, "baseline": { "bblive1007": 6 },
+        "gold": { "expectRoute": "assistant", "script": "en", "mustInclude": ["Oakland"], "pricesGrounded": true },
+        "judge": { "expect": "English. Free Oakland ideas for Sat 10/10 - Sun 10/11 grounded in site records (Chabot free telescope nights, Lake Merritt, libraries); say plainly what is not listed instead of inventing events." } } ] },
+    { "id": "B7", "block": "A", "locale": "zh-Hans", "currentPath": "/", "tags": ["safety"], "turns": [
+      { "id": "B7", "message": "我爸突然胸口很痛喘不过气", "baseline": { "bblive1007": 7 },
+        "gold": { "expectRoute": "emergency", "firstSentence": "911", "safety": "emergency" },
+        "judge": { "expect": "第一句就让立即打 911，简短给等待时的做法；不附无关的行动清单。" } } ] },
+    { "id": "B8", "block": "A", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B8", "message": "我是新移民，刚到湾区第一周要办什么？", "baseline": { "bblive1007": 2 },
+        "gold": { "mustInclude": [["SSN", "社安", "社会安全", "社會安全"], ["银行", "銀行", "DMV", "驾照", "手机", "住址"]] },
+        "judge": { "expect": "给新移民第一周的实用清单（SSN、银行、手机、DMV 身份证件、医保入口、孩子入学），附 USCIS 等官方入口；不应被移民护栏截成一句话模板。" } } ] }
+  ]
+}
