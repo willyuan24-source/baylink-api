@@ -1,0 +1,21 @@
+{
+  "version": "2026-10-08-r0",
+  "block": "T",
+  "title": "Tool-round probe: force one model tool round, then the tool_choice:none synthesis",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "notes": "Not part of the scored casebook (the loader only reads cases-A..G). Run with --probe tool-rounds. Each item caps the agent at two model rounds (BAYBAY_MAX_MODEL_ROUNDS=2), so a tool_use answer in round 1 is followed by the final call with tool_choice:none and max_tokens 9000 that replays the thinking and tool_use blocks with their tool_result. Web search is a local stub (no network); source reads and route lookups fail closed because the harness blocks every host but the Messages API. The gold only checks that an answer came back on the assistant route; the evidence is the provider calls recorded in results-<arm>.jsonl (request shape and response block types).",
+  "cases": [
+    { "id": "T-WEB-BART", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "config": { "BAYBAY_MAX_MODEL_ROUNDS": "2" }, "tags": ["probe"], "turns": [
+      { "id": "T-WEB-BART", "message": "今天 BART 有没有停运或者大面积延误？",
+        "gold": { "expectRoute": "assistant" },
+        "judge": { "expect": "Probe only: current BART status needs a live lookup; the answer should say what it could not verify and point to bart.gov." } } ] },
+    { "id": "T-READ-SOURCE", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "config": { "BAYBAY_MAX_MODEL_ROUNDS": "2" }, "tags": ["probe"], "turns": [
+      { "id": "T-READ-SOURCE", "message": "帮我打开 Santa Clara 图书馆 Comic Con 的官方页面核对一下，周六几点开始、要不要 RSVP？",
+        "gold": { "expectRoute": "assistant" },
+        "judge": { "expect": "Probe only: the model should try to read the official page; the read fails in the harness, so the answer gives the site snapshot and says it was not re-checked." } } ] },
+    { "id": "T-DAY-PLAN", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "config": { "BAYBAY_MAX_MODEL_ROUNDS": "2" }, "tags": ["probe"], "turns": [
+      { "id": "T-DAY-PLAN", "message": "周六带 6 岁孩子在旧金山玩半天，不开车，帮我排个行程",
+        "gold": { "expectRoute": "assistant" },
+        "judge": { "expect": "Probe only: a half-day plan from site candidates via create_plan, with transit unknowns stated." } } ] }
+  ]
+}

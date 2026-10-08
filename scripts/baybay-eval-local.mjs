@@ -24,6 +24,7 @@ import { preDispatch, serverIntentFingerprint, INTENT_MIRROR_FINGERPRINT } from 
 import { createJudge, judgeCase, JUDGE_MODEL } from './eval/judge.mjs';
 import { writeReport } from './eval/report.mjs';
 import { armRoutes } from './eval/arms.mjs';
+import { requestShape, responseShape, toolRounds } from './eval/request-shape.mjs';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,7 +41,10 @@ const { normalizeGuideHistory } = require(path.join(ROOT, 'lib/guideConversation
 const { validateChatSearchContext } = require(path.join(ROOT, 'lib/guideWebSearch'));
 const { baybayWebAccess } = require(path.join(ROOT, 'lib/baybayAccess'));
 
-const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id]
+// A probe replaces the scored casebook with its own file (block T), e.g. the
+// tool-round probe that forces a tool_use round before the tool_choice:none synthesis.
+const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json' });
+const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id] [--probe tool-rounds]
        [--run-id <id>] [--out <dir outside the repo>] [--now <ISO>] [--concurrency 1-3] [--max-reruns N]
        [--no-judge] [--resume] [--live --budget-usd <USD>]
 Without --live it is a dry run (synthetic provider, no key, no network).
@@ -48,7 +52,7 @@ Live: node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --
 
 function parseArgs(argv) {
   const options = { set: 'v0', concurrency: 2, maxReruns: 2, judge: true, resume: false, live: false, now: DEFAULT_NOW, out: DEFAULT_OUT };
-  const values = new Set(['--set', '--blocks', '--arms', '--items', '--run-id', '--out', '--now', '--concurrency', '--max-reruns', '--budget-usd', '--baseline']);
+  const values = new Set(['--set', '--blocks', '--arms', '--items', '--run-id', '--out', '--now', '--concurrency', '--max-reruns', '--budget-usd', '--baseline', '--probe']);
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
     if (flag === '--help' || flag === '-h') { console.log(USAGE); process.exit(0); }
@@ -59,8 +63,9 @@ function parseArgs(argv) {
     const value = argv[++i];
     if (flag === '--blocks' || flag === '--arms' || flag === '--items') options[flag.slice(2)] = value.split(',').map(item => item.trim()).filter(Boolean);
     else if (flag === '--concurrency' || flag === '--max-reruns' || flag === '--budget-usd') options[{ '--concurrency': 'concurrency', '--max-reruns': 'maxReruns', '--budget-usd': 'budgetUsd' }[flag]] = Number(value);
-    else options[{ '--set': 'set', '--run-id': 'runId', '--out': 'out', '--now': 'now', '--baseline': 'baseline' }[flag]] = value;
+    else options[{ '--set': 'set', '--run-id': 'runId', '--out': 'out', '--now': 'now', '--baseline': 'baseline', '--probe': 'probe' }[flag]] = value;
   }
+  if (options.probe !== undefined && !Object.hasOwn(PROBES, options.probe)) throw new Error(`--probe must be one of: ${Object.keys(PROBES).join(', ')}`);
   if (!Number.isInteger(options.concurrency) || options.concurrency < 1 || options.concurrency > 3) throw new Error('--concurrency must be 1, 2 or 3');
   if (!Number.isInteger(options.maxReruns) || options.maxReruns < 0 || options.maxReruns > 4) throw new Error('--max-reruns must be 0-4');
   if (!Number.isFinite(Date.parse(options.now))) throw new Error('--now must be an ISO date-time');
@@ -75,8 +80,8 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
   signal?.addEventListener('abort', () => { clearTimeout(timer); reject(new Error('aborted')); }, { once: true });
 });
 
-function loadCasebook() {
-  const files = readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).sort();
+function loadCasebook(probe) {
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);
@@ -127,7 +132,7 @@ async function main() {
   const armsBook = JSON.parse(readFileSync(path.join(EVAL_DIR, 'arms.json'), 'utf8'));
   const set = armsBook.sets[options.set];
   if (!set) throw new Error(`Unknown --set ${options.set}`);
-  const blocks = options.blocks || set.blocks;
+  const blocks = options.probe ? ['T'] : options.blocks || set.blocks;
   const armNames = options.arms || set.arms;
   for (const arm of armNames) {
     const def = armsBook.arms[arm];
@@ -150,7 +155,7 @@ async function main() {
   mkdirSync(runDir, { recursive: true });
 
   const nowMs = Date.parse(options.now), now = () => nowMs;
-  const { cases } = loadCasebook();
+  const { cases } = loadCasebook(options.probe);
   const selected = cases.filter(item => blocks.includes(item.block) && (!options.items || options.items.includes(item.id) || item.turns.some(turn => options.items.includes(turn.id))));
   if (!selected.length) throw new Error('No cases selected');
   const pinnedMismatch = [...new Set(selected.map(item => item.pinnedNow).filter(value => value && Date.parse(value) !== nowMs))];
@@ -178,7 +183,9 @@ async function main() {
     const ctx = als.getStore() || { kind: 'unattributed', calls: [], t0: performance.now() };
     let body = JSON.parse(init.body);
     if (ctx.requestOverrides) body = { ...body, ...ctx.requestOverrides };
-    const call = { kind: ctx.kind, model: body.model, startMs: Math.round(performance.now() - ctx.t0), retries: 0 };
+    // The request's shape (no content) shows which calls were tool rounds and that
+    // the body kept the model's rules; see scripts/eval/request-shape.mjs.
+    const call = { kind: ctx.kind, model: body.model, startMs: Math.round(performance.now() - ctx.t0), retries: 0, request: requestShape(body) };
     ctx.calls.push(call);
     if (options.live && ledger.spentUsd + reserveFor(body.model) > options.budgetUsd) {
       ledger.exhausted = true; call.error = 'budget_exhausted';
@@ -202,7 +209,7 @@ async function main() {
           call.error = `${data?.error?.type || 'http_error'}: ${String(data?.error?.message || '').slice(0, 160)}`;
           if ([429, 529].includes(response.status)) cooldownUntil = Math.max(cooldownUntil, Date.now() + 20000);
         }
-        call.stopReason = data?.stop_reason; call.stopCategory = data?.stop_details?.category;
+        call.stopReason = data?.stop_reason; call.stopCategory = data?.stop_details?.category; call.contentTypes = responseShape(data);
         call.responseModel = data?.model;
         if (data?.usage) {
           call.usage = rawUsage(data.usage);
@@ -221,7 +228,7 @@ async function main() {
 
   const armLabels = Object.fromEntries(armNames.map(arm => [arm, armsBook.arms[arm].label]));
   const armConfigs = Object.fromEntries(armNames.map(arm => [arm, { config: armsBook.arms[arm].config, routes: armRoutes(armsBook.arms[arm].config) }]));
-  const meta = { runId, mode: options.live ? 'live' : 'dry-run', set: options.set, blocks, arms: armNames, armLabels, armConfigs, baselineArm, pinnedNow: options.now,
+  const meta = { runId, mode: options.live ? 'live' : 'dry-run', set: options.set, ...(options.probe ? { probe: options.probe } : {}), blocks, arms: armNames, armLabels, armConfigs, baselineArm, pinnedNow: options.now,
     concurrency: options.concurrency, maxReruns: options.maxReruns, budgetUsd: options.budgetUsd, judge: options.judge ? { model: JUDGE_MODEL, effort: 'low' } : null,
     gitHead: gitHead(), node: process.version, pricingDate: PRICING_DATE, keyEnvVar: keyVar || null, workspaceHeader: !!workspaceId,
     intentMirror: { expected: INTENT_MIRROR_FINGERPRINT, server: fingerprint, ok: fingerprint === INTENT_MIRROR_FINGERPRINT },
@@ -285,7 +292,7 @@ async function main() {
       suggestedGuides: (payload?.suggestedGuides || []).map(({ title, url }) => ({ title, url })),
       followups: payload?.followups || [], warnings, plan: payload?.assistantPlan ? { status: payload.assistantPlan.status, stops: (payload.assistantPlan.stops || []).map(stop => stop.title) } : null,
       modelResponses: payload?.research?.modelResponses || [], steps: (payload?.research?.steps || []).map(step => ({ tool: step.tool, status: step.status })),
-      calls: ctx.calls, usage, costUsd: +ctx.calls.reduce((sum, call) => sum + (call.costUsd || 0), 0).toFixed(6),
+      calls: ctx.calls, toolRounds: toolRounds(ctx.calls), usage, costUsd: +ctx.calls.reduce((sum, call) => sum + (call.costUsd || 0), 0).toFixed(6),
       timings: { firstCardMs: ctx.firstCardMs ?? null, ttftMs: model ? ctx.calls.find(call => call.headersMs != null)?.headersMs ?? null : completeMs,
         leadMs: ctx.firstDraftMs ?? completeMs, leadSource: ctx.firstDraftMs != null ? 'draft-event' : 'answer-complete', completeMs, progress: ctx.progress, stages: payload?.research?.timings || null },
       gold: error ? { pass: false, checks: [{ id: 'run_error', ok: false, detail: error }], route, falseNegative: false, falseNegativeCaught: false, safetyMiss: !!turn.gold.safety } : scoreTurn(turn.gold, payload, { corpus: catalogs.corpus }),
@@ -315,8 +322,9 @@ async function main() {
         while (Date.now() < cooldownUntil) await sleep(Math.min(1000, cooldownUntil - Date.now()));
         if (ledger.exhausted) { outcome = { payload: null, error: 'budget_exhausted', ctx: { calls: [], progress: [] }, completeMs: 0, budgetStopped: true }; break; }
         attempts++;
-        const armConfig = { ...baseConfig, ...armsBook.arms[arm].config, ...(item.degradedReplay ? { ANTHROPIC_USE_UNTIL: '2026-10-01T00:00:00Z' } : {}) };
-        const runner = item.degradedReplay ? buildAssistant(armConfig) : assistant;
+        // A case may cap the model rounds (validated: no model or effort keys) and use the web stub.
+        const armConfig = { ...baseConfig, ...armsBook.arms[arm].config, ...(item.config || {}), ...(item.degradedReplay ? { ANTHROPIC_USE_UNTIL: '2026-10-01T00:00:00Z' } : {}) };
+        const runner = item.degradedReplay || item.config || item.webStub ? buildAssistant(armConfig, { webStub: item.webStub }) : assistant;
         outcome = await runTurn({ arm, assistant: runner, item, turn, history, sessionToken });
         if (ledger.exhausted && isVoid(item, outcome)) { outcome.budgetStopped = true; break; }
         if (!isVoid(item, outcome)) break;
@@ -327,7 +335,7 @@ async function main() {
       }
       const row = resultRow({ arm, item, turn, outcome, attempts: Math.max(1, attempts) });
       writeJsonl(resultsFile, row);
-      console.log(`[${arm}] ${turn.id} ${row.budgetStopped ? 'BUDGET-STOP' : row.gold.pass ? 'pass' : 'FAIL'} route=${row.route} ${(row.timings.completeMs / 1000).toFixed(1)}s $${row.costUsd.toFixed(4)} (spent $${ledger.spentUsd.toFixed(3)})${row.voidFinal ? ' still-degraded' : ''}`);
+      console.log(`[${arm}] ${turn.id} ${row.budgetStopped ? 'BUDGET-STOP' : row.gold.pass ? 'pass' : 'FAIL'} route=${row.route}${row.toolRounds.length ? ` tool-rounds=${row.toolRounds.map(round => `${round.toolUse.status} tool_use -> ${round.next ? `${round.next.status} ${round.next.stopReason} (tool_choice ${round.next.toolChoice}, ${round.next.toolResults} tool_result)` : 'no next call'}`).join('; ')}` : ''} ${(row.timings.completeMs / 1000).toFixed(1)}s $${row.costUsd.toFixed(4)} (spent $${ledger.spentUsd.toFixed(3)})${row.voidFinal ? ' still-degraded' : ''}`);
       if (row.budgetStopped) return;
       const answer = String(outcome.payload?.answer || '').trim();
       if (answer) {
@@ -340,8 +348,10 @@ async function main() {
 
   const baseConfig = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: apiKey, ...(workspaceId ? { ANTHROPIC_WORKSPACE_ID: workspaceId } : {}),
     BAYBAY_STATE_SECRET: secret, BAYBAY_DAILY_RUN_LIMIT: '100000', BAYBAY_AGENT_ENABLED: 'true' };
-  const buildAssistant = config => createBayBayAssistant({ config, guideCatalog: catalogs.guideCatalog, englishGuideCatalog: catalogs.englishSearchCatalog,
-    isTest: false, Quota: createMemoryQuota(), now, fetchImpl: providerFetch });
+  // A probe case's web search is a local stub: no network, one fixed lead without sources.
+  const stubWebSearch = async () => ({ answer: 'Eval probe stub: no live web result is available in the local eval.', sources: [], candidates: [], checkedAt: new Date(nowMs).toISOString(), cached: false, model: 'eval-stub' });
+  const buildAssistant = (config, { webStub } = {}) => createBayBayAssistant({ config, guideCatalog: catalogs.guideCatalog, englishGuideCatalog: catalogs.englishSearchCatalog,
+    isTest: false, Quota: createMemoryQuota(), now, fetchImpl: providerFetch, ...(webStub ? { webSearch: stubWebSearch } : {}) });
 
   // Preflight: one tiny Haiku request proves the key, workspace header and
   // credit before any arm starts (a bad key would otherwise burn reruns).

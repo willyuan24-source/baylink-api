@@ -16,6 +16,9 @@ node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget
 # What this checkout ships (code-defaults arm), e.g. the R0 check: blocks C and E plus A's C01-C10
 node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 3 --set r0 --items C01,...,C10,C-STROKE-ZH,...,E-SENIOR-OAKLAND --run-id r0-check-1008
 
+# Tool-round probe (code defaults): forces a model tool round, then the tool_choice:none synthesis
+node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 1 --probe tool-rounds --arms code-defaults --no-judge --run-id r0-tools-1008
+
 # Re-render a report; --rescore re-applies the casebook on disk to the stored answers
 node scripts/eval/report.mjs <out>/<run-id> [--rescore]
 ```
@@ -28,6 +31,7 @@ Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`)
 |---|---|
 | `--set v0\|v1\|r0` | Block and arm preset from `scripts/eval/arms.json` (v0 = A, C, E, G on four arms; r0 = A, C, E on `code-defaults`) |
 | `--blocks`, `--arms`, `--items` | Narrow the run (`--items` takes case or turn ids) |
+| `--probe tool-rounds` | Run `scripts/eval/probe-tool-rounds.json` (block T) instead of the casebook. Each probe item caps the agent at two model rounds (`BAYBAY_MAX_MODEL_ROUNDS=2`, the only key a case may set) and uses a local web-search stub, so a `tool_use` answer is followed by the final call with `tool_choice: none` and `max_tokens` 9,000 that replays the thinking and `tool_use` blocks with their `tool_result`. The gold only checks the route; the evidence is the recorded request shapes (`toolRounds` in each row) |
 | `--now` | Pinned clock, default `2026-10-08T10:00:00-07:00`. The harness warns when it differs from the casebook's `pinnedNow` |
 | `--concurrency` | 1-3, default 2 (a new workspace may sit on a low rate tier) |
 | `--max-reruns` | Reruns of a provider-degraded turn, default 2 |
@@ -63,7 +67,7 @@ A turn is **void** when the assistant degraded because of the provider or transp
 
 ### Arms
 
-`scripts/eval/arms.json` switches models through runtime config keys (`lib/aiModels.js`). Since R0 the agent and professional routes default to Sonnet 5.5 at effort low and ignore the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT`, so the arms name `BAYBAY_MODEL_AGENT` / `BAYBAY_MODEL_PROFESSIONAL`. A route whose model comes from a variable takes the legacy effort rule (anything except `low` is `medium`) unless `BAYBAY_EFFORT_<ROUTE>` is set.
+`scripts/eval/arms.json` switches models through runtime config keys (`lib/aiModels.js`). Since R0 the agent and professional routes default to Sonnet 5.5 at effort low and ignore the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT`, so the arms name `BAYBAY_MODEL_AGENT` / `BAYBAY_MODEL_PROFESSIONAL`. A route whose model a variable changes to another model takes the legacy effort rule (anything except `low` is `medium`) unless `BAYBAY_EFFORT_<ROUTE>` is set; pinning the default model keeps effort low.
 
 | Arm | Agent route | Professional route |
 |---|---|---|
@@ -79,13 +83,13 @@ Runs before 2026-10-09 (`v0-20261008`, `c-guard-1008`) used the old pre-dispatch
 
 ## Casebook
 
-`scripts/eval/cases-<block>-*.json`, 64 scored turns, golds dated for **Thu 2026-10-08 10:00 PT** (tomorrow = 10/9, this weekend = 10/10–11).
+`scripts/eval/cases-<block>-*.json`, 66 scored turns, golds dated for **Thu 2026-10-08 10:00 PT** (tomorrow = 10/9, this weekend = 10/10–11).
 
 | Block | Turns | Content |
 |---|---|---|
 | A | 30 | The 10-07 BBLIVE guest turns with their 1-10 human scores (`baseline.bblive1007`), golds re-dated |
 | B | 6 | Retrieval false-negative probes (the site has the answer) |
-| C | 8 | Safety: 5 emergencies, 2 degraded-mode replays (`ANTHROPIC_USE_UNTIL` in the past), 1 guarded professional topic |
+| C | 10 | Safety: 5 emergencies, 2 single stroke signs the lexicon leaves to the model (the gold checks that the model still says 911 first), 2 degraded-mode replays (`ANTHROPIC_USE_UNTIL` in the past), 1 guarded professional topic |
 | D | 10 | Traditional Chinese and English |
 | E | 4 | Page context: offer, opening, past event, senior guide |
 | F | 2 | Signed-in web questions (v1) |
@@ -115,7 +119,7 @@ Latency percentiles, $/question and judge means use model-answered turns only: t
 
 ## Files written per run
 
-`meta.json` (settings, git head, key variable name, mirror check), `results-<arm>.jsonl` (one row per turn: route, answer, sources, cards, warnings, provider calls with status and usage, timings, gold checks), `judge-<arm>.jsonl`, `ledger.jsonl` (every priced call and the running total), `summary.json` and `summary.md` (per-arm table, R0SWITCH check, per-turn pass/fail matrix).
+`meta.json` (settings, git head, key variable name, mirror check), `results-<arm>.jsonl` (one row per turn: route, answer, sources, cards, warnings, provider calls with status, usage, stop reason, response block types and the request's shape without content (`max_tokens`, `tool_choice`, effort, thinking type, sampling fields, replayed thinking and `tool_use` blocks, `tool_result` count), the turn's `toolRounds`, timings, gold checks), `judge-<arm>.jsonl`, `ledger.jsonl` (every priced call and the running total), `summary.json` and `summary.md` (per-arm table, R0SWITCH check, per-turn pass/fail matrix).
 
 ## R0SWITCH check
 

@@ -11,14 +11,14 @@ const EVAL = path.join(ROOT, 'scripts', 'eval');
 const load = file => import(pathToFileURL(path.join(EVAL, file)).href);
 const casebooks = () => fs.readdirSync(EVAL).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).map(file => JSON.parse(fs.readFileSync(path.join(EVAL, file), 'utf8')));
 
-test('casebook has the planned 64 turns, valid golds and the RC-34 follow-up and thin-evidence quotas', async () => {
+test('casebook has the planned 66 turns, valid golds and the RC-34 follow-up and thin-evidence quotas', async () => {
   const { validateCases } = await load('gold.mjs');
   const cases = casebooks().flatMap(book => book.cases);
-  assert.equal(validateCases(cases), 64);
+  assert.equal(validateCases(cases), 66);
   const perBlock = {};
   for (const item of cases) perBlock[item.block] = (perBlock[item.block] || 0) + item.turns.length;
-  assert.deepEqual(perBlock, { A: 30, B: 6, C: 8, D: 10, E: 4, F: 2, G: 4 });
-  assert.equal(['A', 'C', 'E', 'G'].reduce((sum, block) => sum + perBlock[block], 0), 46);
+  assert.deepEqual(perBlock, { A: 30, B: 6, C: 10, D: 10, E: 4, F: 2, G: 4 });
+  assert.equal(['A', 'C', 'E', 'G'].reduce((sum, block) => sum + perBlock[block], 0), 48);
   assert.ok(cases.reduce((sum, item) => sum + item.turns.length - 1, 0) >= 6, 'at least six multi-turn follow-ups');
   const thin = cases.flatMap(item => item.turns.filter(turn => [...(item.tags || []), ...(turn.tags || [])].includes('thin-evidence')));
   assert.ok(thin.length >= 6, 'at least six thin-evidence turns');
@@ -153,5 +153,63 @@ test('dry run needs no key, makes no network call and writes only outside the re
   assert.notEqual(inside.status, 0);
   assert.match(inside.stderr, /outside the repository/);
   assert.equal(fs.existsSync(path.join(ROOT, 'tmp-eval')), false);
+  fs.rmSync(out, { recursive: true, force: true });
+});
+
+// R0 review: the casebook's two single-sign items must stay model-answered (the
+// lexicon leaves one weak FAST sign to the model), or they would not test the model.
+test('the single stroke-sign items are left to the model by the lexicon and gold-check 911 first', () => {
+  const { emergencyResponse, strokeSignMentioned } = require('../lib/safetyRouting');
+  const items = casebooks().flatMap(book => book.cases).filter(item => (item.tags || []).includes('single-sign'));
+  assert.deepEqual(items.map(item => item.id), ['C-SIGN-SPEECH-ZH', 'C-SIGN-SPEECH-EN']);
+  for (const turn of items.flatMap(item => item.turns)) {
+    assert.equal(emergencyResponse(turn.message), null, turn.id);
+    assert.equal(strokeSignMentioned(turn.message), true, `${turn.id}: the degraded floor still treats it as a stroke sign`);
+    assert.equal(turn.gold.firstSentence, '911'); assert.equal(turn.gold.safety, 'emergency');
+  }
+});
+
+test('request shape records tool rounds without content: tool_use, then tool_result with tool_choice none', async () => {
+  const { requestShape, responseShape, toolRounds } = await load('request-shape.mjs');
+  const research = { model: 'claude-sonnet-5-5', max_tokens: 6000, tool_choice: { type: 'auto' }, output_config: { effort: 'low' }, tools: [{ name: 'search_site' }],
+    messages: [{ role: 'user', content: [{ type: 'text', text: 'secret question text' }] }] };
+  const final = { ...research, max_tokens: 9000, tool_choice: { type: 'none' }, messages: [...research.messages,
+    { role: 'assistant', content: [{ type: 'thinking', thinking: '', signature: 'sig' }, { type: 'tool_use', id: 'tu_1', name: 'search_site', input: { query: 'x' } }] },
+    { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'tu_1', content: '{}' }] }, { role: 'user', content: [{ type: 'text', text: 'Research is complete.' }] }] };
+  assert.deepEqual(requestShape(final), { maxTokens: 9000, toolChoice: 'none', effort: 'low', thinking: null, sampling: [], tools: 1, messages: 4, replayedThinking: 1, replayedToolUse: 1, toolResults: 1 });
+  assert.doesNotMatch(JSON.stringify(requestShape(final)), /secret|query|sig/);
+  assert.deepEqual(requestShape({ temperature: 0.2, thinking: { type: 'disabled' } }).sampling, ['temperature']);
+  assert.deepEqual(responseShape({ content: [{ type: 'thinking' }, { type: 'tool_use' }] }), ['thinking', 'tool_use']);
+  const calls = [{ kind: 'assistant', status: 200, model: 'claude-sonnet-5-5', stopReason: 'tool_use', request: requestShape(research) },
+    { kind: 'assistant', status: 200, responseModel: 'claude-sonnet-5-5', stopReason: 'end_turn', request: requestShape(final) }, { kind: 'judge', stopReason: 'end_turn' }];
+  assert.deepEqual(toolRounds(calls), [{ toolUse: { status: 200, model: 'claude-sonnet-5-5', toolChoice: 'auto', maxTokens: 6000 },
+    next: { status: 200, model: 'claude-sonnet-5-5', stopReason: 'end_turn', toolChoice: 'none', maxTokens: 9000, toolResults: 1, replayedThinking: 1, replayedToolUse: 1 } }]);
+});
+
+test('the tool-round probe is outside the scored casebook, caps model rounds only and runs dry with request shapes', async () => {
+  const { validateCases } = await load('gold.mjs');
+  const probe = JSON.parse(fs.readFileSync(path.join(EVAL, 'probe-tool-rounds.json'), 'utf8'));
+  assert.equal(validateCases(probe.cases), 3);
+  assert.ok(!/^cases-/.test('probe-tool-rounds.json'), 'the scored loader never reads it');
+  assert.ok(probe.cases.every(item => item.config.BAYBAY_MAX_MODEL_ROUNDS === '2' && item.webStub === true && item.member === true));
+  for (const config of [{ BAYBAY_MODEL_AGENT: 'claude-opus-5-5' }, { BAYBAY_EFFORT_AGENT: 'high' }, null]) {
+    assert.throws(() => validateCases([{ ...probe.cases[0], config }]), /config may only set BAYBAY_MAX_MODEL_ROUNDS/);
+  }
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-probe-'));
+  const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
+  const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
+  const run = spawnSync(process.execPath, [script, '--probe', 'tool-rounds', '--arms', 'code-defaults', '--no-judge', '--out', out, '--run-id', 'probe-dry'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(run.status, 0, run.stderr);
+  const meta = JSON.parse(fs.readFileSync(path.join(out, 'probe-dry', 'meta.json'), 'utf8'));
+  assert.equal(meta.probe, 'tool-rounds'); assert.deepEqual(meta.blocks, ['T']);
+  const rows = fs.readFileSync(path.join(out, 'probe-dry', 'results-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  assert.deepEqual(rows.map(row => row.turnId).sort(), ['T-DAY-PLAN', 'T-READ-SOURCE', 'T-WEB-BART']);
+  for (const call of rows.flatMap(row => row.calls)) {
+    // Code defaults (R0): Sonnet 5.5, explicit effort low, no thinking field, no sampling fields.
+    assert.deepEqual([call.model, call.request.effort, call.request.thinking, call.request.sampling, call.request.maxTokens, call.request.toolChoice], ['claude-sonnet-5-5', 'low', null, [], 6000, 'auto']);
+  }
+  assert.ok(rows.every(row => Array.isArray(row.toolRounds)));
+  const bad = spawnSync(process.execPath, [script, '--probe', 'nope', '--out', out], { cwd: ROOT, env, encoding: 'utf8', timeout: 60000 });
+  assert.notEqual(bad.status, 0); assert.match(bad.stderr, /--probe must be one of: tool-rounds/);
   fs.rmSync(out, { recursive: true, force: true });
 });
