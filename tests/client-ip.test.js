@@ -14,6 +14,13 @@ const MESSAGES = ['周末带孩子去哪里玩比较好？', '湾区有什么适
 const final = answer => ({ model: 'fixture-baybay', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ answer, candidateIds: [], followups: [] }) }] }] });
 // What Render receives behind Cloudflare: Cloudflare appends the visitor, Render appends the edge.
 const viaCloudflare = (edge, visitor = VISITOR, extra = {}) => ({ 'X-Forwarded-For': `${visitor}, ${edge}`, 'CF-Connecting-IP': visitor, 'CF-Ray': '8c0000000000abcd-SJC', ...extra });
+// Production since at least 2026-10-08 (Render boot diagnostics, /24s only): Cloudflare edges from the
+// published list, then a rotating Render-internal hop, over a loopback socket (as in these fixtures).
+const PROD_EDGES = ['104.22.17.31', '104.22.18.77', '104.23.160.5', '172.68.174.12', '172.69.23.200'];
+const RENDER_HOPS = ['10.27.25.14', '10.28.103.2', '10.30.203.99'];
+// Edges and hops rotate independently (5 x 3 combinations). forged entries are what a client sent.
+const renderChain = (i, visitor = VISITOR, forged = []) => [...forged, visitor, PROD_EDGES[i % PROD_EDGES.length], RENDER_HOPS[i % RENDER_HOPS.length]].join(', ');
+const viaRender = (i, visitor = VISITOR, extra = {}) => ({ 'X-Forwarded-For': renderChain(i, visitor), 'CF-Connecting-IP': visitor, 'CF-Ray': '8c0000000000abcd-SJC', ...extra });
 // CLIENT_IP_SOURCE settings that mean "cloudflare": the default (key absent), empty, and explicit.
 const UNSET = Symbol('unset');
 const ON = [UNSET, '', '  ', 'cloudflare'];
@@ -47,6 +54,12 @@ async function fixture(t, options = {}) {
 
 // Mirrors the Express request shape: ip from the trust setting, ips = trusted XFF hops.
 const fakeRequest = ({ ip, ips = [ip], socket = '10.1.2.3', headers = {}, path = '/api/health', method = 'GET', query = {} }) => ({ ip, ips, socket: { remoteAddress: socket }, headers, path, method, query });
+// What Express itself computes under TRUST_PROXY_HOPS=hops: ips = the trusted entries, ip = the farthest of them (else the socket).
+const expressView = (xff, { hops = 1, socket = '127.0.0.1', headers = {} } = {}) => {
+  const entries = xff ? xff.split(', ') : [];
+  const ips = hops ? entries.slice(Math.max(0, entries.length - hops)) : [];
+  return fakeRequest({ ip: ips[0] ?? socket, ips, socket, headers: { ...(xff ? { 'x-forwarded-for': xff } : {}), ...headers } });
+};
 const untouchable = () => new Proxy({}, { get() { throw new Error('request must not be read'); }, defineProperty() { throw new Error('request must not be modified'); } });
 
 test('keys: IPv4 as-is, IPv6 per /64, IPv4-mapped unwrapped, pseudo-IPv4 accepted, malformed rejected', () => {
@@ -82,7 +95,7 @@ test('Cloudflare ranges: dated published list, IPv4-mapped edges and an explicit
   assert.equal(published.check(NOT_CLOUDFLARE, 'ipv4'), false);
   // A mapped edge address must still pass the Cloudflare gate.
   const mapped = resolveClientIp(fakeRequest({ ip: '::ffff:172.70.3.4', headers: { 'cf-connecting-ip': VISITOR } }), { source: 'cloudflare' });
-  assert.deepEqual(mapped, { key: VISITOR, from: 'cf-connecting-ip', address: VISITOR });
+  assert.deepEqual(mapped, { key: VISITOR, from: 'cf-connecting-ip', address: VISITOR, edgeFrom: 'xff[-1]' });
   const override = cloudflareRanges(' 198.51.100.0/24, 2001:db8::/32 ');
   assert.equal(override.check(NOT_CLOUDFLARE, 'ipv4'), true);
   assert.equal(override.check('2001:db8::1', 'ipv6'), true);
@@ -113,23 +126,80 @@ test('resolver honours client headers only behind a published Cloudflare hop', (
   assert.equal(resolve({ ip: '2606:4700:10::6816:1', headers: { 'cf-connecting-ip': '2001:db8:abcd:12::1' } }).key, '2001:db8:abcd:12::/64');
   assert.equal(resolve({ ip: EDGES[0], headers: { 'cf-connecting-ip': '240.12.34.56' } }).key, '240.12.34.56');
   // Not a Cloudflare hop: forged CF-Connecting-IP and leftmost XFF are ignored.
-  assert.deepEqual(resolve({ ip: NOT_CLOUDFLARE, headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${VISITOR}, ${NOT_CLOUDFLARE}` } }), { key: NOT_CLOUDFLARE, from: 'edge-not-cloudflare', address: NOT_CLOUDFLARE });
-  assert.deepEqual(resolve({ ip: '10.0.0.5', headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${VISITOR}, ${EDGES[0]}, 10.0.0.5` } }), { key: '10.0.0.5', from: 'edge-not-cloudflare', address: '10.0.0.5' }, 'a Render-internal hop needs TRUST_PROXY_HOPS=2');
+  assert.deepEqual(resolve({ ip: NOT_CLOUDFLARE, headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${VISITOR}, ${NOT_CLOUDFLARE}` } }), { key: NOT_CLOUDFLARE, from: 'edge-not-cloudflare', address: NOT_CLOUDFLARE, edgeFrom: 'xff[-1]' });
+  // A Render-internal hop no longer needs TRUST_PROXY_HOPS=2: the Cloudflare edge left of it is gated instead (next test).
+  assert.deepEqual(resolve({ ip: '10.0.0.5', headers: { 'cf-connecting-ip': VISITOR, 'x-forwarded-for': `${VISITOR}, ${EDGES[0]}, 10.0.0.5` } }), { key: VISITOR, from: 'cf-connecting-ip', address: VISITOR, edgeFrom: 'xff[-2]' });
   // No CF-Connecting-IP: the entry Cloudflare appended immediately left of the edge, never further left.
-  assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'x-forwarded-for': `forged, 198.18.0.1, ${VISITOR}, ${EDGES[0]}` } }), { key: VISITOR, from: 'xff-left-of-edge', address: VISITOR });
+  assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'x-forwarded-for': `forged, 198.18.0.1, ${VISITOR}, ${EDGES[0]}` } }), { key: VISITOR, from: 'xff-left-of-edge', address: VISITOR, edgeFrom: 'xff[-1]' });
   // TRUST_PROXY_HOPS=2 shape: Render's own hop is trusted, the Cloudflare edge becomes req.ip.
   assert.equal(resolve({ ip: EDGES[0], ips: [EDGES[0], '10.0.0.5'], headers: { 'x-forwarded-for': `${VISITOR}, ${EDGES[0]}, 10.0.0.5` } }).key, VISITOR);
   // Trust disabled and Cloudflare connected directly: the socket is the edge.
   assert.equal(resolve({ ip: EDGES[0], ips: [], socket: EDGES[0], headers: { 'x-forwarded-for': VISITOR } }).key, VISITOR);
   // Malformed client headers are ignored and fall back to the next source, then the edge.
   for (const header of ['forged', `${VISITOR}, ${OTHER_VISITOR}`, '', 'x'.repeat(200), ` ${VISITOR}`]) {
-    assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'cf-connecting-ip': header, 'x-forwarded-for': EDGES[0] } }), { key: EDGES[0], from: 'edge-without-client', address: EDGES[0] }, header);
+    assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'cf-connecting-ip': header, 'x-forwarded-for': EDGES[0] } }), { key: EDGES[0], from: 'edge-without-client', address: EDGES[0], edgeFrom: 'xff[-1]' }, header);
     assert.equal(resolve({ ip: EDGES[0], headers: { 'cf-connecting-ip': header, 'x-forwarded-for': `${VISITOR}, ${EDGES[0]}` } }).key, VISITOR, header);
   }
   // An invalid entry left of the edge never falls further left, into client-controlled entries.
-  assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'x-forwarded-for': `${VISITOR}, forged, ${EDGES[0]}` } }), { key: EDGES[0], from: 'edge-without-client', address: EDGES[0] });
+  assert.deepEqual(resolve({ ip: EDGES[0], headers: { 'x-forwarded-for': `${VISITOR}, forged, ${EDGES[0]}` } }), { key: EDGES[0], from: 'edge-without-client', address: EDGES[0], edgeFrom: 'xff[-1]' });
   // A chain that does not line up with Express's own result is not trusted.
   assert.equal(resolve({ ip: EDGES[0], ips: [EDGES[1]], headers: { 'x-forwarded-for': `${VISITOR}, ${EDGES[1]}` } }).from, 'edge-without-client');
+});
+
+test('resolver walks past Render-internal hops to the edge, gates it like any edge and otherwise fails closed', () => {
+  const on = { source: 'cloudflare' };
+  const resolve = (xff, options, settings = on) => resolveClientIp(expressView(xff, options), settings);
+  const cf = (value = VISITOR) => ({ headers: { 'cf-connecting-ip': value } });
+  const visitor = (edgeFrom, from = 'cf-connecting-ip', address = VISITOR) => ({ key: clientKey(address), from, address, edgeFrom });
+  // Failing closed means exactly today's key: the Express hop itself.
+  const closed = (hop, edgeFrom) => ({ key: clientKey(hop), from: 'edge-not-cloudflare', address: hop, edgeFrom });
+  const hop = RENDER_HOPS[0];
+
+  // Production [visitor, Cloudflare edge, Render hop]: every internal class, IPv4-mapped forms included.
+  for (const internal of [...RENDER_HOPS, '172.16.0.1', '172.31.255.254', '192.168.1.1', '100.64.0.1', '100.127.255.254', '127.0.0.1', '169.254.10.1',
+    'fd00::1', 'fd12:3456:789a::25', 'fc00::1', 'fe80::1', '::1', `::ffff:${hop}`, '::ffff:7f00:1', `::FFFF:${hop}`]) {
+    for (const edge of PROD_EDGES) {
+      assert.deepEqual(resolve(`${VISITOR}, ${edge}, ${internal}`, cf()), visitor('xff[-2]'), `${edge} ${internal}`);
+      assert.deepEqual(resolve(`${VISITOR}, ${edge}, ${internal}`), visitor('xff[-2]', 'xff-left-of-edge'), `${edge} ${internal} without CF-Connecting-IP`);
+    }
+  }
+  // IPv6 visitor, IPv6 or IPv4-mapped edge, ULA hop; forged leftmost entries are never read.
+  assert.deepEqual(resolve('198.18.0.1, 2001:db8:abcd:12::1, 2606:4700:10::6816:1, fd00:10:27::25'), visitor('xff[-2]', 'xff-left-of-edge', '2001:db8:abcd:12::1'));
+  assert.deepEqual(resolve(`${VISITOR}, ::ffff:${PROD_EDGES[3]}, ::ffff:${hop}`, cf(`::ffff:${VISITOR}`)), { key: VISITOR, from: 'cf-connecting-ip', address: `::ffff:${VISITOR}`, edgeFrom: 'xff[-2]' });
+  assert.deepEqual(resolve(`forged, 198.18.0.1, ${VISITOR}, ${PROD_EDGES[1]}, ${hop}`), visitor('xff[-2]', 'xff-left-of-edge'));
+  // Consecutive internal hops are all skipped (Render adding a proxy keeps working), whatever trust setting ends on one.
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[1]}, ${hop}, 192.168.0.9, ::1`, cf()), visitor('xff[-4]'));
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[1]}, ${hop}, 192.168.0.9`, { hops: 2, ...cf() }), visitor('xff[-3]'));
+  // TRUST_PROXY_HOPS=2 resolves the edge itself: unchanged, no walk.
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[2]}, ${hop}`, { hops: 2, ...cf() }), visitor('xff[-2]'));
+  // Behind the walked edge the same fallbacks apply: an invalid entry left of it keys on the edge, never further left.
+  assert.deepEqual(resolve(`${VISITOR}, forged, ${PROD_EDGES[0]}, ${hop}`), { key: PROD_EDGES[0], from: 'edge-without-client', address: PROD_EDGES[0], edgeFrom: 'xff[-2]' });
+  assert.deepEqual(resolve(`${PROD_EDGES[0]}, ${hop}`, cf('forged')), { key: PROD_EDGES[0], from: 'edge-without-client', address: PROD_EDGES[0], edgeFrom: 'xff[-2]' });
+
+  // Bypass shapes: whoever reached Render without Cloudflare is the first non-internal entry, so forged values never count.
+  assert.deepEqual(resolve(`${NOT_CLOUDFLARE}, ${hop}`, cf()), closed(hop, 'xff[-2]'), '[public-not-cloudflare, 10.x]');
+  assert.deepEqual(resolve(`${PROD_EDGES[0]}, ${NOT_CLOUDFLARE}, ${hop}`, cf()), closed(hop, 'xff[-2]'), '[forged-cloudflare, public-not-cloudflare, 10.x]');
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[0]}, 10.9.9.9, ${NOT_CLOUDFLARE}, ${hop}`, cf()), closed(hop, 'xff[-2]'), 'forged internal entries further left are never reached');
+  assert.deepEqual(resolve(`${PROD_EDGES[0]}, ${NOT_CLOUDFLARE}, ${hop}`), closed(hop, 'xff[-2]'), 'no CF-Connecting-IP either');
+  assert.deepEqual(resolve(hop, cf()), closed(hop, null), '[10.x only]');
+  assert.deepEqual(resolve(`10.9.9.9, fd00::1, ${hop}`, cf()), closed(hop, null), 'internal entries only');
+  assert.deepEqual(resolve('2001:db8:abcd:12::1, 2001:db8:ffff::1, fd00::25', cf('2001:db8:abcd:12::1')), closed('fd00::25', 'xff[-2]'), 'IPv6 caller without Cloudflare');
+  // Only internal classes are skipped: neighbours of each range, pseudo-IPv4 and non-addresses stop the walk.
+  for (const stop of ['172.32.0.1', '172.15.255.255', '100.128.0.1', '100.63.255.255', '192.169.0.1', '11.0.0.1', '169.255.0.1', '240.1.2.3', 'fec0::1', '2001:db8::1', 'unknown', `${hop}:443`]) {
+    assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[0]}, ${stop}, ${hop}`, cf()), closed(hop, 'xff[-2]'), stop);
+  }
+  // A stale or narrowed range list fails closed at the walked edge too.
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[0]}, ${hop}`, cf(), { source: 'cloudflare', cloudflare: cloudflareRanges('198.51.100.0/24') }), closed(hop, 'xff[-2]'));
+  // The Express hop is gated first: an override that lists the hop itself is honoured exactly as before.
+  assert.deepEqual(resolve(`${VISITOR}, ${NOT_CLOUDFLARE}, ${hop}`, cf(), { source: 'cloudflare', cloudflare: cloudflareRanges('10.0.0.0/8') }), visitor('xff[-1]'));
+  // Trust disabled: the socket peer is not known to be a proxy, so a Cloudflare-shaped header from loopback proves nothing.
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[0]}`, { hops: 0, ...cf() }), closed('127.0.0.1', null));
+  assert.deepEqual(resolve(`${VISITOR}, ${PROD_EDGES[0]}, ${hop}`, { hops: 0, socket: '10.1.2.3', ...cf() }), closed('10.1.2.3', null));
+  // A chain that does not line up with Express's own result is not walked.
+  assert.deepEqual(resolveClientIp(fakeRequest({ ip: hop, ips: [PROD_EDGES[0], hop], socket: '127.0.0.1', headers: { 'x-forwarded-for': `${VISITOR}, ${PROD_EDGES[0]}, ${hop}`, 'cf-connecting-ip': VISITOR } }), on), closed(hop, null));
+  assert.deepEqual(resolveClientIp(fakeRequest({ ip: hop, ips: [hop], socket: '127.0.0.1', headers: { 'x-forwarded-for': `${VISITOR}, ${PROD_EDGES[0]}, 10.0.0.77`, 'cf-connecting-ip': VISITOR } }), on), closed(hop, null));
+  // Off: Express req.ip verbatim, in exactly the old shape.
+  for (const source of [null, undefined, 'off']) assert.deepEqual(resolveClientIp(expressView(`${VISITOR}, ${PROD_EDGES[0]}, ${hop}`, cf()), { source }), { key: hop, from: 'express', address: hop });
 });
 
 test('one visitor behind rotating Cloudflare edges keeps one quota bucket by default; off makes the key jump', async t => {
@@ -211,6 +281,101 @@ test('login and register limits are per visitor behind one Cloudflare edge', asy
   assert.equal((await register(VISITOR, 6)).status, 429);
 });
 
+test('production chain [visitor, Cloudflare edge, Render 10.x hop]: rotating edges and hops keep one key, exactly one unit per ask', async t => {
+  for (const source of ON) {
+    const f = await fixture(t, { config: sourceConfig(source) });
+    // Pre-consume through one edge and hop, then read through others: keyed by the Render hop, these reads would be a fresh 15.
+    await f.ask(viaRender(0));
+    const reads = [await f.read(viaRender(1)), await f.read(viaRender(2))];
+    for (let i = 3; i < 9; i += 2) {
+      await f.ask(viaRender(i));
+      reads.push(await f.read(viaRender(i + 1)));
+    }
+    assert.deepEqual(reads, [14, 14, 13, 12, 11], label(source));
+    // Every edge x hop combination reads the same bucket.
+    for (let i = 0; i < 15; i++) assert.equal(await f.read(viaRender(i)), 11, `${label(source)}: ${renderChain(i)}`);
+    assert.deepEqual(f.identities(), [4], `${label(source)}: one visitor, one HMAC identity`);
+  }
+});
+
+test('production chain: forged leftmost X-Forwarded-For, True-Client-IP and X-Real-IP never change the key', async t => {
+  const f = await fixture(t);
+  await f.ask(viaRender(0));
+  for (let i = 1; i <= 6; i++) {
+    // Forged entries include an internal-looking one and a Cloudflare address; Cloudflare still sets CF-Connecting-IP.
+    const forged = [`198.18.0.${i}`, '10.9.9.9', PROD_EDGES[(i + 2) % PROD_EDGES.length]];
+    const spoofed = { 'X-Forwarded-For': renderChain(i, VISITOR, forged), 'True-Client-IP': `198.18.1.${i}`, 'X-Real-IP': `198.18.2.${i}` };
+    assert.equal(await f.read({ ...viaRender(i), ...spoofed }), 14, `forged ${i}`);
+    // Without CF-Connecting-IP the entry Cloudflare appended left of the edge is used, never anything further left.
+    assert.equal(await f.read(spoofed), 14, `forged ${i} without CF-Connecting-IP`);
+  }
+  assert.deepEqual(f.identities(), [1], 'forged values never minted new identities');
+});
+
+test('production chain: two visitors behind the same Cloudflare edges and Render hops are independent', async t => {
+  const f = await fixture(t);
+  await f.ask(viaRender(0));
+  await f.ask(viaRender(1));
+  await f.ask(viaRender(2, OTHER_VISITOR));
+  for (let i = 0; i < 6; i++) {
+    assert.equal(await f.read(viaRender(i)), 13, `visitor ${renderChain(i)}`);
+    assert.equal(await f.read(viaRender(i, OTHER_VISITOR)), 14, `other visitor ${renderChain(i, OTHER_VISITOR)}`);
+  }
+  assert.deepEqual(f.identities().sort(), [1, 2]);
+  // Login is limited per visitor, not per Render hop: ten failures across rotating hops lock this visitor only.
+  const login = (visitor, i) => f.request('/auth/login', { body: { email: `nobody${i}@example.test`, password: 'bad' }, headers: viaRender(i, visitor) });
+  for (let i = 0; i < 10; i++) assert.equal((await login(VISITOR, i)).status, 401);
+  assert.equal((await login(OTHER_VISITOR, 10)).status, 401, 'another visitor behind the same edges and hops keeps its own 10/15min');
+  assert.equal((await login(VISITOR, 11)).status, 429);
+});
+
+test('bypass shapes behind a Render hop fail closed to the hop key, exactly as before', async t => {
+  const f = await fixture(t);
+  const [hop, otherHop] = RENDER_HOPS;
+  await f.ask(viaRender(0));
+  await f.ask(viaRender(1));
+  // A caller that reached Render without Cloudflare: Render appended the caller's own public address.
+  await f.ask({ 'X-Forwarded-For': `${NOT_CLOUDFLARE}, ${hop}`, 'CF-Connecting-IP': VISITOR });
+  for (let i = 0; i < 4; i++) {
+    const forged = { 'CF-Connecting-IP': i % 2 ? VISITOR : `203.0.113.${100 + i}`, 'True-Client-IP': VISITOR, 'X-Real-IP': VISITOR };
+    for (const shape of [
+      [NOT_CLOUDFLARE, hop],
+      [`198.51.100.${30 + i}`, hop],
+      [PROD_EDGES[i], NOT_CLOUDFLARE, hop],
+      [VISITOR, PROD_EDGES[i], '10.9.9.9', NOT_CLOUDFLARE, hop],
+      [hop],
+      ['10.9.9.9', hop],
+      [VISITOR, PROD_EDGES[i], '240.1.2.3', hop],
+      [VISITOR, PROD_EDGES[i], 'unknown', hop],
+    ]) assert.equal(await f.read({ ...forged, 'X-Forwarded-For': shape.join(', ') }), 14, shape.join(', '));
+  }
+  assert.equal(await f.read({ 'X-Forwarded-For': `${NOT_CLOUDFLARE}, ${otherHop}`, 'CF-Connecting-IP': VISITOR }), 15, 'another hop is another (shared) key, as before');
+  assert.equal(await f.read(viaRender(2)), 13, "the visitor's own bucket is untouched");
+  assert.deepEqual(f.identities().sort(), [1, 2], 'forged values never minted new identities');
+});
+
+test('production chain: IPv6 internal hops (fd00::/8) and IPv4-mapped forms resolve to the visitor', async t => {
+  const f = await fixture(t);
+  const v6 = '2001:db8:abcd:12::1';
+  await f.ask({ 'X-Forwarded-For': `${v6}, 2606:4700:10::6816:1, fd00:10:27::25`, 'CF-Connecting-IP': v6 });
+  assert.equal(await f.read({ 'X-Forwarded-For': `2001:db8:abcd:12::ffff, ${PROD_EDGES[1]}, fd12:3456::7`, 'CF-Connecting-IP': '2001:db8:abcd:12::ffff' }), 14, 'same /64 behind another edge and another ULA hop');
+  assert.equal(await f.read({ 'X-Forwarded-For': `198.18.0.1, ${v6}, 2606:4700:10::6816:1, fe80::1, fd00::25` }), 14, 'two internal hops, no CF-Connecting-IP');
+  assert.equal(await f.read({ 'X-Forwarded-For': '2001:db8:abcd:13::1, 2606:4700:10::6816:1, fd00::25', 'CF-Connecting-IP': '2001:db8:abcd:13::1' }), 15, 'another /64 is another visitor');
+  assert.equal(await f.read({ 'X-Forwarded-For': `${v6}, 2001:db8:ffff::1, fd00:10:27::25`, 'CF-Connecting-IP': v6 }), 15, 'an IPv6 caller without Cloudflare cannot claim the visitor key');
+  // IPv4-mapped edges, hops and CF-Connecting-IP give the plain IPv4 key.
+  await f.ask(viaRender(0));
+  assert.equal(await f.read({ 'X-Forwarded-For': `::ffff:${VISITOR}, ::ffff:${PROD_EDGES[2]}, ::ffff:${RENDER_HOPS[1]}` }), 14);
+  assert.equal(await f.read({ 'X-Forwarded-For': `${VISITOR}, ${PROD_EDGES[3]}, ::ffff:${RENDER_HOPS[2]}`, 'CF-Connecting-IP': `::ffff:${VISITOR}` }), 14);
+});
+
+test('CLIENT_IP_SOURCE=off still keys the production chain by the rotating Render hop', async t => {
+  for (const source of OFF) {
+    const f = await fixture(t, { config: sourceConfig(source) });
+    await f.ask(viaRender(0));
+    assert.deepEqual([await f.read(viaRender(1)), await f.read(viaRender(2)), await f.read(viaRender(3))], [15, 15, 14], `${label(source)}: off keeps the hop-keyed buckets`);
+  }
+});
+
 test('IPv6 visitors share one key per /64 and IPv4-mapped equals IPv4', async t => {
   const f = await fixture(t);
   await f.ask(viaCloudflare('2606:4700:10::6816:1', '2001:db8:abcd:12::1'));
@@ -285,7 +450,7 @@ test('diagnostics: time-boxed, probe-first, sampled, capped and never a full add
   assert.equal(line.cfConnectingIpEqualsXffMinus2, true);
   assert.deepEqual(line.headers, { 'cf-connecting-ip': true, 'true-client-ip': false, 'x-real-ip': false, 'cf-connecting-ipv6': false, 'cf-pseudo-ipv4': false, forwarded: false });
   assert.equal(line.cfColo, 'SJC');
-  assert.deepEqual(line.cloudflareMode, { keyFrom: 'cf-connecting-ip', keyPrefix: '203.0.113.0/24' });
+  assert.deepEqual(line.cloudflareMode, { keyFrom: 'cf-connecting-ip', edgeFrom: 'xff[-1]', keyPrefix: '203.0.113.0/24' });
   assert.doesNotMatch(lines[0], /203\.0\.113\.9|162\.158\.1\.2|10\.1\.2\.3|8c0000000000abcd/, 'only /24 prefixes, never a full address or ray id');
   // Only GET /api/health and GET /api/ai/usage are logged.
   run({ path: '/api/posts', query: { probe: 'abcd1234efgh' } });
@@ -383,4 +548,29 @@ test('a Render boot before 2026-10-09T23:00Z opens a 90-minute window by itself;
   assert.deepEqual(opened({ RENDER: 'false' }, NOW), []);
   const explicit = new Date(NOW + 1800000).toISOString();
   assert.deepEqual(opened({ RENDER: 'true', CLIENT_IP_DIAGNOSTIC_UNTIL: explicit }, NOW), ['[client-ip-diag] window open until 2026-10-08T19:30:00.000Z; mode cloudflare'], 'an explicit window wins');
+});
+
+test('diagnostics behind a Render hop report the walked edge: keyFrom cf-connecting-ip, edgeFrom xff[-2]', async t => {
+  const until = new Date(NOW + 3600000).toISOString();
+  for (const [source, currentKeys] of [['off', RENDER_HOPS.length], [UNSET, 1]]) {
+    const f = await fixture(t, { config: { ...sourceConfig(source), CLIENT_IP_DIAGNOSTIC_UNTIL: until }, clientIpNow: () => NOW });
+    const diag = async headers => { const result = await f.request('/_diag/client-ip', { headers }); assert.equal(result.status, 200); return result.data; };
+    const rows = [];
+    for (let i = 0; i < 6; i++) rows.push(await diag(viaRender(i)));
+    for (const row of rows) {
+      assert.equal(row.socket.class, 'loopback');
+      assert.equal(row.reqIpFrom, 'xff[-1]');
+      assert.equal(row.reqIp.class, 'private');
+      assert.deepEqual(row.xffRightToLeft.map(entry => entry.class), ['private', 'cloudflare', 'public']);
+      assert.equal(row.cfConnectingIp.xffMatch, 'xff[-3]');
+      assert.deepEqual(row.cloudflareMode, { keyFrom: 'cf-connecting-ip', edgeFrom: 'xff[-2]', keyPrefix: '203.0.113.0/24' });
+    }
+    assert.equal(new Set(rows.map(row => row.fingerprints.cloudflare)).size, 1, `${label(source)}: one cloudflare-mode key across edges and hops`);
+    assert.equal(new Set(rows.map(row => row.fingerprints.current)).size, currentKeys, `${label(source)}: live key`);
+    const bypass = await diag({ 'X-Forwarded-For': `${PROD_EDGES[0]}, ${NOT_CLOUDFLARE}, ${RENDER_HOPS[0]}`, 'CF-Connecting-IP': VISITOR });
+    assert.deepEqual(bypass.cloudflareMode, { keyFrom: 'edge-not-cloudflare', edgeFrom: 'xff[-2]', keyPrefix: '10.27.25.0/24' });
+    const internalOnly = await diag({ 'X-Forwarded-For': RENDER_HOPS[1], 'CF-Connecting-IP': VISITOR });
+    assert.deepEqual(internalOnly.cloudflareMode, { keyFrom: 'edge-not-cloudflare', edgeFrom: null, keyPrefix: '10.28.103.0/24' });
+    assert.doesNotMatch(JSON.stringify([...rows, bypass, internalOnly]), /203\.0\.113\.9\b|104\.22\.17\.31|10\.27\.25\.14|198\.51\.100\.20/, 'only prefixes, never a full address');
+  }
 });
