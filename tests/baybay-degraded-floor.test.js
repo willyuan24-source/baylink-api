@@ -174,13 +174,19 @@ test('the C-DEGRADED-STROKE wording gets the 911 card with a working model and w
 
 test('a single FAST sign that the lexicon leaves to the model still gets 911/211 when the model is down', async () => {
   const f = degradedAssistant();
+  // The floor is strokeSignMentioned(): every sign the lexicon knows, without the
+  // sudden-onset or two-sign rule (review of d5f8368: these six got guide excerpts).
   for (const [locale, message, call] of [
     ['zh-Hans', '我奶奶今天讲话有点含糊', '请立即拨打 911'],
-    ['zh-Hans', '我爸左手抬不起来了', '请立即拨打 911'],
     ['zh-Hans', '我妈嘴角往下垂', '请立即拨打 911'],
     ['zh-Hant', '外公說話有點含糊不清', '請立即撥打 911'],
     ['en', "My grandpa's speech is a bit slurred today", 'call 911 now'],
-    ['en', "Grandma can't lift her left arm this morning", 'call 911 now'],
+    ['zh-Hans', '我爸话都说不清了', '请立即拨打 911'],
+    ['zh-Hans', '我妈说话大舌头', '请立即拨打 911'],
+    ['zh-Hans', '左边手麻了', '请立即拨打 911'],
+    ['en', 'My mom has arm weakness', 'call 911 now'],
+    ['en', "My dad's speech sounds garbled", 'call 911 now'],
+    ['en', "Dad's left side is weak", 'call 911 now'],
   ]) {
     const result = await f.ask(message, locale);
     assert.equal(result.degraded, true, message);
@@ -190,6 +196,30 @@ test('a single FAST sign that the lexicon leaves to the model still gets 911/211
     assert.deepEqual(result.sources, [], message);
     assert.deepEqual(result.fallbackHelp.actions.map(action => action.href), ['tel:911', 'tel:211']);
   }
-  // Idioms and prices are not health worries.
-  for (const message of ['这家店说话含糊其辞，靠谱吗', '价格说得含糊，到底多少钱']) assert.doesNotMatch((await f.ask(message)).answer, /911/, message);
+  // Idioms, prices, business talk and non-body "weak" or "drooping" are not health worries.
+  for (const [locale, message] of [['zh-Hans', '这家店说话含糊其辞，靠谱吗'], ['zh-Hans', '价格说得含糊，到底多少钱'],
+    ['zh-Hans', '这个房东说话不清不楚，押金能要回来吗'], ['zh-Hans', '客服说话含糊，退款怎么办'], ['zh-Hans', '房东说话突然含糊起来，押金是不是有问题'],
+    ['en', 'The wifi is weak on one side of the house, any good router?'], ['en', 'The tent is drooping on one side'],
+    ['en', 'Paint is drooping on one side of the wall'], ['en', 'His left side is weak in basketball, any drills?']]) {
+    assert.doesNotMatch((await f.ask(message, locale)).answer, /911/, message);
+  }
+});
+
+// Review of d5f8368: each of these reached a guide excerpt or plain no-match copy
+// with the model down. Strong signs now get the 911 card; the rest get 911/211.
+test('FAST phrasings that slipped the old floor reach 911 with the model down', async () => {
+  const f = degradedAssistant();
+  for (const [locale, message, route] of [
+    ['zh-Hans', '我爸话都说不清了', undefined], ['zh-Hans', '我爸脸有一边垂下来了', 'emergency'], ['en', 'Dad has weakness in his left arm', 'emergency'],
+    ['en', 'My mom has arm weakness', undefined], ['zh-Hans', '我妈说话大舌头', undefined], ['en', "My dad's speech sounds garbled", undefined],
+    ['zh-Hans', '我爸左手抬不起来了', 'emergency'], ['en', "Grandma can't lift her left arm this morning", 'emergency'],
+  ]) {
+    const result = await f.ask(message, locale);
+    assert.equal(result.safetyRoute, route, message);
+    assert.match(result.answer, /911/, message);
+    assert.equal((result.safety || result.fallbackHelp).actions[0].href, 'tel:911', message);
+    if (!route) assert.deepEqual(result.sources, [], 'no excerpt is passed off as an answer');
+    // What the reader sees: the answer, cited sources and suggested guides.
+    assert.doesNotMatch(JSON.stringify([result.answer, result.sources, result.suggestedGuides]), UNRELATED_GUIDE, message);
+  }
 });
