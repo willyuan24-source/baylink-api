@@ -18,6 +18,7 @@ test('the guard asks for the general explanation first, then the official channe
   const explain = text.indexOf('(1) explain the general, non-personal facts'), channel = text.indexOf('(2) name the relevant official contact'), caveat = text.indexOf('(3) say plainly that the personal choice or decision depends on their own situation');
   assert.ok(explain > 0 && channel > explain && caveat > channel, 'explain -> official channel -> personal caveat');
   assert.match(text, /HICAP 免费 Medicare 咨询 1-800-434-0222/);
+  assert.match(text, /cite its evidence entry with \[\[source-id\]\] instead of writing its URL/);
   // General Medicare facts the model may explain.
   assert.match(text, /Part A \(A 部分\) is hospital insurance: inpatient hospital stays, skilled nursing facility care/);
   assert.match(text, /most people pay no Part A premium because they or their spouse paid Medicare taxes long enough while working/);
