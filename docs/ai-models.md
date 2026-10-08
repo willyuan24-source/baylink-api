@@ -24,7 +24,7 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 | --- | --- | --- |
 | `BAYBAY_MODEL_<ROUTE>` | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5` | Model for that route only. Any other value is ignored: the route keeps its default, `describeAiModels()` reports it, and the first request on that route logs `[ai-models] ignored {"route","name","reason"}` once (variable name only, never the value) |
 | `BAYBAY_MODEL_HELPERS` | same | All `helper_*` routes; a route-specific value wins |
-| `BAYBAY_EFFORT_<ROUTE>`, `BAYBAY_EFFORT_HELPERS` | `low`, `medium`, `high` | Effort is always sent explicitly (Sonnet 5.5 would otherwise default to `high`). `xhigh`/`max` are not accepted. Without it, a route on its own default model (R0: agent, professional) uses its own effort (`low`); a route whose model comes from a variable uses the legacy rule (`ANTHROPIC_BAYBAY_EFFORT`: `low`, otherwise `medium`) |
+| `BAYBAY_EFFORT_<ROUTE>`, `BAYBAY_EFFORT_HELPERS` | `low`, `medium`, `high` | Effort is always sent explicitly (Sonnet 5.5 would otherwise default to `high`). `xhigh`/`max` are not accepted. Without it, a route on its own default model (R0: agent, professional) uses its own effort (`low`), also when a variable pins that same model; a route whose model a variable changes to another model uses the legacy rule (`ANTHROPIC_BAYBAY_EFFORT`: `low`, otherwise `medium`) |
 | `BAYBAY_MAX_TOKENS_<ROUTE>` | 256–32,000 | Replaces the caller's value. Haiku requests are always raised to at least 4,000 because Haiku 5.5 thinking counts toward `max_tokens` |
 | `BAYBAY_FIRST_BYTE_MS_<ROUTE>` | 500–120,000 | Aborts a call whose response headers have not arrived. Unset by default. Non-streaming calls receive headers only near completion, so this matters mostly once streaming lands |
 | `BAYBAY_TOTAL_MS_<ROUTE>` | 1,000–180,000 | Caps the provider call. Caller deadlines (the agent's 75-second run budget) still apply, so this can only shorten a call |
@@ -91,7 +91,8 @@ BAYBAY_MODEL_PROFESSIONAL=claude-opus-5-5
 ```
 
 - 只设第一行：普通问答回到 Opus，专业话题仍是 Sonnet low。两行都设：完全回到 R0 之前的请求。
-- 用变量指定模型后，effort 回到旧规则：`ANTHROPIC_BAYBAY_EFFORT=low` 时为 low，否则为 medium（即 R0 之前的生产设置）。也可以用 `BAYBAY_EFFORT_AGENT` / `BAYBAY_EFFORT_PROFESSIONAL` 单独指定 `low`/`medium`/`high`。
+- 用变量把模型换成**别的模型**后，effort 回到旧规则：`ANTHROPIC_BAYBAY_EFFORT=low` 时为 low，否则为 medium（即 R0 之前的生产设置）。也可以用 `BAYBAY_EFFORT_AGENT` / `BAYBAY_EFFORT_PROFESSIONAL` 单独指定 `low`/`medium`/`high`。
+- 把变量设成和默认一样的值（例如 `BAYBAY_MODEL_AGENT=claude-sonnet-5-5`）不会改变任何东西：effort 仍是 low，不受 `ANTHROPIC_BAYBAY_EFFORT` 影响。
 - 只想调 effort、不换模型：例如 `BAYBAY_EFFORT_AGENT=medium`（模型仍是 Sonnet 5.5）。
 - 部署后核对：`curl -s https://baylink-api.onrender.com/api/ai/baybay-capabilities` 里的 `configuredModel` 应是 `claude-sonnet-5-5`（回滚后是 `claude-opus-5-5`）；Render 日志里不应出现针对这些变量的 `[ai-models] ignored`（写错值会被忽略，路由保持默认）。
 - 换模型或 effort 会让该路由的 prompt cache 重新开始，属于预期。

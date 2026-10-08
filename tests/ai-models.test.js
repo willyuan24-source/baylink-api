@@ -77,6 +77,15 @@ test('per-route model overrides change one route; the helper group override cove
     assert.deepEqual(route.ignored, [{ name: 'BAYBAY_MODEL_AGENT', reason: 'unknown_model' }]);
   }
   assert.equal(aiRoute('baybay_agent', { BAYBAY_MODEL_AGENT: '  claude-sonnet-5-5  ' }).model, 'claude-sonnet-5-5');
+  // Pinning the default model is a no-op: the route keeps its own effort, even
+  // next to the legacy effort variable production sets.
+  for (const [name, variable] of [['baybay_agent', 'BAYBAY_MODEL_AGENT'], ['baybay_professional', 'BAYBAY_MODEL_PROFESSIONAL']]) {
+    for (const extra of [{}, { ANTHROPIC_BAYBAY_EFFORT: 'medium' }]) {
+      const pinned = aiRoute(name, { [variable]: 'claude-sonnet-5-5', ...extra });
+      assert.deepEqual([pinned.model, pinned.modelSource, pinned.effort, pinned.effortSource], ['claude-sonnet-5-5', variable, 'low', 'route'], `${name} ${JSON.stringify(extra)}`);
+    }
+    assert.equal(aiRoute(name, { [variable]: 'claude-sonnet-5-5', [variable.replace('MODEL', 'EFFORT')]: 'medium' }).effort, 'medium');
+  }
 });
 
 test('native web search never resolves to Haiku 5.5, from its own override or from the legacy all-route variable', () => {
