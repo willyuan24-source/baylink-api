@@ -1,0 +1,32 @@
+{
+  "version": "2026-10-08",
+  "block": "B",
+  "title": "Retrieval false-negative probes: the site has the answer; the assistant must not say it has none",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "notes": "Six probes (turns). The plan's Berkeley half-day probe is the same retrieval path as A/C02-1, so it is not repeated here; the Fleet Week alias runs as a two-turn follow-up instead.",
+  "cases": [
+    { "id": "B-FN-OAKLAND-SENIOR", "block": "B", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B-FN-OAKLAND-SENIOR", "message": "我爸 75 岁住 Oakland，想找能说中文的老人服务，先打哪个电话？",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["510-577-1900", "510-839-2022", "510-763-9017"]], "goldEntity": "中文长者服务指南：Alameda 510-577-1900、Family Bridges 510-839-2022、Hong Lok 510-763-9017" },
+        "judge": { "expect": "先打 Alameda 县 AAA 510-577-1900，或 Family Bridges 510-839-2022（普通话/粤语探访）；来源是站内中文长者服务指南。" } } ] },
+    { "id": "B-FN-FLEET", "block": "B", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn"], "turns": [
+      { "id": "B-FN-BLUE-ANGELS", "message": "蓝天使这周末飞吗",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["10\\s*[/／月]\\s*1[01]", "10\\s*[/／月]\\s*9\\s*日?\\s*[–—~至到-]\\s*(?:10\\s*[/／月]\\s*)?1[01]"]], "goldEntity": "San Francisco Fleet Week 2026（航空展 10/9–11）" },
+        "judge": { "expect": "会飞：Fleet Week 航空展 10/9–11 每天 12:00–16:00（这周末是 10/10–11），Marina Green 免费；蓝天使具体时段以官方为准。" } },
+      { "id": "B-FN-FLEET-ALIAS", "message": "舰队周在哪看比较好？要钱吗？",
+        "gold": { "expectRoute": "assistant", "mustInclude": ["Marina Green", ["免费", "免費"]], "goldEntity": "Fleet Week（别名：舰队周）" },
+        "judge": { "expect": "识别“舰队周”= Fleet Week；Marina Green 普通入场免费，VIP 另购票；登舰参观排队免费；建议公共交通。" } } ] },
+    { "id": "B-FN-FREMONT-LIBRARY", "block": "B", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B-FN-FREMONT-LIBRARY", "message": "Fremont 图书馆卡怎么办？",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["AC Library", "Alameda County Library", "阿拉米达县图书馆"], ["eCard", "实体", "地址证明", "Cards-by-Mail"]], "goldEntity": "日常免费福利指南：Fremont 属 AC Library，eCard 与实体卡" },
+        "judge": { "expect": "Fremont 属 Alameda County Library（AC Library）：线上先拿 eCard，免费打印等要实体卡，带姓名和加州地址证明到分馆办；卡号和 PIN 不发到聊天里。" } } ] },
+    { "id": "B-FN-PENSION", "block": "B", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B-FN-PENSION", "message": "养老金怎么查",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["my Social Security", "Social Security", "SSA", "社安局", "社会安全局"]], "goldEntity": "社安退休准备指南 bay-area-social-security-retirement-preparation-guide" },
+        "judge": { "expect": "指向 my Social Security 账户查看收入记录与估算福利，或致电/预约社安局；来源是站内社安退休指南；不要求在聊天里提供 SSN。" } } ] },
+    { "id": "B-FN-CHINESE-DOCTOR", "block": "B", "locale": "zh-Hans", "currentPath": "/", "turns": [
+      { "id": "B-FN-CHINESE-DOCTOR", "message": "湾区怎么找会说中文的医生？",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["保险网络", "网络内", "in-network", "Provider Directory", "医生名录", "保险公司"]], "goldEntity": "第一次找医生指南 bay-area-first-doctor-insurance-network-guide" },
+        "judge": { "expect": "先按保险网络在保险公司的医生名录里按语言筛选（中文），确认接受新病人与网络内，再预约；来源是站内第一次找医生指南。" } } ] }
+  ]
+}

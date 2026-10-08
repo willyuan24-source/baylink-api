@@ -1,0 +1,17 @@
+{
+  "version": "2026-10-08",
+  "block": "F",
+  "title": "Signed-in member with live web search (timely facts)",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "notes": "These turns need a web-search provider wired into the harness (v1). The v0 harness reports them as skipped_requires_web and never sends them. Live answers change daily, so the code gold only checks shape; the judge reads the cited sources.",
+  "cases": [
+    { "id": "F-WEB-BART", "block": "F", "locale": "zh-Hans", "currentPath": "/", "member": true, "requires": "web", "searchMode": "web", "turns": [
+      { "id": "F-WEB-BART", "message": "今天 BART 有没有停运或者大面积延误？",
+        "gold": { "expectRoute": "assistant", "mustInclude": ["BART"], "mustNotInclude": ["站内(?:没有|未).{0,10}BART"] },
+        "judge": { "expect": "用联网结果回答今天 BART 的服务状况并附官方来源（bart.gov 服务公告）；查不到就说明，不编造延误。" } } ] },
+    { "id": "F-WEB-DMV", "block": "F", "locale": "zh-Hans", "currentPath": "/", "member": true, "requires": "web", "searchMode": "web", "turns": [
+      { "id": "F-WEB-DMV", "message": "San Jose 的 DMV 路考现在最早能约到哪天？",
+        "gold": { "expectRoute": "assistant", "mustInclude": ["DMV"] },
+        "judge": { "expect": "说明预约名额只能在 DMV 官方预约系统实时查看，给官方入口与操作步骤；联网结果若有具体日期要注明来源和查询时间，不编造日期。" } } ] }
+  ]
+}

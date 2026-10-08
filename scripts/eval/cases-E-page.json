@@ -1,0 +1,24 @@
+{
+  "version": "2026-10-08",
+  "block": "E",
+  "title": "Page context: the reader asks about the page they are on",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "cases": [
+    { "id": "E-OFFER-MEMBER", "block": "E", "locale": "zh-Hans", "currentPath": "/offers/ikea-family-hot-drink", "tags": ["page-context"], "turns": [
+      { "id": "E-OFFER-MEMBER", "message": "这个要会员吗",
+        "gold": { "expectRoute": "assistant", "mustInclude": ["IKEA Family"], "mustNotInclude": ["不需要会员|无需会员|不用会员|不需要會員", "哪一个|哪个优惠|哪个福利|具体是哪"], "goldEntity": "当前页 IKEA Family 热饮福利（出示 IKEA Family 条码）" },
+        "judge": { "expect": "直接回答：需要 IKEA Family 会员（免费注册），出示会员条码，无需另购；湾区 Emeryville、East Palo Alto 门店，周末和饮品先向门店确认。" } } ] },
+    { "id": "E-OPENING", "block": "E", "locale": "zh-Hans", "currentPath": "/openings/oakland-chez-maeju-soft-opening-2026", "tags": ["page-context"], "turns": [
+      { "id": "E-OPENING", "message": "开了吗",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["试营业", "試營業", "soft open"]], "mustNotInclude": ["哪一家|哪家店|具体是哪"], "goldEntity": "当前页 Chez Maeju（Oakland，试营业）" },
+        "judge": { "expect": "说明 Chez Maeju 目前是试营业（菜单较精简），具体营业时间以商家最新公告为准，地址 6200 Claremont Ave, Oakland。" } } ] },
+    { "id": "E-PAST-EVENT", "block": "E", "locale": "zh-Hans", "currentPath": "/events/santana-row-glass-pumpkin-2026", "tags": ["page-context"], "turns": [
+      { "id": "E-PAST-EVENT", "message": "还有吗",
+        "gold": { "expectRoute": "assistant", "mustInclude": [["结束", "結束", "已过", "10\\s*[/／月]\\s*4"], ["南瓜", "pumpkin"]], "mustNotInclude": ["哪一个|哪个活动|具体是哪"], "goldEntity": "当前页 Santana Row 玻璃南瓜艺术节（10/2–10/4）" },
+        "judge": { "expect": "说明当前页的玻璃南瓜艺术节 10/4 已结束；推荐下一个类似活动（如 Los Gatos 10/10 玻璃南瓜活动）。" } } ] },
+    { "id": "E-SENIOR-OAKLAND", "block": "E", "locale": "zh-Hans", "currentPath": "/guides/bay-area-chinese-senior-services-referral-guide", "tags": ["page-context"], "turns": [
+      { "id": "E-SENIOR-OAKLAND", "message": "我爸住 Oakland，第一个电话该打哪个？",
+        "gold": { "expectRoute": "assistant", "mustInclude": ["510-577-1900"], "goldEntity": "当前页写明 Alameda：510-577-1900" },
+        "judge": { "expect": "第一个电话打 Alameda 县 AAA 510-577-1900（当前页写明），要求普通话或粤语；可补充 Family Bridges 510-839-2022。" } } ] }
+  ]
+}

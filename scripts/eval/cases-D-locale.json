@@ -1,0 +1,47 @@
+{
+  "version": "2026-10-08",
+  "block": "D",
+  "title": "Traditional Chinese and English: script, terms and facts in the reader's language",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "notes": "Five zh-Hant and five English turns, two of them follow-ups. Free museum days in English are covered by A/C14, so the English set carries a Fleet Week follow-up instead.",
+  "cases": [
+    { "id": "D-HANT-FREE-KIDS", "block": "D", "locale": "zh-Hant", "currentPath": "/", "tags": ["multi-turn"], "turns": [
+      { "id": "D-HANT-FREE-KIDS-1", "message": "灣區這週末有什麼免費的親子活動？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "needsCards": true, "goldEntity": "這週末（10/10–11）免費親子活動，如 Santa Clara 圖書館 Comic Con" },
+        "judge": { "expect": "繁體中文。按這週末 10/10–11 給 2–3 個站內免費親子活動（附地點、時間、條件），用台灣/香港讀者看得懂的用語。" } },
+      { "id": "D-HANT-FREE-KIDS-2", "message": "那如果下雨的話呢？", "tags": ["thin-evidence"],
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "pricesGrounded": true },
+        "judge": { "expect": "繁體中文。延續這週末、免費、親子，給室內備案（圖書館活動、免費博物館時段等站內資料）；不編造活動或價格。" } } ] },
+    { "id": "D-HANT-SENIOR-TRANSIT", "block": "D", "locale": "zh-Hant", "currentPath": "/", "turns": [
+      { "id": "D-HANT-SENIOR-TRANSIT", "message": "我媽 68 歲住舊金山，長者坐公車有優惠卡嗎？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "mustInclude": [["Clipper", "Free Muni", "免費 Muni", "免費乘坐"]], "goldEntity": "sfmta-free-muni-seniors（長者免費 Muni，按收入）與長者 Clipper" },
+        "judge": { "expect": "繁體中文。65 歲以上可辦長者 Clipper 卡享優惠；舊金山低收入長者可申請 Free Muni；說明申請方式與證件，不要求在聊天裡提供證件號碼。" } } ] },
+    { "id": "D-HANT-DMV", "block": "D", "locale": "zh-Hant", "currentPath": "/", "turns": [
+      { "id": "D-HANT-DMV", "message": "加州駕照筆試可以考中文嗎？要先預約嗎？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "mustInclude": ["DMV", ["中文", "Chinese"]] },
+        "judge": { "expect": "繁體中文。說明筆試可選中文（以 DMV 官方語言清單為準）、路考需預約，給 DMV 官方入口；簡潔。" } } ] },
+    { "id": "D-HANT-SCAM", "block": "D", "locale": "zh-Hant", "currentPath": "/", "turns": [
+      { "id": "D-HANT-SCAM", "message": "房東要我先匯 500 元訂金才能看房，可以嗎？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "firstSentence": "不要|別|不建議|詐騙|騙|風險|不可以|不靠譜|不可靠" },
+        "judge": { "expect": "繁體中文。結論先行：看房前先匯訂金是典型詐騙訊號，不要匯；給 2–3 個核驗方法，引用站內防騙指南。" } } ] },
+    { "id": "D-EN-OAKLAND", "block": "D", "locale": "en", "currentPath": "/", "tags": ["thin-evidence"], "turns": [
+      { "id": "D-EN-OAKLAND", "message": "Anything free for kids in Oakland on Saturday?", "searchContext": { "city": "Oakland", "date": "2026-10-10" },
+        "gold": { "expectRoute": "assistant", "script": "en", "mustInclude": ["Oakland"], "pricesGrounded": true },
+        "judge": { "expect": "English. Free kid-friendly Oakland options for Sat 10/10 grounded in site records (e.g., Chabot free telescope viewing, Lake Merritt, library events); say plainly what is not listed rather than inventing events or prices." } } ] },
+    { "id": "D-EN-LIBRARY", "block": "D", "locale": "en", "currentPath": "/", "turns": [
+      { "id": "D-EN-LIBRARY", "message": "How do I get a library card in Fremont?",
+        "gold": { "expectRoute": "assistant", "script": "en", "mustInclude": [["Alameda County Library", "AC Library"]], "goldEntity": "Everyday free perks guide: Fremont is served by AC Library (eCard, physical card)" },
+        "judge": { "expect": "English. Fremont is served by Alameda County Library: get an eCard online, then a physical card at a branch with name and California address proof for printing and full services; never share card number or PIN in chat." } } ] },
+    { "id": "D-EN-FLEET", "block": "D", "locale": "en", "currentPath": "/", "tags": ["multi-turn"], "turns": [
+      { "id": "D-EN-FLEET-1", "message": "When is Fleet Week in San Francisco this year?",
+        "gold": { "expectRoute": "assistant", "script": "en", "mustInclude": [["October 9", "Oct\\.? 9", "10/9", "October 4", "Oct\\.? 4", "10/4"]], "goldEntity": "San Francisco Fleet Week 2026 (Oct 4-12, air show Oct 9-11)" },
+        "judge": { "expect": "English. Fleet Week runs Oct 4-12, 2026; the air show is Oct 9-11, 12:00-16:00; ship tours and parade details from the site record." } },
+      { "id": "D-EN-FLEET-2", "message": "Is it free to watch from Marina Green?",
+        "gold": { "expectRoute": "assistant", "script": "en", "mustInclude": ["Marina Green", ["free", "Free"]] },
+        "judge": { "expect": "English. Yes, general admission at Marina Green is free; VIP viewing is ticketed; bring layers and ear protection for kids, take transit." } } ] },
+    { "id": "D-EN-SCAM", "block": "D", "locale": "en", "currentPath": "/", "turns": [
+      { "id": "D-EN-SCAM", "message": "A landlord wants a $500 deposit before showing me the apartment. Is that normal?",
+        "gold": { "expectRoute": "assistant", "script": "en", "firstSentence": "\\bno\\b|not normal|scam|red flag|don't|do not|warning|fraud" },
+        "judge": { "expect": "English. Lead with the conclusion: paying before a showing is a classic rental scam sign; do not pay; give 2-3 ways to verify the landlord and listing." } } ] }
+  ]
+}
