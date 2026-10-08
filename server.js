@@ -35,7 +35,7 @@ const { registerPlannerWebSearch, normalizeWebSearchError } = require('./lib/pla
 const { registerPlannerTravel } = require('./lib/plannerTravel');
 const { validateChatSearchMode, validateChatSearchContext, buildChatWebRequest, isSearchReset, hasPrivateSearchData } = require('./lib/guideWebSearch');
 const { registerSourceMonitor } = require('./lib/sourceMonitor');
-const { createProductMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
+const { createProductMetricModel, createProductRouteMetricModel, registerProductMetrics, recordServerProductEvent } = require('./lib/productMetrics');
 const { createPostTranslationModels, registerPostTranslation } = require('./lib/postTranslation');
 const { registerLocalAi } = require('./lib/localAi');
 const { createServiceBookingModel, registerServiceBookings } = require('./lib/serviceBookings');
@@ -527,6 +527,7 @@ const PlannerAccount = createPlannerModel(mongoose, injectedModels);
 const ServiceBookingAgenda = createServiceBookingModel(mongoose, injectedModels);
 const Outing = createOutingModel(mongoose, injectedModels);
 const ProductMetric = createProductMetricModel(mongoose, injectedModels);
+const ProductRouteMetric = createProductRouteMetricModel(mongoose, injectedModels);
 const AccountAuthChallenge = createAccountAuthChallengeModel(mongoose, injectedModels);
 const ConversationResponseMetric = createConversationResponseMetricModel(mongoose, injectedModels);
 const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModels);
@@ -1766,7 +1767,7 @@ registerPlannerTravel(app, { config, Quota: PostTranslationQuota, checkRateLimit
 const plannerWebSearch = registerPlannerWebSearch(app, { Quota: PostTranslationQuota, checkRateLimit: checkAuthRateLimit, webAccessForRequest: async req => baybayWebAccess(await getCurrentUserIdFromRequest(req)), config, ai: options.ai?.plannerWebSearch, extractAi: options.ai?.plannerWebExtract, isTest, now: options.plannerNow, lookup: options.plannerWebLookup, sourceFetch: options.plannerWebSourceFetch });
 const sourceMonitor = registerSourceMonitor(app, { authenticateToken, requireAdmin, mongoose, models: injectedModels, config, checkRateLimit: checkAuthRateLimit, getClientIp, ...(options.sourceMonitor || {}) });
 server.once('close', sourceMonitor.stop);
-registerProductMetrics(app, { ProductMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
+registerProductMetrics(app, { ProductMetric, ProductRouteMetric, authenticateToken, requireAdmin, checkRateLimit: checkAuthRateLimit, getClientIp, now: options.productMetricsNow });
 registerPostTranslation(app, { Post, User, UserBlock, PostTranslation, PostTranslationQuota, authenticateToken,
   holdPost: id => holdPostOperation(Post, id), holdAccount: id => holdAccountOperation(User, id),
   checkRateLimit: checkAuthRateLimit, config, ai: options.ai?.postTranslation, isTest, now: options.postTranslationNow });
@@ -4935,7 +4936,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4953,6 +4954,7 @@ async function startProduction(config = process.env) {
   await application.models.ServiceBookingAgenda.init();
   await application.models.Outing.init();
   await application.models.ProductMetric.init();
+  await application.models.ProductRouteMetric.init();
   await application.models.PostTranslation.init();
   await application.models.PostTranslationQuota.init();
   await application.models.AiGovernance.init();

@@ -47,7 +47,7 @@ async function fixture(t, options = {}) {
   const models = { ...createMemoryModels({ User: [
     { id: 'admin', email: 'admin@private.test', role: 'admin', password: 'not-public' },
     { id: 'member', email: 'member@private.test', role: 'user', password: 'not-public' },
-  ] }), ProductMetric };
+  ] }), ProductMetric, ProductRouteMetric: options.routeModel || metricModel() };
   const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET }, models, productMetricsNow: options.now || (() => NOW) });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
