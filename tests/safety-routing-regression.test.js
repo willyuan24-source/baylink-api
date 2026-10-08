@@ -115,6 +115,7 @@ test('emergency lexicon does not fire on past or recovered episodes, class looku
     '我爸没意识到今天是周末，带他去哪里玩', '孩子没意识到危险，怎么教他过马路', '好久没有呼吸到新鲜空气了，周末去哪里走走',
     'The website is unresponsive, how do I book Fleet Week tickets?', 'I almost fainted when I saw the price of the tickets',
     'seizing the opportunity, what events are on this weekend', '我这次大出血买了两张票', '她大出血买了一个包',
+    '我发消息给他，他没反应，是不是不想去', '我给我爸打电话他没反应', '我想死你了，这周末见面去哪',
   ]) assert.equal(emergencyResponse(message), null, message);
 });
 
@@ -127,6 +128,7 @@ test('emergency lexicon still routes current episodes next to those exclusions',
     ['The chest pain started two hours ago', 'cardiac'],
     // Being in a class or at training when it happens is not a class lookup.
     ['My son is having a seizure in class', 'seizure'], ["He collapsed at football training and isn't breathing", 'breathing'], ['我爸在太极课程的时候晕倒了', 'unconscious'],
+    ['我爸倒在地上，他没反应', 'unconscious'], ['叫他没反应', 'unconscious'], ['我真的想死了', 'self-harm'],
     ['My dad is unresponsive', 'unconscious'], ['We found him unresponsive on the floor', 'unconscious'], ['My mom just fainted', 'unconscious'], ['He started seizing', 'seizure'],
   ]) assert.equal(emergencyResponse(message, /[㐀-鿿]/u.test(message) ? 'zh-Hans' : 'en')?.emergencyTopic, topic, message);
 });
