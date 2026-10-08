@@ -6,7 +6,7 @@
 
 | 范围 | 实际行为与边界 |
 | --- | --- |
-| 可信客户端 IP | 只使用 Express 根据明确代理契约计算的 `req.ip`。不直接采信 XFF 左端或 CF-Connecting-IP。默认 Render 一跳；直接对外服务应配置 0，额外代理配置明确 CIDR。`proxy-addr` 已升级到修复 IPv4 映射 IPv6 信任网段漏洞的 2.0.8。 |
+| 可信客户端 IP | 计数键默认仍是 Express 根据明确代理契约计算的 `req.ip`：默认 Render 一跳；直接对外服务应配置 0，额外代理配置明确 CIDR。不直接采信 XFF 左端。只有设置 `CLIENT_IP_SOURCE=cloudflare` 且这个可信一跳属于 Cloudflare 公布的网段时，才采信单个有效的 CF-Connecting-IP；该头缺失时取紧邻这一跳左侧、由 Cloudflare 追加的 XFF 条目。其他任何路径保持原键（失败即关闭），IPv6 按 /64 计数。上线步骤见 `docs/client-ip-rollout.md`。`proxy-addr` 已升级到修复 IPv4 映射 IPv6 信任网段漏洞的 2.0.8。 |
 | 请求限速 | 不同窗口各有到期时间；内存容量满时拒绝新计数键，不清除仍活跃的限制。旧举报/联系/评论/私信及 post-assist 的独立计数器也统一有 5000 个活跃键的硬容量。登录另加账号限制；密码重设加账号限制和冷却；手机号发送加账号/目标号码日限制。 |
 | AI 额度 | 新 `AiGovernance` 集合持久化 Pacific 日预算。一次 Mongo 原子更新同时预留全站和身份额度，跨实例共用；身份用每日 HMAC，不存原始 IP/账号。只有真正准备调用付费 provider 才预留，缓存与确定性回答不花额度。取消/失败不自动退款。 |
 | 额度与指标接口 | `GET /api/ai/usage` 返回 `{ remaining, limit, resetAt, degraded:false }`，剩余额度为个人与全站可用量的较小值。存储不可用返回 503 与 `{remaining:null,limit:null,degraded:true}`。独立可信 IP 读取限制为每分钟 120 次，超限在任何账号/预算 DB 读取前返回 429 `AI_USAGE_RATE_LIMIT` 与空额度/降级标记，不牵连其他交互计数器。管理员 AI 指标不返回身份计数、提示词、原始 IP；预算文档保留 3 天，因此这个接口不是长期成本报表。 |

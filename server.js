@@ -45,6 +45,7 @@ const { baybayProvider, anthropicAvailable, DEFAULT_ANTHROPIC_MODEL } = require(
 const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJson');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
+const { createClientIp } = require('./lib/clientIp');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
@@ -69,6 +70,9 @@ for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
 }
 app.disable('x-powered-by');
 app.set('trust proxy', proxyTrust(config, isTest));
+// Off by default; see docs/client-ip-rollout.md before setting CLIENT_IP_SOURCE.
+const clientIpKeys = createClientIp(config, { now: options.clientIpNow, log: options.clientIpLog });
+app.use(clientIpKeys.middleware);
 
 const ALLOWED_ORIGINS = allowedOrigins(config);
 
@@ -140,6 +144,8 @@ app.get('/api/health', (_req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ status: 'ok', service: 'baylink-api', commit: releaseCommit });
 });
+// Time-boxed by CLIENT_IP_DIAGNOSTIC_UNTIL; otherwise falls through to the default 404.
+app.get('/api/_diag/client-ip', clientIpKeys.diagnosticRoute);
 
 
 // --- Schemas ---
