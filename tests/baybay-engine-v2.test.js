@@ -25,9 +25,9 @@ const message = (content, stop_reason = 'end_turn', usage = {}) => ({ type: 'mes
 const fast = (answer, usage) => message([{ type: 'text', text: JSON.stringify({ lead: 'L', points: [], candidateIds: [], followups: [], coverage: [], gap: '', ...answer }) }], 'end_turn', usage);
 const reply = value => ({ ok: true, status: 200, json: async () => value, clone() { return this; }, text: async () => JSON.stringify(value) });
 const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-function assistantWith({ config = {}, respond }) {
+function assistantWith({ config = {}, respond, ...extra }) {
   const sent = [];
-  const assistant = createBayBayAssistant({ config: { ...base, BAYBAY_ENGINE: 'v2', ...config }, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(),
+  const assistant = createBayBayAssistant({ config: { ...base, BAYBAY_ENGINE: 'v2', ...config }, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(), ...extra,
     fetchImpl: async (url, init) => { assert.equal(url, 'https://api.anthropic.com/v1/messages'); const body = JSON.parse(init.body); sent.push(body); return respond(body, sent.length); } });
   return { assistant, sent };
 }
@@ -315,4 +315,59 @@ test('a member asking to open or re-check an official page keeps the agent loop;
   sent.length = 0;
   const guest = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件');
   assert.equal(guest.route.path, 'fast'); assert.equal(sent[0].tools, undefined);
+});
+
+test('English requests to open an official page also keep the agent loop for a member', async () => {
+  const { assistant } = assistantWith({ respond: () => reply(fast({ lead: 'From the site record.' })) });
+  for (const text of ['Please open the official Fleet Week page and check what time the Blue Angels fly on Saturday.', 'Can you verify on the official site whether RSVP is required?']) {
+    const member = await run(assistant, text, { locale: 'en', searchMode: 'smart', member: true });
+    assert.equal(member.route.path, 'agent', text); assert.equal(member.route.reason, 'live_web');
+  }
+  const plain = await run(assistant, 'What is the official name of the Exploratorium?', { locale: 'en', searchMode: 'smart', member: true });
+  assert.equal(plain.route.path, 'fast');
+});
+
+test('v2 read_source opens the official page behind an evidence ref, never the BAYLINK page, and the agent is told to read it', async () => {
+  const fetched = [];
+  let officialItem;
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '2' },
+    sourceFetch: async source => { fetched.push(source.url); return { text: 'Library cards: bring a photo ID and proof of a current California address. eCards are available online.', links: [] }; },
+    webSearch: async () => ({ answer: '', sources: [], candidates: [], checkedAt: new Date(NOW).toISOString() }),
+    respond: (body, count) => {
+      if (count === 1) {
+        officialItem = JSON.parse(body.messages[0].content[0].text).evidence.find(item => item.official);
+        return reply(message([{ type: 'tool_use', id: 'tool-1', name: 'read_source', input: { sourceId: officialItem.ref } }], 'tool_use'));
+      }
+      return reply(fast({ lead: '带照片证件和加州地址证明。', points: [{ text: `官方页面列明要带照片证件和地址证明 [[${officialItem.ref}]]`, cardIds: [] }] }));
+    } });
+  const result = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.equal(result.route.path, 'agent'); assert.equal(sent.length, 2);
+  assert.ok(officialItem, 'an evidence item carries its official URL');
+  assert.equal(fetched.length, 1); assert.ok(!/baylink\.us/.test(fetched[0]), fetched[0]);
+  assert.equal(new URL(fetched[0]).hostname, new URL(officialItem.official).hostname);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /open or re-check an official page/);
+  assert.match(sent[0].tools.find(row => row.name === 'read_source').description, /evidence ref/);
+  const toolResult = sent[1].messages.find(row => row.role === 'user' && row.content[0]?.type === 'tool_result');
+  assert.match(JSON.stringify(toolResult), /proof of a current California address/);
+  assert.match(JSON.stringify(toolResult), /page-read/);
+});
+
+test('the v2 agent starts from the server web pre-search (summary and sources), and v1 tool text is unchanged', async () => {
+  const { assistant, sent } = assistantWith({
+    webSearch: async () => ({ answer: 'BART reports normal service today; one elevator outage at Powell.', sources: [{ title: 'BART advisories', url: 'https://www.bart.gov/schedules/advisories', text: 'No delays reported.' }], candidates: [], checkedAt: new Date(NOW).toISOString() }),
+    respond: () => reply(fast({ lead: 'BART 今天正常运行。' })) });
+  const result = await run(assistant, '今天 BART 有没有停运或者大面积延误？', { searchMode: 'smart', member: true });
+  assert.equal(result.route.path, 'agent'); assert.equal(sent.length, 1);
+  const user = JSON.parse(sent[0].messages[0].content[0].text);
+  assert.match(user.webResearch.results[0].summary, /normal service/);
+  assert.equal(user.webResearch.status, 'completed');
+  assert.equal(user.webResearch.sources[0].url, 'https://www.bart.gov/schedules/advisories');
+  assert.match(user.webResearch.sources[0].id, /^s-[0-9a-f]{16}$/);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /webResearch holds this run's web search/);
+  // v1 keeps its own read_source text.
+  const v1 = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, respond: () => reply(message([{ type: 'text', text: JSON.stringify({ answer: 'ok', candidateIds: [], followups: [], coverage: [] }) }])) });
+  await run(v1.assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.match(v1.sent[0].tools.find(row => row.name === 'read_source').description, /^Read an already-discovered source page by its source ID/);
 });
