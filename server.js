@@ -4207,6 +4207,8 @@ app.post('/api/ai/post-assist', authenticateToken, async (req, res) => {
 
     return res.json({ ok: true, draft });
   } catch (e) {
+    // Daily AI limits (count quota, $ hard cap) keep their own honest 429 (API-BB-CUTOVER).
+    if (['AI_DAILY_LIMIT', 'AI_DAILY_BUDGET'].includes(e.code)) return res.status(429).json({ ok: false, code: e.code, error: e.message });
     console.error('POST /api/ai/post-assist error:', e.message);
     return res.status(502).json({ ok: false, error: 'AI 整理失败，请稍后再试' });
   }
