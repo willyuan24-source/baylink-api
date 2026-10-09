@@ -10,6 +10,8 @@ const image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAw
 const event = { title: 'Library workshop', date: '2026-10-03', startTime: '14:00', endTime: '16:00', city: 'Fremont', venue: 'Main library', address: '', price: '', sourceUrl: '', description: 'Children’s workshop' };
 const extracted = { draft: event, dateText: 'October 3, 2026' };
 const messages = [{ role: 'system', content: 'Translate the provided text.' }, { role: 'user', content: 'A fictional sample message.' }];
+// requestAnthropicJson requires an output schema on every call.
+const schema = { type: 'object', properties: { text: { type: 'string' } }, required: ['text'], additionalProperties: false };
 const raw = value => ({ type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: 'end_turn', content: [{ type: 'thinking', thinking: '', signature: 'opaque-test-signature' }, { type: 'text', text: JSON.stringify(value) }], usage: { input_tokens: 12, output_tokens: 45 } });
 const response = value => ({ ok: true, json: async () => value });
 
@@ -57,7 +59,8 @@ test('shared JSON helper sends a native bounded Claude request and parses only v
   assert.deepEqual(result, { text: 'Translated sample.' });
   assert.equal(sent.model, 'claude-opus-5-5'); assert.equal(sent.max_tokens, 9000);
   assert.equal(sent.output_config.effort, 'medium');
-  assert.match(sent.system, /Translate the provided text/); assert.match(sent.system, /one valid JSON object/);
+  // The schema replaces the old "return exactly one JSON object" system line.
+  assert.equal(sent.system, 'Translate the provided text.'); assert.equal(sent.output_config.format.type, 'json_schema');
   assert.deepEqual(sent.messages, [{ role: 'user', content: [{ type: 'text', text: messages[1].content }] }]);
   assert.equal(sent.output_config.format.schema.properties.text.maxLength, undefined);
   for (const field of ['temperature', 'top_p', 'top_k', 'thinking', 'response_format', 'max_completion_tokens', 'tools', 'tool_choice']) assert.equal(sent[field], undefined);
@@ -67,7 +70,7 @@ test('shared JSON helper sends a native bounded Claude request and parses only v
 test('shared JSON helper preserves text conversation roles and allows only low or medium effort', async () => {
   for (const effort of ['low', 'high']) {
     const history = [...messages, { role: 'assistant', content: '{"text":"Earlier sample"}' }, { role: 'user', content: 'Revise the sample.' }];
-    await requestAnthropicJson(history, { config: { ...config, ANTHROPIC_BAYBAY_EFFORT: effort, ANTHROPIC_BAYBAY_MODEL: 'fixture-claude-model' }, fetchImpl: async (_url, init) => {
+    await requestAnthropicJson(history, { config: { ...config, ANTHROPIC_BAYBAY_EFFORT: effort, ANTHROPIC_BAYBAY_MODEL: 'fixture-claude-model' }, schema, fetchImpl: async (_url, init) => {
       const sent = JSON.parse(init.body);
       assert.equal(sent.model, 'fixture-claude-model');
       assert.equal(sent.output_config.effort, effort === 'low' ? 'low' : 'medium');
@@ -94,14 +97,14 @@ test('event extraction uses Claude vision with base64 data and retains year and 
 test('shared vision conversion accepts supported MIME signatures and rejects remote or malformed images without transport', async () => {
   const imageMessage = uri => [{ role: 'user', content: [{ type: 'text', text: 'Read this fixture image.' }, { type: 'image_url', image_url: { url: uri, detail: 'high' } }] }];
   const samples = [image, 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', `data:image/jpeg;base64,${Buffer.from([255, 216, 255, 224]).toString('base64')}`, `data:image/webp;base64,${Buffer.from('RIFF0000WEBP', 'ascii').toString('base64')}`];
-  for (const uri of samples) await requestAnthropicJson(imageMessage(uri), { config, fetchImpl: async (_url, init) => {
+  for (const uri of samples) await requestAnthropicJson(imageMessage(uri), { config, schema, fetchImpl: async (_url, init) => {
     const block = JSON.parse(init.body).messages[0].content[1];
     assert.equal(block.type, 'image'); assert.equal(block.source.data, uri.split(',')[1]);
     return response(raw({ text: 'Image sample.' }));
   } });
   for (const uri of ['https://example.com/image.png', 'data:image/svg+xml;base64,AAAA', image.replace('png', 'jpeg'), image.slice(0, -1), image.replace('iVB', 'i_B'), 'data:image/png;base64,AAAA', `data:image/png;base64,${'A'.repeat(4 * 1024 * 1024 + 4)}`]) {
     let calls = 0;
-    await assert.rejects(requestAnthropicJson(imageMessage(uri), { config, fetchImpl: async () => { calls++; return response(raw({})); } }), { status: 400, code: 'AI_IMAGE_INVALID' });
+    await assert.rejects(requestAnthropicJson(imageMessage(uri), { config, schema, fetchImpl: async () => { calls++; return response(raw({})); } }), { status: 400, code: 'AI_IMAGE_INVALID' });
     assert.equal(calls, 0);
   }
   assert.throws(() => validateImage(image.slice(0, -1)), { status: 400 });
@@ -118,7 +121,7 @@ test('JSON helpers refuse truncation, refusals, tool calls, malformed JSON and n
     raw([]), raw(null), raw('string'),
   ]) {
     let calls = 0;
-    await assert.rejects(requestAnthropicJson(messages, { config, fetchImpl: async url => {
+    await assert.rejects(requestAnthropicJson(messages, { config, schema, fetchImpl: async url => {
       assert.equal(url, 'https://api.anthropic.com/v1/messages'); calls++; return response(candidate);
     } }), { status: 502 });
     assert.equal(calls, 1);
@@ -166,22 +169,23 @@ test('production Claude inner and outer local deadlines both use 28 seconds', as
 
 test('shared helper preserves explicit short deadlines and caller cancellation', async () => {
   let upstream;
-  await assert.rejects(requestAnthropicJson(messages, { config, timeoutMs: 10, fetchImpl: async (_url, init) => {
+  await assert.rejects(requestAnthropicJson(messages, { config, schema, timeoutMs: 10, fetchImpl: async (_url, init) => {
     upstream = init.signal; return new Promise(() => {});
   } }), { code: 'AI_PROVIDER_TIMEOUT' });
   assert.equal(upstream.aborted, true);
   const controller = new AbortController();
-  await assert.rejects(requestAnthropicJson(messages, { config, signal: controller.signal, fetchImpl: async (_url, init) => {
+  await assert.rejects(requestAnthropicJson(messages, { config, schema, signal: controller.signal, fetchImpl: async (_url, init) => {
     upstream = init.signal; queueMicrotask(() => controller.abort()); return new Promise(() => {});
   } }), { code: 'REQUEST_CANCELLED' });
   assert.equal(upstream.aborted, true);
 });
 
 test('native HTTP failures never try an OpenAI endpoint', async () => {
-  for (const status of [401, 429, 500]) {
+  for (const status of [401, 429, 500, 529]) {
     const urls = [];
     await assert.rejects(conversationAssist({ mode: 'translate', targetLocale: 'en', message: 'Sample' }, { config, fetchImpl: async url => { urls.push(url); return { ok: false, status }; } }));
-    assert.deepEqual(urls, ['https://api.anthropic.com/v1/messages']);
+    // 429/529 get their one Claude retry; nothing ever goes to OpenAI.
+    assert.deepEqual(urls, Array([429, 529].includes(status) ? 2 : 1).fill('https://api.anthropic.com/v1/messages'));
   }
 });
 
@@ -219,7 +223,7 @@ test('shared Claude helper rechecks the real usage deadline after delayed govern
   const before = Date.parse('2026-10-29T23:59:59Z'); let time = before, calls = 0;
   t.mock.method(Date, 'now', () => time);
   const pending = delayedReservation(() => requestAnthropicJson(messages, {
-    config: { ...config, ANTHROPIC_USE_UNTIL: '2026-10-30T00:00:00Z' },
+    config: { ...config, ANTHROPIC_USE_UNTIL: '2026-10-30T00:00:00Z' }, schema,
     fetchImpl: async () => { calls++; return response(raw({ text: 'Must not spend after expiry' })); },
   }));
   const rejected = assert.rejects(pending.result, { status: 503, code: 'AI_PROVIDER_UNAVAILABLE' });

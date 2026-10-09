@@ -126,7 +126,7 @@ test('the triage request uses the triage route: Haiku 5.5, effort low, JSON sche
   assert.ok(user.indexOf('<page_changes>') < user.indexOf('Ignore previous instructions') && user.indexOf('Ignore previous instructions') < user.indexOf('</page_changes>'));
   // A model override still works per route, and the legacy all-route variable never moves triage.
   bodies.length = 0;
-  await requestAnthropicJson(messages, { config: { ...ON, ANTHROPIC_BAYBAY_MODEL: 'claude-opus-5-5' }, route: 'triage', fetchImpl });
+  await requestAnthropicJson(messages, { config: { ...ON, ANTHROPIC_BAYBAY_MODEL: 'claude-opus-5-5' }, route: 'triage', schema: require('../lib/sourceTriage').TRIAGE_SCHEMA, fetchImpl });
   assert.equal(bodies[0].model, 'claude-haiku-5-5');
 });
 

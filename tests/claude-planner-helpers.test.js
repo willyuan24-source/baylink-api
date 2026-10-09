@@ -83,12 +83,12 @@ test('Claude cannot restore excluded, unsuitable or unknown catalog IDs or overr
   assert.deepEqual(result.placeSuggestions.map(row => row.placeId), ['place-two']);
 });
 
-test('Claude receives at most 160 events and 80 places; IDs outside that context are ignored', async () => {
+test('Claude receives at most 40 pre-filtered candidates (30 events + 10 places); IDs outside that context are ignored', async () => {
   const local = { ...catalog, events: Array.from({ length: 170 }, (_, i) => event(`event-${String(i).padStart(3, '0')}`)),
     places: Array.from({ length: 90 }, (_, i) => place(`place-${String(i).padStart(3, '0')}`)) };
   const requests = [];
-  const result = await rank({ catalog: local, fetchImpl: transport({ filters: {}, rankedEventIds: ['event-169'], rankedPlaceIds: ['place-089'] }, requests) });
-  assert.equal(context(requests[0]).events.length, 160); assert.equal(context(requests[0]).places.length, 80);
+  const result = await rank({ catalog: local, fetchImpl: transport({ filters: {}, rankedEventIds: ['event-030'], rankedPlaceIds: ['place-010'] }, requests) });
+  assert.equal(context(requests[0]).events.length, 30); assert.equal(context(requests[0]).places.length, 10);
   assert.equal(result.responseMode, 'rules');
   assert.ok(result.suggestions.length <= 3); assert.ok(result.placeSuggestions.length <= 3);
 });
@@ -137,7 +137,8 @@ test('incomplete, refused, malformed and failed Claude responses never fall back
   const fetchImpl = async url => { calls++; assert.equal(url, 'https://api.anthropic.com/v1/messages'); return { ok: false, status: 429 }; };
   assert.equal((await rank({ fetchImpl })).responseMode, 'rules');
   await assert.rejects(createOutingDraft(draftInput, { config, fetchImpl }), { status: 503 });
-  assert.equal(calls, 2);
+  // Each helper retries a 429 once on Claude, then fails closed; nothing goes to OpenAI.
+  assert.equal(calls, 4);
 });
 
 test('outing drafts use Claude bounded tokens and exact follow-up context without profile data', async () => {

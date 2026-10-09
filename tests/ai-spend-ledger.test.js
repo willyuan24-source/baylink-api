@@ -6,6 +6,8 @@ const { createAiGovernance, createAiGovernanceModel, aiExecution } = require('..
 const { createAiRuntimeMetrics, metricModel, COUNTERS, HISTOGRAMS } = require('../lib/aiRuntimeMetrics');
 const { fetchAiJson, billingFor } = require('../lib/aiRequest');
 const { requestAnthropicJson } = require('../lib/anthropicJson');
+// requestAnthropicJson requires an output schema on every call.
+const schema = { type: 'object', properties: {}, additionalProperties: false };
 const { createMemoryModels } = require('./support/memory-models');
 
 const SECRET = 'isolated-spend-ledger-test-secret';
@@ -135,7 +137,7 @@ test('refusals are counted per model and the Haiku refusal retry is visible as a
   const replies = [claude('claude-haiku-5-5', { input_tokens: 900, output_tokens: 0 }, { stop_reason: 'refusal', stop_details: { category: 'general_harms' }, content: [] }),
     claude('claude-sonnet-5-5', { input_tokens: 900, output_tokens: 100 })];
   await inRequest(governance, async (_req, res) => {
-    await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture', BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' },
+    await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { schema, config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture', BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' },
       log: () => {}, fetchImpl: async () => ({ ok: true, json: async () => replies.shift() }) });
     res.json({ ok: true });
   }, '/api/ai/post-assist');
@@ -157,7 +159,7 @@ test('helper calls inside a governed request infer their route from the request 
   for (const path of ['/api/ai/post-assist', '/api/ai/outing-draft']) {
     await inRequest(governance, async (_req, res) => {
       assert.ok(aiExecution().feature);
-      await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config, fetchImpl: async (_url, init) => { models_.push(JSON.parse(init.body).model); return { ok: true, json: async () => claude('claude-opus-5-5', { input_tokens: 1, output_tokens: 1 }) }; } });
+      await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { schema, config, fetchImpl: async (_url, init) => { models_.push(JSON.parse(init.body).model); return { ok: true, json: async () => claude('claude-opus-5-5', { input_tokens: 1, output_tokens: 1 }) }; } });
       res.json({ ok: true });
     }, path);
   }
