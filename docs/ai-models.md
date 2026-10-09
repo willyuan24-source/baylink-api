@@ -105,7 +105,9 @@ BAYBAY_MODEL_PROFESSIONAL=claude-opus-5-5
 | --- | --- |
 | 路由（`lib/baybayRouter.js`） | 调模型前确定：行程、改行程、追问已发布的行程、点名两个以上地点、会员联网问题走原来的 agent 循环；其他（约八成以上，含专业话题）走一次调用的 fast path |
 | fast path（`lib/baybayFastPath.js`） | 一次调用、无工具；`baybay_fast` 路由（专业话题用 `baybay_professional`，永不 Haiku）；`max_tokens` 4,000；结构化输出 `{lead, points[{text, cardIds}], candidateIds, followups, coverage, gap}`，服务端拼出旧的 `answer`，原有 finish() 护栏全部照用；无效输出或对当前页／点名记录说"站内没有"时，用 Sonnet 5.5 low 重试一次 |
-| 检索（`buildFastEvidence`） | 别名（舰队周/蓝天使 → Fleet Week 等）、按县的城市召回（San Jose → Santa Clara 县电话）、优惠和新店（discoveries）入索引、相关性门槛；最多 10 条、每条 ≤400 字，带星期的日期，BAYLINK 页面在前 |
+| 检索（`buildFastEvidence`） | 别名（舰队周/蓝天使 → Fleet Week、笔试/路考 → DMV 驾照攻略等）、按县的城市召回（San Jose → Santa Clara 县电话）、优惠和新店（discoveries）入索引、相关性门槛；办事类问题（DMV、Medi-Cal、Medicare、养老金、图书馆卡、中文医生、防诈骗）只保留提到该主题的资料；最多 10 条、每条 ≤400 字，带星期的日期，BAYLINK 页面在前 |
+| agent 循环（会员联网） | 服务器的联网预搜索结果（摘要 + 来源 id）放进第一轮；会员要求"打开官网核对"时，`read_source` 可以直接用资料编号（e1、page、r1）打开该记录的**官方**页面（不是 BAYLINK 页面），打不开时如实说明 |
+| 代订请求 | "帮我订机票/酒店/票"直接回答 BayBay 不能代订、去哪里自己订，不再反问"哪个湾区城市"；"帮我订个周六的行程"仍按行程处理 |
 | 缓存 | system 第 1 块冻结（不含日期、模式、用户信息），带 `cache_control`；本轮条件规则放在用户消息后的 `role:'system'` 消息里（模型不支持时自动改成 `<system-reminder>`）；agent 循环用顶层自动缓存，第二次调用读第一次的前缀，最后一轮只发新增内容 |
 | 新增返回字段 | `engine`、`route{path,reason}`、`lead`、`points`、`gap`、`pageEntity`；`answer` 照旧 |
 
