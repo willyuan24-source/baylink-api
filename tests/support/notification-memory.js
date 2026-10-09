@@ -20,10 +20,14 @@ const matches = (row, query) => Object.entries(query).every(([key, value]) => {
   });
   return actual === value;
 });
+const UPDATE_OPERATORS = new Set(['$set', '$unset', '$inc', '$max', '$setOnInsert']);
 const update = (row, value) => {
+  // An operator the fake does not implement must fail loudly, never be skipped silently.
+  for (const operator of Object.keys(value)) if (!UPDATE_OPERATORS.has(operator)) throw new Error(`Unsupported notification update: ${operator}`);
   for (const [key, next] of Object.entries(value.$set || {})) set(row, key, next);
   for (const key of Object.keys(value.$unset || {})) set(row, key, undefined, true);
   for (const [key, increment] of Object.entries(value.$inc || {})) set(row, key, (get(row, key) || 0) + increment);
+  for (const [key, next] of Object.entries(value.$max || {})) if (get(row, key) === undefined || get(row, key) < next) set(row, key, next);
 };
 function memory(seed = []) {
   const rows = new Map(seed.map((row, index) => [row._id || row.id || String(index), copy(row)]));

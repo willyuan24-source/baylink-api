@@ -14,6 +14,10 @@ Eligibility, existing request lookup, declined cooldown and method checks preced
 
 If quota storage is unavailable, the route returns `503 CONTACT_QUOTA_UNAVAILABLE` before creating a request or disclosing contact details. Exhaustion returns `429 CONTACT_DAILY_LIMIT`. Missing valid verified phone returns the existing `403 VERIFIED_CONTACT_REQUIRED` contract. The phone number itself is never returned in these errors.
 
+### Phone verification SMS (SEC-09 follow-up, 2026-10-08)
+
+Shared numbers stay allowed for families, but a number already verified on two **other** accounts (any status) cannot verify a third: `POST /api/users/me/phone/start` (and the legacy `/api/auth/verify-phone`) answer 409 `PHONE_SHARED_LIMIT` before any SMS budget is spent, and the code submission re-checks it so accounts racing on one number cannot all finish. Existing accounts already sharing a number are not changed. Verification SMS also reserve durable Pacific-day ceilings in `SmsQuota` (`lib/smsQuota.js`, same HMAC/`_id` pattern as above, three-day TTL): 5 per number, 5 per account and `SMS_VERIFY_DAILY_LIMIT` site-wide (default 100; `0` pauses verification SMS). A later ceiling's refusal returns the earlier holds (nothing was sent); a provider failure after a successful claim is not refunded. The in-memory per-user/per-number limits remain as a first line. Production without Twilio answers 503 without reserving.
+
 Boundaries: multiple genuinely different verified numbers are separate shared identities; manual approval remains an owner decision. Existing duplicate numbers are not evidence that all such accounts are fraudulent. SMS sending, ownership recovery, anti-SIM-farm controls and actual provider delivery are not changed or tested here. HMAC-derived anti-abuse counters expire by TTL and are not presented as user profile content.
 
 ## Task understanding (BRAIN-03 / REPLY-13)
