@@ -204,6 +204,14 @@ test('coalescing, the 30-minute window and the 5-minute first notice survive a r
   assert.equal(f.models.NotificationWindow.rows.size, 1);
 });
 
+test('with delivery off, a day-old queued notice that has not been TTL-deleted yet never absorbs a new event', async () => {
+  const f = fixture({ enabled: false });
+  await f.optIn('sms'); await f.service.enqueueEvent(f.event());
+  f.advance(24 * 60 * 60 * 1000 + 1000);
+  assert.deepEqual(await f.service.enqueueEvent(f.event({ eventId: 'message_late', createdAt: f.now() })), { queued: 1 });
+  assert.deepEqual(f.jobs('message').map(row => row.events), [1, 1]);
+});
+
 test('replaying an already queued event is idempotent and threads stay independent', async () => {
   const f = fixture(); await f.verify(); await f.optIn();
   await f.service.enqueueEvent(f.event());
