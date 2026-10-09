@@ -35,3 +35,34 @@ The frontend admin component is `src/features/source-monitor/AdminSourceMonitor.
 ## Validation
 
 `node --test tests/sourceMonitor.test.js` covers first baselines, pending diffs, stale-review protection, 403 handling, noise normalization, fixed registry coverage, private/mixed DNS answers, prohibited protocols and redirect hosts, pinned public addresses, DNS timeout, expiration, throttling/concurrency, non-admin rejection and public evidence redaction. Frontend review tests confirm evidence is visible and no review is sent until the editor acts.
+
+## Change triage (API-FRESH-TRIAGE, 2026-10-09)
+
+**Default off.** `lib/sourceTriage.js` ships with `SOURCE_TRIAGE_DEFAULT = 'off'`. While it is off, no model is called, no change is marked automatically, no digest is sent, and `GET /api/sources/freshness` returns exactly the shape above. The switch is a one-line code change to `'on'` (a later captain PR). The environment variable `SOURCE_TRIAGE=on|off` overrides the code default either way, so the owner can also turn it off on Render without a deploy.
+
+When on:
+
+- **Classification.** After each monitor batch, while the batch lease is still held, every pending change whose current hash has no decision is sent to the `triage` route of `lib/aiModels.js` (Claude Haiku 5.5, effort low, JSON schema output). The request contains the listings that cite the source (title, `dateLabel`, `costLabel`, venue, from `data/planner-catalog.json`, `data/discoveries.json` and `data/guide-catalog.json`) and the stored removed/added lines (at most 12 each, 300 characters per line), fenced as untrusted page data. The answer is `{material, fields[], summary_zh}` with fields from `date, time, price, location, cancel, eligibility, registration, phone, other`.
+- **Cosmetic changes** (material = false) are written as `reviewStatus: 'dismissed'`, `reviewedBy: 'auto-triage'`, `reviewNote: '自动分诊（非人工核对）：…'`. This is logged as an automatic decision. It is never shown as an editor review, and it never changes an item, its verified date or its cancellation status.
+- **Material changes** stay `pending` for an editor, with the decision stored in `triage` on the snapshot.
+- **Guards.** A change whose added lines contain cancellation, postponement, rescheduling or sold-out wording (English or Chinese) is never dismissed automatically. The `cancel` field, which makes the web show its "可能改期或取消" box at once, is kept only when an added line has such wording. Lines that only moved or repeated are decided without a model call.
+- **Safety of writes.** Every automatic write is a compare-and-set on `{sourceId, hash, reviewStatus: 'pending'}`: newer page text or an editor's review always wins. An unusable answer, refusal or timeout leaves the change pending; three failures for the same page version stop retries until the page changes again.
+- **Limits and cost.** At most 30 calls per pass and 200 per Pacific day (`SOURCE_TRIAGE_DAILY_LIMIT`, 0–2000). Each call is priced into the AI spend ledger (`ai-usd:*` documents). Measured cost is in the lane report; expect well under $0.05 per day.
+- **Stops by itself** when `ANTHROPIC_USE_UNTIL` has passed (or the key is missing). Changes then stay pending as before triage, and the digest says triage is off.
+- **48-hour window.** `pendingChange.firstDetectedAt` records when an unreviewed change was first seen; later changes before a review keep it. `detectedAt` is still the latest detection.
+
+**Freshness fields** (only when on; additive, old clients ignore them): `changedAt` (= `firstDetectedAt`, falling back to `detectedAt`), `material` (`true`/`false` for the current page version, `null` when undecided), `changeFields` (empty unless material), `reviewedBy` (`'auto-triage'`, `'editor'` or `null`; never a reviewer identity).
+
+**Owner digest.** Between 08:00 and 20:00 PT, once per Pacific day across instances (a `SourceMonitorLease` document `digest:YYYY-MM-DD`), a plain-text email lists: possible cancellations first, then material changes, then undecided changes, each with the official URL, the site URL and the hours waited; plus the number of automatic dismissals in the last 24 hours. It is sent through Resend (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`) only when triage is on, `NOTIFICATION_DELIVERY_ENABLED=true` and `OWNER_DIGEST_EMAIL` holds one address. Nothing is sent when nothing is pending. A failed send releases the day's claim; the Resend idempotency key prevents a duplicate. Tests and `NODE_ENV=test` never build a sender.
+
+**Organiser image candidates.** Every successful fetch records `og:image` (or `og:image:secure_url`), `og:image:alt`, declared width/height, `twitter:image` and `<title>` from the page head into `mediaCandidates`, with a `likelyLogo` hint (logo/icon file names, a declared or file-name width under 600). These are URLs and text only: nothing is downloaded, proxied or displayed, and they are not in the public response. Downloads still need the owner's per-item approved list.
+
+**Admin endpoints** (JWT + admin, `Cache-Control: no-store`):
+
+- `GET /api/admin/source-monitor` also returns `triage: {enabled, reason, day, calls, microUsd, dailyLimit, digest}` and, per source, `triage` and `mediaCandidates`.
+- `GET /api/admin/source-monitor/digest`: the digest that would be sent now, or `null`. Sends nothing.
+- `GET /api/admin/source-monitor/media-candidates`: sources that still run and have an image candidate, nearest listing date first, with `siteDefault` when three or more sources of one host share the image URL.
+
+**Dry run.** `node scripts/source-triage-dry-run.mjs --snapshots <admin export or rows> [--live --budget-usd 0.10]` classifies with the production code against an in-memory store and writes results outside the repository. `scripts/eval/source-triage-cases.json` is a 19-item casebook (11 material, 8 cosmetic) scored as missed-material, kept-cosmetic and field matches.
+
+`node --test tests/source-triage.test.js` covers the flag default, the use-until stop, auto-dismissal records, material changes, the guards, the request shape (Haiku, low effort, schema, no sampling parameters, fenced page lines), spend recording, compare-and-set against editors and newer text, failure limits, the daily limit, the first-detection window, image candidates, the public field gating, admin-only endpoints and the digest schedule.
