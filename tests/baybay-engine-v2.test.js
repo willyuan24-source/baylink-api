@@ -452,7 +452,7 @@ test('the v2 agent carries the v1 plan and research rules after the user turn; t
   assert.equal(guest.route.path, 'agent');
   const siteRules = rulesOf(sent[0]);
   for (const pattern of [/Plans and research/, /complete final ordered choice/, /within maxStops/, /fewer suitable stops/, /apply planEdit exactly/, /Weekly hours never guarantee/,
-    /city-only origin/, /admissionFacts/, /Check each traveler/, /Tool failures are unknowns/]) assert.match(siteRules, pattern);
+    /city-only origin/, /admissionFacts/, /Check each traveler/, /Tool failures are unknowns/, /never move a named place to another day/, /one point each/]) assert.match(siteRules, pattern);
   assert.doesNotMatch(siteRules, /verify_candidate|relatedSources/, 'site-only runs have no source-reading tools');
   assert.deepEqual(sent[0].system, systemBlocks(), 'block 1 stays frozen');
   assert.equal(sent[0].messages[0].role, 'user');

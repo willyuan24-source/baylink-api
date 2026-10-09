@@ -15,9 +15,9 @@ import { scoreTurn } from './gold.mjs';
 const EVAL_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(EVAL_DIR, '..', '..');
 
-/** Re-score stored rows with the casebook currently on disk. */
+/** Re-score stored rows with the casebook (and probe files) currently on disk. */
 export function rescoreRun(run) {
-  const golds = new Map(readdirSync(EVAL_DIR).filter(file => /^cases-[A-H]-.+\.json$/.test(file))
+  const golds = new Map(readdirSync(EVAL_DIR).filter(file => /^(?:cases-[A-H]-.+|probe-.+)\.json$/.test(file))
     .flatMap(file => JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')).cases.flatMap(item => item.turns)).map(turn => [turn.id, turn.gold]));
   const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json', 'discoveries.json', 'discoveries.en.json']
     .map(file => readFileSync(path.join(ROOT, 'data', file), 'utf8')).join('\n');
