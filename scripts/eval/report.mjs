@@ -15,9 +15,9 @@ import { scoreTurn } from './gold.mjs';
 const EVAL_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(EVAL_DIR, '..', '..');
 
-/** Re-score stored rows with the casebook currently on disk. */
+/** Re-score stored rows with the casebook (and probe files) currently on disk. */
 export function rescoreRun(run) {
-  const golds = new Map(readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file))
+  const golds = new Map(readdirSync(EVAL_DIR).filter(file => /^(?:cases-[A-H]-.+|probe-.+)\.json$/.test(file))
     .flatMap(file => JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')).cases.flatMap(item => item.turns)).map(turn => [turn.id, turn.gold]));
   const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json', 'discoveries.json', 'discoveries.en.json']
     .map(file => readFileSync(path.join(ROOT, 'data', file), 'utf8')).join('\n');
@@ -26,7 +26,7 @@ export function rescoreRun(run) {
     if (!gold || row.skipped || row.budgetStopped || row.error) continue;
     row.gold = scoreTurn(gold, { answer: row.answer, responseMode: row.responseMode, safetyRoute: row.safetyRoute,
       harnessRoute: ['outing', 'legacy'].includes(row.route) ? row.route : undefined, sources: row.sources, suggestedGuides: row.suggestedGuides,
-      localMatches: row.localMatches, research: { warnings: row.warnings } }, { corpus });
+      localMatches: row.localMatches, research: { warnings: row.warnings } }, { corpus: `${corpus}\n${row.message || ''}` });
   }
   run.meta = { ...run.meta, rescored: true };
   return run;
@@ -102,6 +102,24 @@ export function summarizeArm(rows, judgeRows = new Map()) {
       completeP50: percentile(model.map(row => row.timings?.completeMs), 50), completeP90: percentile(model.map(row => row.timings?.completeMs), 90),
     },
     usage: { inputTokens: sum('inputTokens'), cacheWriteTokens: sum('cacheWriteTokens'), cacheReadTokens: sum('cacheReadTokens'), outputTokens: sum('outputTokens') },
+    // API-BB-ENGINE: engine path, prompt caching and cards.
+    engine: (() => {
+      const fast = model.filter(row => row.routePath === 'fast'), agent = model.filter(row => row.routePath === 'agent');
+      const assistantCalls = row => (row.calls || []).filter(call => call.kind === 'assistant' && call.usage);
+      const multi = model.filter(row => assistantCalls(row).length >= 2);
+      const modelCalls = model.flatMap(assistantCalls);
+      return {
+        fastTurns: fast.length, agentTurns: agent.length,
+        fastCompleteP50: percentile(fast.map(row => row.timings?.completeMs), 50), fastCompleteP90: percentile(fast.map(row => row.timings?.completeMs), 90),
+        agentCompleteP50: percentile(agent.map(row => row.timings?.completeMs), 50),
+        callsWithCacheRead: modelCalls.filter(call => call.usage.cacheReadTokens > 0).length, modelCalls: modelCalls.length,
+        secondCallsWithCacheRead: multi.filter(row => assistantCalls(row)[1].usage.cacheReadTokens > 0).length, runsWithSecondCall: multi.length,
+        promptTokensP50: percentile(modelCalls.map(call => call.usage.inputTokens + call.usage.cacheWriteTokens + call.usage.cacheReadTokens), 50),
+        withCards: model.filter(row => (row.localMatches || []).length > 0).length,
+        withLead: model.filter(row => row.lead).length,
+        retries: model.filter(row => (row.warnings || []).some(warning => /^fast_retry_/.test(warning))).length,
+      };
+    })(),
     costUsd: cost,
     costPerModelTurn: model.length ? model.reduce((total, row) => total + (row.costUsd || 0), 0) / model.length : null,
     judgeCostUsd: [...judgeRows.values()].reduce((total, row) => total + (row.costUsd || 0), 0),
@@ -167,6 +185,12 @@ export function renderMarkdown(summary) {
   row('Tokens in / cache write / cache read / out', arm => `${arm.usage.inputTokens} / ${arm.usage.cacheWriteTokens} / ${arm.usage.cacheReadTokens} / ${arm.usage.outputTokens}`);
   row('Provider calls; refusals; max_tokens stops', arm => `${arm.providerCalls}; ${arm.refusals}; ${arm.tokenLimited}`);
   row('Voided attempts (rerun); still degraded', arm => `${arm.voidedAttempts}; ${arm.voidFinal.length}`);
+  row('Engine paths: fast / agent (model-answered)', arm => `${arm.engine.fastTurns} / ${arm.engine.agentTurns}`);
+  row('Fast-path complete p50 / p90', arm => arm.engine.fastTurns ? `${fmtS(arm.engine.fastCompleteP50)} / ${fmtS(arm.engine.fastCompleteP90)}` : 'n/a');
+  row('Prompt tokens per call p50', arm => arm.engine.promptTokensP50 == null ? 'n/a' : String(arm.engine.promptTokensP50));
+  row('Calls with cache read > 0', arm => `${arm.engine.callsWithCacheRead}/${arm.engine.modelCalls}`);
+  row('Second calls with cache read > 0 (multi-call runs)', arm => `${arm.engine.secondCallsWithCacheRead}/${arm.engine.runsWithSecondCall}`);
+  row('Answers with cards; with lead; fast retries', arm => `${arm.engine.withCards}; ${arm.engine.withLead}; ${arm.engine.retries}`);
   if (Object.keys(switches).length) {
     lines.push('', `## R0SWITCH check against ${baselineArm}`, '', 'Plan §3.1: code-gold >= baseline - 2, 0 safety misses, false negatives no worse, complete p50 <= 10 s. Safety counts misses on model-answered turns; deterministic misses (safety templates, degraded replays) are the same in every arm and are listed for API-BB-GUARD.', '',
       '| Arm | Code gold | Safety | False negatives | Complete p50 | Result |', '|---|---|---|---|---|---|');

@@ -12,7 +12,8 @@ const LEGACY_DEFAULTS = { baybay_agent: [9000, 28000], baybay_web: [4096, 35000]
   helper_conversation: [6000, 28000], helper_other: [6000, 28000] };
 
 // R0: the agent loop and guarded professional answers have their own default.
-const R0_ROUTES = new Set(['baybay_agent', 'baybay_professional']);
+// baybay_fast (API-BB-ENGINE, used only with BAYBAY_ENGINE=v2) shares the R0 default.
+const R0_ROUTES = new Set(['baybay_agent', 'baybay_professional', 'baybay_fast']);
 
 test('the plan routes exist; R0 routes default to Sonnet 5.5 low, every other default equals the pre-route request', () => {
   for (const name of ['baybay_fast', 'baybay_agent', 'baybay_professional', 'baybay_web', 'triage', 'helper_translate', 'helper_planner']) assert.ok(ROUTE_NAMES.includes(name), name);
@@ -62,7 +63,7 @@ test('per-route model overrides change one route; the helper group override cove
   assert.equal(aiRoute('baybay_professional', config).model, 'claude-sonnet-5-5', 'professional is not moved by the agent override');
   assert.equal(aiRoute('helper_translate', config).model, 'claude-haiku-5-5');
   assert.equal(aiRoute('helper_planner', config).model, 'claude-sonnet-5-5');
-  assert.equal(aiRoute('baybay_fast', config).model, 'claude-opus-5-5', 'the helper group never applies to BayBay routes');
+  assert.equal(aiRoute('baybay_fast', config).model, 'claude-sonnet-5-5', 'the helper group never applies to BayBay routes (fast keeps its own default)');
   // The R0 rollback is one variable per route, and it restores the pre-R0 request:
   // the model from the variable and the effort from the legacy rule (medium unless
   // ANTHROPIC_BAYBAY_EFFORT=low), unless BAYBAY_EFFORT_<ROUTE> says otherwise.

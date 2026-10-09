@@ -43,7 +43,7 @@ const { baybayWebAccess } = require(path.join(ROOT, 'lib/baybayAccess'));
 
 // A probe replaces the scored casebook with its own file (block T), e.g. the
 // tool-round probe that forces a tool_use round before the tool_choice:none synthesis.
-const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json' });
+const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json', 'agent-path': 'probe-agent-path.json' });
 const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id] [--probe tool-rounds]
        [--run-id <id>] [--out <dir outside the repo>] [--now <ISO>] [--concurrency 1-3] [--max-reruns N]
        [--no-judge] [--resume] [--live --budget-usd <USD>]
@@ -81,7 +81,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 function loadCasebook(probe) {
-  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).sort();
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-H]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);
@@ -121,7 +121,10 @@ function gitHead() {
 }
 
 function syntheticResponse(body) {
-  const text = JSON.stringify({ answer: 'Dry-run synthetic answer. No provider was called.', candidateIds: [], followups: [], coverage: [] });
+  // A v2 request (BAYBAY_ENGINE=v2) asks for the lead-first schema.
+  const v2 = !!body.output_config?.format?.schema?.properties?.lead;
+  const text = JSON.stringify(v2 ? { lead: 'Dry-run synthetic answer.', points: [{ text: 'No provider was called.', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' }
+    : { answer: 'Dry-run synthetic answer. No provider was called.', candidateIds: [], followups: [], coverage: [] });
   return new Response(JSON.stringify({ id: 'msg_dry_run', type: 'message', role: 'assistant', model: body.model, stop_reason: 'end_turn',
     content: [{ type: 'text', text }], usage: { input_tokens: Math.ceil(JSON.stringify(body).length / 3), output_tokens: 60, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } }),
   { status: 200, headers: { 'content-type': 'application/json' } });
@@ -282,9 +285,10 @@ async function main() {
     const usage = ctx.calls.reduce((sum, call) => { for (const key of Object.keys(sum)) sum[key] += call.usage?.[key] || 0; return sum; }, { inputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0, outputTokens: 0, webSearches: 0 });
     const model = route === 'assistant';
     return {
-      runId, arm, model: armConfigs[arm].routes.agent.model, effort: armConfigs[arm].routes.agent.effort, professionalModel: armConfigs[arm].routes.professional.model,
+      runId, arm, model: armConfigs[arm].routes.agent.model, effort: armConfigs[arm].routes.agent.effort, professionalModel: armConfigs[arm].routes.professional.model, fastModel: armConfigs[arm].routes.fast.model,
       caseId: item.id, turnId: turn.id, block: item.block, locale: item.locale, currentPath: item.currentPath, tags: [...new Set([...(item.tags || []), ...(turn.tags || [])])], message: turn.message,
       route, responseMode: payload?.responseMode, safetyRoute: payload?.safetyRoute, legacyReason: payload?.legacyReason,
+      engine: payload?.engine || 'v1', routePath: payload?.route?.path || (route === 'assistant' ? 'agent' : route), routeReason: payload?.route?.reason, lead: payload?.lead || null, points: payload?.points || null,
       degraded: !!payload?.degraded, degradedReplay: !!item.degradedReplay, voidedAttempts: attempts - 1, voidFinal: !!outcome.voidFinal, budgetStopped: !!outcome.budgetStopped, error,
       answer: payload?.answer || '', answerChars: String(payload?.answer || '').length,
       sources: (payload?.sources || []).map(({ title, url }) => ({ title, url })),
@@ -295,7 +299,7 @@ async function main() {
       calls: ctx.calls, toolRounds: toolRounds(ctx.calls), usage, costUsd: +ctx.calls.reduce((sum, call) => sum + (call.costUsd || 0), 0).toFixed(6),
       timings: { firstCardMs: ctx.firstCardMs ?? null, ttftMs: model ? ctx.calls.find(call => call.headersMs != null)?.headersMs ?? null : completeMs,
         leadMs: ctx.firstDraftMs ?? completeMs, leadSource: ctx.firstDraftMs != null ? 'draft-event' : 'answer-complete', completeMs, progress: ctx.progress, stages: payload?.research?.timings || null },
-      gold: error ? { pass: false, checks: [{ id: 'run_error', ok: false, detail: error }], route, falseNegative: false, falseNegativeCaught: false, safetyMiss: !!turn.gold.safety } : scoreTurn(turn.gold, payload, { corpus: catalogs.corpus }),
+      gold: error ? { pass: false, checks: [{ id: 'run_error', ok: false, detail: error }], route, falseNegative: false, falseNegativeCaught: false, safetyMiss: !!turn.gold.safety } : scoreTurn(turn.gold, payload, { corpus: `${catalogs.corpus}\n${turn.message}` }),
     };
   }
 

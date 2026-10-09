@@ -10,7 +10,7 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 | --- | --- | --- | --- |
 | `baybay_agent` | Unified BayBay research and synthesis loop (`lib/baybayAgent.js`) | caller's 6,000 / 9,000 (passed through, no ceiling); 25 s / 28 s | **R0 default `claude-sonnet-5-5`, effort `low`**; the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT` no longer apply. `baybayModel()` and `/api/ai/baybay-capabilities` report this route's model |
 | `baybay_web` | Native Claude web search (`lib/anthropicWebSearch.js`) | 4,096; caller's 35 s | Never resolves to Haiku 5.5 (web search on it is unverified) |
-| `baybay_fast` | Not wired yet (API-BB-ENGINE) | 4,000; 28 s | |
+| `baybay_fast` | The v2 single-call fast path (`lib/baybayFastPath.js`), only with `BAYBAY_ENGINE=v2` | 4,000; 28 s | Default `claude-sonnet-5-5`, effort `low` (the R0 default); `BAYBAY_MODEL_FAST=claude-haiku-5-5` is the cheap tier. Guarded professional topics never use this route (they use `baybay_professional`) |
 | `baybay_professional` | Guarded professional-topic runs: `lib/baybayAgent.js` creates each run with `route: baybayRoute({ safetyTopic })` | caller's value, no ceiling; 28 s | **R0 default `claude-sonnet-5-5`, effort `low`**. Never resolves to Haiku 5.5 (RC-20), whatever variable names it. On this route the adapter sends the route's model, not the agent's |
 | `baybay_legacy` | Not wired yet; `server.js` legacy guide chat still reads the legacy variables | 4,096; 28 s | |
 | `helper_translate`, `helper_post_assist`, `helper_outing`, `helper_planner`, `helper_event_extract`, `helper_conversation`, `helper_other` | `requestAnthropicJson` callers | caller's value (6,000; planner 4,000), capped at 9,000; 28 s | Callers name their route; post-assist (in `server.js`) is inferred from the governed request path |
@@ -97,8 +97,38 @@ BAYBAY_MODEL_PROFESSIONAL=claude-opus-5-5
 - 部署后核对：`curl -s https://baylink-api.onrender.com/api/ai/baybay-capabilities` 里的 `configuredModel` 应是 `claude-sonnet-5-5`（回滚后是 `claude-opus-5-5`）；Render 日志里不应出现针对这些变量的 `[ai-models] ignored`（写错值会被忽略，路由保持默认）。
 - 换模型或 effort 会让该路由的 prompt cache 重新开始，属于预期。
 
+## BAYBAY_ENGINE=v2（API-BB-ENGINE）
+
+`BAYBAY_ENGINE` 不设（或设为 `v1`）时，BayBay 发出的请求和以前逐字节相同。设为 `v2`（只对 Claude provider 生效）后：
+
+| 部分 | 行为 |
+| --- | --- |
+| 路由（`lib/baybayRouter.js`） | 调模型前确定：行程、改行程、追问已发布的行程、点名两个以上地点、会员联网问题走原来的 agent 循环；任务状态没认成行程、但明显是在排行程的话（"幫我排行程""Plan a Saturday in SF""帮我排一下顺序""顺便排一下"，`asksForPlan`，原因 `plan_request`）也走 agent，和 v1 一样有 create_plan 可用；其他（约八成以上，含专业话题）走一次调用的 fast path |
+| fast path（`lib/baybayFastPath.js`） | 一次调用、无工具；`baybay_fast` 路由（专业话题用 `baybay_professional`，永不 Haiku）；`max_tokens` 4,000；结构化输出 `{lead, points[{text, cardIds}], candidateIds, followups, coverage, gap}`，服务端拼出旧的 `answer`，原有 finish() 护栏全部照用；无效输出或对当前页／点名记录说"站内没有"时，用 Sonnet 5.5 low 重试一次 |
+| 检索（`buildFastEvidence`） | 别名（舰队周/蓝天使 → Fleet Week、笔试/路考 → DMV 驾照攻略等）、按县的城市召回（San Jose → Santa Clara 县电话）、优惠和新店（discoveries）入索引、相关性门槛；办事类问题（DMV、Medi-Cal、Medicare、养老金、图书馆卡、中文医生、防诈骗）只保留提到该主题的资料；最多 10 条、每条 ≤400 字，带星期的日期，BAYLINK 页面在前 |
+| agent 循环 | 行程和研究规则：v1 SYSTEM 里冻结第 1 块没有的那部分（行程必须 create_plan，candidateIds 是完整、有序、不超过 maxStops 的最终选择；宁少勿多；保留用户点名的地点、按 planEdit 只改指定那一站；每周营业时间不等于某天一定开门；只有城市的出发点要问具体出发地点；用 admissionFacts 讲门票，按每位同行者分别核对，一张卡的优惠不等于同行的人也免费；工具失败是"未知"而不是否定事实；不说已预订/已购买）作为 `role:'system'` 规则发在用户消息之后，冻结的第 1 块不变。会员模式另加两条：网上新找到的活动要先读来源、核实名称/城市/含年份的日期才能放进行程；优惠和资格先读已知官方页面及其 relatedSources 条款页 |
+| agent 循环（会员联网） | 服务器的联网预搜索结果（摘要 + 来源 id）放进第一轮；会员要求"打开官网核对"时，`read_source` 可以直接用资料编号（e1、page、r1）打开该记录的**官方**页面（不是 BAYLINK 页面），打不开时如实说明 |
+| 代订请求 | 只认对 BayBay 说的请求（`isBookingRequest`：句首的"帮我/给我/请你/你能不能帮我…订/买"，或 "can you / please / help me book…"）：直接回答 BayBay 不能代订、去哪里自己订，不再反问"哪个湾区城市"。"老公说要给我买包，哪里有奥特莱斯""给我买点建议吧""帮我买什么礼物好""Can you buy tickets at the door?"这类问题不算代订；"帮我订个周六的行程"仍按行程处理 |
+| 缓存 | system 第 1 块冻结（不含日期、模式、用户信息），带 `cache_control`；本轮条件规则放在用户消息后的 `role:'system'` 消息里（模型不支持时自动改成 `<system-reminder>`）；agent 循环用顶层自动缓存，第二次调用读第一次的前缀，最后一轮只发新增内容 |
+| 新增返回字段 | `engine`、`route{path,reason}`、`lead`、`points`、`gap`、`pageEntity`；`answer` 照旧。`points[].cardIds` 只含本次 `localMatches` 里真的返回的卡片（`kind:id`；有攻略页的地点显示成攻略卡 `guide:…`，没有 BAYLINK 页面的场馆不出卡，也不出现在 cardIds） |
+| 不返回 `lead`/`points` 的情况 | 前端此时只显示 `answer`：澄清问题；没有模型回答（模型不可用、额度用完、餐饮证据不足的固定回答）；多部分问题（`checklist.complex`，按 checklist 分段回答）；行程引用被修复（`answer_plan_citations_repaired` / `answer_plan_sources_missing`）；护栏改写了回答（"站内没有"误报模板、学区、票价冲突、未证实的行程保证、超出湾区、邻里帖子缺席、去掉登录推销）；引用渲染对不上。护栏只是在末尾补官方电话时，补的那行变成最后一个 point |
+| lead 长度 | 提示要求中文 ≤40 字、英文 ≤20 词，服务器不截断；超过时只在 `research.warnings` 记 `answer_lead_long` |
+
+**切换与回滚（Render 环境变量，改完重新部署）：**
+
+```
+BAYBAY_ENGINE=v2                      # 打开 v2（默认 fast path = Sonnet 5.5 low）
+BAYBAY_MODEL_FAST=claude-haiku-5-5    # 可选：fast path 改用 Haiku 5.5（行程与专业话题仍是 Sonnet low）
+BAYBAY_EFFORT_FAST=low                # 换模型时显式指定 effort
+```
+
+- 回滚：删掉 `BAYBAY_ENGINE`（或设为 `v1`），立即回到 v1。
+- 改 `BAYBAY_MODEL_FAST`、`BAYBAY_EFFORT_FAST` 或 `ANTHROPIC_BAYBAY_EFFORT` 会让对应路由的 prompt cache 重新开始（缓存按模型与 effort 区分），属于预期。
+- 部署后核对：随便问一句，响应 JSON 里 `engine` 为 `v2`、`route.path` 为 `fast`；`/api/admin/ai-metrics` 的 `cacheReadTokens` 应开始大于 0。
+- 缓存命中率别按评测的 100% 期待：评测是连续跑、都在 5 分钟缓存有效期内。线上流量稀疏时 fast path 常常读不到缓存，每次冷启动要为约 3k tokens 的第 1 块付 1.25 倍的缓存写入费。部署后的信号是 `cacheReadTokens > 0`，不是某个命中率。
+
 ## What this does not do
 
-- No `cache_control`, no streaming and no prompt changes: those belong to API-BB-ENGINE, API-BB-STREAM and API-BB-CUTOVER and are gated by the eval. (The R0 model default above came later, from API-BB-R0.)
+- No streaming: that is API-BB-STREAM (the v2 schema puts `lead` first so it can be streamed). Caching and the prompt layout are v2-only (above). (The R0 model default above came later, from API-BB-R0.)
 - `server.js` (legacy guide chat) is not touched; it keeps reading `ANTHROPIC_BAYBAY_MODEL` / `ANTHROPIC_BAYBAY_EFFORT` until a `server.js`-owning lane switches it to `aiRoute('baybay_legacy', config)`.
 - The admin endpoint does not yet show `getSpendState()`; the per-day cost is visible in `runtime.daily[].costMicroUsd`.
