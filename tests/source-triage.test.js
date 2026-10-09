@@ -4,7 +4,7 @@ const express = require('express');
 const { createSourceMonitor, createMongoStore, registerSourceMonitor, mediaCandidates, fetchSource, INTERVAL_MS } = require('../lib/sourceMonitor');
 const {
   SOURCE_TRIAGE_DEFAULT, TRIAGE_FIELDS, triageFlag, triageState, digestState, createSourceTriage, createItemIndex, triageMessages, normalizeTriage, applyGuards,
-  buildDigest, createDigestScheduler, resendSender, freshnessFields,
+  buildDigest, createDigestScheduler, resendSender, freshnessFields, factText,
 } = require('../lib/sourceTriage');
 const { requestAnthropicJson } = require('../lib/anthropicJson');
 
@@ -188,39 +188,171 @@ test('expired sources are never classified', async () => {
   assert.equal((await triage.run()).triaged, 0); assert.equal(fake.bodies.length, 0);
 });
 
-test('clock and counter churn reuses an earlier cosmetic decision; any new kind of line goes back to the model', async () => {
+test('clock and counter churn reuses an earlier cosmetic decision for 7 days; a moved date or a new line goes back to the model', async () => {
   const { store, service, claude, setLines, advance } = fixture({ decide: user => /October 24/.test(user)
     ? { material: true, fields: ['date'], summary_zh: '日期改为 10/24' } : { material: false, fields: [], summary_zh: '页面检查时间更新' } });
   const stamp = value => [...BASE, `Last Checked: ${value}`];
-  await service.run(); setLines(source.id, stamp('10/8/2026 10:39 PM')); advance(); await service.run();
-  assert.equal(claude.bodies.length, 1); assert.equal(store.rows.get(source.id).triage.decidedBy, 'model');
-  assert.ok(store.rows.get(source.id).triage.cosmeticShapes.includes('last checked: #/#/# #:# pm'));
-  setLines(source.id, stamp('10/9/2026 4:39 PM')); advance(); await service.run();
+  setLines(source.id, stamp('10/8/2026 4:39 AM')); await service.run();
+  setLines(source.id, stamp('10/8/2026 10:39 AM')); advance(); await service.run();
   let row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 1); assert.equal(row.triage.decidedBy, 'model');
+  assert.deepEqual(row.triage.cosmeticMemo.added.map(([key]) => key), ['last checked: #/#/# #:# am']);
+  setLines(source.id, stamp('10/9/2026 4:39 AM')); advance(); await service.run();
+  row = store.rows.get(source.id);
   assert.equal(claude.bodies.length, 1); assert.equal(row.triage.decidedBy, 'repeat'); assert.equal(row.reviewStatus, 'dismissed'); assert.equal(row.reviewedBy, 'auto-triage');
-  // Same digit shape is not enough when a new kind of line changes too.
+  assert.equal(row.triage.summaryZh, '页面检查时间更新');
+  // The clock is still churn, but the date line is a new question; the memory survives the material decision.
   setLines(source.id, [BASE[0].replace('October 17', 'October 24'), ...BASE.slice(1), 'Last Checked: 10/10/2026 4:39 AM']); advance(); await service.run();
   row = store.rows.get(source.id);
-  assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'pending'); assert.equal(row.triage.material, true); assert.equal(row.triage.cosmeticShapes, undefined);
+  assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'pending'); assert.equal(row.triage.material, true);
+  assert.equal(row.triage.cosmeticMemo.added.length, 1);
+  // Remembered lines expire after 7 days: the same clock churn is asked again.
+  const later = fixture({ decide: () => ({ material: false, fields: [], summary_zh: '页面检查时间更新' }) });
+  later.setLines(source.id, stamp('10/8/2026 4:39 AM')); await later.service.run();
+  later.setLines(source.id, stamp('10/8/2026 10:39 AM')); later.advance(); await later.service.run();
+  later.setLines(source.id, stamp('10/16/2026 4:39 AM')); later.advance(7 * 86400000); await later.service.run();
+  assert.equal(later.claude.bodies.length, 2); assert.equal(later.store.rows.get(source.id).triage.decidedBy, 'model');
 });
 
-test('an unreviewed material change on a page with a clock is not re-sent on every fetch; a reverted or new line is', async () => {
-  const { store, service, claude, setLines, advance } = fixture({ decide: user => /October 24/.test(user)
+test('stamp and counter digits are churn; every other digit on the line is a fact', () => {
+  const stream = (start, updated) => `Sections of the Stream Trail at Dr. Aurelia Reinhardt Redwood Regional Park will be closed for repairs beginning Mon., ${start}, 2026 from Trail's End through Fern Trail. In late September and early October, a section of Stream Trail will be shutdown at Old Church Picnic site. Updated ${updated}, 2026.`;
+  assert.equal(factText('Last Checked: 10/9/2026 2:09 AM'), 'last checked: #/#/# #:# am');
+  assert.equal(factText('Updated: 2026-10-09 02:15'), 'updated: #-#-# #:#');
+  assert.equal(factText('1,353 Going'), '#,# going');
+  assert.equal(factText('Lauriane Nayal, James Knurbein and 1,351 others'), 'lauriane nayal, james knurbein and #,# others');
+  assert.equal(factText('Last Updated: Nov 01, 2025 Views: 112481'), 'last updated: nov #, # views: #');
+  assert.equal(factText('88&deg;F'), '#&deg;f');
+  // Opening hours, closure dates, prices and distances keep their digits.
+  assert.equal(factText('Open 11 AM–5 PM'), 'open 11 am–5 pm');
+  assert.equal(factText('Admission $20; kids under 12 free'), 'admission $20; kids under 12 free');
+  assert.match(factText(stream('Aug. 24', 'October 08')), /beginning mon\., aug\. 24, 2026 from .* updated october #, #\.$/);
+  assert.equal(factText(stream('Aug. 24', 'October 08')), factText(stream('Aug. 24', 'October 09')));
+  assert.notEqual(factText(stream('Aug. 24', 'October 08')), factText(stream('Aug. 31', 'October 09')));
+  const tilden = updated => `The upper 0.43 miles of Laurel Canyon Trail in the Tilden Nature Area is closed until further notice due to storm damage. Updated ${updated}, 2026.`;
+  assert.equal(factText(tilden('October 08')), factText(tilden('October 09')));
+  assert.notEqual(factText(tilden('October 08')), factText(tilden('October 08').replace('0.43', '0.6')));
+});
+
+test('a remembered stamp line does not hide a changed closure date on the same line (EBRPD Stream Trail)', async () => {
+  const stream = (start, updated) => `Sections of the Stream Trail at Dr. Aurelia Reinhardt Redwood Regional Park will be closed for repairs beginning Mon., ${start}, 2026 from Trail's End through Fern Trail. In late September and early October, a section of Stream Trail will be shutdown at Old Church Picnic site. Updated ${updated}, 2026.`;
+  const page = (start, updated) => [...BASE, stream(start, updated), `Updated ${updated}, 2026.`];
+  const { store, service, claude, setLines, advance } = fixture({ decide: user => /Aug\. 31/.test(user)
+    ? { material: true, fields: ['date'], summary_zh: '施工封路开始日改为 8/31' } : { material: false, fields: [], summary_zh: '只是页面更新日期变化' } });
+  setLines(source.id, page('Aug. 24', 'October 08')); await service.run();
+  setLines(source.id, page('Aug. 24', 'October 09')); advance(); await service.run();
+  assert.equal(claude.bodies.length, 1); assert.equal(store.rows.get(source.id).reviewStatus, 'dismissed');
+  // Stamp churn on both lines: reused without a call.
+  setLines(source.id, page('Aug. 24', 'October 10')); advance(); await service.run();
+  let row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 1); assert.deepEqual([row.triage.decidedBy, row.reviewStatus, row.reviewedBy], ['repeat', 'dismissed', 'auto-triage']);
+  // The closure start moved inside the remembered line: a new question, kept for an editor.
+  setLines(source.id, page('Aug. 31', 'October 11')); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 2); assert.deepEqual([row.triage.decidedBy, row.triage.material, row.reviewStatus], ['model', true, 'pending']);
+});
+
+test('opening hours judged cosmetic once are not reused for a different time', async () => {
+  const { store, service, claude, setLines, advance } = fixture({ decide: () => ({ material: false, fields: [], summary_zh: '今日开放时间小组件' }) });
+  const hours = open => [...BASE, `Open ${open} AM–5 PM`];
+  setLines(source.id, hours(11)); await service.run();
+  setLines(source.id, hours(10)); advance(); await service.run();
+  assert.equal(claude.bodies.length, 1);
+  // 10 -> 11 was seen only as a removed line: asked once more, then the alternation is remembered.
+  setLines(source.id, hours(11)); advance(); await service.run();
+  assert.equal(claude.bodies.length, 2);
+  setLines(source.id, hours(10)); advance(); await service.run();
+  assert.equal(claude.bodies.length, 2); assert.equal(store.rows.get(source.id).triage.decidedBy, 'repeat');
+  // A time never judged before always goes to the model.
+  setLines(source.id, hours(9)); advance(); await service.run();
+  assert.equal(claude.bodies.length, 3); assert.equal(store.rows.get(source.id).triage.decidedBy, 'model');
+});
+
+test('a cut-off diff is rebuilt from the page texts, so a material line past line 12 reaches the model', async () => {
+  const photos = start => Array.from({ length: 15 }, (_, index) => `Photo ${start + index}: sunset over the market stalls`);
+  const { store, service, claude, setLines, advance } = fixture({ decide: user => /CreekWalk Plaza/.test(user)
+    ? { material: true, fields: ['location'], summary_zh: '地点改为 CreekWalk Plaza' } : { material: false, fields: [], summary_zh: '只是社交媒体图片更新' } });
+  setLines(source.id, [...BASE, ...photos(1), 'Location: Main Street & Town Square']); await service.run();
+  setLines(source.id, [...BASE, ...photos(101), 'Location: CreekWalk Plaza']); advance(); await service.run();
+  const row = store.rows.get(source.id);
+  assert.equal(row.pendingChange.summary, '12+ removed / 12+ added lines'); assert.ok(!row.pendingChange.added.includes('Location: CreekWalk Plaza'));
+  const user = claude.bodies[0].messages[0].content[0].text;
+  assert.match(user, /- Location: CreekWalk Plaza/); assert.doesNotMatch(user, /only the first/);
+  assert.deepEqual([row.reviewStatus, row.triage.material, row.triage.fields], ['pending', true, ['location']]);
+});
+
+test('a diff still cut off at 40 lines is never dismissed on a cosmetic verdict', async () => {
+  const many = start => Array.from({ length: 45 }, (_, index) => `Post ${start + index}: weekend photos from our community`);
+  const { store, service, claude, setLines, advance } = fixture();
+  setLines(source.id, [...BASE, ...many(1)]); await service.run();
+  setLines(source.id, [...BASE, ...many(101)]); advance(); await service.run();
+  let row = store.rows.get(source.id);
+  assert.match(claude.bodies[0].messages[0].content[0].text, /only the first 40 differing lines are shown/);
+  assert.deepEqual([row.reviewStatus, row.triage.material, row.triage.fields, row.triage.guards], ['pending', true, ['other'], ['truncated-diff']]);
+  assert.equal(row.triage.summaryZh, '改动超过 40 行，未能完整判断，请人工查看'); assert.equal(row.triage.cosmeticMemo, undefined);
+  // Without the stored page texts the 12-line diff stays cut off and pending too.
+  const bare = { ...memoryStore(), get: undefined };
+  bare.rows.set(source.id, { sourceId: source.id, hash: 'a'.repeat(64), reviewStatus: 'pending', pendingChange: { removed: many(1).slice(0, 12), added: many(101).slice(0, 12), summary: '12+ removed / 12+ added lines', detectedAt: 1 } });
+  const fake = fakeClaude(() => ({ material: false, fields: [], summary_zh: '社交媒体更新' }));
+  await createSourceTriage({ store: bare, registry: [source], config: ON, now: () => Date.UTC(2026, 9, 6, 15), logger: { info() {}, warn() {} }, items, fetchImpl: fake.fetchImpl }).run();
+  row = bare.rows.get(source.id);
+  assert.match(fake.bodies[0].messages[0].content[0].text, /only the first 12 differing lines are shown/);
+  assert.deepEqual([row.reviewStatus, row.triage.guards], ['pending', ['truncated-diff']]);
+});
+
+test('the daily call limit is kept in storage across restarts', async () => {
+  const counts = new Map();
+  const store = { ...memoryStore(), triageCalls: async day => counts.get(day) || 0, addTriageCalls: async (day, calls) => { counts.set(day, (counts.get(day) || 0) + calls); } };
+  const pending = (id, letter) => store.rows.set(id, { sourceId: id, hash: letter.repeat(64), reviewStatus: 'pending', pendingChange: { removed: [`old ${id}`], added: [`new ${id}`], detectedAt: 1 } });
+  const make = () => { const fake = fakeClaude(() => ({ material: true, fields: ['date'], summary_zh: '日期变化' }));
+    return { fake, triage: createSourceTriage({ store, registry: [source, other], config: ON, now: () => Date.UTC(2026, 9, 9, 15), logger: { info() {}, warn() {} }, items, fetchImpl: fake.fetchImpl, dailyLimit: 1 }) }; };
+  pending(source.id, 'a');
+  const first = make(); await first.triage.run();
+  assert.equal(first.fake.bodies.length, 1); assert.deepEqual([...counts], [['2026-10-09', 1]]);
+  // A restarted process starts from the stored count, not from zero.
+  pending(other.id, 'b');
+  const second = make(); const report = await second.triage.run();
+  assert.equal(second.fake.bodies.length, 0); assert.equal(report.limited, true); assert.equal(store.rows.get(other.id).triage, undefined);
+});
+
+test("an automatic dismissal keeps the last editor review readable", async () => {
+  const { store, service, setLines, advance } = fixture();
+  setLines(source.id, [...BASE, 'One']); await service.run(); setLines(source.id, [...BASE, 'Two']); advance(); await service.run();
+  // A row reviewed before this field existed: the editor's review is copied once.
+  const legacy = store.rows.get(source.id);
+  Object.assign(legacy, { reviewStatus: 'pending', reviewedBy: 'admin-1', lastReviewedAt: 1234, lastEditorReviewAt: undefined, triage: undefined });
+  const triage = createSourceTriage({ store, registry: [source], config: ON, now: () => Date.UTC(2026, 9, 9, 15), logger: { info() {}, warn() {} }, items, fetchImpl: fakeClaude(() => ({ material: false, fields: [], summary_zh: '无关' })).fetchImpl });
+  await triage.run();
+  let row = store.rows.get(source.id);
+  assert.deepEqual([row.reviewedBy, row.lastEditorReviewAt, row.lastEditorReviewedBy], ['auto-triage', 1234, 'admin-1']);
+  // An editor review sets both; a later automatic dismissal leaves the editor's fields alone.
+  await service.review(source.id, row.hash, 'acknowledged', '', 'admin-2');
+  const reviewedAt = store.rows.get(source.id).lastEditorReviewAt;
+  setLines(source.id, [...BASE, 'Three']); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.deepEqual([row.reviewedBy, row.lastEditorReviewAt, row.lastEditorReviewedBy], ['auto-triage', reviewedAt, 'admin-2']);
+});
+
+test('an unreviewed material change on a page with a clock is not re-sent on every fetch; a reverted line or a moved date is', async () => {
+  const { store, service, claude, setLines, advance } = fixture({ decide: user => /October 31/.test(user) ? { material: true, fields: ['date'], summary_zh: '日期改为 10/31' } : /October 24/.test(user)
     ? { material: true, fields: ['date'], summary_zh: '日期改为 10/24' } : { material: false, fields: [], summary_zh: '页面检查时间更新' } });
   const moved = [BASE[0].replace('October 17', 'October 24'), ...BASE.slice(1)];
   await service.run(); setLines(source.id, [...moved, 'Last Checked: 10/8/2026 10:39 PM']); advance(); await service.run();
   let row = store.rows.get(source.id);
   assert.equal(claude.bodies.length, 1); assert.deepEqual([row.triage.material, row.triage.decidedBy], [true, 'model']);
-  assert.equal(row.triage.chain, row.pendingChange.firstDetectedAt); assert.equal(row.triage.materialShapes.length, 2);
+  assert.equal(row.triage.chain, row.pendingChange.firstDetectedAt); assert.equal(typeof row.triage.diffKey, 'string');
   // Only the clock moved: same still-unreviewed change, same line shapes, no call.
   setLines(source.id, [...moved, 'Last Checked: 10/9/2026 4:39 PM']); advance(); await service.run();
   row = store.rows.get(source.id);
   assert.equal(claude.bodies.length, 1); assert.deepEqual([row.reviewStatus, row.triage.material, row.triage.fields, row.triage.decidedBy], ['pending', true, ['date'], 'repeat']);
-  assert.equal(row.triage.hash, row.hash);
-  // The date reverted and only the clock differs from the baseline: a new question.
-  setLines(source.id, [...BASE, 'Last Checked: 10/9/2026 10:39 AM']); advance(); await service.run();
+  assert.equal(row.triage.hash, row.hash); assert.equal(row.triage.summaryZh, '日期改为 10/24');
+  // The date moved again inside the same unreviewed change: asked again, so the summary is not stale.
+  setLines(source.id, [BASE[0].replace('October 17', 'October 31'), ...BASE.slice(1), 'Last Checked: 10/9/2026 10:39 PM']); advance(); await service.run();
   row = store.rows.get(source.id);
-  assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'dismissed'); assert.equal(row.triage.materialShapes, undefined);
+  assert.equal(claude.bodies.length, 2); assert.deepEqual([row.reviewStatus, row.triage.decidedBy, row.triage.summaryZh], ['pending', 'model', '日期改为 10/31']);
+  // The date reverted and only the clock differs from the baseline: a new question.
+  setLines(source.id, [...BASE, 'Last Checked: 10/10/2026 4:39 AM']); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 3); assert.equal(row.reviewStatus, 'dismissed'); assert.equal(row.triage.diffKey, undefined);
   // Cancellation wording is never decided from memory.
   const fresh = fixture({ decide: () => ({ material: true, fields: ['cancel'], summary_zh: '活动取消' }) });
   await fresh.service.run(); fresh.setLines(source.id, [...BASE, 'Saturday is cancelled due to rain.', 'Last Checked: 10/8/2026 10:39 PM']); fresh.advance(); await fresh.service.run();
@@ -392,4 +524,22 @@ test('Mongo store: triage writes are compare-and-set on the pending hash; one di
   assert.equal(await store.triage('source-fixture', 'e'.repeat(64), { triage: {} }), null);
   assert.deepEqual(filter, { sourceId: 'source-fixture', hash: 'e'.repeat(64), reviewStatus: 'pending' });
   assert.equal(await store.claimDigest('2026-10-09', 1), true); assert.equal(await store.claimDigest('2026-10-09', 2), false);
+});
+
+test('Mongo store: the triage queue never loads page texts; a cut-off diff reads them for one source; calls are counted per day', async () => {
+  const selected = [], updates = [];
+  const query = (result, filter) => ({ select: fields => { selected.push([filter, fields]); return { lean: async () => result }; } });
+  const snapshot = { find: filter => query([], filter), findOne: filter => query({ hash: 'e'.repeat(64), pendingChange: { before: 'a', after: 'b' } }, filter) };
+  const lease = { findOne: filter => query(filter._id === 'triage-calls:2026-10-09' ? { calls: 7 } : null, filter), updateOne: async (...args) => { updates.push(args); return {}; } };
+  const store = createMongoStore({}, { SourceMonitorSnapshot: snapshot, SourceMonitorLease: lease });
+  await store.pendingForTriage();
+  const [queueFilter, queueFields] = selected[0];
+  assert.deepEqual(queueFilter, { reviewStatus: 'pending', pendingChange: { $exists: true } });
+  for (const field of ['pendingChange.removed', 'pendingChange.added', 'pendingChange.summary', 'triage', 'reviewedBy', 'lastReviewedAt', 'lastEditorReviewAt']) assert.ok(queueFields.split(' ').includes(field), field);
+  assert.ok(!/before|after|\btext\b/.test(queueFields));
+  assert.deepEqual(await store.pendingText('source-fixture'), { hash: 'e'.repeat(64), pendingChange: { before: 'a', after: 'b' } });
+  assert.deepEqual(selected[1], [{ sourceId: 'source-fixture' }, 'hash pendingChange.before pendingChange.after']);
+  assert.equal(await store.triageCalls('2026-10-09'), 7); assert.equal(await store.triageCalls('2026-10-10'), 0);
+  await store.addTriageCalls('2026-10-09', 1);
+  assert.deepEqual(updates[0], [{ _id: 'triage-calls:2026-10-09' }, { $inc: { calls: 1 }, $setOnInsert: { owner: 'source-triage', expiresAt: 0, lastStartedAt: 0 } }, { upsert: true }]);
 });

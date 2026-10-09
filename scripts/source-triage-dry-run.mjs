@@ -10,8 +10,10 @@
 //
 // <file.json> is either the admin export (GET /api/admin/source-monitor, saved
 // by an administrator) or an array of rows shaped like it:
-//   { id | sourceId, hash, reviewStatus: 'pending', pendingChange: { removed[], added[], summary, detectedAt } }
-// Rows whose id is not in data/source-registry.json are skipped. `--now` (or a
+//   { id | sourceId, hash, reviewStatus: 'pending', pendingChange: { removed[], added[], summary, detectedAt, before?, after? } }
+// Rows whose id is not in data/source-registry.json are skipped. When a stored diff was
+// cut off at 12 lines and the row carries the page texts (pendingChange.before/after, as
+// the admin export does), triage rebuilds it with up to 40 lines per side, as in production. `--now` (or a
 // top-level `now` in the file, as in the casebook) fixes the clock, so sources that
 // have ended since the file was written are still classified.
 //
@@ -69,6 +71,7 @@ for (const row of exported || []) {
 // In-memory store with the production compare-and-set semantics.
 const store = {
   pendingForTriage: async () => [...rows.values()].filter(row => row.reviewStatus === 'pending').map(row => ({ ...row })),
+  get: async sourceId => rows.has(sourceId) ? { ...rows.get(sourceId) } : null,
   list: async () => [...rows.values()].map(row => ({ ...row })),
   triage: async (sourceId, expectedHash, patch) => { const row = rows.get(sourceId); if (!row || row.hash !== expectedHash || row.reviewStatus !== 'pending') return null; Object.assign(row, patch); return row; },
 };
@@ -108,22 +111,26 @@ function casebookScore(list) {
 const started = Date.now();
 const report = await triage.run();
 const elapsedMs = Date.now() - started;
-const results = [...rows.values()].map(row => {
+const results = await Promise.all([...rows.values()].map(async row => {
   const source = known.get(row.sourceId);
+  // The lines triage judged: the stored diff, or the rebuilt one when it was cut off.
+  const seen = await triage.changeFor({ ...row, triage: undefined });
   return { sourceId: row.sourceId, kind: source.kind, title: source.title, url: source.url, contentIds: source.contentIds,
     listings: items.items(source.contentIds).slice(0, 3).map(item => ({ title: item.title, dateLabel: item.dateLabel, costLabel: item.costLabel })),
-    removed: row.pendingChange.removed, added: row.pendingChange.added, summary: row.pendingChange.summary,
+    removed: seen.removed, added: seen.added, summary: row.pendingChange.summary, cutOff: seen.truncated, linesPerSide: seen.lineCap,
     decision: row.triage ? { material: row.triage.material ?? null, fields: row.triage.fields || [], summaryZh: row.triage.summaryZh || '', decidedBy: row.triage.decidedBy || null, guards: row.triage.guards || [], failures: row.triage.failures || 0, error: row.triage.lastError || null } : null,
     autoDismissed: row.reviewedBy === 'auto-triage', freshness: freshnessFields(row),
     ...(expected.has(row.sourceId) ? { ...expected.get(row.sourceId), correct: row.triage?.material === expected.get(row.sourceId).expect.material } : {}) };
-});
+}));
 mkdirSync(outDir, { recursive: true });
 writeFileSync(path.join(outDir, 'results.json'), JSON.stringify(results, null, 1));
 const digest = buildDigest({ rows: [...rows.values()], registry, items, now: now() });
 writeFileSync(path.join(outDir, 'digest-preview.txt'), digest ? `${digest.subject}\n\n${digest.text}\n` : '(nothing to send)\n');
-writeFileSync(path.join(outDir, 'prompt-sample.txt'), results[0] ? triageMessages(known.get(results[0].sourceId), rows.get(results[0].sourceId).pendingChange, items.items(known.get(results[0].sourceId).contentIds)).map(m => `## ${m.role}\n${m.content}`).join('\n\n') : '');
+writeFileSync(path.join(outDir, 'prompt-sample.txt'), results[0] ? triageMessages(known.get(results[0].sourceId), { removed: results[0].removed, added: results[0].added, summary: results[0].summary, truncated: results[0].cutOff, lineCap: results[0].linesPerSide }, items.items(known.get(results[0].sourceId).contentIds)).map(m => `## ${m.role}\n${m.content}`).join('\n\n') : '');
 const summary = {
   live, thinking, now: new Date(now()).toISOString(), pending: rows.size, triaged: report.triaged ?? 0, material: report.material ?? 0, dismissed: report.dismissed ?? 0, failed: report.failed ?? 0,
+  // Without --live every answer is synthetic ("material"): a pipeline smoke test, not a measure of accuracy.
+  ...(live ? {} : { note: 'synthetic provider: every model answer is "material"; this checks the pipeline, not accuracy' }),
   modelCalls: calls, usd: Number((spentMicroUsd / 1e6).toFixed(5)), meanUsdPerCall: perCall.length ? Number((spentMicroUsd / perCall.length / 1e6).toFixed(6)) : 0, elapsedMs,
   ...(expected.size ? { casebook: casebookScore(results) } : {}),
 };
