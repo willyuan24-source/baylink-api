@@ -113,6 +113,7 @@ test('soft cap: web-search requests are refused before they are sent; other call
   await assert.rejects(governed(governance, () => fetchAiJson('https://api.openai.com/v1/responses', { method: 'POST', body: JSON.stringify({ model: 'gpt-5.4-mini', tools: [{ type: 'web_search_preview' }] }) }, { fetchImpl })),
     error => error.code === 'AI_WEB_BUDGET');
   assert.equal(bodies.length, 1); assert.equal(bodies[0].tools, undefined);
+  assert.equal(models.AiGovernance.rows.find(row => row.id === `ai:${TODAY}`).count, 1, 'a refused web search claims nothing');
   // Under the soft cap a web search outside a governed request (no context) is not refused here.
   assert.equal(aiExecution(), undefined);
   await assert.doesNotReject(reserveAiCall({ webSearch: true }));
@@ -139,6 +140,21 @@ test('the spend level is cached for 30 s, bumped by each priced call, re-read on
   now = Date.parse('2026-10-09T08:00:00Z');
   assert.equal(await governance.budgetLevel(), 'ok');
   assert.equal(await governance.spendLevel(), null);
+});
+
+test('a slow ledger read is waited on for at most 1.5 s, and still refreshes the cache when it lands', async () => {
+  const models = createMemoryModels(); ledgerAt(models, 6_500_000);
+  const original = models.AiGovernance.findOne;
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  models.AiGovernance.findOne = query => ({ lean: () => gate.then(() => original(query).lean()) });
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
+  const started = Date.now();
+  assert.equal(await governance.budgetLevel(), 'ok', 'no state yet: not capped');
+  const waited = Date.now() - started;
+  assert.ok(waited >= 1400 && waited < 3000, `waited ${waited} ms`);
+  release(); await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(await governance.budgetLevel(), 'soft', 'the late read filled the cache');
 });
 
 test('12 concurrent governed AI requests by default (was 6); the 13th gets AI_CONCURRENCY_LIMIT', async () => {
