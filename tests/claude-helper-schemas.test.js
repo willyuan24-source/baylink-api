@@ -59,7 +59,17 @@ test('every helper schema is a valid structured-output schema', () => {
     outing: helperSchemas.OUTING_DRAFT_SCHEMA, planner: PLANNER_SCHEMA,
     extract: helperSchemas.EVENT_EXTRACT_SCHEMA, conversation: helperSchemas.CONVERSATION_TEXT_SCHEMA,
   };
-  for (const [name, value] of Object.entries(schemas)) { assert.equal(value.type, 'object', name); assertStructuredSchema(value, name); }
+  // Structured-output limits per request: at most 24 optional parameters and 16 union-typed ones.
+  const optional = node => !node || typeof node !== 'object' ? 0 : Object.entries(node).reduce((sum, [key, child]) => sum
+    + (key === 'properties' ? Object.keys(child).filter(name => !(node.required || []).includes(name)).length + Object.values(child).reduce((total, property) => total + optional(property), 0)
+      : key === 'enum' || key === 'required' ? 0 : optional(child)), 0);
+  for (const [name, value] of Object.entries(schemas)) {
+    assert.equal(value.type, 'object', name); assertStructuredSchema(value, name);
+    assert.ok(optional(value) <= 24, `${name}: ${optional(value)} optional parameters`);
+    assert.doesNotMatch(JSON.stringify(value), /"anyOf"|"type":\[/, `${name}: no union types`);
+  }
+  assert.equal(optional(helperSchemas.OUTING_DRAFT_SCHEMA), 11); assert.equal(optional(PLANNER_SCHEMA), 7);
+  assert.equal(optional(helperSchemas.EVENT_EXTRACT_SCHEMA), 0);
   assert.deepEqual(schemas.postAssist.properties.category.enum, ['rent', 'other']);
   // Optional draft fields stay optional: an unknown field is omitted, never invented.
   assert.equal(helperSchemas.OUTING_DRAFT_SCHEMA.properties.draft.required, undefined);
