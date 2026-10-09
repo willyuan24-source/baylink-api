@@ -62,12 +62,16 @@ Added 2026-10-09. **Helper models and effort are unchanged.** They still follow 
 **Helper-set eval.** `scripts/helper-eval-local.mjs` runs 12 cases (`scripts/eval/helper-set.json`: translate 3, post-assist 3, outing 2, planner 2, screenshot 2) through the real helper code. It judges every Claude reply on schema validity (`end_turn`, one JSON object, valid against the schema the request carried) and records whether the caller's validator accepted it. A dry run is the default ($0, synthetic provider); a paid run needs `--live --budget-usd <n ≤ 5>`:
 
 ```
-node --env-file=<private env file> scripts/helper-eval-local.mjs --live --budget-usd 1 --arms haiku-low --repeat 2 --run-id helpers-<date>
+node --env-file=<private env file> scripts/helper-eval-local.mjs --live --budget-usd 2 --arms haiku-low,opus-medium --repeat 2 --run-id helpers-<date-time>
 ```
 
-Arms: `haiku-low` (`BAYBAY_MODEL_HELPERS=claude-haiku-5-5`, `BAYBAY_EFFORT_HELPERS=low`), `sonnet-low`, and `opus-medium` (today's production helpers). The two flyer images are synthetic, rendered locally from `scripts/eval/helper-images/*.html`. Results are written outside the repository (default `~/opus-qa/overhaul/eval/<run-id>`).
+Arms: `haiku-low` (`BAYBAY_MODEL_HELPERS=claude-haiku-5-5`, `BAYBAY_EFFORT_HELPERS=low`), `opus-medium` (today's production helpers: `ANTHROPIC_BAYBAY_MODEL=claude-opus-5-5`, legacy effort medium) and `sonnet-low`. The default is `haiku-low,opus-medium`. Keep the budget at $2 or more when Opus runs: its per-call budget reserve is about $0.13, so a $1 cap can stop the run early.
 
-**助手类调用（中文摘要）：** 模型和 effort 不变。每个助手调用都带 JSON schema（结构化输出），Claude 提示词里不再写"只输出 JSON"。遇到 429/529 时抖动等待后重试一次。行程排序只给模型最多 40 个精简候选，"这个周末"类问题的提示词从约 2.6 万 token 降到约 2,600。联网搜索遇到 `pause_turn` 最多续两次，`max_tokens` 改为 8,000。切到 Haiku 5.5 low 要等 CUTOVER 线路，而且要先让上面的助手评测在该配置上 schema 全部有效。
+`summary.json` carries two gates. **Merge gate:** `opus-medium`, the config this change ships with schemas for the first time, is schema-valid on every item, and no arm saw an HTTP 400 or "Schema is too complex". **CUTOVER gate:** `haiku-low` is schema-valid on every item, with no HTTP 400. A case is judged on the reply the helper finally used, so a 429/529 retried into a valid reply passes. A live run exits with code 2 when a gate fails. `review.md` lays out the post-assist (P1–P3) and planner (L1–L2) outputs that a schema check cannot judge (invented `budget`/`timeInfo`, planner picks) for a read by eye. A run id that already holds results is refused, so paid results are never overwritten.
+
+The two flyer images are synthetic, rendered locally from `scripts/eval/helper-images/*.html`. Results are written outside the repository (default `~/opus-qa/overhaul/eval/<run-id>`).
+
+**助手类调用（中文摘要）：** 模型和 effort 不变。每个助手调用都带 JSON schema（结构化输出），Claude 提示词里不再写"只输出 JSON"。遇到 429/529 时抖动等待后重试一次。行程排序只给模型最多 40 个精简候选，"这个周末"类问题的提示词从约 2.6 万 token 降到约 2,600。联网搜索遇到 `pause_turn` 最多续两次，`max_tokens` 改为 8,000。合并前要跑一次付费助手评测：`opus-medium`（现在生产用的配置）必须全部 schema 有效，且任何一组都不能出现 HTTP 400 或 "Schema is too complex"（合并门槛）。切到 Haiku 5.5 low 要等 CUTOVER 线路，而且 `haiku-low` 也必须全部 schema 有效（CUTOVER 门槛）。schema 检查判断不了的内容（发帖助手有没有编造预算和时间、行程推荐选得好不好）写在 `review.md` 里，需要人工看一遍。
 
 ## Prices (`lib/aiPricing.js`)
 
