@@ -151,7 +151,7 @@ async function main() {
     const cost = data?.usage ? claudeCost({ model: data.model || body.model, usage: data.usage, day: today }) : { priced: false };
     const costUsd = cost.priced ? cost.microUsd / 1e6 : 0;
     ledger.spentUsd += costUsd; ledger.calls++;
-    current?.calls.push({ requestedModel: body.model, servedModel: data?.model || null, effort: body.output_config?.effort, maxTokens: body.max_tokens,
+    current?.calls.push({ requestedModel: body.model, servedModel: data?.model || null, effort: body.output_config?.effort, maxTokens: body.max_tokens, promptEstimate: estimatePromptTokens(body),
       schemaSent: !!schema, sampling: ['temperature', 'top_p', 'top_k'].filter(key => Object.hasOwn(body, key)),
       httpStatus: response.status, stopReason: data?.stop_reason ?? null, schemaValid: !errors.length, errors: errors.slice(0, 5), latencyMs,
       usage: data?.usage ? { input: data.usage.input_tokens, output: data.usage.output_tokens, cacheRead: data.usage.cache_read_input_tokens || 0 } : null,

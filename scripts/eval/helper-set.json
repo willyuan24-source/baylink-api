@@ -12,7 +12,7 @@
     { "id": "O1-ferry-walk-zh", "helper": "outing", "locale": "zh-Hans", "intent": "10月17日周六下午2点在旧金山 Ferry Building 门口集合，一共4个人，一起沿 Embarcadero 散步，各付各的。" },
     { "id": "O2-museum-en", "helper": "outing", "locale": "en", "intent": "Looking for 2-3 people to visit a free museum day in Oakland next Saturday morning; we can take BART." },
     { "id": "L1-sf-kid-zh", "helper": "planner", "locale": "zh-Hans", "message": "这周六带 5 岁的孩子在旧金山玩半天，预算每人 20 美元以内" },
-    { "id": "L2-eastbay-free-en", "helper": "planner", "locale": "en", "message": "Free outdoor things to do in the East Bay this Sunday" },
+    { "id": "L2-weekend-broad-en", "helper": "planner", "locale": "en", "message": "Fun things to do around the Bay Area this weekend with my parents" },
     { "id": "S1-flyer-en", "helper": "screenshot", "locale": "en", "image": "helper-images/flyer-en.png" },
     { "id": "S2-flyer-zh-no-year", "helper": "screenshot", "locale": "zh-Hans", "image": "helper-images/flyer-zh.png" }
   ]
