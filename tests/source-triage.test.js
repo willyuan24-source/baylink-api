@@ -188,6 +188,22 @@ test('expired sources are never classified', async () => {
   assert.equal((await triage.run()).triaged, 0); assert.equal(fake.bodies.length, 0);
 });
 
+test('clock and counter churn reuses an earlier cosmetic decision; any new kind of line goes back to the model', async () => {
+  const { store, service, claude, setLines, advance } = fixture({ decide: user => /October 24/.test(user)
+    ? { material: true, fields: ['date'], summary_zh: '日期改为 10/24' } : { material: false, fields: [], summary_zh: '页面检查时间更新' } });
+  const stamp = value => [...BASE, `Last Checked: ${value}`];
+  await service.run(); setLines(source.id, stamp('10/8/2026 10:39 PM')); advance(); await service.run();
+  assert.equal(claude.bodies.length, 1); assert.equal(store.rows.get(source.id).triage.decidedBy, 'model');
+  assert.ok(store.rows.get(source.id).triage.cosmeticShapes.includes('last checked: #/#/# #:# pm'));
+  setLines(source.id, stamp('10/9/2026 4:39 PM')); advance(); await service.run();
+  let row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 1); assert.equal(row.triage.decidedBy, 'repeat'); assert.equal(row.reviewStatus, 'dismissed'); assert.equal(row.reviewedBy, 'auto-triage');
+  // Same digit shape is not enough when a new kind of line changes too.
+  setLines(source.id, [BASE[0].replace('October 17', 'October 24'), ...BASE.slice(1), 'Last Checked: 10/10/2026 4:39 AM']); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'pending'); assert.equal(row.triage.material, true); assert.equal(row.triage.cosmeticShapes, undefined);
+});
+
 test('reordered or duplicated lines are decided without a model call', async () => {
   const { store, service, claude, setLines, advance } = fixture();
   await service.run(); setLines(source.id, [BASE[1], BASE[0], BASE[2], BASE[0]]); advance(); await service.run();
