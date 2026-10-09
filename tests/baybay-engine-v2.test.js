@@ -371,3 +371,33 @@ test('the v2 agent starts from the server web pre-search (summary and sources), 
   await run(v1.assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
   assert.match(v1.sent[0].tools.find(row => row.name === 'read_source').description, /^Read an already-discovered source page by its source ID/);
 });
+
+test('a how-to question keeps to its topic: DMV questions get the driver-licence guide, never a yoga class or a museum that only shares 预约', () => {
+  for (const [text, locale] of [['加州驾照怎么考，要预约吗', 'zh-Hans'], ['加州駕照筆試可以考中文嗎？要先預約嗎？', 'zh-Hant']]) {
+    assert.deepEqual(queryAliases(text).ids, ['dmv'], text);
+    const result = evidence(text, { locale });
+    assert.ok(result.items.some(item => item.kind === 'guide' && /驾照与 ID/.test(item.title)), text);
+    for (const item of result.items) assert.match(`${item.title}\n${item.text}`, /[驾駕]照|DMV|路考|[笔筆]试/i, `${text}: ${item.title}`);
+    assert.ok(!result.items.some(item => /瑜伽|书法|OMCA|报税/.test(item.title)), text);
+  }
+  // Topics without a subject pattern (seniors, museums, …) are not gated.
+  assert.equal(queryAliases('带老人去哪里玩').onSubject, null);
+  assert.equal(queryAliases('养老金怎么查').onSubject('a classic mission'), false);
+  assert.equal(queryAliases('养老金怎么查').onSubject('my Social Security account'), true);
+});
+
+test('v2 answers "帮我订机票" by saying BayBay cannot book (no city question); v1 keeps its clarification', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '我没法帮你订机票，请在航空公司官网预订。' })) });
+  const result = await run(assistant, '帮我订一张下周五从旧金山飞北京的机票');
+  assert.equal(result.route.path, 'fast'); assert.equal(sent.length, 1);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /cannot book, reserve, pay for or hold anything/);
+  assert.match(result.answer, /没法帮你订机票/);
+  // Planning a day is not booking.
+  sent.length = 0;
+  await run(assistant, '帮我订个周六在 Berkeley 的行程，不开车');
+  assert.ok(!sent.some(body => JSON.stringify(body.messages).includes('cannot book, reserve')));
+  const v1 = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, respond: () => { throw new Error('v1 asks for a city without a model call'); } });
+  const legacy = await run(v1.assistant, '帮我订一张下周五从旧金山飞北京的机票');
+  assert.match(legacy.answer, /请确认一个湾区城市/); assert.equal(v1.sent.length, 0);
+});
