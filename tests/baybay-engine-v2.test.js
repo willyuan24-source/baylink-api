@@ -307,3 +307,12 @@ test('offers and openings are indexed in both locales, inside the asked city or 
   assert.ok(!keys(pastPage).includes('event:santana-row-glass-pumpkin-2026'), 'the page itself is currentPage, not an item');
   assert.ok(keys(pastPage).includes('event:los-gatos-magical-glass-pumpkin-2026'), 'retrieval follows the page subject');
 });
+
+test('a member asking to open or re-check an official page keeps the agent loop; a guest asking the same gets one site-only call', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '按站内资料回答。' })) });
+  const member = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.equal(member.route.path, 'agent'); assert.equal(member.route.reason, 'live_web'); assert.ok(sent[0].tools.length > 2);
+  sent.length = 0;
+  const guest = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件');
+  assert.equal(guest.route.path, 'fast'); assert.equal(sent[0].tools, undefined);
+});
