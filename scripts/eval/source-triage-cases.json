@@ -1,0 +1,363 @@
+[
+ {
+  "sourceId": "source-075cd7aee0b3",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Thu, Oct 8, 12:30pm – 1:30pm"
+   ],
+   "added": [
+    "Thu, Oct 8, 1:00pm – 2:00pm"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "time"
+   ]
+  },
+  "note": "concert start time moved"
+ },
+ {
+  "sourceId": "source-2758ceec9f70bb04",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Saturday, October 17, 2026 1:00–5:00 pm"
+   ],
+   "added": [
+    "Saturday, October 24, 2026 1:00–5:00 pm"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "date"
+   ]
+  },
+  "note": "event moved a week"
+ },
+ {
+  "sourceId": "source-118204f15040137f",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "General Admission : $30 per ticket"
+   ],
+   "added": [
+    "General Admission : $35 per ticket"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "price"
+   ]
+  },
+  "note": "ticket price up"
+ },
+ {
+  "sourceId": "source-1ab0aed3d3c8",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "Due to the forecast of heavy rain, the October 17 Harvest Festival has been cancelled."
+   ],
+   "summary": "0 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "cancel"
+   ]
+  },
+  "note": "cancellation notice"
+ },
+ {
+  "sourceId": "source-12c0e94a730d",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Friday & Saturday: 10 am to 10 pm"
+   ],
+   "added": [
+    "Friday & Saturday: 10 am to 8 pm"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "time"
+   ]
+  },
+  "note": "weekend hours shortened"
+ },
+ {
+  "sourceId": "source-27e8c41df8b7c981",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "Registration is now full. Join the waitlist to be notified if seats open."
+   ],
+   "summary": "0 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "registration"
+   ]
+  },
+  "note": "symposium full"
+ },
+ {
+  "sourceId": "source-0d87d1959ebf2837",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Level up your Thursday at Pixels Arcade Taproom, Marin County's retro arcade bar for adults ages 21 and over."
+   ],
+   "added": [
+    "Level up your Thursday at Pixels Arcade Taproom, Marin County's retro arcade bar, now welcoming guests ages 18 and over."
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "eligibility"
+   ]
+  },
+  "note": "age limit changed"
+ },
+ {
+  "sourceId": "source-102af0a7a043e5b2",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Brunch: Sat–Sun, 11 a.m.–2 p.m. (10/18)"
+   ],
+   "added": [
+    "Brunch: Sat–Sun, 11 a.m.–2 p.m. (starting 10/24)"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "date"
+   ]
+  },
+  "note": "brunch start date moved"
+ },
+ {
+  "sourceId": "source-1b4031faa134b690",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "Sunday, October 18 program is canceled due to building maintenance; Saturday continues as planned."
+   ],
+   "summary": "0 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "cancel"
+   ]
+  },
+  "note": "one festival day cancelled"
+ },
+ {
+  "sourceId": "source-226511607ac33deb",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "Now open! Visit our new boutique at Westfield Valley Fair, Level 1 near Nordstrom."
+   ],
+   "summary": "0 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true
+  },
+  "note": "opening now confirmed (listing says first day unpublished)"
+ },
+ {
+  "sourceId": "source-255467afd8c1d595",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "November 14, 2026–January 10, 2027"
+   ],
+   "added": [
+    "November 21, 2026–January 10, 2027"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": true,
+   "fields": [
+    "date"
+   ]
+  },
+  "note": "season start moved"
+ },
+ {
+  "sourceId": "source-06dca508ebabfb37",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Last Checked: 10/8/2026 10:39 PM"
+   ],
+   "added": [
+    "Last Checked: 10/9/2026 4:39 AM"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "page timestamp"
+ },
+ {
+  "sourceId": "source-1ea71dcd227aa05c",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "USAF Band of Golden West – Jazz Combo",
+    "Pier 39, Entertainment Stage"
+   ],
+   "summary": "0 removed / 2 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "extra band slot in the Fleet Week calendar; listed facts unchanged"
+ },
+ {
+  "sourceId": "source-0216176cf2be",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Use code NEWSUB30 at checkout. Valid only on your first three shipments of a new subscription."
+   ],
+   "added": [
+    "Use code NEWSUB25 at checkout. Valid only on your first three shipments of a new subscription."
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "unrelated subscription code; listing is Coffee Day 9/29"
+ },
+ {
+  "sourceId": "source-183ee9735f486dda",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Join us for a community meeting about a proposed Geyserville SMART station"
+   ],
+   "added": [
+    "North Bay riders power SMART to record year for sustainable travel"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "news rotation on transit home page"
+ },
+ {
+  "sourceId": "source-290eb10cccc15bb4",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Make your haul twice as nice during your birthday month."
+   ],
+   "added": [
+    "Make your birthday-month haul twice as nice."
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "reworded marketing copy"
+ },
+ {
+  "sourceId": "source-23c37c7d28e53354",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Friday specials, light bites, and cash bar at El Cafecito, by Mezcal Restaurant"
+   ],
+   "added": [
+    "Friday specials, light bites, and cash bar at El Cafecito, by Mezcal Restaurant. Try our new fall menu!"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "cafe menu blurb"
+ },
+ {
+  "sourceId": "source-1a7aa38e5322",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [],
+   "added": [
+    "Sign up for MyYogurtland rewards to get a birthday treat and exclusive offers."
+   ],
+   "summary": "0 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "loyalty sign-up blurb"
+ },
+ {
+  "sourceId": "source-1c78d80063503fd7",
+  "reviewStatus": "pending",
+  "pendingChange": {
+   "removed": [
+    "Earn 5,000 pts on $39+ with FREE Same-Day Delivery thru 10/11, see terms* >"
+   ],
+   "added": [
+    "Earn 5,000 pts on $49+ with FREE Same-Day Delivery thru 10/18, see terms* >"
+   ],
+   "summary": "1 removed / 1 added lines",
+   "detectedAt": 1791486000000
+  },
+  "expect": {
+   "material": false
+  },
+  "note": "site banner promo; listing is the first-autoship discount"
+ }
+]
