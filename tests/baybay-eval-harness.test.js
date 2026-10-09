@@ -102,7 +102,11 @@ test('arms switch models through runtime config keys; code-defaults sets nothing
   }
   const sonnetLow = { model: 'claude-sonnet-5-5', effort: 'low', thinking: 'adaptive' };
   assert.deepEqual(book.arms['code-defaults'].config, {});
-  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v1' });
+  // API-BB-CUTOVER: the code default is engine v2; v1-code-defaults is the rollback, and the
+  // pre-ENGINE model arms pin v1 so they keep measuring the v1 research loop.
+  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v2' });
+  assert.deepEqual(armRoutes(book.arms['v1-code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v1' });
+  for (const name of ['opus-asis', 'haiku-low', 'haiku-low-nothink', 'haiku-medium', 'sonnet-low', 'sonnet-medium']) assert.equal(armRoutes(book.arms[name].config).engine, 'v1', name);
   const opusMedium = { model: 'claude-opus-5-5', effort: 'medium', thinking: 'adaptive' };
   const { fast: _opusFast, ...opusRoutes } = armRoutes(book.arms['opus-asis'].config);
   assert.deepEqual(opusRoutes, { agent: opusMedium, professional: opusMedium, engine: 'v1' });
@@ -116,7 +120,7 @@ test('arms switch models through runtime config keys; code-defaults sets nothing
   assert.deepEqual(armRoutes(book.arms['v2-code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v2' });
   assert.deepEqual(armRoutes(book.arms['v2-haiku-low'].config), { agent: sonnetLow, professional: sonnetLow, fast: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, engine: 'v2' });
   assert.deepEqual(armRoutes(book.arms['v2-haiku-low-nothink'].config).fast, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
-  assert.deepEqual(book.sets.engine, { blocks: ['A', 'B', 'C', 'D', 'E', 'G', 'H'], arms: ['v2-haiku-low', 'v2-code-defaults', 'code-defaults'], baselineArm: 'code-defaults' });
+  assert.deepEqual(book.sets.engine, { blocks: ['A', 'B', 'C', 'D', 'E', 'G', 'H'], arms: ['v2-haiku-low', 'v2-code-defaults', 'v1-code-defaults'], baselineArm: 'v1-code-defaults' });
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
   assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });

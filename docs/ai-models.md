@@ -92,7 +92,7 @@ Per million tokens. Web search: $0.01 per request (`usage.server_tool_use.web_se
 - in `AiRuntimeMetric` (`GET /api/admin/ai-metrics` → `runtime`): `costMicroUsd`, `cacheReadTokens`, `cacheWriteTokens`, `providerRefusal`, `costUnpriced`, and the `providerTtft` histogram (time to provider response headers; answered calls only). `claude-sonnet-5-5` and `claude-haiku-5-5` are now model buckets of their own instead of `other`. The existing `inputTokens` still counts the whole prompt including cache reads and writes.
 - in `AiGovernance`, a spend ledger: one document per Pacific day (`ai-usd:YYYY-MM-DD`, kept 62 days) and one per month (`ai-usd:YYYY-MM`, kept 400 days) with integer `microUsd`, `pricedCalls` and `unpricedCalls`. Each update is a single atomic `$inc` upsert; a lost first-insert race (duplicate key) is retried once as a plain `$inc`, and uncertain storage errors are never retried. Ledger documents hold no identity, prompt or model data.
 
-`aiGovernance.getSpendState()` returns today's and this month's spend, call counts, and a `level` (`ok` / `soft` / `hard`) against `AI_SPEND_SOFT_DAILY_USD` (default 6) and `AI_SPEND_HARD_DAILY_USD` (default 10). **Caps are reported only, not enforced** (`caps.enforced: false`); enforcement is API-BB-CUTOVER's job. Provider calls that time out or are cancelled report no usage and are not in the ledger.
+`aiGovernance.getSpendState()` returns today's and this month's spend, call counts, a `level` (`ok` / `soft` / `hard`) against `AI_SPEND_SOFT_DAILY_USD` (default 6) and `AI_SPEND_HARD_DAILY_USD` (default 10), and `resetAt` (the next Pacific midnight). **Since API-BB-CUTOVER the caps are enforced** (`caps.enforced: true`; `AI_SPEND_CAPS=off` makes them report-only again); see [Daily $ caps, pause mode and alerts](#daily--caps-pause-mode-and-alerts-api-bb-cutover). `GET /api/admin/ai-metrics` returns it as `spend`. Provider calls that time out or are cancelled report no usage and are not in the ledger (a cut stream records an estimate, API-BB-STREAM).
 
 ## R0 默认模型与回滚
 
@@ -125,7 +125,9 @@ BAYBAY_MODEL_PROFESSIONAL=claude-opus-5-5
 
 ## BAYBAY_ENGINE=v2（API-BB-ENGINE）
 
-`BAYBAY_ENGINE` 不设（或设为 `v1`）时，BayBay 发出的请求和以前逐字节相同。设为 `v2`（只对 Claude provider 生效）后：
+**2026-10-09 起（API-BB-CUTOVER）v2 是默认值**：`BAYBAY_ENGINE` 不设就是 v2（只对 Claude provider 生效；OpenAI provider 仍是 v1）。设为 `v1`（`off`、`legacy` 也按 `v1` 处理）回到切换前：发出的请求和返回的结果与切换前的生产逐字节相同（8 轮固定对话的 sha256 已核对）。其他值（拼错等）仍按默认 v2。`/api/ai/baybay-capabilities` 和 `capabilities()` 新增 `engine` 字段，报告实际生效的引擎。
+
+v2 的行为：
 
 | 部分 | 行为 |
 | --- | --- |
@@ -143,12 +145,13 @@ BAYBAY_MODEL_PROFESSIONAL=claude-opus-5-5
 **切换与回滚（Render 环境变量，改完重新部署）：**
 
 ```
-BAYBAY_ENGINE=v2                      # 打开 v2（默认 fast path = Sonnet 5.5 low）
+（不设）                               # v2，默认 fast path = Sonnet 5.5 low（API-BB-CUTOVER 起）
+BAYBAY_ENGINE=v1                      # 回滚到 v1
 BAYBAY_MODEL_FAST=claude-haiku-5-5    # 可选：fast path 改用 Haiku 5.5（行程与专业话题仍是 Sonnet low）
 BAYBAY_EFFORT_FAST=low                # 换模型时显式指定 effort
 ```
 
-- 回滚：删掉 `BAYBAY_ENGINE`（或设为 `v1`），立即回到 v1。
+- 回滚：设 `BAYBAY_ENGINE=v1`，重新部署后立即回到 v1。完整的切换说明和回滚清单见 `docs/claude-baybay-rollout.md`。
 - 改 `BAYBAY_MODEL_FAST`、`BAYBAY_EFFORT_FAST` 或 `ANTHROPIC_BAYBAY_EFFORT` 会让对应路由的 prompt cache 重新开始（缓存按模型与 effort 区分），属于预期。
 - 部署后核对：随便问一句，响应 JSON 里 `engine` 为 `v2`、`route.path` 为 `fast`；`/api/admin/ai-metrics` 的 `cacheReadTokens` 应开始大于 0。
 - 缓存命中率别按评测的 100% 期待：评测是连续跑、都在 5 分钟缓存有效期内。线上流量稀疏时 fast path 常常读不到缓存，每次冷启动要为约 3k tokens 的第 1 块付 1.25 倍的缓存写入费。部署后的信号是 `cacheReadTokens > 0`，不是某个命中率。
@@ -167,10 +170,44 @@ BAYBAY_EFFORT_FAST=low                # 换模型时显式指定 effort
 | 最终结果 | `result` 仍是唯一权威答案。出过草稿时 result 带 `corrected`：结果没有接着读者已看到的草稿往下写（护栏改写、重试、模板回答）为 `true`，否则 `false`；没出草稿时没有这个字段。`research.drafts` 记 `{events, chars}`，`research.warnings` 记 `draft_corrected` |
 | 指标 | `/api/admin/ai-metrics` 的 runtime 新增 `firstDraft`（第一条草稿写出的时间）。流式调用的 `providerTtft` 是第一个文字（或工具参数）增量的时间，非流式仍是响应头时间。流式调用被超时或客户端断开切断时，按 message_start 的输入 token 和已收到的文字估算输出 token，记入用量和花费，不再记 0 |
 
-**开关（Render 环境变量）：** `BAYBAY_STREAM=off` 关掉流式和草稿（fast path 回到 ENGINE 的非流式请求，其他不变）；不设即开启。`BAYBAY_ENGINE` 不设时这个开关不起作用。
+**开关（Render 环境变量）：** `BAYBAY_STREAM=off` 关掉流式和草稿（fast path 回到 ENGINE 的非流式请求，其他不变）；不设即开启。`BAYBAY_ENGINE=v1` 时这个开关不起作用（v1 不出草稿）。
+
+## Daily $ caps, pause mode and alerts (API-BB-CUTOVER)
+
+Added 2026-10-09. The full owner guide (Chinese and English, rollback lines, what to watch) is `docs/claude-baybay-rollout.md`.
+
+| Part | Where | Behaviour |
+| --- | --- | --- |
+| Cap level | `lib/aiGovernance.js` `spendLevel()` / `budgetLevel()` | Today's ledger against `AI_SPEND_SOFT_DAILY_USD` (6) and `AI_SPEND_HARD_DAILY_USD` (10), per Pacific day. Cached 30 s per instance (two ledger reads at most twice a minute); every priced call bumps the cached total at once. An unreadable ledger keeps today's last known level, else no cap. `AI_SPEND_CAPS=off` = report only |
+| Hard cap | `reserveAiCall()` / `reserve()` in the governance middleware | Every governed provider call (`/api/ai/*`, planner recommend/web-search, conversation AI, post translation), web search included, is refused before any claim or send: 429 `AI_DAILY_BUDGET`, message in the request's `locale` ("今日 AI 名额已满，明天会恢复；站内资料仍可浏览。"). The visitor's daily count is not consumed. What readers get: post-assist, post translation, conversation and event-screenshot AI and outing drafts answer 429 with that message; the planner web search answers `web_daily_limit` (429, `retryable: false`, no 30 s failure cooldown); the planner ranker falls back to its rules; BayBay pauses (below). Translation, local AI, outing drafts and the web search call `assertAiBudget()` before they spend their own rate limits and daily quotas. A refusal inside a provider call is kept for the request (`aiRefusal()`), so a route that maps provider failures to a generic 503 (outing drafts on Claude, translation) reports the 429 instead, and translation caches no failure for the post. Background source triage has no request context and is not capped here |
+| Soft cap | `reserveAiCall({webSearch})` from `governedFetch` (`lib/aiRequest.js`); `assertAiBudget({webSearch: true})` in `lib/plannerWebSearch.js` | A provider body with a `web_search*` tool (Claude or OpenAI) is refused before it is sent: 429 `AI_WEB_BUDGET` ("今天 AI 用量较高，暂停联网查询…"). The planner web search service (the `/api/planner/web-search` route, legacy guide-chat and BayBay's `search_web` tool) is refused before its rate limits, cache and quota, as `web_daily_limit`. Other calls proceed |
+| BayBay under the soft cap | `lib/baybayAgent.js` | The member's web access is treated as the standard site-only scope (no web pre-search or tools, no sign-in wording), and v2 sends every question to one fast call (`route.reason: budget_fast_only`; a day plan is still built from that answer by `create_plan`). Exception: a replace/remove edit of the plan in scope ("换掉第二站") keeps the agent path, which gets `previousPlan` and `planEdit`, with site-only tools (`search_site`, `create_plan`). A member whose Smart/Web request was reduced gets `notice.kind = ai_budget_reduced` |
+| BayBay paused | `lib/baybayAgent.js` | No model call, no quota claim: the site-record answer (`degraded: true`) plus `notice`. Reasons: hard cap (`ai_daily_budget`, with `resumesAt`), `BAYBAY_PAUSED=true`, no usable provider (key missing, `ANTHROPIC_USE_UNTIL` passed) (`ai_paused`). The daily run limit (`BAYBAY_DAILY_RUN_LIMIT`, default **1000**, was 200) gives `ai_daily_budget` too. The emergency card returns first and never carries a notice |
+| Concurrency | `AI_CONCURRENCY_LIMIT` | Default **12** (was 6) concurrent governed AI requests per instance |
+| Capabilities | `GET /api/ai/baybay-capabilities` → `assistant.status({webAccess})` | Adds `engine`, `pause` and `reduced` (below). While paused `enabled` is `false` and `tools` is `['site']`. `capabilities().enabled` (guide-chat's routing switch) is unchanged, so a paused BayBay still answers from site records with the notice. `BAYBAY_AGENT_ENABLED=false` is not a pause: `enabled` is `false` as before (guide-chat answers on its legacy model path) and `pause` is `null`, except past the hard cap (`daily_budget`), which stops that path too; `reduced` still follows the soft cap |
+| Alerts | `lib/aiSpendAlerts.js`, started in `server.js` outside tests | E-mail at $100 / $150 / $180 month-to-date (`AI_ALERT_MTD_USD`), at the daily hard cap, and 7 / 3 / 1 days before `ANTHROPIC_USE_UNTIL`. Sent through Resend only with `NOTIFICATION_DELIVERY_ENABLED=true` and `AI_ALERT_EMAIL` or `OWNER_DIGEST_EMAIL`; each alert once across instances (`ai-alert:…` claim document) |
+| Admin | `GET /api/admin/ai-metrics` | Adds `spend` (`getSpendState()`): day/month micro-USD, priced/unpriced calls, `level`, `caps`, `resetAt` |
+
+**Front-end contract (WEB-BB-UI).** All fields are additive; old clients ignore them.
+
+```
+// GET /api/ai/baybay-capabilities
+engine: 'v2' | 'v1'
+pause: null | { reason: 'daily_budget' | 'paused' | 'provider_unavailable',   // never for BAYBAY_AGENT_ENABLED=false
+                kind: 'ai_daily_budget' | 'ai_paused',
+                banner: { 'zh-Hans': string, 'zh-Hant': string, en: string },
+                resumesAt?: ISO,                  // daily_budget only: next Pacific midnight
+                actions: [{ id: 'call-911', label: '911', href: 'tel:911' }, { id: 'call-211', label: '211', href: 'tel:211' }] }
+reduced: null | { reason: 'daily_budget_soft', kind: 'ai_budget_reduced', banner: {…3 locales}, resumesAt?: ISO }
+
+// guide-chat result (v1 and v2)
+notice?: { kind: 'ai_daily_budget' | 'ai_paused' | 'ai_budget_reduced', text: string /* reader's locale */, resumesAt?: ISO }
+```
+
+Show `pause.banner` (or `notice.text`) above the answer, with the 911 / 211 actions first; never show dollar amounts. Banner texts: 今日 AI 名额已满，以下为站内资料；明天会恢复。 / AI 助手暂停，以下为站内资料。 / 今天 AI 用量较高：先用站内资料快速回答，暂不联网查询。
 
 ## What this does not do
 
 - Streaming covers only the v2 fast path's first call, for capable clients (above). The v2 agent loop, the professional route and the helpers do not stream yet; `lib/anthropicStream.js` already rebuilds tool rounds with thinking signatures, so a later lane can turn it on there. Caching and the prompt layout are v2-only (above). (The R0 model default above came later, from API-BB-R0.)
-- `server.js` (legacy guide chat) is not touched; it keeps reading `ANTHROPIC_BAYBAY_MODEL` / `ANTHROPIC_BAYBAY_EFFORT` until a `server.js`-owning lane switches it to `aiRoute('baybay_legacy', config)`.
-- The admin endpoint does not yet show `getSpendState()`; the per-day cost is visible in `runtime.daily[].costMicroUsd`.
+- `server.js` (legacy guide chat) is not touched; it keeps reading `ANTHROPIC_BAYBAY_MODEL` / `ANTHROPIC_BAYBAY_EFFORT` until a `server.js`-owning lane switches it to `aiRoute('baybay_legacy', config)`. Its provider calls are still governed, so the $ caps apply to them too (its web search falls back to the existing guidance with a "联网未完成" note).
+- Since API-BB-CUTOVER the admin endpoint shows `getSpendState()` as `spend`; the per-day cost by model is in `runtime.daily[].costMicroUsd`.

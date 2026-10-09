@@ -3,7 +3,9 @@ const assert = require('node:assert/strict');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
 
 const NOW = Date.parse('2026-10-04T19:00:00Z');
-const config = { JWT_SECRET: 'private-test-task-secret', BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', OPENAI_API_KEY: 'fixture-openai-must-not-be-used' };
+// These tests cover the v1 research loop, which stays the rollback path (BAYBAY_ENGINE=v1)
+// now that v2 is the default (API-BB-CUTOVER). The v2 paths are in baybay-engine-v2.test.js.
+const config = { JWT_SECRET: 'private-test-task-secret', BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', OPENAI_API_KEY: 'fixture-openai-must-not-be-used', BAYBAY_ENGINE: 'v1' };
 const guide = { slug: 'sf-library', url: '/guides/sf-library', title: 'San Francisco library card', content: 'San Francisco library cards require eligibility checks. Use the official library information for current rules.', keywords: ['San Francisco', 'library'], summary: 'Library card reference', updatedAt: '2026-10-02' };
 const options = extra => ({ config, guideCatalog: [guide], now: () => NOW, isTest: false, Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) }, ...extra });
 const raw = (content, stop_reason = 'end_turn') => ({ type: 'message', id: 'msg-fixture', model: 'claude-opus-5-5', role: 'assistant', stop_reason, content, usage: { input_tokens: 20, output_tokens: 100, output_tokens_details: { thinking_tokens: 70 } } });
