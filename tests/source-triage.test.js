@@ -204,6 +204,37 @@ test('clock and counter churn reuses an earlier cosmetic decision; any new kind 
   assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'pending'); assert.equal(row.triage.material, true); assert.equal(row.triage.cosmeticShapes, undefined);
 });
 
+test('an unreviewed material change on a page with a clock is not re-sent on every fetch; a reverted or new line is', async () => {
+  const { store, service, claude, setLines, advance } = fixture({ decide: user => /October 24/.test(user)
+    ? { material: true, fields: ['date'], summary_zh: '日期改为 10/24' } : { material: false, fields: [], summary_zh: '页面检查时间更新' } });
+  const moved = [BASE[0].replace('October 17', 'October 24'), ...BASE.slice(1)];
+  await service.run(); setLines(source.id, [...moved, 'Last Checked: 10/8/2026 10:39 PM']); advance(); await service.run();
+  let row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 1); assert.deepEqual([row.triage.material, row.triage.decidedBy], [true, 'model']);
+  assert.equal(row.triage.chain, row.pendingChange.firstDetectedAt); assert.equal(row.triage.materialShapes.length, 2);
+  // Only the clock moved: same still-unreviewed change, same line shapes, no call.
+  setLines(source.id, [...moved, 'Last Checked: 10/9/2026 4:39 PM']); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 1); assert.deepEqual([row.reviewStatus, row.triage.material, row.triage.fields, row.triage.decidedBy], ['pending', true, ['date'], 'repeat']);
+  assert.equal(row.triage.hash, row.hash);
+  // The date reverted and only the clock differs from the baseline: a new question.
+  setLines(source.id, [...BASE, 'Last Checked: 10/9/2026 10:39 AM']); advance(); await service.run();
+  row = store.rows.get(source.id);
+  assert.equal(claude.bodies.length, 2); assert.equal(row.reviewStatus, 'dismissed'); assert.equal(row.triage.materialShapes, undefined);
+  // Cancellation wording is never decided from memory.
+  const fresh = fixture({ decide: () => ({ material: true, fields: ['cancel'], summary_zh: '活动取消' }) });
+  await fresh.service.run(); fresh.setLines(source.id, [...BASE, 'Saturday is cancelled due to rain.', 'Last Checked: 10/8/2026 10:39 PM']); fresh.advance(); await fresh.service.run();
+  fresh.setLines(source.id, [...BASE, 'Saturday is cancelled due to rain.', 'Last Checked: 10/9/2026 4:39 AM']); fresh.advance(); await fresh.service.run();
+  assert.equal(fresh.claude.bodies.length, 2); assert.deepEqual(fresh.store.rows.get(source.id).triage.fields, ['cancel']);
+  // After an editor review the next change starts a new chain and is asked again.
+  const reviewed = fixture({ decide: () => ({ material: true, fields: ['time'], summary_zh: '时间变化' }) });
+  await reviewed.service.run(); reviewed.setLines(source.id, [...moved, 'Last Checked: 1']); reviewed.advance(); await reviewed.service.run();
+  const first = reviewed.store.rows.get(source.id);
+  await reviewed.service.review(source.id, first.hash, 'acknowledged', '', 'admin-1');
+  reviewed.setLines(source.id, [...BASE, 'Last Checked: 2']); reviewed.advance(); await reviewed.service.run();
+  assert.equal(reviewed.claude.bodies.length, 2);
+});
+
 test('reordered or duplicated lines are decided without a model call', async () => {
   const { store, service, claude, setLines, advance } = fixture();
   await service.run(); setLines(source.id, [BASE[1], BASE[0], BASE[2], BASE[0]]); advance(); await service.run();
