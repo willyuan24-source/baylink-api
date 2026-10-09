@@ -128,6 +128,20 @@ test('a comment deleted before its notice is due cancels the notice', async t =>
   assert.deepEqual(f.jobs('comment').map(row => [row.status, row.reason]), [['cancelled', 'read']]);
 });
 
+test('a comment soft-deleted because it has replies also cancels the notice; the recipient\'s own reply does not count', async t => {
+  const f = await notifyFixture(t);
+  const posted = await f.request('/posts/owner-post/comments', { as: 'third', body: { content: 'Wrong post, sorry.' } });
+  assert.equal(posted.status, 200);
+  assert.equal((await f.request('/posts/owner-post/comments', { as: 'owner', body: { content: 'No problem.', parentId: posted.data.comment.id } })).status, 200);
+  assert.equal((await f.request(`/posts/owner-post/comments/${posted.data.comment.id}`, { as: 'third', method: 'DELETE' })).status, 200);
+  const kept = await f.models.Post.findOne({ id: 'owner-post' }).lean();
+  assert.ok(kept.comments.some(comment => comment.id === posted.data.comment.id && comment.isDeleted), 'a comment with replies stays as a soft-deleted row');
+  f.clock.set(FIRST_NOTICE_DELAY + 1000);
+  await f.application.notifications.runOnce();
+  assert.equal(f.mail.length, 0);
+  assert.deepEqual(f.jobs('comment').filter(row => row.recipientId === 'owner').map(row => [row.status, row.reason]), [['cancelled', 'read']]);
+});
+
 test('forgot-password: 300 s cooldown and 5 emails per day per account survive restarts', async t => {
   const models = createMemoryModels({ User: [makeUser('owner')] });
   const owner = () => models.User.rows.find(row => row.id === 'owner');
