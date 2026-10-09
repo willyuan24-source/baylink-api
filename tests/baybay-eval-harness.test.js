@@ -93,22 +93,30 @@ test('route mirror matches the server intent classifier and pre-dispatch follows
 test('arms switch models through runtime config keys; code-defaults sets nothing and runs the R0 routes', async () => {
   const { armRoutes } = await load('arms.mjs');
   const book = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
-  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT']);
+  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT',
+    // API-BB-ENGINE arms: the engine flag and the fast route.
+    'BAYBAY_ENGINE', 'BAYBAY_MODEL_FAST', 'BAYBAY_EFFORT_FAST', 'BAYBAY_THINKING_FAST']);
   for (const [name, arm] of Object.entries(book.arms)) {
     for (const key of Object.keys(arm.config)) assert.ok(keys.has(key), `${name}: ${key}`);
     assert.equal(arm.requestOverrides, undefined, `${name}: thinking goes through BAYBAY_THINKING_AGENT, which only Haiku receives`);
   }
   const sonnetLow = { model: 'claude-sonnet-5-5', effort: 'low', thinking: 'adaptive' };
   assert.deepEqual(book.arms['code-defaults'].config, {});
-  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow });
+  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v1' });
   const opusMedium = { model: 'claude-opus-5-5', effort: 'medium', thinking: 'adaptive' };
-  assert.deepEqual(armRoutes(book.arms['opus-asis'].config), { agent: opusMedium, professional: opusMedium });
-  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow }, 'professional answers never run on Haiku');
+  const { fast: _opusFast, ...opusRoutes } = armRoutes(book.arms['opus-asis'].config);
+  assert.deepEqual(opusRoutes, { agent: opusMedium, professional: opusMedium, engine: 'v1' });
+  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow, fast: sonnetLow, engine: 'v1' }, 'professional answers never run on Haiku');
   assert.deepEqual(armRoutes(book.arms['haiku-low-nothink'].config).agent, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
   assert.deepEqual(armRoutes(book.arms['haiku-medium'].config).agent, { model: 'claude-haiku-5-5', effort: 'medium', thinking: 'adaptive' });
   assert.deepEqual(armRoutes(book.arms['sonnet-low'].config).agent, sonnetLow);
   const sonnetMedium = { model: 'claude-sonnet-5-5', effort: 'medium', thinking: 'adaptive' };
-  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium });
+  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium, fast: sonnetLow, engine: 'v1' });
+  // Engine arms: v2 on code defaults, and the fast route alone on Haiku (plans and professional stay on Sonnet low).
+  assert.deepEqual(armRoutes(book.arms['v2-code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v2' });
+  assert.deepEqual(armRoutes(book.arms['v2-haiku-low'].config), { agent: sonnetLow, professional: sonnetLow, fast: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, engine: 'v2' });
+  assert.deepEqual(armRoutes(book.arms['v2-haiku-low-nothink'].config).fast, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
+  assert.deepEqual(book.sets.engine, { blocks: ['A', 'B', 'C', 'D', 'E', 'G', 'H'], arms: ['v2-haiku-low', 'v2-code-defaults', 'code-defaults'], baselineArm: 'code-defaults' });
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
   assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });

@@ -81,7 +81,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 function loadCasebook(probe) {
-  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-G]-.+\.json$/.test(file)).sort();
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-H]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);
@@ -121,7 +121,10 @@ function gitHead() {
 }
 
 function syntheticResponse(body) {
-  const text = JSON.stringify({ answer: 'Dry-run synthetic answer. No provider was called.', candidateIds: [], followups: [], coverage: [] });
+  // A v2 request (BAYBAY_ENGINE=v2) asks for the lead-first schema.
+  const v2 = !!body.output_config?.format?.schema?.properties?.lead;
+  const text = JSON.stringify(v2 ? { lead: 'Dry-run synthetic answer.', points: [{ text: 'No provider was called.', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' }
+    : { answer: 'Dry-run synthetic answer. No provider was called.', candidateIds: [], followups: [], coverage: [] });
   return new Response(JSON.stringify({ id: 'msg_dry_run', type: 'message', role: 'assistant', model: body.model, stop_reason: 'end_turn',
     content: [{ type: 'text', text }], usage: { input_tokens: Math.ceil(JSON.stringify(body).length / 3), output_tokens: 60, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } }),
   { status: 200, headers: { 'content-type': 'application/json' } });
@@ -282,9 +285,10 @@ async function main() {
     const usage = ctx.calls.reduce((sum, call) => { for (const key of Object.keys(sum)) sum[key] += call.usage?.[key] || 0; return sum; }, { inputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0, outputTokens: 0, webSearches: 0 });
     const model = route === 'assistant';
     return {
-      runId, arm, model: armConfigs[arm].routes.agent.model, effort: armConfigs[arm].routes.agent.effort, professionalModel: armConfigs[arm].routes.professional.model,
+      runId, arm, model: armConfigs[arm].routes.agent.model, effort: armConfigs[arm].routes.agent.effort, professionalModel: armConfigs[arm].routes.professional.model, fastModel: armConfigs[arm].routes.fast.model,
       caseId: item.id, turnId: turn.id, block: item.block, locale: item.locale, currentPath: item.currentPath, tags: [...new Set([...(item.tags || []), ...(turn.tags || [])])], message: turn.message,
       route, responseMode: payload?.responseMode, safetyRoute: payload?.safetyRoute, legacyReason: payload?.legacyReason,
+      engine: payload?.engine || 'v1', routePath: payload?.route?.path || (route === 'assistant' ? 'agent' : route), routeReason: payload?.route?.reason, lead: payload?.lead || null, points: payload?.points || null,
       degraded: !!payload?.degraded, degradedReplay: !!item.degradedReplay, voidedAttempts: attempts - 1, voidFinal: !!outcome.voidFinal, budgetStopped: !!outcome.budgetStopped, error,
       answer: payload?.answer || '', answerChars: String(payload?.answer || '').length,
       sources: (payload?.sources || []).map(({ title, url }) => ({ title, url })),

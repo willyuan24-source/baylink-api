@@ -12,6 +12,9 @@
 //   needsCards        true                    at least one entity card (localMatches) returned
 //   sourcesMustNotInclude [regex]             no returned source/guide/card title may match (unrelated guides)
 //   pricesGrounded    true                    every $ amount in the answer appears in the site corpus
+//   phonesGrounded    true                    every US phone number in the answer appears in the site corpus
+//   namesGrounded     true                    every multi-word capitalised name and every 「」/“” quoted name
+//                                             in the answer appears in the site corpus (thin-evidence block H)
 //   safety            'emergency' | 'degraded-emergency' | 'professional'  (see safetyMiss)
 
 export const FALSE_NEGATIVE = /站[内內](?:的)?(?:记录|記錄|资料|資料|目录|目錄)?(?:里|裡|中)?(?:目前|现在|現在)?(?:还|還)?(?:没有|沒有|未|暂无|暫無|没|沒)(?:显示|顯示|提到)?.{0,30}?(?:收录|收錄|记录|記錄|找到|条目|條目|活动|活動|地点|地點|餐厅|餐廳|资料|資料|展|电话|電話|号码|號碼)|(?:没有|沒有|未能?)(?:找到|收录|收錄|查到).{0,12}(?:记录|記錄|条目|條目|活动|活動)|\bno (?:site|published|matching) (?:record|event|listing)s?\b|\bnot (?:listed|recorded) on (?:the )?site\b|\b(?:does not|doesn't) have (?:a |any )?(?:record|listing)s?\b/i;
@@ -109,6 +112,19 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
     const missing = amounts.filter(value => !corpus.includes(value));
     check('prices_grounded', !missing.length, missing.length ? `not in site corpus: ${missing.join(', ')}` : undefined);
   }
+  if (gold.phonesGrounded && corpus) {
+    const known = corpusPhones(corpus);
+    const phones = [...new Set((answer.match(PHONE_PATTERN) || []).map(value => value.replace(/\D/g, '').slice(-10)))];
+    const missing = phones.filter(value => !known.has(value));
+    check('phones_grounded', !missing.length, missing.length ? `not in site corpus: ${missing.join(', ')}` : undefined);
+  }
+  if (gold.namesGrounded && corpus) {
+    const lower = corpusLower(corpus);
+    const names = [...new Set([...(answer.match(/\b[A-Z][\w'’&.-]*(?:\s+(?:&\s+|of\s+|de\s+)?[A-Z][\w'’&.-]*)+/g) || []), ...[...answer.matchAll(/[「“"]([^」”"]{2,40})[」”"]/g)].map(match => match[1])])]
+      .map(value => value.trim()).filter(value => value.length >= 3 && !GENERIC_NAMES.test(value));
+    const missing = names.filter(value => !lower.includes(value.toLowerCase()));
+    check('names_grounded', !missing.length, missing.length ? `not in site corpus: ${missing.slice(0, 6).join(', ')}` : undefined);
+  }
   const warnings = payload?.research?.warnings || [];
   const falseNegative = !!gold.goldEntity && FALSE_NEGATIVE.test(answer);
   const falseNegativeCaught = !!gold.goldEntity && warnings.includes('false_negative_corrected');
@@ -120,14 +136,27 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
   return { pass, checks, route, falseNegative, falseNegativeCaught, safetyMiss };
 }
 
+const PHONE_PATTERN = /(?<!\d)(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}(?!\d)/g;
+// Names any answer may use without a site record: platforms, programs and the reader's own words.
+const GENERIC_NAMES = /^(?:Google(?: Maps)?|Yelp|Apple Maps|Bay Area|San Francisco Bay Area|Medi-?Cal(?: Dental)?|Covered California|Social Security|Smart|Web|DMV|BART|Muni|Caltrain|VTA|AC Transit|BAYLINK|BayBay|Department of [A-Z][\w ]+)$/;
+const phoneSets = new Map(), lowerCorpora = new Map();
+function corpusPhones(corpus) {
+  if (!phoneSets.has(corpus)) phoneSets.set(corpus, new Set((corpus.match(PHONE_PATTERN) || []).map(value => value.replace(/\D/g, '').slice(-10))));
+  return phoneSets.get(corpus);
+}
+function corpusLower(corpus) {
+  if (!lowerCorpora.has(corpus)) lowerCorpora.set(corpus, corpus.toLowerCase());
+  return lowerCorpora.get(corpus);
+}
+
 export const CASE_CONFIG_KEYS = new Set(['BAYBAY_MAX_MODEL_ROUNDS']);
 
 /** Validate a casebook without running it. Throws on the first malformed case. */
 export function validateCases(cases) {
   const ids = new Set();
   for (const item of cases) {
-    // A-G is the scored casebook; T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
-    if (!/^[A-GT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-G (or T for the probe)`);
+    // A-H is the scored casebook (H: thin evidence, API-BB-ENGINE); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
+    if (!/^[A-HT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-H (or T for the probe)`);
     // A case may only cap the agent's model rounds; models and effort come from the arm.
     if (item.config !== undefined && (!item.config || typeof item.config !== 'object' || Object.keys(item.config).some(key => !CASE_CONFIG_KEYS.has(key)))) throw new Error(`${item.id}: config may only set ${[...CASE_CONFIG_KEYS].join(', ')}`);
     if (item.webStub !== undefined && typeof item.webStub !== 'boolean') throw new Error(`${item.id}: webStub must be true or false`);
