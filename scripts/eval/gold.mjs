@@ -122,7 +122,17 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
     const lower = corpusLower(corpus);
     const names = [...new Set([...(answer.match(/\b[A-Z][\w'’&.-]*(?:\s+(?:&\s+|of\s+|de\s+)?[A-Z][\w'’&.-]*)+/g) || []), ...[...answer.matchAll(/[「“"]([^」”"]{2,40})[」”"]/g)].map(match => match[1])])]
       .map(value => value.trim()).filter(value => value.length >= 3 && !GENERIC_NAMES.test(value));
-    const missing = names.filter(value => !lower.includes(value.toLowerCase()));
+    // A name is grounded when it appears whole (accents folded, a trailing plural
+    // dropped), or when it has at most three words and each word appears in the
+    // corpus: "Apple Stores" and "San Jose Public Library" are not inventions,
+    // "Golden Sichuan House" is.
+    const grounded = name => {
+      const folded = fold(name);
+      if (lower.includes(folded) || lower.includes(folded.replace(/s$/, ''))) return true;
+      const words = folded.split(/\s+/).filter(Boolean);
+      return words.length <= 3 && words.every(word => new RegExp(`(?:^|[^a-z0-9])${word.replace(/s$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i').test(lower));
+    };
+    const missing = names.filter(value => !grounded(value));
     check('names_grounded', !missing.length, missing.length ? `not in site corpus: ${missing.slice(0, 6).join(', ')}` : undefined);
   }
   const warnings = payload?.research?.warnings || [];
@@ -144,8 +154,9 @@ function corpusPhones(corpus) {
   if (!phoneSets.has(corpus)) phoneSets.set(corpus, new Set((corpus.match(PHONE_PATTERN) || []).map(value => value.replace(/\D/g, '').slice(-10))));
   return phoneSets.get(corpus);
 }
+const fold = value => String(value).normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[’]/g, "'").toLowerCase();
 function corpusLower(corpus) {
-  if (!lowerCorpora.has(corpus)) lowerCorpora.set(corpus, corpus.toLowerCase());
+  if (!lowerCorpora.has(corpus)) lowerCorpora.set(corpus, fold(corpus));
   return lowerCorpora.get(corpus);
 }
 

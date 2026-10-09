@@ -26,7 +26,7 @@ export function rescoreRun(run) {
     if (!gold || row.skipped || row.budgetStopped || row.error) continue;
     row.gold = scoreTurn(gold, { answer: row.answer, responseMode: row.responseMode, safetyRoute: row.safetyRoute,
       harnessRoute: ['outing', 'legacy'].includes(row.route) ? row.route : undefined, sources: row.sources, suggestedGuides: row.suggestedGuides,
-      localMatches: row.localMatches, research: { warnings: row.warnings } }, { corpus });
+      localMatches: row.localMatches, research: { warnings: row.warnings } }, { corpus: `${corpus}\n${row.message || ''}` });
   }
   run.meta = { ...run.meta, rescored: true };
   return run;
