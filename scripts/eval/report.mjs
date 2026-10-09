@@ -100,7 +100,16 @@ export function summarizeArm(rows, judgeRows = new Map()) {
       ttftP50: percentile(model.map(row => row.timings?.ttftMs), 50),
       leadP50: percentile(model.map(row => row.timings?.leadMs), 50), leadP90: percentile(model.map(row => row.timings?.leadMs), 90),
       completeP50: percentile(model.map(row => row.timings?.completeMs), 50), completeP90: percentile(model.map(row => row.timings?.completeMs), 90),
+      // API-BB-STREAM: turns that streamed draft events (a capable client on the v2 fast path).
+      firstTextP50: percentile(model.map(row => row.timings?.firstTextMs), 50),
     },
+    drafts: (() => {
+      const drafted = model.filter(row => row.drafts?.events);
+      return { turns: drafted.length, corrected: drafted.filter(row => row.drafts.corrected === true).map(row => row.turnId),
+        leadP50: percentile(drafted.map(row => row.drafts.firstLeadMs), 50), leadP90: percentile(drafted.map(row => row.drafts.firstLeadMs), 90),
+        completeP50: percentile(drafted.map(row => row.timings?.completeMs), 50), completeP90: percentile(drafted.map(row => row.timings?.completeMs), 90),
+        eventsP50: percentile(drafted.map(row => row.drafts.events), 50) };
+    })(),
     usage: { inputTokens: sum('inputTokens'), cacheWriteTokens: sum('cacheWriteTokens'), cacheReadTokens: sum('cacheReadTokens'), outputTokens: sum('outputTokens') },
     // API-BB-ENGINE: engine path, prompt caching and cards.
     engine: (() => {
@@ -162,7 +171,7 @@ export function renderMarkdown(summary) {
   const lines = [`# BayBay local eval: ${meta.runId}`, '',
     `- Mode: ${meta.mode}. Pinned now: ${meta.pinnedNow}. Code: ${meta.gitHead || 'unknown'}. Blocks: ${meta.blocks.join(', ')}.${meta.rescored ? ' Gold re-applied from the current casebook (--rescore).' : ''}`,
     `- Arms: ${names.map(arm => `${arm} (${meta.armLabels?.[arm] || ''})`).join('; ')}.`,
-    `- Latency, $ per question and judge means use model-answered turns only (route = assistant with at least one provider call). The current pipeline does not stream from the provider, so lead = complete unless the run recorded a draft event.`, '',
+    `- Latency, $ per question and judge means use model-answered turns only (route = assistant with at least one provider call). Lead = the first streamed lead draft event when the turn drafted (API-BB-STREAM: v2 fast path, capable client), otherwise the complete answer.`, '',
     '## Per arm', '',
     `| | ${names.join(' | ')} |`, `|---|${names.map(() => '---').join('|')}|`];
   const row = (label, fn) => lines.push(`| ${label} | ${names.map(arm => fn(arms[arm])).join(' | ')} |`);
@@ -179,6 +188,10 @@ export function renderMarkdown(summary) {
   row('TTFT p50 (first provider response)', arm => fmtS(arm.latency.ttftP50));
   row('Lead p50 / p90', arm => `${fmtS(arm.latency.leadP50)} / ${fmtS(arm.latency.leadP90)}`);
   row('Complete p50 / p90', arm => `${fmtS(arm.latency.completeP50)} / ${fmtS(arm.latency.completeP90)}`);
+  row('Drafted turns (streamed lead); corrected by the result', arm => arm.drafts ? `${arm.drafts.turns}; ${arm.drafts.corrected.length}${arm.drafts.corrected.length ? ` (${arm.drafts.corrected.join(', ')})` : ''}` : 'n/a');
+  row('Drafted turns: lead TTFT p50 / p90', arm => arm.drafts?.turns ? `${fmtS(arm.drafts.leadP50)} / ${fmtS(arm.drafts.leadP90)}` : 'n/a');
+  row('Drafted turns: complete p50 / p90', arm => arm.drafts?.turns ? `${fmtS(arm.drafts.completeP50)} / ${fmtS(arm.drafts.completeP90)}` : 'n/a');
+  row('First provider text p50 (streamed calls)', arm => fmtS(arm.latency.firstTextP50));
   row('$ per model-answered question', arm => fmt$(arm.costPerModelTurn));
   row('$ total (answers)', arm => fmt$(arm.costUsd));
   row('$ judge', arm => fmt$(arm.judgeCostUsd));

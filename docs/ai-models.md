@@ -153,8 +153,24 @@ BAYBAY_EFFORT_FAST=low                # 换模型时显式指定 effort
 - 部署后核对：随便问一句，响应 JSON 里 `engine` 为 `v2`、`route.path` 为 `fast`；`/api/admin/ai-metrics` 的 `cacheReadTokens` 应开始大于 0。
 - 缓存命中率别按评测的 100% 期待：评测是连续跑、都在 5 分钟缓存有效期内。线上流量稀疏时 fast path 常常读不到缓存，每次冷启动要为约 3k tokens 的第 1 块付 1.25 倍的缓存写入费。部署后的信号是 `cacheReadTokens > 0`，不是某个命中率。
 
+## 流式草稿（API-BB-STREAM）
+
+只在 `BAYBAY_ENGINE=v2` 下生效。v1 的请求和结果逐字节不变；v2 下没有声明能力的客户端（旧标签页、JSON 请求）也和 ENGINE（#31）逐字节相同。
+
+| 部分 | 行为 |
+| --- | --- |
+| 谁收到草稿 | 只有请求体带 `stream: true` 且 `streamVersion` 为整数且 ≥3 的客户端（WEB-BB-STREAMPREP #25 已上线：`assistantVersion: 2` + `streamVersion: 3`）。`assistantVersion` 仍严格等于 2 |
+| 哪些问题出草稿（RC-21） | 只有 v2 fast path 的普通站内问答（`route.reason = site_answer`，`baybay_fast` 路由）。不出草稿：专业话题（医疗、保险、税务、移民、法律）、急救、行程和其他 agent 问题、小队、多部分问题（`checklist.complex`）、证据太少（可用记录少于 2 条，当前页算 1 条）、点名记录与所问日期不符（near-miss）、餐饮证据未确认 |
+| 上游调用 | 只有要出草稿的那一次调用用 `stream: true`；SSE 由 `lib/anthropicStream.js` 还原成和非流式完全相同的 message（thinking 块和 signature 原样保留），之后的护栏、引用、卡片都不变。重试调用（无效 JSON、误报"站内没有"、Haiku 拒答后的 Sonnet 重试）不流式，也不再出草稿 |
+| 草稿内容 | 只取结构化输出里的 `lead` 和 `points[i].text`（i 为 0–4）。服务器清洗：去掉 `[[ref]]`、`[n]`、网址，Markdown 链接只留文字，ISO 日期和区域代码改成"10月11日（周日）""南湾"；还没写完的词、引用标记、链接和日期先扣住不发 |
+| 发送节奏 | 攒到 40 个字符或 120 ms 发一次，一个字段写完立刻发；`seq` 从 1 递增；全部草稿合计最多 4,000 个字符，到了就停 |
+| 最终结果 | `result` 仍是唯一权威答案。出过草稿时 result 带 `corrected`：结果没有接着读者已看到的草稿往下写（护栏改写、重试、模板回答）为 `true`，否则 `false`；没出草稿时没有这个字段。`research.drafts` 记 `{events, chars}`，`research.warnings` 记 `draft_corrected` |
+| 指标 | `/api/admin/ai-metrics` 的 runtime 新增 `firstDraft`（第一条草稿写出的时间）。流式调用的 `providerTtft` 是第一个文字（或工具参数）增量的时间，非流式仍是响应头时间。流式调用被超时或客户端断开切断时，按 message_start 的输入 token 和已收到的文字估算输出 token，记入用量和花费，不再记 0 |
+
+**开关（Render 环境变量）：** `BAYBAY_STREAM=off` 关掉流式和草稿（fast path 回到 ENGINE 的非流式请求，其他不变）；不设即开启。`BAYBAY_ENGINE` 不设时这个开关不起作用。
+
 ## What this does not do
 
-- No streaming: that is API-BB-STREAM (the v2 schema puts `lead` first so it can be streamed). Caching and the prompt layout are v2-only (above). (The R0 model default above came later, from API-BB-R0.)
+- Streaming covers only the v2 fast path's first call, for capable clients (above). The v2 agent loop, the professional route and the helpers do not stream yet; `lib/anthropicStream.js` already rebuilds tool rounds with thinking signatures, so a later lane can turn it on there. Caching and the prompt layout are v2-only (above). (The R0 model default above came later, from API-BB-R0.)
 - `server.js` (legacy guide chat) is not touched; it keeps reading `ANTHROPIC_BAYBAY_MODEL` / `ANTHROPIC_BAYBAY_EFFORT` until a `server.js`-owning lane switches it to `aiRoute('baybay_legacy', config)`.
 - The admin endpoint does not yet show `getSpendState()`; the per-day cost is visible in `runtime.daily[].costMicroUsd`.
