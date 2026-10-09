@@ -82,11 +82,11 @@ test('a lost insert race is retried once as a plain $inc; uncertain storage erro
   assert.equal(failures, 2, 'one attempt per document, no retry of an uncertain write');
 });
 
-test('getSpendState reports day and month spend against soft/hard caps without enforcing them', async () => {
+test('getSpendState reports day and month spend against the soft/hard caps (enforced since API-BB-CUTOVER)', async () => {
   const models = createMemoryModels();
   const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET, AI_SPEND_SOFT_DAILY_USD: '0.5', AI_SPEND_HARD_DAILY_USD: '1' }, now: () => NOW });
   assert.deepEqual(await governance.getSpendState(), { day: '2026-10-08', month: '2026-10', dayMicroUsd: 0, monthMicroUsd: 0, dayUsd: 0, monthUsd: 0,
-    dayPricedCalls: 0, dayUnpricedCalls: 0, caps: { softDailyUsd: 0.5, hardDailyUsd: 1, enforced: false }, level: 'ok' });
+    dayPricedCalls: 0, dayUnpricedCalls: 0, caps: { softDailyUsd: 0.5, hardDailyUsd: 1, enforced: true }, level: 'ok', resetAt: '2026-10-09T07:00:00.000Z' });
   await governance.recordSpend({ priced: true, microUsd: 499999 });
   assert.equal((await governance.getSpendState()).level, 'ok');
   await governance.recordSpend({ priced: true, microUsd: 1 });
@@ -94,10 +94,13 @@ test('getSpendState reports day and month spend against soft/hard caps without e
   await governance.recordSpend({ priced: true, microUsd: 500000 }); await governance.recordSpend({ priced: false });
   const state = await governance.getSpendState();
   assert.equal(state.level, 'hard'); assert.equal(state.dayUsd, 1); assert.equal(state.dayPricedCalls, 3); assert.equal(state.dayUnpricedCalls, 1);
-  // Not enforced: AI quota claims still succeed at the hard level.
+  // claim() is the count quota only; the $ cap is enforced by the middleware's
+  // reservation (tests/baybay-cutover.test.js).
   assert.equal(await governance.claim({ ip: 'fixture-ip' }), true);
   const defaults = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
-  assert.deepEqual((await defaults.getSpendState()).caps, { softDailyUsd: 6, hardDailyUsd: 10, enforced: false });
+  assert.deepEqual((await defaults.getSpendState()).caps, { softDailyUsd: 6, hardDailyUsd: 10, enforced: true });
+  const reportOnly = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET, AI_SPEND_CAPS: 'off' }, now: () => NOW });
+  assert.equal((await reportOnly.getSpendState()).caps.enforced, false);
 });
 
 test('a governed Claude call records cost, raw cache reads/writes and TTFT in metrics and the day/month ledger', async () => {

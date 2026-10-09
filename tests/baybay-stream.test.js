@@ -408,7 +408,7 @@ test('engine v1 with a capable client sends the byte-identical request and resul
   const strip = result => ({ ...result, assistantSessionToken: undefined, research: { ...result.research, elapsedMs: undefined, timings: undefined, modelResponses: result.research.modelResponses.map(row => ({ ...row, elapsedMs: undefined })) } });
   const runs = [];
   for (const drafts of [false, true]) {
-    const { assistant, sent } = assistantWith({ config: { BAYBAY_ENGINE: '' }, answers: () => ({ type: 'message', id: 'v1', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify({ answer: '蓝天使周六下午飞。', candidateIds: [], followups: [], coverage: [] }) }], usage: { input_tokens: 4, output_tokens: 4 } }) });
+    const { assistant, sent } = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, answers: () => ({ type: 'message', id: 'v1', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify({ answer: '蓝天使周六下午飞。', candidateIds: [], followups: [], coverage: [] }) }], usage: { input_tokens: 4, output_tokens: 4 } }) });
     const { result, events } = await ask(assistant, '蓝天使这周末飞吗', { drafts });
     assert.deepEqual(events, []);
     runs.push({ sent: digest(sent), result: digest(strip(result)) });

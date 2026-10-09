@@ -63,7 +63,10 @@ test('router table: plans, plan edits, named stops and live web use the agent; e
   }
   assert.equal(routeBayBay({ state: {}, professional: { topic: 'tax' } }).route, 'baybay_professional', 'professional topics never use the fast (possibly Haiku) route');
   assert.equal(routeBayBay({ state: {} }).route, 'baybay_fast');
-  assert.deepEqual(['v2', 'V2', ' v2 ', 'v1', '', undefined, 'v3'].map(value => baybayEngine({ BAYBAY_ENGINE: value })), ['v2', 'v2', 'v2', 'v1', 'v1', 'v1', 'v1']);
+  // API-BB-CUTOVER: v2 is the default; v1 (or off / legacy) rolls back.
+  assert.deepEqual(['v2', 'V2', ' v2 ', 'v1', ' V1 ', 'off', 'legacy', '', undefined, 'v3'].map(value => baybayEngine({ BAYBAY_ENGINE: value })),
+    ['v2', 'v2', 'v2', 'v1', 'v1', 'v1', 'v1', 'v2', 'v2', 'v2']);
+  assert.equal(baybayEngine(), 'v2');
 });
 
 // ---------------------------------------------------------------- caching layout (RC-19/RC-22)
@@ -248,16 +251,35 @@ test('no Anthropic payload carries temperature, top_p or top_k (RC-18), on any r
   for (const body of bodies) assert.ok(['low', 'medium', 'high'].includes(body.output_config.effort), 'effort is explicit');
 });
 
-test('BAYBAY_ENGINE unset keeps the v1 request: an instructions string as system, tools on every call, no cache_control', async () => {
+test('BAYBAY_ENGINE=v1 keeps the v1 request: an instructions string as system, tools on every call, no cache_control', async () => {
+  for (const rollback of ['v1', 'off']) {
+    const sent = [];
+    const assistant = createBayBayAssistant({ config: { ...base, BAYBAY_ENGINE: rollback }, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(), fetchImpl: async (_url, init) => {
+      sent.push(JSON.parse(init.body));
+      return reply(message([{ type: 'text', text: JSON.stringify({ answer: 'v1 answer', candidateIds: [], followups: [], coverage: [] }) }]));
+    } });
+    const result = await run(assistant, '蓝天使这周末飞吗');
+    assert.equal(typeof sent[0].system, 'string'); assert.ok(Array.isArray(sent[0].tools) && sent[0].tools.length);
+    assert.equal(sent[0].cache_control, undefined); assert.equal(sent[0].max_tokens, 6000);
+    assert.equal(result.engine, undefined); assert.equal(result.lead, undefined); assert.equal(result.answer, 'v1 answer');
+    assert.equal(assistant.capabilities().engine, 'v1');
+  }
+});
+
+test('BAYBAY_ENGINE unset runs v2 (API-BB-CUTOVER default): frozen cached system block, one fast call, engine reported', async () => {
   const sent = [];
   const assistant = createBayBayAssistant({ config: base, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(), fetchImpl: async (_url, init) => {
     sent.push(JSON.parse(init.body));
-    return reply(message([{ type: 'text', text: JSON.stringify({ answer: 'v1 answer', candidateIds: [], followups: [], coverage: [] }) }]));
+    return reply(fast({ lead: '会飞，周六周日下午表演[[e1]]。' }));
   } });
+  assert.equal(base.BAYBAY_ENGINE, undefined);
   const result = await run(assistant, '蓝天使这周末飞吗');
-  assert.equal(typeof sent[0].system, 'string'); assert.ok(Array.isArray(sent[0].tools) && sent[0].tools.length);
-  assert.equal(sent[0].cache_control, undefined); assert.equal(sent[0].max_tokens, 6000);
-  assert.equal(result.engine, undefined); assert.equal(result.lead, undefined); assert.equal(result.answer, 'v1 answer');
+  assert.equal(sent.length, 1);
+  assert.ok(Array.isArray(sent[0].system)); assert.deepEqual(sent[0].system[0].cache_control, { type: 'ephemeral' });
+  assert.equal(result.engine, 'v2'); assert.equal(result.route.path, 'fast');
+  assert.equal(assistant.capabilities().engine, 'v2');
+  // The OpenAI provider has no v2 engine: it reports and runs v1.
+  assert.equal(createBayBayAssistant({ config: { ...base, BAYBAY_AI_PROVIDER: 'openai' }, guideCatalog: guides, catalog, isTest: true }).capabilities().engine, 'v1');
 });
 
 // ---------------------------------------------------------------- retrieval v2

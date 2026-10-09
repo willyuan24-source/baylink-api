@@ -75,12 +75,15 @@ A turn is **void** when the assistant degraded because of the provider or transp
 
 | Arm | Agent route | Professional route |
 |---|---|---|
-| `code-defaults` | No config: whatever this checkout ships (R0: Sonnet 5.5 low) | Same |
+| `code-defaults` | No config: whatever this checkout ships (since API-BB-CUTOVER: engine v2, fast path, agent and professional on Sonnet 5.5 low; the same as `v2-code-defaults`) | Same |
+| `v1-code-defaults` | `BAYBAY_ENGINE=v1`: the rollback, production before the cut-over (Sonnet 5.5 low) | Same |
 | `opus-asis` | Opus 5.5 medium (production before R0) | Opus 5.5 medium |
 | `sonnet-low` | Sonnet 5.5 low | Sonnet 5.5 low (default) |
 | `haiku-low`, `haiku-medium` | Haiku 5.5 low / medium | Sonnet 5.5 low (never Haiku, RC-20) |
 | `haiku-low-nothink` | Haiku 5.5 low with `BAYBAY_THINKING_AGENT=disabled` (sent to Haiku only; a 400 on Opus 5.5 and Sonnet 5.5) | Sonnet 5.5 low |
 | `sonnet-medium` | Sonnet 5.5 medium (`BAYBAY_EFFORT_AGENT=medium`): makes adaptive thinking likelier, so the tool-round probe can show thinking blocks replayed with a `tool_result` | Sonnet 5.5 medium |
+
+Since API-BB-CUTOVER the pre-ENGINE model arms (`opus-asis`, `sonnet-*`, `haiku-*`) pin `BAYBAY_ENGINE=v1`, so they keep measuring the v1 research loop they were built for, and the `engine` set compares the v2 arms with `v1-code-defaults`.
 
 `meta.json` (`armConfigs`) and every result row record the resolved agent and professional model and effort. Harness-level `requestOverrides` still accept a thinking override, but only on an arm whose agent and professional routes both resolve to Haiku, which no arm does since R0.
 

@@ -1,31 +1,33 @@
 {
-  "version": "2026-10-09-stream",
+  "version": "2026-10-09-cutover",
   "notes": [
     "An arm is a set of runtime config keys (lib/aiModels.js). Since R0 the agent loop (baybay_agent) and guarded professional answers (baybay_professional) have their own default, Claude Sonnet 5.5 at effort low, and the legacy all-route ANTHROPIC_BAYBAY_MODEL/EFFORT no longer move them; arms name BAYBAY_MODEL_AGENT / BAYBAY_MODEL_PROFESSIONAL. A route whose model a variable changes to another model takes its effort from BAYBAY_EFFORT_<ROUTE>, else from ANTHROPIC_BAYBAY_EFFORT (anything except 'low' is 'medium'); a variable that pins the default model keeps effort low.",
     "code-defaults sets nothing: it measures exactly what this checkout ships.",
     "Professional topics never run on Haiku 5.5 (RC-20), so the Haiku arms answer them on the professional route's default (Sonnet 5.5 low).",
     "The nothink arm uses BAYBAY_THINKING_AGENT=disabled, which lib/aiModels.js sends to Haiku 5.5 only (it is a 400 on Opus 5.5 and Sonnet 5.5). Harness-level requestOverrides are still accepted for a thinking override, but only on an arm whose agent and professional routes both resolve to Haiku.",
     "opus-asis is production before R0: every route on Opus 5.5 at effort medium.",
-    "API-BB-ENGINE: v2-* arms set BAYBAY_ENGINE=v2 (router, single-call fast path, v2 retrieval, frozen cached system block). The fast route defaults to Sonnet 5.5 low; v2-haiku-low moves only the fast route to Haiku 5.5 low (plans and professional topics stay on Sonnet low). code-defaults is engine v1, as shipped.",
-    "API-BB-STREAM: set stream = block A on v2-code-defaults; the harness is a capable client (streamVersion 3) unless --no-drafts, so v2 fast-path turns stream their lead as draft events and the report shows lead TTFT for drafted turns."
+    "API-BB-ENGINE: v2-* arms set BAYBAY_ENGINE=v2 (router, single-call fast path, v2 retrieval, frozen cached system block). The fast route defaults to Sonnet 5.5 low; v2-haiku-low moves only the fast route to Haiku 5.5 low (plans and professional topics stay on Sonnet low). code-defaults was engine v1 when the engine set ran (now the v1-code-defaults arm).",
+    "API-BB-STREAM: set stream = block A on v2-code-defaults; the harness is a capable client (streamVersion 3) unless --no-drafts, so v2 fast-path turns stream their lead as draft events and the report shows lead TTFT for drafted turns.",
+    "API-BB-CUTOVER: the engine default is now v2, so code-defaults (no config) runs v2, the same as v2-code-defaults. v1-code-defaults pins BAYBAY_ENGINE=v1 (the rollback, production before the cut-over). The pre-ENGINE model arms (opus-asis, haiku-*, sonnet-*) pin BAYBAY_ENGINE=v1 so they keep measuring the v1 research loop they were built for. The engine set compares against v1-code-defaults."
   ],
   "arms": {
-    "code-defaults": { "label": "Code defaults (R0: agent and professional on Sonnet 5.5, effort low)", "config": {} },
-    "opus-asis": { "label": "Opus 5.5, effort medium (production before R0)", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-opus-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium", "BAYBAY_MODEL_AGENT": "claude-opus-5-5", "BAYBAY_MODEL_PROFESSIONAL": "claude-opus-5-5" } },
-    "haiku-low": { "label": "Haiku 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
-    "haiku-low-nothink": { "label": "Haiku 5.5, effort low, thinking disabled", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5", "BAYBAY_THINKING_AGENT": "disabled" } },
-    "haiku-medium": { "label": "Haiku 5.5, effort medium", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
-    "sonnet-low": { "label": "Sonnet 5.5, effort low", "config": { "ANTHROPIC_BAYBAY_MODEL": "claude-sonnet-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-sonnet-5-5", "BAYBAY_EFFORT_AGENT": "low" } },
+    "code-defaults": { "label": "Code defaults (engine v2 since API-BB-CUTOVER; fast path, agent and professional on Sonnet 5.5, effort low)", "config": {} },
+    "v1-code-defaults": { "label": "Engine v1 on code defaults (BAYBAY_ENGINE=v1, the rollback; production before API-BB-CUTOVER)", "config": { "BAYBAY_ENGINE": "v1" } },
+    "opus-asis": { "label": "Opus 5.5, effort medium (production before R0)", "config": { "BAYBAY_ENGINE": "v1", "ANTHROPIC_BAYBAY_MODEL": "claude-opus-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium", "BAYBAY_MODEL_AGENT": "claude-opus-5-5", "BAYBAY_MODEL_PROFESSIONAL": "claude-opus-5-5" } },
+    "haiku-low": { "label": "Haiku 5.5, effort low", "config": { "BAYBAY_ENGINE": "v1", "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
+    "haiku-low-nothink": { "label": "Haiku 5.5, effort low, thinking disabled", "config": { "BAYBAY_ENGINE": "v1", "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5", "BAYBAY_THINKING_AGENT": "disabled" } },
+    "haiku-medium": { "label": "Haiku 5.5, effort medium", "config": { "BAYBAY_ENGINE": "v1", "ANTHROPIC_BAYBAY_MODEL": "claude-haiku-5-5", "ANTHROPIC_BAYBAY_EFFORT": "medium", "BAYBAY_MODEL_AGENT": "claude-haiku-5-5" } },
+    "sonnet-low": { "label": "Sonnet 5.5, effort low", "config": { "BAYBAY_ENGINE": "v1", "ANTHROPIC_BAYBAY_MODEL": "claude-sonnet-5-5", "ANTHROPIC_BAYBAY_EFFORT": "low", "BAYBAY_MODEL_AGENT": "claude-sonnet-5-5", "BAYBAY_EFFORT_AGENT": "low" } },
     "v2-code-defaults": { "label": "Engine v2 on code defaults (fast path and agent on Sonnet 5.5 low)", "config": { "BAYBAY_ENGINE": "v2" } },
     "v2-haiku-low": { "label": "Engine v2, fast path on Haiku 5.5 low (agent and professional on Sonnet 5.5 low)", "config": { "BAYBAY_ENGINE": "v2", "BAYBAY_MODEL_FAST": "claude-haiku-5-5", "BAYBAY_EFFORT_FAST": "low" } },
     "v2-haiku-low-nothink": { "label": "Engine v2, fast path on Haiku 5.5 low with thinking disabled", "config": { "BAYBAY_ENGINE": "v2", "BAYBAY_MODEL_FAST": "claude-haiku-5-5", "BAYBAY_EFFORT_FAST": "low", "BAYBAY_THINKING_FAST": "disabled" } },
-    "sonnet-medium": { "label": "Sonnet 5.5 (R0 default model), effort medium: adaptive thinking more likely, for the tool-round probe", "config": { "BAYBAY_EFFORT_AGENT": "medium", "BAYBAY_EFFORT_PROFESSIONAL": "medium" } }
+    "sonnet-medium": { "label": "Sonnet 5.5 (R0 default model), effort medium: adaptive thinking more likely, for the tool-round probe", "config": { "BAYBAY_ENGINE": "v1", "BAYBAY_EFFORT_AGENT": "medium", "BAYBAY_EFFORT_PROFESSIONAL": "medium" } }
   },
   "sets": {
     "v0": { "blocks": ["A", "C", "E", "G"], "arms": ["haiku-low", "haiku-low-nothink", "sonnet-low", "opus-asis"], "baselineArm": "opus-asis" },
     "v1": { "blocks": ["A", "B", "C", "D", "E", "F", "G"], "arms": ["haiku-low", "haiku-medium", "sonnet-low", "opus-asis"], "baselineArm": "opus-asis" },
     "r0": { "blocks": ["A", "C", "E"], "arms": ["code-defaults"], "baselineArm": "code-defaults" },
-    "engine": { "blocks": ["A", "B", "C", "D", "E", "G", "H"], "arms": ["v2-haiku-low", "v2-code-defaults", "code-defaults"], "baselineArm": "code-defaults" },
+    "engine": { "blocks": ["A", "B", "C", "D", "E", "G", "H"], "arms": ["v2-haiku-low", "v2-code-defaults", "v1-code-defaults"], "baselineArm": "v1-code-defaults" },
     "stream": { "blocks": ["A"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" }
   }
 }
