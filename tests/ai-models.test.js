@@ -23,12 +23,15 @@ test('the plan routes exist; R0 routes default to Sonnet 5.5 low, every other de
       if (R0_ROUTES.has(name)) {
         // The legacy all-route variables (production sets ANTHROPIC_BAYBAY_MODEL) no longer move these routes.
         assert.deepEqual([route.model, route.modelSource, route.effort, route.effortSource], ['claude-sonnet-5-5', 'route', 'low', 'route'], name);
+      } else if (name === 'triage') {
+        // API-FRESH-TRIAGE: triage has its own default, Haiku 5.5 at effort low; the legacy all-route variables never move it.
+        assert.deepEqual([route.model, route.modelSource, route.effort, route.effortSource], ['claude-haiku-5-5', 'route', 'low', 'route'], name);
       } else {
         assert.equal(route.model, config.ANTHROPIC_BAYBAY_MODEL || 'claude-opus-5-5', name);
         // The legacy variable only ever produced low or medium.
         assert.equal(route.effort, config.ANTHROPIC_BAYBAY_EFFORT === 'low' ? 'low' : 'medium', name);
       }
-      assert.equal(route.fallbacks, 'off'); assert.equal(route.firstByteMs, null); assert.equal(route.maxPromptTokens, null);
+      assert.equal(route.fallbacks, 'off'); assert.equal(route.firstByteMs, null); assert.equal(route.maxPromptTokens, name === 'triage' ? 60000 : null, name);
       assert.equal(route.thinking, 'adaptive');
       assert.deepEqual(route.ignored, []);
       if (LEGACY_DEFAULTS[name]) assert.deepEqual([route.maxTokens, route.totalMs], LEGACY_DEFAULTS[name], name);

@@ -14,7 +14,7 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 | `baybay_professional` | Guarded professional-topic runs: `lib/baybayAgent.js` creates each run with `route: baybayRoute({ safetyTopic })` | caller's value, no ceiling; 28 s | **R0 default `claude-sonnet-5-5`, effort `low`**. Never resolves to Haiku 5.5 (RC-20), whatever variable names it. On this route the adapter sends the route's model, not the agent's |
 | `baybay_legacy` | Not wired yet; `server.js` legacy guide chat still reads the legacy variables | 4,096; 28 s | |
 | `helper_translate`, `helper_post_assist`, `helper_outing`, `helper_planner`, `helper_event_extract`, `helper_conversation`, `helper_other` | `requestAnthropicJson` callers | caller's value (6,000; planner 4,000), capped at 9,000; 28 s | Callers name their route; post-assist (in `server.js`) is inferred from the governed request path |
-| `triage` | Not wired yet (API-FRESH-TRIAGE) | 4,000; 28 s | |
+| `triage` | Source-change triage (`lib/sourceTriage.js`), only while `SOURCE_TRIAGE` is on | 4,000; 20 s caller deadline (route cap 28 s) | **Own default `claude-haiku-5-5`, effort `low`** (API-FRESH-TRIAGE); the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT` never move it. `BAYBAY_MODEL_TRIAGE` / `BAYBAY_EFFORT_TRIAGE` / `BAYBAY_THINKING_TRIAGE` override it. See `docs/source-monitor.md` |
 
 ### Environment overrides
 
