@@ -1790,6 +1790,11 @@ const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
 const AiRuntimeMetric = createAiRuntimeMetricModel(mongoose, injectedModels);
 const aiRuntimeMetrics = createAiRuntimeMetrics({ Model: AiRuntimeMetric, now: options.aiMetricsNow || Date.now, enabled: !isTest || !!injectedModels.AiRuntimeMetric });
 const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest, metrics: aiRuntimeMetrics });
+// API-BB-CUTOVER: owner e-mails at $100/$150/$180 month-to-date, at the daily hard cap and
+// 7/3/1 days before ANTHROPIC_USE_UNTIL (lib/aiSpendAlerts.js; same delivery gates as the digest).
+const aiSpendAlerts = require('./lib/aiSpendAlerts').createAiSpendAlerts({ governance: aiGovernance, store: require('./lib/aiSpendAlerts').governanceAlertStore(AiGovernance), config, now: options.plannerNow || Date.now });
+if (!isTest) aiSpendAlerts.start();
+server.once('close', aiSpendAlerts.stop);
 const aiUsageLimiter = createInteractionLimiter();
 app.get('/api/ai/usage', async (req, res) => {
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
@@ -1823,14 +1828,16 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
   if (Object.keys(req.query).length) return res.status(400).json({ error: 'Metrics use a fixed 30-day aggregate window.' });
   if (!aiUsageLimiter.check(`admin:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: 'Please wait before reading metrics again.' });
   try {
-    const [rows, runtime] = await Promise.all([
+    const [rows, runtime, spend] = await Promise.all([
       AiGovernance.find({ id: /^ai:\d{4}-\d{2}-\d{2}$/ }).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
       aiRuntimeMetrics.report(),
+      // Today's and this month's $ against the caps (API-BB-CUTOVER).
+      aiGovernance.getSpendState().catch(() => null),
     ]);
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
     const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
       ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
-    res.json({ days, runtime });
+    res.json({ days, runtime, spend });
   } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
 });
 
@@ -4765,13 +4772,14 @@ const baybayAssistant = createBayBayAssistant({ config, catalog: options.planner
   ai: options.ai?.baybay, webSearch: plannerWebSearch.search, Quota: PostTranslationQuota,
   now: options.plannerNow || Date.now, sourceFetch: options.baybaySourceFetch,
   fetchImpl: options.baybayFetch, routeCompute: options.plannerTravelCompute,
-  monitorStatus: () => sourceMonitor.service.list(true),
+  monitorStatus: () => sourceMonitor.service.list(true), budget: aiGovernance.spendLevel,
 });
 const publicContext = createPublicContext({ catalog: options.plannerCatalog, guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG, discoveryCatalog: options.discoveryCatalog, discoveryCatalogEn: options.discoveryCatalogEn });
 app.get('/api/ai/baybay-capabilities', async (req, res) => {
   const webAccess = baybayWebAccess(await getCurrentUserIdFromRequest(req));
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
-  res.json({ ...baybayAssistant.capabilities(), ...(!webAccess.allowed ? { tools: ['site', 'plans'], routeEstimates: false } : {}), webRequiresAuth: true, webAccess });
+  // status() adds the pause / reduced state (API-BB-CUTOVER) and the guest site-only tools.
+  res.json({ ...await baybayAssistant.status({ webAccess }), webRequiresAuth: true, webAccess });
 });
 app.post('/api/ai/guide-chat', async (req, res) => {
   const requestStartedAt = Date.now();
