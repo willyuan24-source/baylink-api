@@ -50,7 +50,7 @@ test('Claude search uses current direct Messages web tool, scoped query and opti
   assert.equal(request.headers['x-api-key'], undefined);
   assert.ok(request.signal instanceof AbortSignal);
   assert.equal(request.body.model, 'claude-opus-5-5');
-  assert.equal(request.body.max_tokens, 4096);
+  assert.equal(request.body.max_tokens, 8000);
   assert.deepEqual(request.body.output_config, { effort: 'low' });
   assert.deepEqual(request.body.tool_choice, { type: 'auto' });
   assert.deepEqual(request.body.tools, [{ type: 'web_search_20260318', name: 'web_search', allowed_callers: ['direct'], response_inclusion: 'full', max_uses: 2,
@@ -153,11 +153,12 @@ test('cites require native locations, opaque index and matching returned sources
   await assert.rejects(extractSearchResult(normalizeAnthropicSearch(native()), { lookup: async () => [{ address: '10.0.0.1', family: 4 }] }), { code: 'web_no_cited_sources' });
 });
 
-test('paused, truncated, refused, mixed-client-tool or unexecuted searches fail without continuation spend', async () => {
+test('truncated, refused, mixed-client-tool or unexecuted searches fail without continuation spend; a turn still paused after two resumes fails', async () => {
   for (const stop_reason of ['pause_turn', 'max_tokens', 'refusal', 'tool_use', 'stop_sequence', null]) {
     let calls = 0;
     await assert.rejects(requestSearch(input, options({ ai: async () => { calls++; return native('The venue does not exist.', { stop_reason }); } })), { code: 'web_incomplete_response' });
-    assert.equal(calls, 1);
+    // pause_turn is resumed at most twice (lib/anthropicWebSearch.js MAX_CONTINUATIONS); nothing else is.
+    assert.equal(calls, stop_reason === 'pause_turn' ? 3 : 1);
   }
   for (const content of [
     [{ type: 'text', text: 'Unsearched claim.', citations: [citation()] }],

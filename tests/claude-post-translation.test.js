@@ -92,7 +92,8 @@ test('missing, expired or unknown Claude configurations never fall back to an av
   await assert.rejects(translateWithProvider(source, { config, fetchImpl: async url => {
     calls++; assert.equal(url, 'https://api.anthropic.com/v1/messages'); return { ok: false, status: 429 };
   } }));
-  assert.equal(calls, 1);
+  // One Claude retry for the 429, never an OpenAI request.
+  assert.equal(calls, 2);
 });
 
 test('Claude expiry and missing credentials permit a durable valid cache but prohibit new reservations', async t => {

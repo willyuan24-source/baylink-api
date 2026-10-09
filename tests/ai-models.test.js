@@ -7,7 +7,8 @@ const {
 } = require('../lib/aiModels');
 const { FEATURES } = require('../lib/aiRuntimeMetrics');
 
-const LEGACY_DEFAULTS = { baybay_agent: [9000, 28000], baybay_web: [4096, 35000], baybay_legacy: [4096, 28000], helper_translate: [6000, 28000],
+// baybay_web: max_tokens 4,096 -> 8,000 (API-BB-HELPERS); its model and effort are unchanged.
+const LEGACY_DEFAULTS = { baybay_agent: [9000, 28000], baybay_web: [8000, 35000], baybay_legacy: [4096, 28000], helper_translate: [6000, 28000],
   helper_post_assist: [6000, 28000], helper_outing: [6000, 28000], helper_planner: [4000, 28000], helper_event_extract: [6000, 28000],
   helper_conversation: [6000, 28000], helper_other: [6000, 28000] };
 

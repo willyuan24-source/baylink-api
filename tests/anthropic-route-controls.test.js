@@ -42,7 +42,7 @@ test('Anthropic payloads never carry temperature/top_p/top_k, always carry effor
     const agent = createAnthropicBaybay({ config, fetchImpl: capture([answer(model)], sent) });
     assert.equal(parseDraft(await agent(agentPayload(baybayModel(config)), { timeoutMs: 25000 })).answer, 'Supported answer.');
     // JSON helpers (explicit route and inferred route).
-    await requestAnthropicJson([{ role: 'system', content: 'Return JSON.' }, { role: 'user', content: 'Sample' }], { config, route: 'helper_planner', maxTokens: 1200, fetchImpl: capture([answer(model)], sent) });
+    await requestAnthropicJson([{ role: 'system', content: 'Return JSON.' }, { role: 'user', content: 'Sample' }], { schema, config, route: 'helper_planner', maxTokens: 1200, fetchImpl: capture([answer(model)], sent) });
     await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config, schema, fetchImpl: capture([answer(model)], sent) });
     // Native web search: the payload builder plus its transport.
     const web = searchPayload({ query: 'SF museums' }, { config, instructions: 'Search.', scope: { city: 'San Francisco', timezone: 'America/Los_Angeles' } });
@@ -147,7 +147,7 @@ test('a Haiku route with disabled thinking sends it to Haiku and drops it from t
   assert.equal(sent[1].body.model, 'claude-sonnet-5-5'); assert.equal(sent[1].body.thinking, undefined);
   for (const field of SAMPLING) assert.equal(sent[1].body[field], undefined);
   const helper = [];
-  await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_THINKING_HELPER_OTHER: 'disabled' }, fetchImpl: capture([answer('claude-haiku-5-5')], helper) });
+  await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { schema, config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_THINKING_HELPER_OTHER: 'disabled' }, fetchImpl: capture([answer('claude-haiku-5-5')], helper) });
   assert.deepEqual(helper[0].body.thinking, { type: 'disabled' });
 });
 
@@ -168,17 +168,17 @@ test('JSON helpers retry a Haiku refusal once on Sonnet and keep their 502 refus
   const messages = [{ role: 'user', content: 'Sample' }];
   const logs = [];
   let sent = [];
-  const parsed = await requestAnthropicJson(messages, { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, route: 'helper_translate', log: line => logs.push(line),
+  const parsed = await requestAnthropicJson(messages, { schema, config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, route: 'helper_translate', log: line => logs.push(line),
     fetchImpl: capture([refusal('claude-haiku-5-5', 'bio'), answer('claude-sonnet-5-5')], sent) });
   assert.equal(parsed.answer, 'Supported answer.');
   assert.deepEqual(sent.map(item => item.body.model), ['claude-haiku-5-5', 'claude-sonnet-5-5']);
   assert.match(logs[0], /"route":"helper_translate".*"category":"bio"/);
   sent = [];
-  await assert.rejects(requestAnthropicJson(messages, { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, log: () => {},
+  await assert.rejects(requestAnthropicJson(messages, { schema, config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, log: () => {},
     fetchImpl: capture([refusal('claude-haiku-5-5'), refusal('claude-sonnet-5-5')], sent) }), { status: 502, code: 'AI_RESPONSE_REFUSED' });
   assert.equal(sent.length, 2);
   sent = [];
-  await assert.rejects(requestAnthropicJson(messages, { config: base, fetchImpl: capture([refusal('claude-opus-5-5')], sent) }), { status: 502, code: 'AI_RESPONSE_REFUSED' });
+  await assert.rejects(requestAnthropicJson(messages, { schema, config: base, fetchImpl: capture([refusal('claude-opus-5-5')], sent) }), { status: 502, code: 'AI_RESPONSE_REFUSED' });
   assert.equal(sent.length, 1);
 });
 
@@ -186,7 +186,7 @@ test('an over-cap Haiku prompt is answered by Sonnet 5.5 (sticky for the run) in
   const huge = [{ role: 'user', content: '活动'.repeat(40000) }];
   const logs = [];
   let sent = [];
-  const parsed = await requestAnthropicJson(huge, { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_THINKING_HELPER_OTHER: 'disabled' }, log: line => logs.push(line),
+  const parsed = await requestAnthropicJson(huge, { schema, config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5', BAYBAY_THINKING_HELPER_OTHER: 'disabled' }, log: line => logs.push(line),
     fetchImpl: capture([answer('claude-sonnet-5-5')], sent) });
   assert.equal(parsed.answer, 'Supported answer.');
   assert.equal(sent.length, 1); assert.equal(sent[0].body.model, 'claude-sonnet-5-5');
@@ -210,7 +210,7 @@ test('an over-cap Haiku prompt is answered by Sonnet 5.5 (sticky for the run) in
   assert.equal(logs.length, 1); assert.match(logs[0], /^\[ai-prompt-cap\] .*"route":"baybay_agent"/);
   // Under the cap nothing changes: Haiku is called directly and nothing is logged.
   sent = []; logs.length = 0;
-  await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, log: line => logs.push(line), fetchImpl: capture([answer('claude-haiku-5-5')], sent) });
+  await requestAnthropicJson([{ role: 'user', content: 'Sample' }], { schema, config: { ...base, BAYBAY_MODEL_HELPERS: 'claude-haiku-5-5' }, log: line => logs.push(line), fetchImpl: capture([answer('claude-haiku-5-5')], sent) });
   assert.equal(sent[0].body.model, 'claude-haiku-5-5'); assert.equal(logs.length, 0);
 });
 

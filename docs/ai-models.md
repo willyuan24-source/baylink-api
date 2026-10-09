@@ -9,11 +9,11 @@ Added 2026-10-08 (overhaul lane API-BB-MODELS). **No behaviour changes by defaul
 | Route | Used by today | Default `max_tokens` / deadline | Notes |
 | --- | --- | --- | --- |
 | `baybay_agent` | Unified BayBay research and synthesis loop (`lib/baybayAgent.js`) | caller's 6,000 / 9,000 (passed through, no ceiling); 25 s / 28 s | **R0 default `claude-sonnet-5-5`, effort `low`**; the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT` no longer apply. `baybayModel()` and `/api/ai/baybay-capabilities` report this route's model |
-| `baybay_web` | Native Claude web search (`lib/anthropicWebSearch.js`) | 4,096; caller's 35 s | Never resolves to Haiku 5.5 (web search on it is unverified) |
+| `baybay_web` | Native Claude web search (`lib/anthropicWebSearch.js`) | 8,000 (4,096 before API-BB-HELPERS); caller's 35 s | Never resolves to Haiku 5.5 (web search on it is unverified). A `pause_turn` is resumed up to twice inside the deadline |
 | `baybay_fast` | The v2 single-call fast path (`lib/baybayFastPath.js`), only with `BAYBAY_ENGINE=v2` | 4,000; 28 s | Default `claude-sonnet-5-5`, effort `low` (the R0 default); `BAYBAY_MODEL_FAST=claude-haiku-5-5` is the cheap tier. Guarded professional topics never use this route (they use `baybay_professional`) |
 | `baybay_professional` | Guarded professional-topic runs: `lib/baybayAgent.js` creates each run with `route: baybayRoute({ safetyTopic })` | caller's value, no ceiling; 28 s | **R0 default `claude-sonnet-5-5`, effort `low`**. Never resolves to Haiku 5.5 (RC-20), whatever variable names it. On this route the adapter sends the route's model, not the agent's |
 | `baybay_legacy` | Not wired yet; `server.js` legacy guide chat still reads the legacy variables | 4,096; 28 s | |
-| `helper_translate`, `helper_post_assist`, `helper_outing`, `helper_planner`, `helper_event_extract`, `helper_conversation`, `helper_other` | `requestAnthropicJson` callers | caller's value (6,000; planner 4,000), capped at 9,000; 28 s | Callers name their route; post-assist (in `server.js`) is inferred from the governed request path |
+| `helper_translate`, `helper_post_assist`, `helper_outing`, `helper_planner`, `helper_event_extract`, `helper_conversation`, `helper_other` | `requestAnthropicJson` callers | caller's value (6,000; planner 4,000), capped at 9,000; 28 s | Every caller names its route (post-assist passes `helper_post_assist` since API-BB-HELPERS) and an output schema; see [Helpers on schemas](#helpers-on-schemas-api-bb-helpers) |
 | `triage` | Source-change triage (`lib/sourceTriage.js`), only while `SOURCE_TRIAGE` is on | 4,000; 20 s caller deadline (route cap 28 s) | **Own default `claude-haiku-5-5`, effort `low`** (API-FRESH-TRIAGE); the legacy `ANTHROPIC_BAYBAY_MODEL/EFFORT` never move it. `BAYBAY_MODEL_TRIAGE` / `BAYBAY_EFFORT_TRIAGE` / `BAYBAY_THINKING_TRIAGE` override it. See `docs/source-monitor.md` |
 
 ### Environment overrides
@@ -46,6 +46,32 @@ Changing a route's model or effort starts a new prompt cache for that route (cac
 - **Prompt cap on Haiku.** A Haiku request whose estimated prompt exceeds 60,000 tokens (estimate: UTF-8 bytes / 3, images 2,000 each) is sent to `claude-sonnet-5-5` instead, through the same path as the refusal retry; in the agent the rest of that run stays on Sonnet. One log line is written: `[ai-prompt-cap] {"route","from","to","estimate","cap"}` (sizes only, no text). This keeps Haiku traffic clear of the 100K-token price cliff without failing long day plans (H7 records final calls of up to 83.5K tokens). Opus and Sonnet are not capped. Evals should count cap escalations from these log lines or from `response.model`; they are not degraded answers.
 - **Output budget.** Helper routes cap the caller's `max_tokens` at 9,000, as `requestAnthropicJson` always did. BayBay routes (agent, professional, web, legacy, fast) pass the caller's value through unchanged; `BAYBAY_MAX_TOKENS_<ROUTE>` replaces it.
 - **Server-side fallback replies.** If fallbacks are enabled and a reply contains a `fallback` marker, only the serving model's blocks after the last marker (plus earlier text) are exposed or replayed; the declining model's tool calls are never executed.
+
+## Helpers on schemas (API-BB-HELPERS)
+
+Added 2026-10-09. **Helper models and effort are unchanged.** They still follow `ANTHROPIC_BAYBAY_MODEL` / `ANTHROPIC_BAYBAY_EFFORT`, or `BAYBAY_MODEL_HELPERS` / `BAYBAY_MODEL_HELPER_<NAME>` when set. The cut-over to Haiku 5.5 at effort low belongs to API-BB-CUTOVER, after the helper set passes on that config.
+
+| Change | Where | Detail |
+| --- | --- | --- |
+| Output schema on every helper call | `lib/anthropicJson.js`, `lib/helperSchemas.js` | `requestAnthropicJson` refuses a call without a JSON schema (`AI_SCHEMA_REQUIRED`, before any spend) and sends it as `output_config.format`. Schemas: post translation, post-assist (categories and covers come from `server.js`), outing draft (draft fields optional), planner ranking, event screenshot, conversation translate/reply, source triage. The callers' own validators still run |
+| No "return only JSON" text on Claude | the same callers; the `server.js` post-assist prompt | The appended "Return exactly one valid JSON object…" system line is gone, and the Claude prompts drop their JSON-only sentences. OpenAI request bodies are byte-identical to before (the rollback path keeps its JSON-mode wording) |
+| One 429/529 retry | `lib/anthropicJson.js` | HTTP 429 or 529 is retried once with the identical request after a 250–1,250 ms jittered pause, or after the provider's `retry-after` when that is ≤ 4 s. There is no retry when `retry-after` is longer, when under 3 s of the deadline would remain, or when the caller has gone. Other statuses are never retried. `lib/aiRequest.js` is unchanged: the helper reads the status and `retry-after` from its own transport wrapper, and the rejected error gains `providerStatus` (and `retryAfterMs`). One log line: `[ai-retry] {"route","status","delayMs"}` (no text). The Haiku refusal retry on Sonnet is separate; each happens at most once per call |
+| Planner pre-filter | `lib/planner.js` | On Claude the ranking call sees at most 40 candidates `{id, title, city, category, date}`: up to 30 events and 10 places, either side using the other's unused share, in the server's own fit-and-relevance order. A broad "this weekend" request drops from about 26K to about 2.6K prompt tokens. OpenAI and injected test rankers keep 160 events + 80 places with full rows |
+| Web search | `lib/anthropicWebSearch.js`, `lib/aiModels.js` | `pause_turn` is resumed with the paused assistant content appended (no extra user text), at most twice and only with ≥ 2 s of the deadline left. The joined turn then goes through the unchanged validator. `max_tokens` is 8,000 |
+
+**Helper-set eval.** `scripts/helper-eval-local.mjs` runs 12 cases (`scripts/eval/helper-set.json`: translate 3, post-assist 3, outing 2, planner 2, screenshot 2) through the real helper code. It judges every Claude reply on schema validity (`end_turn`, one JSON object, valid against the schema the request carried) and records whether the caller's validator accepted it. A dry run is the default ($0, synthetic provider); a paid run needs `--live --budget-usd <n ≤ 5>`:
+
+```
+node --env-file=<private env file> scripts/helper-eval-local.mjs --live --budget-usd 2 --arms haiku-low,opus-medium --repeat 2 --run-id helpers-<date-time>
+```
+
+Arms: `haiku-low` (`BAYBAY_MODEL_HELPERS=claude-haiku-5-5`, `BAYBAY_EFFORT_HELPERS=low`), `opus-medium` (today's production helpers: `ANTHROPIC_BAYBAY_MODEL=claude-opus-5-5`, legacy effort medium) and `sonnet-low`. The default is `haiku-low,opus-medium`. Keep the budget at $2 or more when Opus runs: its per-call budget reserve is about $0.13, so a $1 cap can stop the run early.
+
+`summary.json` carries two gates. **Merge gate:** `opus-medium`, the config this change ships with schemas for the first time, is schema-valid on every item, and no arm saw an HTTP 400 or "Schema is too complex". **CUTOVER gate:** `haiku-low` is schema-valid on every item, with no HTTP 400. A case is judged on the reply the helper finally used, so a 429/529 retried into a valid reply passes. A live run exits with code 2 when the merge gate fails, and 3 when only the CUTOVER gate fails. `review.md` lays out the post-assist (P1–P3) and planner (L1–L2) outputs that a schema check cannot judge (invented `budget`/`timeInfo`, planner picks) for a read by eye. A run id that already holds results is refused, so paid results are never overwritten.
+
+The two flyer images are synthetic, rendered locally from `scripts/eval/helper-images/*.html`. Results are written outside the repository (default `~/opus-qa/overhaul/eval/<run-id>`).
+
+**助手类调用（中文摘要）：** 模型和 effort 不变。每个助手调用都带 JSON schema（结构化输出），Claude 提示词里不再写"只输出 JSON"。遇到 429/529 时抖动等待后重试一次。行程排序只给模型最多 40 个精简候选，"这个周末"类问题的提示词从约 2.6 万 token 降到约 2,600。联网搜索遇到 `pause_turn` 最多续两次，`max_tokens` 改为 8,000。合并前要跑一次付费助手评测：`opus-medium`（现在生产用的配置）必须全部 schema 有效，且任何一组都不能出现 HTTP 400 或 "Schema is too complex"（合并门槛）。切到 Haiku 5.5 low 要等 CUTOVER 线路，而且 `haiku-low` 也必须全部 schema 有效（CUTOVER 门槛）。schema 检查判断不了的内容（发帖助手有没有编造预算和时间、行程推荐选得好不好）写在 `review.md` 里，需要人工看一遍。
 
 ## Prices (`lib/aiPricing.js`)
 

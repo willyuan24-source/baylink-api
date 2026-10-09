@@ -3840,6 +3840,8 @@ const AI_DEFAULT_COVERS = [
   '/default-covers/15_二手出售.png',
   '/default-covers/16_湾区生活.png',
 ];
+// Claude drafts are constrained to this shape (output_config.format).
+const AI_POST_ASSIST_SCHEMA = require('./lib/helperSchemas').postAssistSchema({ categories: AI_POST_ASSIST_CATEGORIES, covers: AI_DEFAULT_COVERS });
 
 const AI_POST_ASSIST_TONES = new Set(['clear', 'natural', 'concise', 'detailed', 'urgent']);
 const AI_POST_ASSIST_REWRITE_MODES = new Set(['shorter', 'moreDetailed', 'moreNatural']);
@@ -3881,7 +3883,8 @@ const AI_POST_ASSIST_REWRITE_GUIDE = {
   moreNatural: '更像真人；减少模板感；避免“本人现需求如下”等生硬表达；更像湾区本地社区发帖语气。',
 };
 
-const buildAiPostAssistSystem = () => `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
+// Claude gets AI_POST_ASSIST_SCHEMA instead of the "JSON only" line; OpenAI's JSON mode keeps it.
+const buildAiPostAssistSystem = ({ claude = false } = {}) => `你是 BAYLINK 湾区华人本地生活平台的 BayBay 发帖助手。根据用户一句话需求，生成清晰、真实、可发布的帖子草稿。
 
 通用规则：
 - 严格遵循 language：zh 时所有文案使用简体中文；en 时 title、description、budget、timeInfo、quickTags、safetyTip 全部使用自然英文；bilingual 时这些文案中英文对应呈现，先中文后英文。不要因用户需求是中文而忽略 language。area 与 category/type 的系统值仍遵循以下约定。
@@ -3892,8 +3895,7 @@ const buildAiPostAssistSystem = () => `你是 BAYLINK 湾区华人本地生活�
 - area 字段请返回中文大区名：旧金山、中半岛、南湾、东湾、北湾（不要只写 San Francisco 当 area；Millbrae 等应归中半岛）
 - coverSuggestion 必须从以下路径中选一：${AI_DEFAULT_COVERS.join(', ')}
 - quickTags 为 2-5 个短标签（字符串数组）
-- 只输出一个 JSON 对象，不要 Markdown，不要解释
-
+${claude ? '' : '- 只输出一个 JSON 对象，不要 Markdown，不要解释\n'}
 地区判断（area 字段，非常重要）：
 - Millbrae, Burlingame, San Mateo, Foster City, Belmont, San Carlos, Redwood City → 中半岛
 - San Francisco, SF, Daly City, South San Francisco → 旧金山
@@ -4118,12 +4120,13 @@ const callOpenAiPostAssist = async ({ intent, type, categoryHint, areaHint, lang
   if (options.ai?.postAssist) return options.ai.postAssist({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide });
   if (!selectedAiAvailable(config)) throw new Error('AI post assistance is not configured');
   if (isTest && !options.postAssistFetch) throw new Error('External AI requests are disabled in tests');
+  const claude = baybayProvider(config) === 'anthropic';
   const messages = [
-    { role: 'system', content: buildAiPostAssistSystem() },
+    { role: 'system', content: buildAiPostAssistSystem({ claude }) },
     { role: 'user', content: buildAiPostAssistUserMessage({ intent, type, categoryHint, areaHint, language, tone, rewriteMode, lengthGuide }) },
   ];
-  if (baybayProvider(config) === 'anthropic') {
-    return requestAnthropicJson(messages, { config, fetchImpl: options.postAssistFetch, maxTokens: 6000 });
+  if (claude) {
+    return requestAnthropicJson(messages, { config, fetchImpl: options.postAssistFetch, maxTokens: 6000, route: 'helper_post_assist', schema: AI_POST_ASSIST_SCHEMA });
   }
   const model = config.OPENAI_MODEL || 'gpt-5.4-mini';
   const maxTokens = lengthGuide.max >= 350 ? 1100 : 900;
