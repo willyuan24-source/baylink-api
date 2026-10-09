@@ -4,8 +4,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
-const { routeBayBay, baybayEngine } = require('../lib/baybayRouter');
-const { FROZEN_SYSTEM, systemBlocks, FAST_FORMAT, parseFastDraft, assembleAnswer, readerProse, fastProblems } = require('../lib/baybayFastPath');
+const { routeBayBay, baybayEngine, isBookingRequest } = require('../lib/baybayRouter');
+const { FROZEN_SYSTEM, systemBlocks, FAST_FORMAT, parseFastDraft, assembleAnswer, leadUnits, readerProse, fastProblems } = require('../lib/baybayFastPath');
 const { buildFastEvidence, readerDate } = require('../lib/baybayEvidence');
 const { createAnthropicBaybay } = require('../lib/anthropicBaybay');
 const { namedEntitiesV2, queryAliases } = require('../lib/entityAliases');
@@ -404,4 +404,74 @@ test('v2 answers "帮我订机票" by saying BayBay cannot book (no city questio
   const v1 = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, respond: () => { throw new Error('v1 asks for a city without a model call'); } });
   const legacy = await run(v1.assistant, '帮我订一张下周五从旧金山飞北京的机票');
   assert.match(legacy.answer, /请确认一个湾区城市/); assert.equal(v1.sent.length, 0);
+});
+
+// ---------------------------------------------------------------- review fixes (10-09)
+
+test('points[].cardIds are keys of localMatches: a place with a guide page becomes its guide card, a venue with no BAYLINK page is left out', async () => {
+  const refOf = (body, pattern) => JSON.parse(body.messages[0].content[0].text).evidence.find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
+  let refs = {};
+  const { assistant } = assistantWith({ respond: body => {
+    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org/) };
+    return reply(refs.garden
+      ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
+      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `King 图书馆有中文馆藏和活动 [[${refs.library}]]`, cardIds: [refs.library, refs.sjma] }], candidateIds: [refs.library] }));
+  } });
+  const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
+  assert.ok(refs.garden && refs.tea, JSON.stringify(refs));
+  const shown = result => new Set(result.localMatches.map(card => `${card.kind}:${card.id}`));
+  assert.deepEqual(berkeley.points[0].cardIds, ['guide:berkeley-campus-botanical-garden-half-day'], 'the place is shown as its guide card');
+  assert.deepEqual(berkeley.points[1].cardIds, ['opening:berkeley-cere-tea-opening-2026'], 'an unknown ref is dropped');
+  for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
+  assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
+  const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动');
+  assert.ok(refs.library && refs.sjma, JSON.stringify(refs));
+  assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
+  assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));
+  assert.ok(sanJose.research.warnings.includes('answer_lead_long'), 'a lead over 40 characters is recorded');
+  assert.equal(leadUnits(sanJose.lead), 47); assert.equal(leadUnits('Yes, the Blue Angels fly Saturday [1]', 'en'), 6); assert.equal(leadUnits('会飞：航空展是10月9日至11日 [1]'), 13);
+});
+
+test('a booking request is one addressed to BayBay; shopping questions that say 给我买 are not', async () => {
+  for (const text of ['帮我订一张下周五从旧金山飞北京的机票', '你能不能帮我订酒店', '请你帮我买两张票', '可以帮我订机票吗', 'BayBay，帮我订个餐厅', '给我订一张周六的票', '我想让你帮我订机票',
+    'Can you book a flight to Beijing for me?', 'Please reserve a table for two', 'Could you buy two tickets for us']) assert.equal(isBookingRequest(text), true, text);
+  for (const text of ['老公说要给我买包，湾区哪里有奥特莱斯', '我想给我买个生日蛋糕，哪家好', '给我买点建议吧', '帮我订个周六在 Berkeley 的行程，不开车', '帮我买什么礼物好', '妈妈帮我订了机票，到机场怎么走',
+    'Can you buy tickets at the door?', 'Can you book online for the Exploratorium?', 'Can you book a day plan for Saturday', 'Help me plan a day']) assert.equal(isBookingRequest(text), false, text);
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '可以去 Great Mall 看看。' })) });
+  await run(assistant, '老公说要给我买包，湾区哪里有奥特莱斯');
+  assert.equal(sent.length, 1);
+  assert.ok(!JSON.stringify(sent[0].messages).includes('cannot book, reserve'), 'a shopping question gets no "cannot book" rule');
+});
+
+test('the v2 agent carries the v1 plan and research rules after the user turn; the fast path and system block 1 do not', async () => {
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以安排半天。' })) });
+  const rulesOf = body => body.messages.filter(row => row.role === 'system').map(row => row.content[0].text).join('\n');
+  const guest = await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  assert.equal(guest.route.path, 'agent');
+  const siteRules = rulesOf(sent[0]);
+  for (const pattern of [/Plans and research/, /complete final ordered choice/, /within maxStops/, /fewer suitable stops/, /apply planEdit exactly/, /Weekly hours never guarantee/,
+    /city-only origin/, /admissionFacts/, /Check each traveler/, /Tool failures are unknowns/]) assert.match(siteRules, pattern);
+  assert.doesNotMatch(siteRules, /verify_candidate|relatedSources/, 'site-only runs have no source-reading tools');
+  assert.deepEqual(sent[0].system, systemBlocks(), 'block 1 stays frozen');
+  assert.equal(sent[0].messages[0].role, 'user');
+  sent.length = 0;
+  await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车', { searchMode: 'smart', member: true });
+  assert.match(rulesOf(sent[0]), /verify_candidate/); assert.match(rulesOf(sent[0]), /relatedSources/);
+  sent.length = 0;
+  const quick = await run(assistant, '蓝天使这周末飞吗');
+  assert.equal(quick.route.path, 'fast');
+  assert.doesNotMatch(rulesOf(sent[0]), /Plans and research/);
+});
+
+test('reader prose: sf and peninsula codes become names only in a code context; the v2 false-negative template has its own zh-Hant text', async () => {
+  assert.equal(readerProse('这周末 sf 和 peninsula 有免费活动', 'zh-Hans'), '这周末 旧金山 和 半岛 有免费活动');
+  assert.equal(readerProse('在peninsula的南瓜园', 'zh-Hant'), '在半島的南瓜园');
+  assert.equal(readerProse('Events in region: peninsula and (peninsula) and sf', 'en'), 'Events in region: the Peninsula and (the Peninsula) and San Francisco');
+  assert.equal(readerProse('Half Moon Bay is on the peninsula; see sf.gov or SFMOMA.', 'en'), 'Half Moon Bay is on the peninsula; see sf.gov or SFMOMA.');
+  assert.equal(readerProse('先去 sfmoma', 'zh-Hans'), '先去 sfmoma');
+  const { assistant } = assistantWith({ respond: () => reply(fast({ lead: '站內沒有收錄這個活動的後續場次。' })) });
+  const result = await run(assistant, '還有嗎', { currentPath: '/events/santana-row-glass-pumpkin-2026', locale: 'zh-Hant' });
+  assert.ok(result.research.warnings.includes('false_negative_corrected'), 'the Traditional wording 站內沒有 is caught');
+  assert.match(result.answer, /^站內已收錄「/); assert.match(result.answer, /這一場已經結束/); assert.match(result.answer, /（週/);
+  assert.doesNotMatch(result.answer, /站内|这一场|请以/);
 });
