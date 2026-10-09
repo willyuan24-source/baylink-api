@@ -6,11 +6,14 @@
 //
 //   node scripts/source-triage-dry-run.mjs --snapshots <file.json> [--out <dir>]
 //        [--live --budget-usd 0.10] [--thinking adaptive|disabled] [--limit 200]
+//        [--now 2026-10-08T20:00:00-07:00]
 //
 // <file.json> is either the admin export (GET /api/admin/source-monitor, saved
 // by an administrator) or an array of rows shaped like it:
 //   { id | sourceId, hash, reviewStatus: 'pending', pendingChange: { removed[], added[], summary, detectedAt } }
-// Rows whose id is not in data/source-registry.json are skipped.
+// Rows whose id is not in data/source-registry.json are skipped. `--now` (or a
+// top-level `now` in the file, as in the casebook) fixes the clock, so sources that
+// have ended since the file was written are still classified.
 //
 // Without --live a synthetic provider answers "material" for every change ($0).
 // --live reads ANTHROPIC_API_KEY (and optional ANTHROPIC_WORKSPACE_ID) from the
@@ -46,6 +49,10 @@ const outDir = path.resolve(option('--out', path.join(os.homedir(), 'opus-qa', '
 if (outDir.startsWith(ROOT)) { console.error('Write results outside the repository.'); process.exit(2); }
 
 const raw = JSON.parse(readFileSync(snapshotsPath, 'utf8'));
+const fixedNow = option('--now') || (!Array.isArray(raw) && typeof raw.now === 'string' ? raw.now : '');
+const clock = fixedNow ? Date.parse(fixedNow) : null;
+if (fixedNow && !Number.isFinite(clock)) { console.error('--now needs an ISO date-time.'); process.exit(2); }
+const now = () => clock ?? Date.now();
 const exported = Array.isArray(raw) ? raw : raw.sources;
 const known = new Map(registry.map(row => [row.id, row]));
 const rows = new Map();
@@ -84,7 +91,7 @@ const config = { SOURCE_TRIAGE: 'on', BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC
   ...(thinking === 'disabled' ? { BAYBAY_THINKING_TRIAGE: 'disabled' } : {}) };
 const items = createItemIndex();
 const perCall = [];
-const triage = createSourceTriage({ store, registry, config, items, dailyLimit: 2000, batchLimit: limit, batchMaxMs: 60 * 60 * 1000,
+const triage = createSourceTriage({ store, registry, config, items, now, dailyLimit: 2000, batchLimit: limit, batchMaxMs: 60 * 60 * 1000,
   logger: { info() {}, warn() {}, error() {} }, fetchImpl: live ? guarded : synthetic,
   recordSpend: billing => { if (billing?.priced) { spentMicroUsd += billing.microUsd; perCall.push(billing.microUsd); } } });
 
@@ -112,11 +119,11 @@ const results = [...rows.values()].map(row => {
 });
 mkdirSync(outDir, { recursive: true });
 writeFileSync(path.join(outDir, 'results.json'), JSON.stringify(results, null, 1));
-const digest = buildDigest({ rows: [...rows.values()], registry, items, now: Date.now() });
+const digest = buildDigest({ rows: [...rows.values()], registry, items, now: now() });
 writeFileSync(path.join(outDir, 'digest-preview.txt'), digest ? `${digest.subject}\n\n${digest.text}\n` : '(nothing to send)\n');
 writeFileSync(path.join(outDir, 'prompt-sample.txt'), results[0] ? triageMessages(known.get(results[0].sourceId), rows.get(results[0].sourceId).pendingChange, items.items(known.get(results[0].sourceId).contentIds)).map(m => `## ${m.role}\n${m.content}`).join('\n\n') : '');
 const summary = {
-  live, thinking, pending: rows.size, triaged: report.triaged ?? 0, material: report.material ?? 0, dismissed: report.dismissed ?? 0, failed: report.failed ?? 0,
+  live, thinking, now: new Date(now()).toISOString(), pending: rows.size, triaged: report.triaged ?? 0, material: report.material ?? 0, dismissed: report.dismissed ?? 0, failed: report.failed ?? 0,
   modelCalls: calls, usd: Number((spentMicroUsd / 1e6).toFixed(5)), meanUsdPerCall: perCall.length ? Number((spentMicroUsd / perCall.length / 1e6).toFixed(6)) : 0, elapsedMs,
   ...(expected.size ? { casebook: casebookScore(results) } : {}),
 };
