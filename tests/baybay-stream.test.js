@@ -52,6 +52,28 @@ test('recorded fast-path stream rebuilds the exact non-streamed message at every
   assert.deepEqual(await readMessageStream(sseResponse(sse, { size: 3 }).body), message);
 });
 
+test('a live recorded Sonnet 5.5 fast-path stream (eval stream-1009, C03): padded JSON, lead first, drafts equal the lead and carry no markers', async () => {
+  // Recorded with --save-sse from the real API: data lines carry whitespace padding,
+  // message_delta repeats input usage and adds stop_details/container, ping has a space.
+  const sse = fixture('live-sonnet-fast-path.sse');
+  const reference = await readMessageStream(iterate([sse]));
+  for (const size of [1, 3, 17, 4096]) assert.deepEqual(await readMessageStream(iterate(byteChunks(sse, size))), reference);
+  assert.deepEqual(reference.content.map(block => block.type), ['text']);
+  assert.equal(reference.stop_reason, 'end_turn');
+  assert.deepEqual([reference.usage.cache_read_input_tokens, reference.usage.output_tokens], [3106, 479]);
+  const answer = JSON.parse(reference.content[0].text);
+  assert.match(reference.content[0].text, /^\{"lead":/, 'structured output streams the lead first');
+  const events = [];
+  const writer = createDraftWriter({ emit: event => events.push(event), ...fakeTimers() });
+  const fields = createJsonFieldStream({ match: fastDraftField, onText: (target, text) => writer.text(target.field, target.index, text), onDone: target => writer.done(target.field, target.index) });
+  await readMessageStream(iterate(byteChunks(sse, 7)), createMessageAccumulator({ onDelta: delta => { if (delta.type === 'text') fields.push(delta.text); } }));
+  writer.end({ complete: true });
+  assert.equal(events[0].field, 'lead');
+  assert.equal(joined(events, 'lead'), sanitizeDraft(answer.lead, 'zh-Hans'));
+  answer.points.slice(0, 5).forEach((point, index) => assert.equal(joined(events, 'point', index), sanitizeDraft(point.text, 'zh-Hans').trimStart()));
+  for (const event of events) assert.doesNotMatch(event.text, /\[\[|\[\d+\]|https?:|20\d\d-\d\d-\d\d/);
+});
+
 test('recorded tool round: summarized thinking + signature verbatim and a tool input split into JSON fragments', async () => {
   const message = expected('tool-round.message.json');
   for (const size of [1, 4, 9, 4096]) assert.deepEqual(await readMessageStream(iterate(byteChunks(fixture('tool-round.sse'), size))), message);
