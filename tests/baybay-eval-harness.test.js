@@ -166,6 +166,32 @@ test('dry run needs no key, makes no network call and writes only outside the re
   fs.rmSync(out, { recursive: true, force: true });
 });
 
+// API-BB-STREAM: the harness is a capable client, so a v2 fast-path turn streams its
+// call, reports draft events as lead TTFT and still prices the streamed usage.
+test('stream set dry run: a site answer drafts its lead from a streamed call; a professional topic and --no-drafts do not stream', async () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-eval-'));
+  const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
+  const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
+  const run = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-stream', '--set', 'stream', '--items', 'C05,C13', '--no-judge', '--save-sse', '1'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(run.status, 0, run.stderr);
+  const rows = fs.readFileSync(path.join(out, 'dry-stream', 'results-v2-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  const site = rows.find(row => row.turnId === 'C05'), professional = rows.find(row => row.turnId === 'C13');
+  assert.equal(site.routeReason, 'site_answer');
+  assert.ok(site.drafts.events >= 1); assert.equal(site.drafts.corrected, false);
+  assert.equal(site.timings.leadSource, 'draft-event');
+  assert.ok(site.timings.leadMs <= site.timings.completeMs);
+  assert.equal(site.calls[0].streamed, true); assert.ok(site.calls[0].usage.inputTokens > 0, 'usage read from the streamed body');
+  assert.equal(professional.routeReason, 'professional_topic');
+  assert.equal(professional.drafts, null); assert.equal(professional.calls[0].streamed, undefined);
+  assert.equal(fs.readdirSync(path.join(out, 'dry-stream', 'sse')).length, 1);
+  assert.match(fs.readFileSync(path.join(out, 'dry-stream', 'summary.md'), 'utf8'), /Drafted turns: lead TTFT p50 \/ p90/);
+  const plain = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-no-drafts', '--set', 'stream', '--items', 'C05', '--no-judge', '--no-drafts'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(plain.status, 0, plain.stderr);
+  const [row] = fs.readFileSync(path.join(out, 'dry-no-drafts', 'results-v2-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  assert.equal(row.drafts, null); assert.equal(row.calls[0].streamed, undefined); assert.equal(row.timings.leadSource, 'answer-complete');
+  fs.rmSync(out, { recursive: true, force: true });
+});
+
 // R0 review: the casebook's two single-sign items must stay model-answered (the
 // lexicon leaves one weak FAST sign to the model), or they would not test the model.
 test('the single stroke-sign items are left to the model by the lexicon and gold-check 911 first', () => {
