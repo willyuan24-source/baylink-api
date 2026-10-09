@@ -95,7 +95,7 @@ test('getSpendState reports day and month spend against the soft/hard caps (enfo
   const state = await governance.getSpendState();
   assert.equal(state.level, 'hard'); assert.equal(state.dayUsd, 1); assert.equal(state.dayPricedCalls, 3); assert.equal(state.dayUnpricedCalls, 1);
   // claim() is the count quota only; the $ cap is enforced by the middleware's
-  // reservation (tests/ai-spend-caps.test.js).
+  // reservation (tests/baybay-cutover.test.js).
   assert.equal(await governance.claim({ ip: 'fixture-ip' }), true);
   const defaults = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
   assert.deepEqual((await defaults.getSpendState()).caps, { softDailyUsd: 6, hardDailyUsd: 10, enforced: true });

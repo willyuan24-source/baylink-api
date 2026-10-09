@@ -5,9 +5,11 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { EventEmitter } = require('node:events');
 const jwt = require('jsonwebtoken');
-const { createAiGovernance, aiExecution, reserveAiCall } = require('../lib/aiGovernance');
+const { createAiGovernance, aiExecution, reserveAiCall, aiRefusal, governProviders } = require('../lib/aiGovernance');
 const { fetchAiJson } = require('../lib/aiRequest');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
+const { registerPlannerWebSearch, normalizeWebSearchError, WEB_SEARCH_FAILURES } = require('../lib/plannerWebSearch');
+const { createOutingDraft } = require('../lib/outingDraft');
 const { budgetNotice, noticeBanners, pacificResetAt, spendCapsEnforced, LOCALES } = require('../lib/aiBudget');
 const { loadPlannerCatalog } = require('../lib/planner');
 const { createPublicContext } = require('../lib/publicContext');
@@ -27,6 +29,8 @@ const fastMessage = (answer = {}) => ({ type: 'message', id: 'msg-fixture', mode
   content: [{ type: 'text', text: JSON.stringify({ lead: '会飞，周六周日下午表演[[e1]]。', points: [], candidateIds: [], followups: [], coverage: [], gap: '', ...answer }) }], usage: { input_tokens: 40, output_tokens: 60 } });
 const spendState = (level, extra = {}) => ({ day: TODAY, level, caps: { softDailyUsd: 6, hardDailyUsd: 10, enforced: true }, ...extra });
 const page = (currentPath, locale = 'zh-Hans') => publicContext.resolve({ context: { currentPath }, currentPath, today: TODAY, locale });
+const hanPost = (id, authorId) => ({ id, authorId, title: 'Fremont 房间出租', description: '周末可看房。', budget: '', timeInfo: '', isDeleted: false, adminHidden: false, status: 'active', contactPreference: { methods: [] } });
+const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+yP1sAAAAASUVORK5CYII=';
 
 function assistantWith({ config = {}, budget, webSearch, Quota = quota(), respond = () => reply(fastMessage()) } = {}) {
   const sent = [], searches = [];
@@ -91,6 +95,12 @@ test('hard cap: no provider call is reserved or sent, nothing is claimed, and th
   await assert.rejects(governed(governance, call), error => error.status === 429 && error.code === 'AI_DAILY_BUDGET' && /今日 AI 名额已满/.test(error.message));
   await assert.rejects(governed(governance, call, { locale: 'en' }), error => error.code === 'AI_DAILY_BUDGET' && /^Today's AI capacity is used up/.test(error.message));
   await assert.rejects(governed(governance, call, { locale: 'zh-Hant' }), error => /今日 AI 名額已滿/.test(error.message));
+  // A web-search body past the hard cap gets the day's refusal, not the soft cap's "暂停联网查询".
+  await assert.rejects(governed(governance, () => fetchAiJson('https://api.anthropic.com/v1/messages', { method: 'POST', body: webBody }, { fetchImpl: async () => { fetched++; return reply(claudeReply); } })),
+    error => error.status === 429 && error.code === 'AI_DAILY_BUDGET');
+  // The refusal is kept for the request, for routes that report provider failures generically.
+  assert.equal(await governed(governance, async () => { await call().catch(() => {}); return aiRefusal()?.code; }), 'AI_DAILY_BUDGET');
+  assert.equal(await governed(governance, async () => aiRefusal()), null, 'a request with no refused call has none');
   assert.equal(fetched, 0);
   assert.equal(models.AiGovernance.rows.find(row => row.id === `ai:${TODAY}`), undefined, 'no quota document: the visitor\'s daily count is untouched');
   // AI_SPEND_CAPS=off: report only, the call goes through.
@@ -117,6 +127,68 @@ test('soft cap: web-search requests are refused before they are sent; other call
   // Under the soft cap a web search outside a governed request (no context) is not refused here.
   assert.equal(aiExecution(), undefined);
   await assert.doesNotReject(reserveAiCall({ webSearch: true }));
+});
+
+test('planner web search: a capped day is refused before the rate limits and quota, as a non-retryable 429 web_daily_limit with no cooldown', async () => {
+  const quotaRow = models => models.PostTranslationQuota.rows.find(row => row.id.startsWith('planner-web-search:'));
+  const service = (models, config = {}) => {
+    const seen = { limits: 0, provider: 0 };
+    const { search } = registerPlannerWebSearch({ post() {} }, { Quota: models.PostTranslationQuota, checkRateLimit: () => { seen.limits++; return true; },
+      config: { OPENAI_API_KEY: 'fixture-openai-only', ...config }, now: () => NOW,
+      // Governed like server.js's injected providers.
+      ai: governProviders({ search: async () => { seen.provider++; throw new Error('must not be called'); } }).search });
+    return { search, seen };
+  };
+  for (const [microUsd, code] of [[6_500_000, 'AI_WEB_BUDGET'], [10_000_000, 'AI_DAILY_BUDGET']]) {
+    const models = createMemoryModels(); ledgerAt(models, microUsd);
+    const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
+    const { search, seen } = service(models);
+    for (const locale of ['zh-Hans', 'en']) {
+      const error = await governed(governance, () => search({ query: 'Berkeley library card', locale }, 'private-ip')).catch(failure => failure);
+      assert.equal(error.code, code); assert.equal(error.status, 429);
+      const safe = normalizeWebSearchError(error);
+      assert.equal(safe.code, 'web_daily_limit'); assert.equal(safe.status, 429); assert.equal(WEB_SEARCH_FAILURES[safe.code].retryable, false);
+    }
+    assert.deepEqual(seen, { limits: 0, provider: 0 }, 'no rate-limit count and no provider call');
+    assert.equal(quotaRow(models), undefined, 'the route\'s daily web quota is untouched');
+    assert.equal(models.AiGovernance.rows.find(row => row.id === `ai:${TODAY}`), undefined, 'the visitor\'s AI count is untouched');
+  }
+  // A refusal inside the provider call (the visitor's AI count is used up) is the same
+  // honest 429, and it does not put the query on the 30 s failure cooldown.
+  const models = createMemoryModels();
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1' }, now: () => NOW });
+  await governed(governance, () => reserveAiCall());
+  const { search, seen } = service(models);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await assert.rejects(governed(governance, () => search({ query: 'Berkeley library card', locale: 'en' }, 'private-ip')),
+      error => error.code === 'web_daily_limit' && error.status === 429);
+  }
+  assert.equal(seen.provider, 0);
+  for (const code of ['AI_WEB_BUDGET', 'AI_DAILY_BUDGET', 'AI_DAILY_LIMIT']) assert.equal(normalizeWebSearchError({ code, message: 'private detail' }).code, 'web_daily_limit');
+  assert.equal(normalizeWebSearchError({ code: 'AI_CALL_LIMIT' }).code, 'web_provider_unavailable', 'other refusals keep their mapping');
+});
+
+test('outing draft: a capped Claude call is the honest 429, not the generic 503 "please try again"', async () => {
+  const input = { intent: '周六下午在 Berkeley 散步，三个人', answers: [], locale: 'zh-Hans', today: TODAY, now: NOW };
+  const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only' };
+  let fetched = 0;
+  const fetchImpl = async () => { fetched++; return reply(claudeReply); };
+  const models = createMemoryModels(); ledgerAt(models, 10_000_000);
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
+  await assert.rejects(governed(governance, () => createOutingDraft(input, { config, fetchImpl }), { path: '/api/ai/outing-draft', locale: 'en' }),
+    error => error.status === 429 && error.code === 'AI_DAILY_BUDGET' && /^Today's AI capacity is used up/.test(error.message));
+  // The visitor's AI count used up: the same honest 429.
+  const counted = createMemoryModels();
+  const limited = createAiGovernance({ Model: counted.AiGovernance, config: { JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1' }, now: () => NOW });
+  await governed(limited, () => reserveAiCall());
+  await assert.rejects(governed(limited, () => createOutingDraft(input, { config, fetchImpl }), { path: '/api/ai/outing-draft' }),
+    error => error.status === 429 && error.code === 'AI_DAILY_LIMIT');
+  assert.equal(fetched, 0);
+  // Any other provider failure keeps the generic 503.
+  const open = createAiGovernance({ Model: createMemoryModels().AiGovernance, config: { JWT_SECRET: SECRET }, now: () => NOW });
+  await assert.rejects(governed(open, () => createOutingDraft(input, { config, fetchImpl: async () => { fetched++; return { ok: false, status: 500, json: async () => ({}), text: async () => '' }; } }), { path: '/api/ai/outing-draft' }),
+    error => error.status === 503 && /could not prepare this draft/.test(error.message));
+  assert.equal(fetched, 1);
 });
 
 test('the spend level is cached for 30 s, bumped by each priced call, re-read on a new day, and fails open', async () => {
@@ -233,6 +305,25 @@ test('soft cap: a day plan is one fast call (route reason budget_fast_only); a g
   assert.equal(agentPlan.route.path, 'agent');
 });
 
+test('soft cap: an edit of the plan in scope (换掉第二站) keeps the agent path with the previous plan and site-only tools', async () => {
+  let level = 'ok';
+  const { assistant, sent, searches } = assistantWith({ budget: async () => spendState(level) });
+  const first = await ask(assistant, '周六带孩子在 Berkeley 安排一天行程，三站，不开车');
+  assert.equal(first.route.path, 'agent'); assert.equal(first.assistantPlan.stops.length, 3);
+  level = 'soft'; sent.length = 0;
+  const edit = await assistant.run({ message: '换掉第二站', locale: 'zh-Hans', currentPath: '/', pageContext: page('/'), searchMode: 'smart', webAccess: { allowed: true }, sessionToken: first.assistantSessionToken });
+  assert.equal(edit.route.path, 'agent'); assert.ok(!edit.research.warnings.includes('budget_fast_only'));
+  assert.equal(edit.notice.kind, 'ai_budget_reduced'); assert.equal(edit.retrieval.requestedMode, 'site');
+  const context = JSON.parse(sent[0].messages[0].content[0].text);
+  assert.deepEqual(context.planEdit && { kind: context.planEdit.kind, index: context.planEdit.index }, { kind: 'replace', index: 1 });
+  assert.ok(context.previousPlan?.selectedIds?.length === 3, 'the agent gets the previous plan');
+  for (const body of sent) assert.deepEqual((body.tools || []).map(tool => tool.name).sort(), ['create_plan', 'search_site'], 'site-only tools, no web search');
+  assert.equal(searches.length, 0);
+  // Without a plan in scope the same words stay on the one fast call.
+  const fresh = await ask(assistant, '换掉第二站');
+  assert.equal(fresh.route.path, 'fast');
+});
+
 test('the BayBay daily run limit defaults to 1000 and, when reached, gives the same daily notice', async () => {
   const filters = [];
   const full = { updateOne: async () => ({}), findOneAndUpdate: async filter => { filters.push(filter); return null; } };
@@ -280,12 +371,20 @@ test('status(): the capabilities contract for the pause banner, the reduced mode
     actions: [{ id: 'call-911', label: '911', href: 'tel:911' }, { id: 'call-211', label: '211', href: 'tel:211' }] });
   assert.equal(hard.pause.actions[0].href, 'tel:911', 'the 911 action comes first');
   const reasons = [];
-  for (const config of [{ BAYBAY_PAUSED: 'true' }, { ANTHROPIC_USE_UNTIL: '2026-10-01T00:00:00Z' }, { BAYBAY_AI_PROVIDER: 'unknown' }, { BAYBAY_AGENT_ENABLED: 'false' }]) {
+  for (const config of [{ BAYBAY_PAUSED: 'true' }, { ANTHROPIC_USE_UNTIL: '2026-10-01T00:00:00Z' }, { BAYBAY_AI_PROVIDER: 'unknown' }]) {
     const status = await assistantWith({ config }).assistant.status();
     assert.equal(status.enabled, false); assert.equal(status.pause.kind, 'ai_paused'); assert.equal(status.pause.resumesAt, undefined);
     reasons.push(status.pause.reason);
   }
-  assert.deepEqual(reasons, ['paused', 'provider_unavailable', 'provider_unavailable', 'disabled']);
+  assert.deepEqual(reasons, ['paused', 'provider_unavailable', 'provider_unavailable']);
+  // BAYBAY_AGENT_ENABLED=false is not a pause: guide-chat answers on its legacy model path,
+  // so there is no "AI 助手暂停" banner; only the $ caps, which govern that path too, show.
+  const disabled = { BAYBAY_AGENT_ENABLED: 'false', BAYBAY_PAUSED: 'true' };
+  const off = await assistantWith({ config: disabled, budget: async () => spendState('ok') }).assistant.status();
+  assert.equal(off.enabled, false); assert.equal(off.pause, null); assert.equal(off.reduced, null);
+  assert.equal((await assistantWith({ config: disabled, budget: async () => spendState('soft') }).assistant.status()).reduced.kind, 'ai_budget_reduced');
+  const offHard = await assistantWith({ config: disabled, budget: async () => spendState('hard') }).assistant.status();
+  assert.equal(offHard.pause.reason, 'daily_budget'); assert.equal(offHard.pause.kind, 'ai_daily_budget');
   // capabilities() (guide-chat's routing switch) is unchanged by the budget.
   assert.equal(assistantWith({ budget: async () => spendState('hard') }).assistant.capabilities().enabled, true);
   // Engine reporting follows the effective engine.
@@ -296,12 +395,15 @@ test('status(): the capabilities contract for the pause banner, the reduced mode
 
 test('server: past the hard cap the capabilities pause, BayBay answers without a model, the 911 card is unchanged and helpers get an honest 429', async t => {
   const { createApplication } = require('../server');
-  const models = createMemoryModels({ User: [{ id: 'admin', role: 'admin', accountStatus: 'active' }, { id: 'member', role: 'user', accountStatus: 'active', email: 'member@example.test' }] });
+  const models = createMemoryModels({ User: [{ id: 'admin', role: 'admin', accountStatus: 'active' }, { id: 'member', role: 'user', accountStatus: 'active', email: 'member@example.test' }],
+    Post: [hanPost('han-post', 'member')] });
   ledgerAt(models, 10_000_000);
-  const calls = { baybay: 0, postAssist: 0 };
+  const calls = { baybay: 0, postAssist: 0, outing: 0, web: 0, translation: 0, extract: 0 };
   const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only' },
     models, plannerNow: () => NOW,
-    ai: { baybay: async () => { calls.baybay++; throw new Error('must not be called'); }, postAssist: async () => { calls.postAssist++; return {}; } } });
+    ai: { baybay: async () => { calls.baybay++; throw new Error('must not be called'); }, postAssist: async () => { calls.postAssist++; return {}; },
+      outingDraft: async () => { calls.outing++; return {}; }, plannerWebSearch: async () => { calls.web++; return {}; },
+      postTranslation: async () => { calls.translation++; return {}; }, eventExtract: async () => { calls.extract++; return {}; } } });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => app.io.close(resolve)));
   const url = path => `http://127.0.0.1:${app.server.address().port}/api${path}`;
@@ -325,9 +427,48 @@ test('server: past the hard cap the capabilities pause, BayBay answers without a
   const body = await draft.json();
   assert.equal(body.code, 'AI_DAILY_BUDGET'); assert.match(body.error, /今日 AI 名额已满/); assert.equal(calls.postAssist, 0);
 
+  // Outing drafts and the planner web search: the honest 429 before their own quotas are spent.
+  const outing = await post('/ai/outing-draft', { intent: '周六下午在 Berkeley 散步，三个人', locale: 'en' }, auth('member'));
+  assert.equal(outing.status, 429);
+  assert.match((await outing.json()).error, /^Today's AI capacity is used up/);
+  const web = await post('/planner/web-search', { query: 'Berkeley library card', locale: 'en' }, auth('member'));
+  assert.equal(web.status, 429);
+  const webBody = await web.json();
+  assert.equal(webBody.code, 'web_daily_limit'); assert.equal(webBody.retryable, false);
+  // Post translation and event-screenshot AI: the same honest 429, before their own quotas.
+  const translation = await post('/posts/han-post/translation', { target: 'en' });
+  assert.equal(translation.status, 429);
+  assert.match((await translation.json()).error, /^Today's AI capacity is used up/);
+  const extract = await post('/ai/event-extract', { image: PNG, locale: 'zh-Hant' });
+  assert.equal(extract.status, 429);
+  assert.match((await extract.json()).error, /今日 AI 名額已滿/);
+  assert.deepEqual([calls.outing, calls.web, calls.translation, calls.extract], [0, 0, 0, 0]);
+  assert.deepEqual(models.PostTranslationQuota.rows.map(row => row.id), [], 'no draft, web, translation or local AI quota spent');
+  assert.equal(models.PostTranslation.rows.length, 0, 'no translation failure is cached for the post');
+
   const metrics = await (await fetch(url('/admin/ai-metrics'), { headers: auth('admin') })).json();
   assert.equal(metrics.spend.level, 'hard'); assert.equal(metrics.spend.dayUsd, 10); assert.equal(metrics.spend.caps.enforced, true);
   assert.equal(metrics.spend.resetAt, RESETS);
+});
+
+test('server: a translation whose provider call is refused for the day is an honest 429 and caches no failure for the post', async t => {
+  const { createApplication } = require('../server');
+  const models = createMemoryModels({ User: [{ id: 'owner', role: 'user', accountStatus: 'active' }], Post: [hanPost('first', 'owner'), hanPost('second', 'owner')] });
+  let translated = 0;
+  // One governed AI call per guest per day: the second post's provider call is refused (AI_DAILY_LIMIT).
+  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1' }, models, plannerNow: () => NOW,
+    ai: { postTranslation: async () => { translated++; return { title: 'Room for rent in Fremont', description: 'Viewings on weekends.', budget: '', timeInfo: '' }; } } });
+  await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => app.io.close(resolve)));
+  const translate = id => fetch(`http://127.0.0.1:${app.server.address().port}/api/posts/${id}/translation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target: 'en' }) });
+  assert.equal((await translate('first')).status, 200);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const refused = await translate('second');
+    assert.equal(refused.status, 429, 'not the generic 503 "unavailable"');
+    assert.match((await refused.json()).error, /今日 AI 额度已用完/);
+  }
+  assert.equal(translated, 1);
+  assert.ok(!models.PostTranslation.rows.some(row => row.kind === 'failure'), 'no negative cache for the refused post');
 });
 
 test('server: below the caps the capabilities report v2 with no pause; guests are offered site and plan tools', async t => {
