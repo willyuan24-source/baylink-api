@@ -1,0 +1,26 @@
+{
+ "id": "msg_fixture_fast",
+ "type": "message",
+ "role": "assistant",
+ "model": "claude-sonnet-5-5",
+ "content": [
+  {
+   "type": "thinking",
+   "thinking": "",
+   "signature": "EqQBCkgIBxABGAIqQFixtureSignatureFastPath0001"
+  },
+  {
+   "type": "text",
+   "text": "{\"lead\":\"蓝天使本周末飞，周六周日下午都有表演[[e1]]。\",\"points\":[{\"text\":\"主表演 2026-10-11 下午 3:00 在 Marina Green，免费观看[[e1]]。\",\"cardIds\":[\"e1\"]},{\"text\":\"南湾出发可坐 Caltrain 到 4th & King 再换 Muni，详见 https://www.sfmta.com/ 的\\\"舰队周\\\"交通页。\\n提前 1 小时到。\",\"cardIds\":[]},{\"text\":\"想避开人群？Fort Mason 草坪也能看到[[e2]]。\",\"cardIds\":[\"e2\"]}],\"candidateIds\":[\"e1\",\"e2\"],\"followups\":[\"那下雨天呢？\"],\"coverage\":[],\"gap\":\"具体飞行时段以官方日历为准。\"}"
+  }
+ ],
+ "stop_reason": "end_turn",
+ "stop_sequence": null,
+ "usage": {
+  "input_tokens": 2210,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 3104,
+  "output_tokens": 214,
+  "service_tier": "standard"
+ }
+}
