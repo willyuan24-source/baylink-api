@@ -12,6 +12,7 @@ const { namedEntitiesV2, queryAliases } = require('../lib/entityAliases');
 const { loadPlannerCatalog } = require('../lib/planner');
 const { createPublicContext } = require('../lib/publicContext');
 const { ROUTE_NAMES, aiRoute, requestControls, KNOWN_MODELS } = require('../lib/aiModels');
+const { assertSearchScope } = require('../lib/bayAreaSearchScope');
 
 const NOW = Date.parse('2026-10-08T17:00:00Z'); // Thu 2026-10-08 10:00 PDT
 const TODAY = '2026-10-08';
@@ -387,12 +388,15 @@ test('a how-to question keeps to its topic: DMV questions get the driver-licence
 });
 
 test('v2 answers "帮我订机票" by saying BayBay cannot book (no city question); v1 keeps its clarification', async () => {
-  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '我没法帮你订机票，请在航空公司官网预订。' })) });
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '我没法帮你订机票，请在航空公司官网预订。', points: [{ text: '飞北京的机票请到航空公司官网比价预订。', cardIds: [] }] })) });
   const result = await run(assistant, '帮我订一张下周五从旧金山飞北京的机票');
   assert.equal(result.route.path, 'fast'); assert.equal(sent.length, 1);
   const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
   assert.match(rules, /cannot book, reserve, pay for or hold anything/);
-  assert.match(result.answer, /没法帮你订机票/);
+  // Naming the declined destination is not a foreign recommendation.
+  assert.match(result.answer, /没法帮你订机票/); assert.match(result.answer, /飞北京的机票/);
+  assert.ok(!result.research.warnings.includes('answer_scope_rejected'));
+  assert.throws(() => assertSearchScope({ answer: '北京的活动很多。' }, { query: '这周末去哪', locale: 'zh-Hans' }), { reason: 'outside_bay_area' });
   // Planning a day is not booking.
   sent.length = 0;
   await run(assistant, '帮我订个周六在 Berkeley 的行程，不开车');
