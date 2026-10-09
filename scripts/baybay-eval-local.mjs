@@ -35,6 +35,7 @@ const DEFAULT_OUT = process.env.BAYLINK_EVAL_OUT || path.join(os.homedir(), 'opu
 const PROVIDER_FAILURE_WARNINGS = new Set(['model_unavailable', 'model_unavailable_or_capacity', 'quota_unavailable']);
 
 const { createBayBayAssistant } = require(path.join(ROOT, 'lib/baybayAgent'));
+const { createMessageAccumulator, readMessageStream } = require(path.join(ROOT, 'lib/anthropicStream'));
 const { createPublicContext } = require(path.join(ROOT, 'lib/publicContext'));
 const { bayAreaDate } = require(path.join(ROOT, 'lib/bayAreaSearchScope'));
 const { normalizeGuideHistory } = require(path.join(ROOT, 'lib/guideConversation'));
@@ -46,28 +47,32 @@ const { baybayWebAccess } = require(path.join(ROOT, 'lib/baybayAccess'));
 const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json', 'agent-path': 'probe-agent-path.json' });
 const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id] [--probe tool-rounds]
        [--run-id <id>] [--out <dir outside the repo>] [--now <ISO>] [--concurrency 1-3] [--max-reruns N]
-       [--no-judge] [--resume] [--live --budget-usd <USD>]
+       [--no-judge] [--no-drafts] [--save-sse N] [--resume] [--live --budget-usd <USD>]
 Without --live it is a dry run (synthetic provider, no key, no network).
+The harness is a capable client (streamVersion 3) unless --no-drafts: v2 fast-path turns
+stream and report draft events; --save-sse N keeps the first N raw provider streams.
 Live: node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --budget-usd 20 ...`;
 
 function parseArgs(argv) {
-  const options = { set: 'v0', concurrency: 2, maxReruns: 2, judge: true, resume: false, live: false, now: DEFAULT_NOW, out: DEFAULT_OUT };
-  const values = new Set(['--set', '--blocks', '--arms', '--items', '--run-id', '--out', '--now', '--concurrency', '--max-reruns', '--budget-usd', '--baseline', '--probe']);
+  const options = { set: 'v0', concurrency: 2, maxReruns: 2, judge: true, drafts: true, saveSse: 0, resume: false, live: false, now: DEFAULT_NOW, out: DEFAULT_OUT };
+  const values = new Set(['--set', '--blocks', '--arms', '--items', '--run-id', '--out', '--now', '--concurrency', '--max-reruns', '--budget-usd', '--baseline', '--probe', '--save-sse']);
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
     if (flag === '--help' || flag === '-h') { console.log(USAGE); process.exit(0); }
     if (flag === '--live') { options.live = true; continue; }
     if (flag === '--no-judge') { options.judge = false; continue; }
+    if (flag === '--no-drafts') { options.drafts = false; continue; }
     if (flag === '--resume') { options.resume = true; continue; }
     if (!values.has(flag) || argv[i + 1] === undefined) throw new Error(`Unknown or incomplete argument: ${flag}\n${USAGE}`);
     const value = argv[++i];
     if (flag === '--blocks' || flag === '--arms' || flag === '--items') options[flag.slice(2)] = value.split(',').map(item => item.trim()).filter(Boolean);
-    else if (flag === '--concurrency' || flag === '--max-reruns' || flag === '--budget-usd') options[{ '--concurrency': 'concurrency', '--max-reruns': 'maxReruns', '--budget-usd': 'budgetUsd' }[flag]] = Number(value);
+    else if (flag === '--concurrency' || flag === '--max-reruns' || flag === '--budget-usd' || flag === '--save-sse') options[{ '--concurrency': 'concurrency', '--max-reruns': 'maxReruns', '--budget-usd': 'budgetUsd', '--save-sse': 'saveSse' }[flag]] = Number(value);
     else options[{ '--set': 'set', '--run-id': 'runId', '--out': 'out', '--now': 'now', '--baseline': 'baseline', '--probe': 'probe' }[flag]] = value;
   }
   if (options.probe !== undefined && !Object.hasOwn(PROBES, options.probe)) throw new Error(`--probe must be one of: ${Object.keys(PROBES).join(', ')}`);
   if (!Number.isInteger(options.concurrency) || options.concurrency < 1 || options.concurrency > 3) throw new Error('--concurrency must be 1, 2 or 3');
   if (!Number.isInteger(options.maxReruns) || options.maxReruns < 0 || options.maxReruns > 4) throw new Error('--max-reruns must be 0-4');
+  if (!Number.isInteger(options.saveSse) || options.saveSse < 0 || options.saveSse > 20) throw new Error('--save-sse must be 0-20');
   if (!Number.isFinite(Date.parse(options.now))) throw new Error('--now must be an ISO date-time');
   if (options.live && !(options.budgetUsd > 0 && options.budgetUsd <= 100)) throw new Error('--live requires --budget-usd between 0 and 100 (hard stop for every provider call, judge included)');
   if (!options.live) options.budgetUsd = 0;
@@ -125,9 +130,26 @@ function syntheticResponse(body) {
   const v2 = !!body.output_config?.format?.schema?.properties?.lead;
   const text = JSON.stringify(v2 ? { lead: 'Dry-run synthetic answer.', points: [{ text: 'No provider was called.', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' }
     : { answer: 'Dry-run synthetic answer. No provider was called.', candidateIds: [], followups: [], coverage: [] });
-  return new Response(JSON.stringify({ id: 'msg_dry_run', type: 'message', role: 'assistant', model: body.model, stop_reason: 'end_turn',
-    content: [{ type: 'text', text }], usage: { input_tokens: Math.ceil(JSON.stringify(body).length / 3), output_tokens: 60, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } }),
-  { status: 200, headers: { 'content-type': 'application/json' } });
+  const message = { id: 'msg_dry_run', type: 'message', role: 'assistant', model: body.model, stop_reason: 'end_turn',
+    content: [{ type: 'text', text }], usage: { input_tokens: Math.ceil(JSON.stringify(body).length / 3), output_tokens: 60, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } };
+  if (body.stream === true) return new Response(syntheticSse(message), { status: 200, headers: { 'content-type': 'text/event-stream' } });
+  return new Response(JSON.stringify(message), { status: 200, headers: { 'content-type': 'application/json' } });
+}
+
+/** A dry-run streamed reply in the Messages SSE wire format: text in 6-character
+ * deltas, sent as a few byte chunks so the client's parser and draft path run. */
+function syntheticSse(message) {
+  const event = (name, data) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`;
+  const text = message.content[0].text;
+  let sse = event('message_start', { type: 'message_start', message: { ...message, content: [], stop_reason: null, usage: { ...message.usage, output_tokens: 1 } } })
+    + event('content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } });
+  for (let index = 0; index < text.length; index += 6) sse += event('content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: text.slice(index, index + 6) } });
+  sse += event('content_block_stop', { type: 'content_block_stop', index: 0 })
+    + event('message_delta', { type: 'message_delta', delta: { stop_reason: 'end_turn', stop_sequence: null }, usage: { output_tokens: message.usage.output_tokens } })
+    + event('message_stop', { type: 'message_stop' });
+  const bytes = Buffer.from(sse, 'utf8'), chunks = [];
+  for (let index = 0; index < bytes.length; index += 97) chunks.push(bytes.subarray(index, index + 97));
+  return new ReadableStream({ pull(controller) { if (chunks.length) controller.enqueue(chunks.shift()); else controller.close(); } });
 }
 
 async function main() {
@@ -178,7 +200,7 @@ async function main() {
   const ledger = { spentUsd: 0, exhausted: false };
   if (existsSync(ledgerFile)) for (const line of readFileSync(ledgerFile, 'utf8').split('\n').filter(Boolean)) ledger.spentUsd = Math.max(ledger.spentUsd, JSON.parse(line).spentUsd || 0);
   const reserveFor = model => /opus/.test(model) ? 0.5 : /sonnet/.test(model) ? 0.25 : 0.03;
-  let cooldownUntil = 0;
+  let cooldownUntil = 0, savedSse = 0;
   const als = new AsyncLocalStorage();
 
   async function providerFetch(url, init) {
@@ -204,6 +226,35 @@ async function main() {
           cooldownUntil = Math.max(cooldownUntil, Date.now() + Math.max(wait, 10000));
           call.retries++; await response.arrayBuffer().catch(() => {});
           await sleep(wait, init.signal); continue;
+        }
+        // A streamed call (API-BB-STREAM): the caller reads one branch of the body; the
+        // ledger reads the other to its end (usage arrives in message_start/message_delta).
+        if (body.stream === true && response.ok && response.body) {
+          const [mine, theirs] = response.body.tee();
+          const raw = options.saveSse && savedSse < options.saveSse ? (savedSse++, []) : null;
+          const accumulator = createMessageAccumulator({ onDelta: delta => { if (delta.type === 'text' && call.firstTextMs == null) call.firstTextMs = Math.round(performance.now() - ctx.t0); } });
+          async function* tap(stream) { for await (const chunk of stream) { raw?.push(Buffer.from(chunk)); yield chunk; } }
+          ctx.pending?.push((async () => {
+            try {
+              const message = await readMessageStream(tap(mine), accumulator);
+              call.endMs = Math.round(performance.now() - ctx.t0);
+              call.stopReason = message.stop_reason; call.stopCategory = message.stop_details?.category; call.contentTypes = responseShape(message); call.responseModel = message.model;
+              call.usage = rawUsage(message.usage);
+              call.costUsd = options.live ? callCostUsd(message.model || body.model, call.usage) : 0;
+              ledger.spentUsd += call.costUsd;
+              appendFileSync(ledgerFile, scrub(JSON.stringify({ at: new Date().toISOString(), arm: ctx.arm, turnId: ctx.turnId, kind: ctx.kind, model: message.model || body.model, usage: call.usage, costUsd: +call.costUsd.toFixed(6), spentUsd: +ledger.spentUsd.toFixed(6), streamed: true })) + '\n');
+            } catch (error) {
+              call.endMs ??= Math.round(performance.now() - ctx.t0);
+              call.error ??= /abort/i.test(error.name + error.message) ? 'aborted_or_timeout' : String(error.message).slice(0, 160);
+              // A cut stream is still billed: price the usage it reported, input at least.
+              const partial = accumulator.partial();
+              if (partial?.usage && options.live) { call.usage = rawUsage(partial.usage); call.costUsd = callCostUsd(partial.model || body.model, call.usage); ledger.spentUsd += call.costUsd; }
+            } finally {
+              if (raw) { mkdirSync(path.join(runDir, 'sse'), { recursive: true }); writeFileSync(path.join(runDir, 'sse', `${ctx.arm}-${ctx.turnId}-${ctx.calls.indexOf(call) + 1}.sse`), scrub(Buffer.concat(raw).toString('utf8'))); }
+            }
+          })());
+          call.streamed = true;
+          return new Response(theirs, { status: response.status, statusText: response.statusText, headers: { 'content-type': 'text/event-stream' } });
         }
         const text = await response.text();
         call.endMs = Math.round(performance.now() - ctx.t0);
@@ -232,7 +283,7 @@ async function main() {
   const armLabels = Object.fromEntries(armNames.map(arm => [arm, armsBook.arms[arm].label]));
   const armConfigs = Object.fromEntries(armNames.map(arm => [arm, { config: armsBook.arms[arm].config, routes: armRoutes(armsBook.arms[arm].config) }]));
   const meta = { runId, mode: options.live ? 'live' : 'dry-run', set: options.set, ...(options.probe ? { probe: options.probe } : {}), blocks, arms: armNames, armLabels, armConfigs, baselineArm, pinnedNow: options.now,
-    concurrency: options.concurrency, maxReruns: options.maxReruns, budgetUsd: options.budgetUsd, judge: options.judge ? { model: JUDGE_MODEL, effort: 'low' } : null,
+    concurrency: options.concurrency, maxReruns: options.maxReruns, budgetUsd: options.budgetUsd, judge: options.judge ? { model: JUDGE_MODEL, effort: 'low' } : null, drafts: options.drafts,
     gitHead: gitHead(), node: process.version, pricingDate: PRICING_DATE, keyEnvVar: keyVar || null, workspaceHeader: !!workspaceId,
     intentMirror: { expected: INTENT_MIRROR_FINGERPRINT, server: fingerprint, ok: fingerprint === INTENT_MIRROR_FINGERPRINT },
     cases: selected.map(item => item.id), turns: selected.reduce((sum, item) => sum + item.turns.length, 0), startedAt: new Date().toISOString() };
@@ -252,7 +303,7 @@ async function main() {
   const secret = randomBytes(32).toString('hex');
 
   async function runTurn({ arm, assistant, item, turn, history, sessionToken }) {
-    const ctx = { arm, turnId: turn.id, kind: 'assistant', calls: [], requestOverrides: armsBook.arms[arm].requestOverrides, t0: performance.now(), progress: [] };
+    const ctx = { arm, turnId: turn.id, kind: 'assistant', calls: [], requestOverrides: armsBook.arms[arm].requestOverrides, t0: performance.now(), progress: [], pending: [], drafts: [] };
     return als.run(ctx, async () => {
       let payload, error;
       try {
@@ -269,11 +320,17 @@ async function main() {
             webAccess, pageContext, ip: 'local-eval',
             onProgress: event => { ctx.progress.push([Math.round(performance.now() - ctx.t0), event.phase, event.status]); },
             onQuickCard: cards => { if (cards?.length && ctx.firstCardMs == null) ctx.firstCardMs = Math.round(performance.now() - ctx.t0); },
-            // Forward-compatible: a streaming pipeline may report its first lead text here.
-            onDraft: () => { if (ctx.firstDraftMs == null) ctx.firstDraftMs = Math.round(performance.now() - ctx.t0); } });
+            // A capable client (streamVersion 3): the draft events guide-chat would write.
+            // Lead TTFT = the first `lead` draft, exactly what the reader would see first.
+            ...(options.drafts ? { onDraft: event => {
+              const ms = Math.round(performance.now() - ctx.t0);
+              ctx.drafts.push({ ms, seq: event.seq, field: event.field, chars: event.text.length });
+              if (event.field === 'lead' && ctx.firstDraftMs == null) ctx.firstDraftMs = ms;
+            } } : {}) });
         }
       } catch (caught) { error = String(caught?.message || caught).slice(0, 300); }
       const completeMs = Math.round(performance.now() - ctx.t0);
+      await Promise.allSettled(ctx.pending);
       return { payload, error, ctx, completeMs };
     });
   }
@@ -298,7 +355,11 @@ async function main() {
       modelResponses: payload?.research?.modelResponses || [], steps: (payload?.research?.steps || []).map(step => ({ tool: step.tool, status: step.status })),
       calls: ctx.calls, toolRounds: toolRounds(ctx.calls), usage, costUsd: +ctx.calls.reduce((sum, call) => sum + (call.costUsd || 0), 0).toFixed(6),
       timings: { firstCardMs: ctx.firstCardMs ?? null, ttftMs: model ? ctx.calls.find(call => call.headersMs != null)?.headersMs ?? null : completeMs,
-        leadMs: ctx.firstDraftMs ?? completeMs, leadSource: ctx.firstDraftMs != null ? 'draft-event' : 'answer-complete', completeMs, progress: ctx.progress, stages: payload?.research?.timings || null },
+        leadMs: ctx.firstDraftMs ?? completeMs, leadSource: ctx.firstDraftMs != null ? 'draft-event' : 'answer-complete', completeMs, progress: ctx.progress, stages: payload?.research?.timings || null,
+        firstTextMs: ctx.calls.find(call => call.firstTextMs != null)?.firstTextMs ?? null },
+      // API-BB-STREAM: the draft events this turn produced and whether the result corrected them.
+      drafts: ctx.drafts.length ? { events: ctx.drafts.length, chars: ctx.drafts.reduce((sum, row) => sum + row.chars, 0), firstLeadMs: ctx.firstDraftMs ?? null,
+        lastMs: ctx.drafts.at(-1).ms, corrected: payload?.corrected ?? null } : null,
       gold: error ? { pass: false, checks: [{ id: 'run_error', ok: false, detail: error }], route, falseNegative: false, falseNegativeCaught: false, safetyMiss: !!turn.gold.safety } : scoreTurn(turn.gold, payload, { corpus: `${catalogs.corpus}\n${turn.message}` }),
     };
   }

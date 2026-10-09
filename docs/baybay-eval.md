@@ -36,6 +36,9 @@ Results go to `--out` (default `~/opus-qa/overhaul/eval`, or `BAYLINK_EVAL_OUT`)
 | `--concurrency` | 1-3, default 2 (a new workspace may sit on a low rate tier) |
 | `--max-reruns` | Reruns of a provider-degraded turn, default 2 |
 | `--live --budget-usd N` | Paid run with a hard stop at N dollars, judge included |
+| `--set stream` | API-BB-STREAM: block A on `v2-code-defaults`. The harness is a capable client (streamVersion 3), so v2 fast-path turns stream their first call and report `draft` events |
+| `--no-drafts` | Run as an old client: no `onDraft`, so no turn streams (the ENGINE request) |
+| `--save-sse N` | Keep the first N raw provider streams in `<run>/sse/` (0-20), e.g. to refresh the recorded-format fixtures in `tests/fixtures/anthropic-stream/` |
 | `--no-judge`, `--resume` | Skip the judge; continue an interrupted run (same `--run-id`). A resume re-runs only turns missing from `results-*.jsonl` and judges only turns missing from `judge-*.jsonl`, so a resume of a finished run is a judge-only pass. Pass `--budget-usd` = spend already on the ledger + new allowance. `meta.json` keeps the first session's start, code head and budget and lists each resume |
 
 ## Key handling
@@ -112,8 +115,9 @@ When the pinned date moves, re-date the golds first ("this weekend", "tomorrow",
 | False negative | Turn with a `goldEntity` whose answer says the site has no such record; plus turns where the agent's own false-negative guard had to rewrite the answer (`false_negative_corrected`) |
 | Judge | Opus 5.5, effort low, three dimensions 1-5 (答到点 / 简洁 / 语气) and an overall 1-10 on the 10-07 BBLIVE rubric wording, so Part A stays comparable with the 5.32 baseline. Every assistant-route answer is judged; the means use model-answered turns |
 | First card | Time to the first quick card (`onQuickCard`) |
-| TTFT | Time to the first provider response headers. The current pipeline does not stream from the provider, so this is the first call's completion |
-| Lead | Time the first answer text can show. Without provider streaming this equals complete; a streaming pipeline can report a draft event through `onDraft` |
+| TTFT | Time to the first provider response headers. For a non-streamed call this is close to its completion; for a streamed call (API-BB-STREAM) it is when the stream opened |
+| First provider text | Streamed calls only: time to the first `text_delta` (`timings.firstTextMs`) |
+| Lead | Time the first answer text can show: the first `lead` `draft` event when the turn drafted (`timings.leadSource = draft-event`), otherwise the complete answer. The report also gives lead p50/p90 over drafted turns only, and how many drafted turns the result corrected (`corrected: true`) |
 | Complete | Time until `run()` returns the validated answer |
 | $ | Per call from raw usage: uncached input, cache write, cache read and output priced separately (`scripts/eval/pricing.mjs`, table dated 2026-10-06, Haiku's >100K-prompt card included) |
 

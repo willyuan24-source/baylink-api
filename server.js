@@ -4765,9 +4765,12 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       }
       const assistantStartedAt = Date.now();
       if (req.body?.stream === true) progressStream = createBayBayProgressStream(res, req.aiRuntime);
+      // API-BB-STREAM (RC-21): answer drafts only for a client that declares it can
+      // read them (WEB-BB-STREAMPREP sends streamVersion: 3); older tabs never get one.
+      const drafts = progressStream && Number.isInteger(req.body?.streamVersion) && req.body.streamVersion >= 3;
       const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess, pageContext, signal: req.aiSignal,
         sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
-        ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard } : {}) });
+        ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard, ...(drafts ? { onDraft: progressStream.draft } : {}) } : {}) });
       const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
       const assistantMs = Math.max(0, Date.now() - assistantStartedAt);
       const requestMs = Math.max(0, Date.now() - requestStartedAt);
