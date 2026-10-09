@@ -225,6 +225,11 @@ test('stamp and counter digits are churn; every other digit on the line is a fac
   // Opening hours, closure dates, prices and distances keep their digits.
   assert.equal(factText('Open 11 AM–5 PM'), 'open 11 am–5 pm');
   assert.equal(factText('Admission $20; kids under 12 free'), 'admission $20; kids under 12 free');
+  assert.equal(factText('$15 for members, $20 for others'), '$15 for members, $20 for others');
+  assert.equal(factText('Updated hours: 10 AM–6 PM starting Oct 12'), 'updated hours: 10 am–6 pm starting oct 12');
+  assert.equal(factText('Event updated on October 8: now starts at 2 PM'), 'event updated on october #: now starts at 2 pm');
+  assert.equal(factText('Updated Mon., Oct. 9, 2026 at 4:30 p.m.'), 'updated mon., oct. #, # at #:# p.m.');
+  assert.equal(factText('Posted 3 hours ago · 浏览量：12345'), 'posted # hours ago · 浏览量：#');
   assert.match(factText(stream('Aug. 24', 'October 08')), /beginning mon\., aug\. 24, 2026 from .* updated october #, #\.$/);
   assert.equal(factText(stream('Aug. 24', 'October 08')), factText(stream('Aug. 24', 'October 09')));
   assert.notEqual(factText(stream('Aug. 24', 'October 08')), factText(stream('Aug. 31', 'October 09')));
@@ -524,6 +529,22 @@ test('Mongo store: triage writes are compare-and-set on the pending hash; one di
   assert.equal(await store.triage('source-fixture', 'e'.repeat(64), { triage: {} }), null);
   assert.deepEqual(filter, { sourceId: 'source-fixture', hash: 'e'.repeat(64), reviewStatus: 'pending' });
   assert.equal(await store.claimDigest('2026-10-09', 1), true); assert.equal(await store.claimDigest('2026-10-09', 2), false);
+});
+
+test('Mongo store: every projection built by real mongoose is free of path collisions (public list included)', () => {
+  const mongoose = require('mongoose');
+  const store = createMongoStore(new mongoose.Mongoose());
+  // Built, never executed: no connection is opened.
+  const queries = { publicList: store.list(true), adminList: store.list(false), queue: store.pendingForTriage(), texts: store.pendingText('source-fixture'), digest: store.digestRows(1) };
+  for (const [name, query] of Object.entries(queries)) {
+    const fields = Object.keys(query.projection() || {});
+    assert.ok(fields.length, name);
+    for (const a of fields) for (const b of fields) assert.ok(a === b || !b.startsWith(`${a}.`), `${name}: ${a} collides with ${b}`);
+  }
+  assert.deepEqual(queries.queue.getFilter(), { reviewStatus: 'pending', pendingChange: { $exists: true } });
+  // The admin list drops only the current page text (mongoose keeps the '-text' exclusion until execution).
+  assert.deepEqual(queries.adminList.projection(), { '-text': 0 });
+  for (const field of ['pendingChange.before', 'pendingChange.after', 'text']) assert.equal(queries.queue.projection()[field], undefined, field);
 });
 
 test('Mongo store: the triage queue never loads page texts; a cut-off diff reads them for one source; calls are counted per day', async () => {
