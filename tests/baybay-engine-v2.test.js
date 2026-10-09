@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
-const { routeBayBay, baybayEngine, isBookingRequest } = require('../lib/baybayRouter');
+const { routeBayBay, baybayEngine, isBookingRequest, asksForPlan } = require('../lib/baybayRouter');
 const { FROZEN_SYSTEM, systemBlocks, FAST_FORMAT, parseFastDraft, assembleAnswer, leadUnits, readerProse, fastProblems } = require('../lib/baybayFastPath');
 const { buildFastEvidence, readerDate } = require('../lib/baybayEvidence');
 const { createAnthropicBaybay } = require('../lib/anthropicBaybay');
@@ -48,6 +48,8 @@ test('router table: plans, plan edits, named stops and live web use the agent; e
     [{ state: { goal: 'discover' }, explicitCandidateIds: ['a', 'b'] }, 'agent', 'named_stops'],
     [{ state: { goal: 'discover' }, explicitCandidateIds: ['a'] }, 'fast', 'site_answer'],
     [{ state: { goal: 'information' }, planFollowup: true }, 'agent', 'plan_followup'],
+    [{ state: { goal: 'information' }, planRequest: true }, 'agent', 'plan_request'],
+    [{ state: { goal: 'information' }, planRequest: true, professional: { topic: 'medicare' } }, 'fast', 'professional_topic'],
     [{ state: { goal: 'information' }, searchMode: 'web' }, 'agent', 'live_web'],
     [{ state: { goal: 'information' }, searchMode: 'smart', timely: true }, 'agent', 'live_web'],
     [{ state: { goal: 'information' }, searchMode: 'smart', timely: false }, 'fast', 'site_answer'],
@@ -474,4 +476,13 @@ test('reader prose: sf and peninsula codes become names only in a code context; 
   assert.ok(result.research.warnings.includes('false_negative_corrected'), 'the Traditional wording 站內沒有 is caught');
   assert.match(result.answer, /^站內已收錄「/); assert.match(result.answer, /這一場已經結束/); assert.match(result.answer, /（週/);
   assert.doesNotMatch(result.answer, /站内|这一场|请以/);
+});
+
+test('plan-shaped asks the task state does not classify still reach the v2 agent, as every v1 turn does', async () => {
+  for (const text of ['週六帶孩子在舊金山玩一天，不開車，幫我排行程', 'Plan a Saturday in San Francisco with two kids (4 and 8), no car, at most 3 stops.', '周六想去 Exploratorium 和 California Academy of Sciences，帮我排一下顺序',
+    '周六带老婆和两个孩子去 California Academy of Sciences 玩半天，我有图书馆的 Discover & Go 通行证，全家都免费吗？顺便排一下', 'In what order should we visit the Exploratorium and the Academy?']) assert.equal(asksForPlan(text), true, text);
+  for (const text of ['蓝天使这周末飞吗', '不要排行程，只告诉我门票', 'What does plan a day mean in Chinese?', '排队要多久', '这个活动安排在哪天', '我刚搬到 Fremont，第一周要办哪些事？', 'Any free museum days in SF this month?']) assert.equal(asksForPlan(text), false, text);
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以這樣排。' })) });
+  const result = await run(assistant, '週六帶孩子在舊金山玩一天，不開車，幫我排行程', { locale: 'zh-Hant' });
+  assert.equal(result.route.path, 'agent'); assert.equal(result.route.reason, 'plan_request'); assert.ok(sent[0].tools.some(tool => tool.name === 'create_plan'));
 });

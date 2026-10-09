@@ -43,7 +43,7 @@ const { baybayWebAccess } = require(path.join(ROOT, 'lib/baybayAccess'));
 
 // A probe replaces the scored casebook with its own file (block T), e.g. the
 // tool-round probe that forces a tool_use round before the tool_choice:none synthesis.
-const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json' });
+const PROBES = Object.freeze({ 'tool-rounds': 'probe-tool-rounds.json', 'agent-path': 'probe-agent-path.json' });
 const USAGE = `Usage: node scripts/baybay-eval-local.mjs [--set v0|v1|r0] [--blocks A,C,E,G] [--arms a,b] [--items id,id] [--probe tool-rounds]
        [--run-id <id>] [--out <dir outside the repo>] [--now <ISO>] [--concurrency 1-3] [--max-reruns N]
        [--no-judge] [--resume] [--live --budget-usd <USD>]

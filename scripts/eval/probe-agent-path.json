@@ -1,0 +1,72 @@
+{
+  "version": "2026-10-09-engine-agent",
+  "block": "T",
+  "title": "Agent-path probe: day plans, plan edits, named stops and member live questions (v1 vs v2 before API-BB-CUTOVER)",
+  "pinnedNow": "2026-10-08T10:00:00-07:00",
+  "notes": "Not part of the scored casebook (the loader only reads cases-A..H). Run with --probe agent-path. Every turn routes to the v2 agent loop (day_plan, plan_edit, named_stops or live_web), the path the 70-turn casebook never reaches. Model rounds are not capped. Web search is the local stub and source reads fail closed (no network), the same for both engines, so a member's live question tests how each engine handles an unavailable check. Gold is code-checked: assistant route, script, no assurance or booking claims, and grounded $ amounts on admission turns; plan stop counts and plan-guard warnings are read from the result rows.",
+  "cases": [
+    { "id": "P-PLAN-SF-KIDS", "block": "T", "locale": "zh-Hans", "currentPath": "/", "tags": ["day-plan", "plan-edit", "guest"], "turns": [
+      { "id": "P-PLAN-SF-KIDS-1", "message": "周六带 6 岁孩子在旧金山玩半天，不开车，帮我排个行程",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證|一定能(?:赶上|到)", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "A half-day San Francisco plan for a 6-year-old without a car: two or three suitable stops from site records in a sensible order, transit stated as something to check rather than a guaranteed time, and opening hours or tickets left to the official page." } },
+      { "id": "P-PLAN-SF-KIDS-2", "message": "把第二站换掉，换个室内的",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "Replaces only the second stop of the previous plan with an indoor option from the site records, keeps the other stops, the child and the no-car condition, and says what changed." } } ] },
+    { "id": "P-PLAN-BERKELEY", "block": "T", "locale": "zh-Hans", "currentPath": "/", "tags": ["day-plan", "plan-edit", "guest"], "turns": [
+      { "id": "P-PLAN-BERKELEY-1", "message": "周六带孩子在 Berkeley 安排一天行程，不开车",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "A Berkeley day plan for a family without a car from site records (campus, botanical garden or similar), with fewer well-chosen stops, and travel times or hours named as things to check." } },
+      { "id": "P-PLAN-BERKELEY-2", "message": "去掉第一站，其余不变",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證"] },
+        "judge": { "expect": "Removes only the first stop and keeps the remaining stops in order without adding new ones; confirms the change briefly." } } ] },
+    { "id": "P-PLAN-SJ-SENIOR", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["day-plan", "plan-edit", "member"], "turns": [
+      { "id": "P-PLAN-SJ-SENIOR-1", "message": "这周日带 70 岁的爸妈在 San Jose 安排半天，少走路，最多两站",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "At most two low-walking stops in San Jose for parents around 70 on Sunday, from site records, with accessibility or walking as a stated consideration, and no guarantee of opening or travel time. The live check is unavailable in this harness; the answer should not pretend it was verified." } },
+      { "id": "P-PLAN-SJ-SENIOR-2", "message": "第二站换成博物馆",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證"] },
+        "judge": { "expect": "Keeps the first stop, replaces the second with a San Jose museum from site records, stays within two stops and keeps the low-walking parents in mind." } } ] },
+    { "id": "P-PLAN-OAKLAND-FREE", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["day-plan", "plan-edit", "member", "budget"], "turns": [
+      { "id": "P-PLAN-OAKLAND-FREE-1", "message": "周六在 Oakland 安排一天免费的亲子行程，孩子 5 岁和 9 岁，我们坐 BART",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "pricesGrounded": true, "mustNotInclude": ["保证|保證", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "A free (or clearly free-to-enter) Oakland day for kids 5 and 9 reachable by BART, from site records; anything with a fee or an unverified free condition is flagged, and BART times are left to check." } },
+      { "id": "P-PLAN-OAKLAND-FREE-2", "message": "加一个吃饭的地方，四个人预算 60 刀",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "pricesGrounded": true, "mustNotInclude": ["保证|保證", "肯定不会超|完全符合预算"] },
+        "judge": { "expect": "Adds a meal stop only if the site records support one in Oakland; treats $60 as a total for four, never claims the plan is within budget when prices are unknown, and keeps the free stops and BART." } } ] },
+    { "id": "P-PLAN-EN-SF", "block": "T", "locale": "en", "currentPath": "/", "tags": ["day-plan", "plan-edit", "guest"], "turns": [
+      { "id": "P-PLAN-EN-SF-1", "message": "Plan a Saturday in San Francisco with two kids (4 and 8), no car, at most 3 stops.",
+        "gold": { "expectRoute": "assistant", "script": "en", "mustNotInclude": ["guarantee", "\\b(?:I(?:'ve| have)? (?:booked|reserved|purchased))\\b"] },
+        "judge": { "expect": "At most three San Francisco stops for kids 4 and 8 without a car, from site records, in English, with transit and hours as things to check." } },
+      { "id": "P-PLAN-EN-SF-2", "message": "Replace the second stop with something outdoors.",
+        "gold": { "expectRoute": "assistant", "script": "en", "mustNotInclude": ["guarantee"] },
+        "judge": { "expect": "Replaces only the second stop with an outdoor option from site records, keeps the other stops and the three-stop limit, and states the change." } } ] },
+    { "id": "P-PLAN-HANT", "block": "T", "locale": "zh-Hant", "currentPath": "/", "tags": ["day-plan", "guest"], "turns": [
+      { "id": "P-PLAN-HANT-1", "message": "週六帶孩子在舊金山玩一天，不開車，幫我排行程",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hant", "mustNotInclude": ["保證|保证", "已(?:為你|幫你)?(?:預訂|訂好|購買)"] },
+        "judge": { "expect": "A Traditional Chinese San Francisco day plan for a family without a car from site records, with transit and hours left to check." } } ] },
+    { "id": "P-NAMED-STOPS", "block": "T", "locale": "zh-Hans", "currentPath": "/", "tags": ["named-stops", "guest"], "turns": [
+      { "id": "P-NAMED-STOPS-1", "message": "周六想去 Exploratorium 和 California Academy of Sciences，帮我排一下顺序",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["保证|保證", "已(?:为你|帮你)?(?:预订|订好|购买)"] },
+        "judge": { "expect": "Keeps both named places, orders them sensibly with the reason (location, opening times to check), and does not add or drop a destination." } } ] },
+    { "id": "P-PLAN-ADMISSION", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["day-plan", "admission", "member"], "turns": [
+      { "id": "P-PLAN-ADMISSION-1", "message": "周六带老婆和两个孩子去 California Academy of Sciences 玩半天，我有图书馆的 Discover & Go 通行证，全家都免费吗？顺便排一下",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "pricesGrounded": true, "mustNotInclude": ["全家都(?:可以)?免费", "保证|保證"] },
+        "judge": { "expect": "Does not assume one library pass makes all four people free: says the pass covers a stated number of people only if the records say so, otherwise to check the pass terms; plans the half day around the museum with hours and tickets left to the official page." } } ] },
+    { "id": "P-LIVE-FLEET", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["live-web", "member"], "turns": [
+      { "id": "P-LIVE-FLEET-1", "message": "今天蓝天使几点飞？Marina Green 现在人多吗？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["站内没有.{0,10}(?:Fleet|舰队|蓝天使)"] },
+        "judge": { "expect": "Answers from the Fleet Week site record (dates and the published airshow window), says the live crowd level cannot be checked now, and points to the official schedule; never claims the site has no Fleet Week record." } } ] },
+    { "id": "P-LIVE-EXPLORATORIUM", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["live-web", "admission", "member"], "turns": [
+      { "id": "P-LIVE-EXPLORATORIUM-1", "message": "Exploratorium 明天开门吗？门票多少钱？",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "pricesGrounded": true, "mustNotInclude": ["保证|保證|肯定开"] },
+        "judge": { "expect": "Uses the site record for usual hours and any recorded prices, does not turn weekly hours into a guarantee for tomorrow, says the current check was unavailable and names the official page." } } ] },
+    { "id": "P-LIVE-EN-ZOO", "block": "T", "locale": "en", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["live-web", "admission", "member"], "turns": [
+      { "id": "P-LIVE-EN-ZOO-1", "message": "Is the Oakland Zoo open tomorrow and how much are tickets?",
+        "gold": { "expectRoute": "assistant", "script": "en", "pricesGrounded": true, "mustNotInclude": ["guarantee"] },
+        "judge": { "expect": "Answers in English from whatever site records exist about the Oakland Zoo, never invents prices or hours, says tomorrow's opening and prices need the official page, and does not claim a live check succeeded." } } ] },
+    { "id": "P-LIVE-FREE-TODAY", "block": "T", "locale": "zh-Hans", "currentPath": "/", "member": true, "searchMode": "smart", "webStub": true, "tags": ["live-web", "member"], "turns": [
+      { "id": "P-LIVE-FREE-TODAY-1", "message": "今天湾区有什么免费活动可以带孩子去？要最新的",
+        "gold": { "expectRoute": "assistant", "script": "zh-Hans", "mustNotInclude": ["站内没有.{0,10}(?:活动|活動)"] },
+        "judge": { "expect": "Two or three current free kid-friendly options for today from site records, with dates, and a short note that the latest web check was unavailable." } } ] }
+  ]
+}
