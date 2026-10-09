@@ -129,6 +129,12 @@ export function gateVerdicts(summary) {
   return { merge: verdict('opus-medium', badRequestElsewhere), cutover: verdict('haiku-low') };
 }
 
+/** Exit code of a live run: 2 when the merge gate fails, 3 when only the CUTOVER gate fails. */
+export function gateExitCode(gates) {
+  if (gates.merge.verdict === 'FAIL') return 2;
+  return gates.cutover.verdict === 'FAIL' ? 3 : 0;
+}
+
 /** The outputs a schema check cannot judge, laid out for a read by eye. */
 export function reviewMarkdown(rows, { cases, catalog, runId, live }) {
   const cell = value => String(value ?? '').replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim().slice(0, 160) || '—';
@@ -319,7 +325,7 @@ async function main() {
     console.log(`${name}: ${gate.verdict}${note}${gate.failures.length ? ` - ${gate.failures.join('; ')}` : ''}`);
   }
   console.log(`Read ${path.join(runDir, 'review.md')} (post-assist budget/timeInfo, planner picks) before merging.`);
-  if (options.live && Object.values(gates).some(gate => gate.verdict === 'FAIL')) process.exitCode = 2;
+  if (options.live) process.exitCode = gateExitCode(gates);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

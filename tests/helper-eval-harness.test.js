@@ -74,7 +74,7 @@ test('a dry run calls every helper once per default arm (haiku-low and opus-medi
 });
 
 test('the gates fail on an HTTP 400, "Schema is too complex", a short run or an invalid final reply', async () => {
-  const { rowSchemaValid, summarizeArm, gateVerdicts } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'helper-eval-local.mjs')).href);
+  const { rowSchemaValid, summarizeArm, gateVerdicts, gateExitCode } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'helper-eval-local.mjs')).href);
   const call = (extra = {}) => ({ schemaSent: true, schemaValid: true, httpStatus: 200, providerError: null, sampling: [], ...extra });
   const row = (arm, id, calls) => ({ arm, id, helper: 'translate', round: 1, calls: calls.length, schemaValid: rowSchemaValid(calls), callerAccepted: true,
     sampling: [], completeMs: 10, costUsd: 0, providerCalls: calls });
@@ -87,6 +87,11 @@ test('the gates fail on an HTTP 400, "Schema is too complex", a short run or an 
   const clean = arm => [row(arm, 'a', [call()]), row(arm, 'b', [call({ httpStatus: 429, schemaValid: false }), call()])];
   const pass = gateVerdicts(['haiku-low', 'opus-medium'].map(arm => summarizeArm(clean(arm), arm, 2)));
   assert.equal(pass.merge.verdict, 'PASS'); assert.equal(pass.cutover.verdict, 'PASS');
+  assert.equal(gateExitCode(pass), 0);
+  // A Haiku-only quality miss (no 400) blocks CUTOVER, not the merge: exit 3, not 2.
+  const haikuMiss = gateVerdicts([summarizeArm([row('haiku-low', 'a', [call({ schemaValid: false })]), row('haiku-low', 'b', [call()])], 'haiku-low', 2),
+    summarizeArm(clean('opus-medium'), 'opus-medium', 2)]);
+  assert.deepEqual([haikuMiss.merge.verdict, haikuMiss.cutover.verdict, gateExitCode(haikuMiss)], ['PASS', 'FAIL', 3]);
 
   const tooComplex = call({ httpStatus: 400, schemaValid: false, providerError: { type: 'invalid_request_error', message: 'Schema is too complex for compilation.' } });
   const badHaiku = [row('haiku-low', 'a', [call()]), row('haiku-low', 'b', [tooComplex])];
@@ -95,6 +100,7 @@ test('the gates fail on an HTTP 400, "Schema is too complex", a short run or an 
   assert.deepEqual(gates.cutover.failures, ['schema-valid 1/2', '1 HTTP 400', '1 "Schema is too complex"']);
   assert.equal(gates.merge.verdict, 'FAIL', 'a 400 on any arm blocks the merge');
   assert.deepEqual(gates.merge.failures, ['HTTP 400 on haiku-low']);
+  assert.equal(gateExitCode(gates), 2);
 
   const short = gateVerdicts([summarizeArm(clean('opus-medium').slice(0, 1), 'opus-medium', 2)]);
   assert.equal(short.merge.verdict, 'FAIL'); assert.deepEqual(short.merge.failures, ['ran 1/2 items']);
