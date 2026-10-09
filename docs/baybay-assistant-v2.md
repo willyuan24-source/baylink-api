@@ -63,7 +63,8 @@ A valid complete JSON object is accepted even when the provider reports a
 token-limit stop; truncated output is never repaired or shown as an answer.
 The run has a 75-second deadline with 16 seconds reserved for final synthesis.
 `BAYBAY_DAILY_RUN_LIMIT` defaults to
-200 shared model runs per UTC day. This is a run limit, not a currency cap;
+1,000 shared model runs per Pacific day (API-BB-CUTOVER; 200 before). This is a
+run limit, not a currency cap (the daily $ caps are in `docs/ai-models.md`);
 one run can include several model requests and separately metered web lookup.
 The existing web-search cache and shared
 quota remain authoritative, including model-triggered searches; no tool bypasses
