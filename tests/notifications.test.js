@@ -1,22 +1,25 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createNotificationService, HALF_HOUR, trustedOrigin, notificationOrigin } = require('../lib/notifications');
+const { createNotificationService, HALF_HOUR, FIRST_NOTICE_DELAY, TOPICS, trustedOrigin, notificationOrigin } = require('../lib/notifications');
 const { memory } = require('./support/notification-memory');
 
-function fixture({ enabled = true, mail, sms, holdAccount, acquireAccount, config = {}, log } = {}) {
+function fixture({ enabled = true, mail, sms, holdAccount, acquireAccount, config = {}, log, stillUnread } = {}) {
   let at = Date.parse('2026-10-06T12:00:00Z');
   const sent = [], texts = [];
   const models = {
     User: memory([{ id: 'owner', email: 'owner@example.test', isPhoneVerified: true, phoneNormalized: '+16505550123' }, { id: 'guest', email: 'guest@example.test' }]),
     UserBlock: memory(), NotificationAccount: memory(), NotificationToken: memory(), NotificationJob: memory(), NotificationWindow: memory(), NotificationBudget: memory(),
   };
-  const service = createNotificationService({ ...models, isTest: true, isolated: true, holdAccount, acquireAccount, log, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
+  // A fresh service over the same stores is what a deploy or restart looks like.
+  const build = () => createNotificationService({ ...models, isTest: true, isolated: true, holdAccount, acquireAccount, log, stillUnread, config: { NODE_ENV: 'production', JWT_SECRET: 'notification-only-test-key', NOTIFICATION_DELIVERY_ENABLED: String(enabled), ...config }, now: () => at,
     sendEmail: mail || (async value => { sent.push(value); return { id: 'mock-email' }; }), sendSms: sms || (async value => { texts.push(value); return { sid: 'mock-sms' }; }) });
+  const service = build();
   const rawToken = value => value.text.match(/#token=([A-Za-z0-9_-]{43})/)[1];
   const verify = async () => { await service.startEmailVerification('owner'); await service.runOnce(); await service.verifyEmail(rawToken(sent.at(-1))); sent.length = 0; };
   const optIn = async (channel = 'email') => service.updatePreferences('owner', { preferences: { [channel]: { message: true, contact_request: true, outing_request: true } }, locale: 'en' });
   const event = (overrides = {}) => ({ topic: 'message', recipientId: 'owner', actorId: 'guest', sourceId: 'dm_pair', eventId: 'message_1', createdAt: at, ...overrides });
-  return { models, service, sent, texts, verify, optIn, event, rawToken, clock: value => { at = value; }, advance: ms => { at += ms; }, now: () => at };
+  const jobs = topic => [...models.NotificationJob.rows.values()].filter(row => row.topic === topic);
+  return { models, service, restart: build, sent, texts, verify, optIn, event, rawToken, jobs, clock: value => { at = value; }, advance: ms => { at += ms; }, now: () => at };
 }
 
 test('legacy accounts default off; channels require their current verified destination', async () => {
@@ -102,24 +105,157 @@ test('verification limits survive fresh service instances and reject burst and d
   f.advance(86400000); assert.equal((await f.service.startEmailVerification('owner')).queued, true);
 });
 
-test('same conversation coalesces, never includes message contents, and waits 30 minutes', async () => {
+test('same conversation coalesces into one notice due five minutes after the first event, without message contents', async () => {
   const f = fixture(); await f.verify(); await f.optIn();
-  await f.service.enqueueEvent(f.event({ content: 'Private phone 650-555-9999', rawUrl: 'https://evil.test' }));
-  await f.service.enqueueEvent(f.event({ eventId: 'message_2' }));
-  assert.equal([...f.models.NotificationJob.rows.values()].filter(row => row.topic === 'message').length, 1);
-  assert.equal((await f.service.runOnce()).processed, 0); f.advance(HALF_HOUR);
+  const first = f.now();
+  assert.deepEqual(await f.service.enqueueEvent(f.event({ content: 'Private phone 650-555-9999', rawUrl: 'https://evil.test' })), { queued: 1 });
+  f.advance(2 * 60000);
+  assert.deepEqual(await f.service.enqueueEvent(f.event({ eventId: 'message_2', createdAt: f.now() })), { queued: 0, coalesced: 1 });
+  const [job] = f.jobs('message');
+  assert.equal(f.jobs('message').length, 1);
+  assert.equal(job.availableAt, first + FIRST_NOTICE_DELAY, 'the first notice is due at T+5 min, not T+30');
+  assert.equal(job.events, 2); assert.equal(job.lastEventAt, first + 2 * 60000); assert.equal(job.sourceId, 'dm_pair');
+  assert.equal((await f.service.runOnce()).processed, 0);
+  f.clock(first + FIRST_NOTICE_DELAY - 1); assert.equal((await f.service.runOnce()).processed, 0);
+  f.clock(first + FIRST_NOTICE_DELAY);
   await Promise.all([f.service.runOnce(), f.service.runOnce()]);
   assert.equal(f.sent.length, 1); assert.ok(f.sent[0].text.includes('https://www.baylink.us/en/messages/dm_pair'));
   assert.doesNotMatch(f.sent[0].text, /Private phone|650-555-9999|evil\.test|guest/);
   assert.equal((await f.service.runOnce()).processed, 0);
 });
 
-test('adjacent queue buckets still respect rolling 30-minute delivery throttle', async () => {
+test('events after a notice coalesce into one follow-up when the rolling 30-minute window reopens', async () => {
   const f = fixture(); await f.verify(); await f.optIn();
-  f.advance(29 * 60000); await f.service.enqueueEvent(f.event()); f.advance(60000); await f.service.enqueueEvent(f.event({ eventId: 'message_2' }));
-  f.advance(29 * 60000); await f.service.runOnce(); assert.equal(f.sent.length, 1);
-  f.advance(60000); await f.service.runOnce(); assert.equal(f.sent.length, 1, 'delayed first send cannot allow another a minute later');
-  f.advance(HALF_HOUR); await f.service.runOnce(); assert.equal(f.sent.length, 2);
+  const start = f.now();
+  await f.service.enqueueEvent(f.event());
+  f.clock(start + FIRST_NOTICE_DELAY); await f.service.runOnce(); assert.equal(f.sent.length, 1);
+  const sentAt = f.now();
+  f.advance(60000); assert.deepEqual(await f.service.enqueueEvent(f.event({ eventId: 'message_2', createdAt: f.now() })), { queued: 1 });
+  f.advance(4 * 60000); assert.deepEqual(await f.service.enqueueEvent(f.event({ eventId: 'message_3', createdAt: f.now() })), { queued: 0, coalesced: 1 });
+  f.advance(10 * 60000); assert.deepEqual(await f.service.enqueueEvent(f.event({ eventId: 'message_4', createdAt: f.now() })), { queued: 0, coalesced: 1 });
+  const followUp = f.jobs('message').find(row => row.status === 'queued');
+  assert.equal(followUp.availableAt, sentAt + HALF_HOUR, 'the follow-up waits for the window, not 5 minutes');
+  assert.equal(followUp.events, 3);
+  f.clock(sentAt + HALF_HOUR - 1); await f.service.runOnce(); assert.equal(f.sent.length, 1, 'never two notices for one thread within 30 minutes');
+  f.clock(sentAt + HALF_HOUR); await f.service.runOnce(); assert.equal(f.sent.length, 2);
+  assert.deepEqual(f.jobs('message').map(row => [row.status, row.events]), [['sent', 1], ['sent', 3]]);
+});
+
+test('a duplicate pending notice (concurrent enqueue) is re-queued to the window reopening, never sent early', async () => {
+  const f = fixture(); await f.verify(); await f.optIn();
+  await f.service.enqueueEvent(f.event());
+  // Simulate the rare race where two enqueues both found no pending notice for the thread.
+  const [original] = f.jobs('message');
+  await f.models.NotificationJob.create({ ...original, _id: 'f'.repeat(64), events: 1 });
+  f.advance(FIRST_NOTICE_DELAY); const sentAt = f.now();
+  await f.service.runOnce();
+  assert.equal(f.sent.length, 1);
+  const requeued = f.jobs('message').find(row => row.status === 'queued');
+  assert.equal(requeued.availableAt, sentAt + HALF_HOUR, 'the rolling window decides, not now + 30 min');
+  f.advance(HALF_HOUR - 1); await f.service.runOnce(); assert.equal(f.sent.length, 1);
+});
+
+test('a notice is cancelled when the thread was read in-app before it was due; a later message starts a new one', async () => {
+  const calls = [], state = { unread: false };
+  const f = fixture({ stillUnread: async value => { calls.push(value); if (state.fail) throw new Error('database unavailable'); return state.unread; } });
+  await f.verify(); await f.optIn();
+  const first = f.now();
+  await f.service.enqueueEvent(f.event());
+  f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.sent.length, 0);
+  assert.deepEqual(calls[0], { topic: 'message', recipientId: 'owner', actorId: 'guest', sourceId: 'dm_pair', since: first });
+  assert.deepEqual(f.jobs('message').map(row => [row.status, row.reason]), [['cancelled', 'read']]);
+  // The read thread never reached the recipient, so the next message is a fresh first notice.
+  f.advance(60000); state.unread = true;
+  await f.service.enqueueEvent(f.event({ eventId: 'message_2', createdAt: f.now() }));
+  const second = f.jobs('message').find(row => row.status === 'queued');
+  assert.equal(second.availableAt, f.now() + FIRST_NOTICE_DELAY);
+  // A failed unread check never sends and never cancels: the notice waits and retries.
+  f.advance(FIRST_NOTICE_DELAY); state.fail = true; await f.service.runOnce();
+  assert.equal(f.sent.length, 0); assert.equal(f.jobs('message').find(row => row._id === second._id).status, 'queued');
+  state.fail = false; f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.sent.length, 1);
+});
+
+test('a failed unread check on SMS is retried, not recorded as an ambiguous provider submission', async () => {
+  let fail = true;
+  const f = fixture({ stillUnread: async () => { if (fail) throw new Error('database unavailable'); return true; } });
+  await f.optIn('sms'); await f.service.enqueueEvent(f.event());
+  f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.texts.length, 0); assert.equal(f.jobs('message')[0].status, 'queued');
+  fail = false; f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.texts.length, 1); assert.equal(f.jobs('message')[0].status, 'sent');
+});
+
+test('coalescing, the 30-minute window and the 5-minute first notice survive a restart (persistence model)', async () => {
+  const f = fixture(); await f.verify(); await f.optIn();
+  await f.service.enqueueEvent(f.event()); f.advance(FIRST_NOTICE_DELAY);
+  await f.service.runOnce(); assert.equal(f.sent.length, 1); const sentAt = f.now();
+  const restarted = f.restart();
+  f.advance(60000); await restarted.enqueueEvent(f.event({ eventId: 'message_2', createdAt: f.now() }));
+  f.advance(60000); assert.deepEqual(await restarted.enqueueEvent(f.event({ eventId: 'message_3', createdAt: f.now() })), { queued: 0, coalesced: 1 });
+  f.clock(sentAt + HALF_HOUR - 1); await f.restart().runOnce(); assert.equal(f.sent.length, 1, 'a new process still honours the stored window');
+  f.clock(sentAt + HALF_HOUR); await f.restart().runOnce(); assert.equal(f.sent.length, 2);
+  // What the E2E harness inspects: one row per notice, carrying how many events it covered.
+  assert.deepEqual(f.jobs('message').map(({ status, events, availableAt }) => ({ status, events, availableAt })), [
+    { status: 'sent', events: 1, availableAt: sentAt },
+    { status: 'sent', events: 2, availableAt: sentAt + HALF_HOUR },
+  ]);
+  assert.equal(f.models.NotificationWindow.rows.size, 1);
+});
+
+test('replaying an already queued event is idempotent and threads stay independent', async () => {
+  const f = fixture(); await f.verify(); await f.optIn();
+  await f.service.enqueueEvent(f.event());
+  assert.deepEqual(await f.service.enqueueEvent(f.event()), { queued: 0, coalesced: 1 });
+  await f.service.enqueueEvent(f.event({ sourceId: 'dm_other', eventId: 'message_9' }));
+  assert.equal(f.jobs('message').length, 2);
+  f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.sent.length, 2, 'two threads are two windows');
+});
+
+test('comment topic is opt-in, uses its own label and links to the post', async () => {
+  const f = fixture(); await f.verify(); await f.optIn();
+  assert.deepEqual(TOPICS, ['message', 'contact_request', 'outing_request', 'comment']);
+  const prefs = await f.service.preferences('owner');
+  assert.equal(prefs.preferences.email.comment, false); assert.equal(prefs.preferences.sms.comment, false);
+  assert.deepEqual(prefs.topics, TOPICS);
+  const comment = (overrides = {}) => f.event({ topic: 'comment', sourceId: 'post_1', eventId: '1760000000000_abcd1234', ...overrides });
+  assert.deepEqual(await f.service.enqueueEvent(comment()), { queued: 0 }, 'opting into the original three topics does not opt into comments');
+  await f.service.updatePreferences('owner', { preferences: { email: { comment: true } } });
+  assert.deepEqual(await f.service.enqueueEvent(comment()), { queued: 1 });
+  f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.sent.length, 1);
+  assert.match(f.sent[0].text, /You have new comments on BAYLINK/);
+  assert.ok(f.sent[0].text.includes('https://www.baylink.us/en/posts/post_1'));
+  for (const [locale, label, prefix] of [['zh-Hans', '新的评论', ''], ['zh-Hant', '新的評論', '/zh-Hant']]) {
+    const g = fixture(); await g.verify();
+    await g.service.updatePreferences('owner', { preferences: { email: { comment: true } }, locale });
+    await g.service.enqueueEvent(g.event({ topic: 'comment', sourceId: 'post_2', eventId: 'c_1', createdAt: g.now() }));
+    g.advance(FIRST_NOTICE_DELAY); await g.service.runOnce();
+    assert.ok(g.sent[0].text.includes(label)); assert.ok(g.sent[0].text.includes(`https://www.baylink.us${prefix}/posts/post_2`));
+  }
+});
+
+test('enable all turns on every topic, only for channels whose destination is verified', async () => {
+  const f = fixture();
+  // The owner's phone is verified in this fixture, the email is not yet.
+  const phoneOnly = await f.service.updatePreferences('owner', { enableAll: true });
+  assert.equal(Object.values(phoneOnly.preferences.sms).every(Boolean), true);
+  assert.equal(Object.values(phoneOnly.preferences.email).some(Boolean), false);
+  assert.deepEqual(phoneOnly.allEnabled, { email: false, sms: true });
+  await assert.rejects(f.service.updatePreferences('owner', { enableAll: 'email' }), error => error.status === 409 && error.code === 'NOTIFICATION_VERIFICATION_REQUIRED');
+  await f.verify();
+  const both = await f.service.updatePreferences('owner', { enableAll: 'email', preferences: { sms: { comment: false } } });
+  assert.deepEqual(both.preferences.email, { message: true, contact_request: true, outing_request: true, comment: true });
+  assert.equal(both.preferences.sms.comment, false);
+  assert.deepEqual(both.allEnabled, { email: true, sms: false });
+  await assert.rejects(f.service.updatePreferences('guest', { enableAll: true }), error => error.status === 409 && error.code === 'NOTIFICATION_VERIFICATION_REQUIRED');
+  for (const value of ['push', false, 1, ['email']]) await assert.rejects(f.service.updatePreferences('owner', { enableAll: value }), error => error.status === 400);
+  // Turning everything on is a consent change: work queued under the old consent is not revived.
+  await f.service.enqueueEvent(f.event());
+  await f.service.updatePreferences('owner', { enableAll: true });
+  f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce(); assert.equal(f.sent.length + f.texts.length, 0);
 });
 
 test('opt-out cancels queue and a later opt-in cannot revive earlier events; unsubscribe consumes once', async () => {
