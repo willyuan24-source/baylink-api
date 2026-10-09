@@ -93,22 +93,30 @@ test('route mirror matches the server intent classifier and pre-dispatch follows
 test('arms switch models through runtime config keys; code-defaults sets nothing and runs the R0 routes', async () => {
   const { armRoutes } = await load('arms.mjs');
   const book = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
-  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT']);
+  const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT',
+    // API-BB-ENGINE arms: the engine flag and the fast route.
+    'BAYBAY_ENGINE', 'BAYBAY_MODEL_FAST', 'BAYBAY_EFFORT_FAST', 'BAYBAY_THINKING_FAST']);
   for (const [name, arm] of Object.entries(book.arms)) {
     for (const key of Object.keys(arm.config)) assert.ok(keys.has(key), `${name}: ${key}`);
     assert.equal(arm.requestOverrides, undefined, `${name}: thinking goes through BAYBAY_THINKING_AGENT, which only Haiku receives`);
   }
   const sonnetLow = { model: 'claude-sonnet-5-5', effort: 'low', thinking: 'adaptive' };
   assert.deepEqual(book.arms['code-defaults'].config, {});
-  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow });
+  assert.deepEqual(armRoutes(book.arms['code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v1' });
   const opusMedium = { model: 'claude-opus-5-5', effort: 'medium', thinking: 'adaptive' };
-  assert.deepEqual(armRoutes(book.arms['opus-asis'].config), { agent: opusMedium, professional: opusMedium });
-  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow }, 'professional answers never run on Haiku');
+  const { fast: _opusFast, ...opusRoutes } = armRoutes(book.arms['opus-asis'].config);
+  assert.deepEqual(opusRoutes, { agent: opusMedium, professional: opusMedium, engine: 'v1' });
+  assert.deepEqual(armRoutes(book.arms['haiku-low'].config), { agent: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, professional: sonnetLow, fast: sonnetLow, engine: 'v1' }, 'professional answers never run on Haiku');
   assert.deepEqual(armRoutes(book.arms['haiku-low-nothink'].config).agent, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
   assert.deepEqual(armRoutes(book.arms['haiku-medium'].config).agent, { model: 'claude-haiku-5-5', effort: 'medium', thinking: 'adaptive' });
   assert.deepEqual(armRoutes(book.arms['sonnet-low'].config).agent, sonnetLow);
   const sonnetMedium = { model: 'claude-sonnet-5-5', effort: 'medium', thinking: 'adaptive' };
-  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium });
+  assert.deepEqual(armRoutes(book.arms['sonnet-medium'].config), { agent: sonnetMedium, professional: sonnetMedium, fast: sonnetLow, engine: 'v1' });
+  // Engine arms: v2 on code defaults, and the fast route alone on Haiku (plans and professional stay on Sonnet low).
+  assert.deepEqual(armRoutes(book.arms['v2-code-defaults'].config), { agent: sonnetLow, professional: sonnetLow, fast: sonnetLow, engine: 'v2' });
+  assert.deepEqual(armRoutes(book.arms['v2-haiku-low'].config), { agent: sonnetLow, professional: sonnetLow, fast: { model: 'claude-haiku-5-5', effort: 'low', thinking: 'adaptive' }, engine: 'v2' });
+  assert.deepEqual(armRoutes(book.arms['v2-haiku-low-nothink'].config).fast, { model: 'claude-haiku-5-5', effort: 'low', thinking: 'disabled' });
+  assert.deepEqual(book.sets.engine, { blocks: ['A', 'B', 'C', 'D', 'E', 'G', 'H'], arms: ['v2-haiku-low', 'v2-code-defaults', 'code-defaults'], baselineArm: 'code-defaults' });
   assert.deepEqual(book.sets.v0.arms.sort(), ['haiku-low', 'haiku-low-nothink', 'opus-asis', 'sonnet-low']);
   assert.deepEqual(book.sets.r0, { blocks: ['A', 'C', 'E'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
 });
@@ -155,6 +163,32 @@ test('dry run needs no key, makes no network call and writes only outside the re
   assert.notEqual(inside.status, 0);
   assert.match(inside.stderr, /outside the repository/);
   assert.equal(fs.existsSync(path.join(ROOT, 'tmp-eval')), false);
+  fs.rmSync(out, { recursive: true, force: true });
+});
+
+// API-BB-STREAM: the harness is a capable client, so a v2 fast-path turn streams its
+// call, reports draft events as lead TTFT and still prices the streamed usage.
+test('stream set dry run: a site answer drafts its lead from a streamed call; a professional topic and --no-drafts do not stream', async () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-eval-'));
+  const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
+  const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
+  const run = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-stream', '--set', 'stream', '--items', 'C05,C13', '--no-judge', '--save-sse', '1'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(run.status, 0, run.stderr);
+  const rows = fs.readFileSync(path.join(out, 'dry-stream', 'results-v2-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  const site = rows.find(row => row.turnId === 'C05'), professional = rows.find(row => row.turnId === 'C13');
+  assert.equal(site.routeReason, 'site_answer');
+  assert.ok(site.drafts.events >= 1); assert.equal(site.drafts.corrected, false);
+  assert.equal(site.timings.leadSource, 'draft-event');
+  assert.ok(site.timings.leadMs <= site.timings.completeMs);
+  assert.equal(site.calls[0].streamed, true); assert.ok(site.calls[0].usage.inputTokens > 0, 'usage read from the streamed body');
+  assert.equal(professional.routeReason, 'professional_topic');
+  assert.equal(professional.drafts, null); assert.equal(professional.calls[0].streamed, undefined);
+  assert.equal(fs.readdirSync(path.join(out, 'dry-stream', 'sse')).length, 1);
+  assert.match(fs.readFileSync(path.join(out, 'dry-stream', 'summary.md'), 'utf8'), /Drafted turns: lead TTFT p50 \/ p90/);
+  const plain = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-no-drafts', '--set', 'stream', '--items', 'C05', '--no-judge', '--no-drafts'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });
+  assert.equal(plain.status, 0, plain.stderr);
+  const [row] = fs.readFileSync(path.join(out, 'dry-no-drafts', 'results-v2-code-defaults.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
+  assert.equal(row.drafts, null); assert.equal(row.calls[0].streamed, undefined); assert.equal(row.timings.leadSource, 'answer-complete');
   fs.rmSync(out, { recursive: true, force: true });
 });
 

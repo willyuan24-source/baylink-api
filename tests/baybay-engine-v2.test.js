@@ -1,0 +1,488 @@
+// API-BB-ENGINE: BAYBAY_ENGINE=v2 router, single-call fast path, v2 retrieval and
+// the frozen-system cache layout. Every test is offline ($0): Anthropic is a fixture.
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const { createBayBayAssistant } = require('../lib/baybayAgent');
+const { routeBayBay, baybayEngine, isBookingRequest, asksForPlan } = require('../lib/baybayRouter');
+const { FROZEN_SYSTEM, systemBlocks, FAST_FORMAT, parseFastDraft, assembleAnswer, leadUnits, readerProse, fastProblems } = require('../lib/baybayFastPath');
+const { buildFastEvidence, readerDate } = require('../lib/baybayEvidence');
+const { createAnthropicBaybay } = require('../lib/anthropicBaybay');
+const { namedEntitiesV2, queryAliases } = require('../lib/entityAliases');
+const { loadPlannerCatalog } = require('../lib/planner');
+const { createPublicContext } = require('../lib/publicContext');
+const { ROUTE_NAMES, aiRoute, requestControls, KNOWN_MODELS } = require('../lib/aiModels');
+const { assertSearchScope } = require('../lib/bayAreaSearchScope');
+
+const NOW = Date.parse('2026-10-08T17:00:00Z'); // Thu 2026-10-08 10:00 PDT
+const TODAY = '2026-10-08';
+const guides = require('../data/guide-catalog.json');
+const catalog = loadPlannerCatalog();
+const discoveries = { ...require('../data/discoveries.json'), english: require('../data/discoveries.en.json') };
+const publicContext = createPublicContext({ guideCatalog: guides });
+const base = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_STATE_SECRET: 'private-test-task-secret-0123456789', BAYBAY_DAILY_RUN_LIMIT: '1000' };
+const quota = () => ({ updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) });
+const message = (content, stop_reason = 'end_turn', usage = {}) => ({ type: 'message', id: 'msg-fixture', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason, content, usage: { input_tokens: 40, output_tokens: 60, ...usage } });
+const fast = (answer, usage) => message([{ type: 'text', text: JSON.stringify({ lead: 'L', points: [], candidateIds: [], followups: [], coverage: [], gap: '', ...answer }) }], 'end_turn', usage);
+const reply = value => ({ ok: true, status: 200, json: async () => value, clone() { return this; }, text: async () => JSON.stringify(value) });
+const hash = value => crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+function assistantWith({ config = {}, respond, ...extra }) {
+  const sent = [];
+  const assistant = createBayBayAssistant({ config: { ...base, BAYBAY_ENGINE: 'v2', ...config }, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(), ...extra,
+    fetchImpl: async (url, init) => { assert.equal(url, 'https://api.anthropic.com/v1/messages'); const body = JSON.parse(init.body); sent.push(body); return respond(body, sent.length); } });
+  return { assistant, sent };
+}
+const page = (currentPath, locale = 'zh-Hans') => publicContext.resolve({ context: { currentPath }, currentPath, today: TODAY, locale });
+const run = (assistant, text, { currentPath = '/', locale = 'zh-Hans', searchMode = 'site', member = false, history = [] } = {}) => assistant.run({ message: text, locale, currentPath, history,
+  pageContext: page(currentPath, locale), searchMode, webAccess: { allowed: member } });
+
+// ---------------------------------------------------------------- router
+
+test('router table: plans, plan edits, named stops and live web use the agent; everything else is one fast call', () => {
+  const cases = [
+    [{ emergency: true, state: { goal: 'information' } }, 'emergency'],
+    [{ outing: true, state: {} }, 'outing'],
+    [{ state: { goal: 'day-plan' } }, 'agent', 'day_plan'],
+    [{ state: { goal: 'information' }, edit: { kind: 'replace', index: 1 } }, 'agent', 'plan_edit'],
+    [{ state: { goal: 'information' }, edit: { kind: 'invalidated' } }, 'fast', 'site_answer'],
+    [{ state: { goal: 'discover' }, explicitCandidateIds: ['a', 'b'] }, 'agent', 'named_stops'],
+    [{ state: { goal: 'discover' }, explicitCandidateIds: ['a'] }, 'fast', 'site_answer'],
+    [{ state: { goal: 'information' }, planFollowup: true }, 'agent', 'plan_followup'],
+    [{ state: { goal: 'information' }, planRequest: true }, 'agent', 'plan_request'],
+    [{ state: { goal: 'information' }, planRequest: true, professional: { topic: 'medicare' } }, 'fast', 'professional_topic'],
+    [{ state: { goal: 'information' }, searchMode: 'web' }, 'agent', 'live_web'],
+    [{ state: { goal: 'information' }, searchMode: 'smart', timely: true }, 'agent', 'live_web'],
+    [{ state: { goal: 'information' }, searchMode: 'smart', timely: false }, 'fast', 'site_answer'],
+    [{ state: { goal: 'information' }, searchMode: 'site', timely: true }, 'fast', 'site_answer'],
+    [{ state: { goal: 'information' }, professional: { topic: 'medicare' } }, 'fast', 'professional_topic'],
+    [{ state: { goal: 'discover' } }, 'fast', 'site_answer'],
+  ];
+  for (const [turn, path, reason] of cases) {
+    const routed = routeBayBay(turn);
+    assert.equal(routed.path, path, JSON.stringify(turn)); if (reason) assert.equal(routed.reason, reason);
+  }
+  assert.equal(routeBayBay({ state: {}, professional: { topic: 'tax' } }).route, 'baybay_professional', 'professional topics never use the fast (possibly Haiku) route');
+  assert.equal(routeBayBay({ state: {} }).route, 'baybay_fast');
+  assert.deepEqual(['v2', 'V2', ' v2 ', 'v1', '', undefined, 'v3'].map(value => baybayEngine({ BAYBAY_ENGINE: value })), ['v2', 'v2', 'v2', 'v1', 'v1', 'v1', 'v1']);
+});
+
+// ---------------------------------------------------------------- caching layout (RC-19/RC-22)
+
+test('system block 1 is byte-identical across modes, locales, routes and paths, carries cache_control and has no date', async () => {
+  const systems = [];
+  const { assistant, sent } = assistantWith({ respond: (body, count) => reply(body.tools?.length && count % 2 === 1 && body.tool_choice?.type === 'auto'
+    ? message([{ type: 'tool_use', id: `tool-${count}`, name: 'search_site', input: { query: 'Berkeley' } }], 'tool_use') : fast({ lead: '可以。' })) });
+  await run(assistant, '蓝天使这周末飞吗');
+  await run(assistant, 'Any free museum days in SF this month?', { locale: 'en' });
+  await run(assistant, '灣區這週末有什麼免費的親子活動？', { locale: 'zh-Hant' });
+  await run(assistant, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？');
+  await run(assistant, '还有吗', { currentPath: '/events/santana-row-glass-pumpkin-2026' });
+  await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  await run(assistant, '今天 BART 有没有大面积延误？', { searchMode: 'smart', member: true });
+  for (const body of sent) systems.push(hash(body.system));
+  assert.ok(sent.length >= 8);
+  assert.equal(new Set(systems).size, 1, 'one frozen system prefix');
+  assert.deepEqual(sent[0].system, systemBlocks());
+  assert.deepEqual(sent[0].system[0].cache_control, { type: 'ephemeral' });
+  assert.equal(sent[0].system.length, 1);
+  // No date, time or request data: a different clock or user yields the same bytes.
+  const later = [];
+  const other = createBayBayAssistant({ config: { ...base, BAYBAY_ENGINE: 'v2' }, guideCatalog: guides, catalog, now: () => Date.parse('2026-11-20T23:30:00Z'), isTest: false, Quota: quota(),
+    fetchImpl: async (_url, init) => { later.push(JSON.parse(init.body)); return reply(fast({ lead: 'ok' })); } });
+  await other.run({ message: 'What free things can I do in Oakland this weekend?', locale: 'en', currentPath: '/', pageContext: page('/', 'en'), searchMode: 'site', webAccess: { allowed: false } });
+  assert.equal(hash(later[0].system), systems[0]);
+  assert.doesNotMatch(FROZEN_SYSTEM, /10月8日|2026-10-08|11月20日|2026-11-20|Thursday|Friday/);
+  assert.ok(FROZEN_SYSTEM.length > 2400, 'over the 512-token minimum cacheable prefix');
+  // Routes and paths differ only after the cached prefix.
+  const fastCalls = sent.filter(body => !body.tools), agentCalls = sent.filter(body => body.tools);
+  assert.ok(fastCalls.length >= 5 && agentCalls.length >= 2);
+  for (const body of fastCalls) { assert.equal(body.tool_choice, undefined); assert.equal(body.cache_control, undefined); }
+  for (const body of agentCalls) {
+    assert.deepEqual(body.cache_control, { type: 'ephemeral' }, 'agent runs use top-level automatic caching');
+    assert.deepEqual(body.tools.map(tool => tool.name), [...body.tools.map(tool => tool.name)].sort(), 'tools are name-sorted');
+  }
+  const siteTools = agentCalls.filter(body => body.tools.length === 2), memberTools = agentCalls.filter(body => body.tools.length > 2);
+  assert.ok(siteTools.length && memberTools.length);
+  assert.equal(new Set(siteTools.map(body => hash(body.tools))).size, 1, 'one site tool prefix');
+  assert.equal(new Set(memberTools.map(body => hash(body.tools))).size, 1, 'one member tool prefix');
+  // Conditional rules sit after the user turn as a role:system message.
+  const professional = sent.find(body => JSON.stringify(body.messages).includes('Professional-topic guard'));
+  assert.equal(professional.messages[0].role, 'user'); assert.equal(professional.messages[1].role, 'system');
+  assert.match(professional.messages[1].content[0].text, /1-800-434-0222/);
+});
+
+test('an agent run: call 2 replays call 1 unchanged and adds only the new turn; evidence is never sent twice', async () => {
+  // Two model rounds: the research call, then the final synthesis (tool_choice none).
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '2' }, respond: (body, count) => reply(count === 1
+    ? message([{ type: 'tool_use', id: 'tool-1', name: 'search_site', input: { query: 'Berkeley 植物园' } }], 'tool_use', { cache_creation_input_tokens: 3000 })
+    // The final answer cites the plan stop's own record (its evidence ref), as the plan guard requires.
+    : fast({ lead: '可以安排半天。', points: [{ text: `先去校园和植物园 [[${JSON.parse(sent[0].messages[0].content[0].text).evidence.find(item => item.title.startsWith('Berkeley 校园')).ref}]]`, cardIds: [] }], candidateIds: ['berkeley'] }, { cache_read_input_tokens: 3000 })) });
+  const result = await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  assert.equal(result.route.path, 'agent'); assert.equal(sent.length, 2);
+  const [first, second] = sent;
+  assert.deepEqual(second.messages.slice(0, first.messages.length), first.messages, 'append-only: call 1 is a prefix of call 2');
+  const added = second.messages.slice(first.messages.length);
+  assert.deepEqual(added.map(row => row.role), ['assistant', 'user', 'user', 'system']);
+  assert.equal(added[1].content[0].type, 'tool_result');
+  const firstBytes = JSON.stringify(first.messages).length, delta = JSON.stringify(added).length;
+  assert.ok(JSON.stringify(second.messages).length <= firstBytes + delta + 2);
+  // The first turn's evidence (by id) does not reappear in the tool result or the final delta.
+  const firstIds = new Set([...JSON.stringify(first.messages).matchAll(/"id":"(s-[0-9a-f]{16})"/g)].map(match => match[1]));
+  const repeated = [...JSON.stringify(added).matchAll(/"id":"(s-[0-9a-f]{16})"/g)].map(match => match[1]).filter(id => firstIds.has(id));
+  assert.deepEqual(repeated, []);
+  assert.match(added[3].content[0].text, /Research is complete/);
+  assert.deepEqual(second.tool_choice, { type: 'none' }); assert.deepEqual(second.tools, first.tools);
+  assert.deepEqual(result.research.modelResponses.map(row => row.cacheReadTokens), [0, 3000], 'raw cache reads are recorded per call');
+  assert.deepEqual(result.research.modelResponses.map(row => row.cacheWriteTokens), [3000, 0]);
+});
+
+// ---------------------------------------------------------------- fast path
+
+test('fast path: one call, no tools, lead-first schema, max_tokens >= 4,000, explicit effort; legacy answer assembled from lead and points', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '会飞：航空展是10月9日至11日 [[e1]]', points: [{ text: 'Marina Green 免费观看 [[e1]]', cardIds: ['e1'] }, { text: '每天中午12点至下午4点', cardIds: [] }], candidateIds: ['e1'], followups: ['那在哪看最好？'] })) });
+  const result = await run(assistant, '蓝天使这周末飞吗');
+  assert.equal(sent.length, 1);
+  const [body] = sent;
+  assert.equal(body.tools, undefined); assert.equal(body.max_tokens, 4000); assert.equal(body.output_config.effort, 'low'); assert.equal(body.model, 'claude-sonnet-5-5');
+  assert.deepEqual(Object.keys(body.output_config.format.schema.properties), ['lead', 'points', 'candidateIds', 'followups', 'coverage', 'gap'], 'lead comes first');
+  for (const key of ['temperature', 'top_p', 'top_k', 'thinking']) assert.equal(Object.hasOwn(body, key), false, key);
+  const user = JSON.parse(body.messages[0].content[0].text);
+  assert.equal(user.today, '10月8日（周四）');
+  assert.ok(user.evidence.length >= 1 && user.evidence.length <= 10);
+  assert.ok(user.evidence.every(item => item.text.length <= 400), 'items are at most 400 characters');
+  assert.equal(user.evidence[0].title.startsWith('San Francisco Fleet Week'), true, 'the alias names Fleet Week first');
+  assert.match(user.evidence[0].page, /^https:\/\/www\.baylink\.us\/events\/san-francisco-fleet-week-2026$/);
+  assert.match(user.evidence[0].when, /10月4日（周日） 至 10月12日（周一）/);
+  assert.equal(result.route.path, 'fast'); assert.equal(result.engine, 'v2');
+  assert.equal(result.lead, '会飞：航空展是10月9日至11日 [1]');
+  assert.deepEqual(result.points.map(point => point.text), ['Marina Green 免费观看 [1]', '每天中午12点至下午4点']);
+  assert.deepEqual(result.points[0].cardIds, ['event:san-francisco-fleet-week-2026']);
+  assert.equal(result.answer, '会飞：航空展是10月9日至11日 [1]\n\n1. Marina Green 免费观看 [1]\n2. 每天中午12点至下午4点');
+  assert.equal(result.localMatches[0].id, 'san-francisco-fleet-week-2026');
+  assert.deepEqual(result.followups, ['那在哪看最好？']);
+  assert.equal(result.sources[0].url, 'https://www.baylink.us/events/san-francisco-fleet-week-2026', 'the BAYLINK page is the cited source');
+});
+
+test('fast path retries once on Claude Sonnet 5.5 low after invalid JSON, and a Haiku fast route never sends disabled thinking to Sonnet', async () => {
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MODEL_FAST: 'claude-haiku-5-5', BAYBAY_EFFORT_FAST: 'low', BAYBAY_THINKING_FAST: 'disabled' },
+    respond: (body, count) => reply(count === 1 ? message([{ type: 'text', text: 'not json' }]) : fast({ lead: '站内有这篇指南。' })) });
+  const result = await run(assistant, '养老金怎么查');
+  assert.equal(sent.length, 2);
+  assert.equal(sent[0].model, 'claude-haiku-5-5'); assert.deepEqual(sent[0].thinking, { type: 'disabled' }); assert.equal(sent[0].max_tokens, 4000);
+  assert.equal(sent[1].model, 'claude-sonnet-5-5'); assert.equal(sent[1].thinking, undefined); assert.equal(sent[1].output_config.effort, 'low');
+  assert.match(sent[1].messages.at(-1).content[0].text, /not valid JSON/);
+  assert.ok(result.research.warnings.includes('fast_retry_invalid_output'));
+  assert.equal(result.lead, '站内有这篇指南。'); assert.equal(result.degraded, false);
+});
+
+test('a "site has no record" answer about the page being viewed is retried, and the guard names the dates and that it ended', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '站内没有收录这个活动的后续场次。' })) });
+  const result = await run(assistant, '还有吗', { currentPath: '/events/santana-row-glass-pumpkin-2026' });
+  assert.equal(sent.length, 2, 'one retry');
+  assert.match(sent[1].messages.at(-1).content[0].text, /currentPage or an evidence record is what the user asked about/);
+  assert.ok(result.research.warnings.includes('false_negative_corrected'));
+  assert.match(result.answer, /^站内已收录「Santana Row 玻璃南瓜艺术节」（10月2日（周五） 至 10月4日（周日））/);
+  assert.match(result.answer, /已经结束/);
+  assert.doesNotMatch(result.answer, /20\d\d-\d\d-\d\d/);
+  assert.equal(result.lead, undefined, 'a guard rewrite keeps only the legacy answer');
+  assert.deepEqual(result.pageEntity, { kind: 'event', id: 'santana-row-glass-pumpkin-2026', title: 'Santana Row 玻璃南瓜艺术节' });
+});
+
+test('a guarded professional topic answers in one call on the professional route, cites the official contact by ref and keeps its phone number', async () => {
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MODEL_FAST: 'claude-haiku-5-5' }, respond: () => reply(fast({ lead: 'A 和 B 通常不是二选一。', points: [{ text: 'A 部分是住院保险，B 部分是门诊保险。', cardIds: [] }, { text: '可免费咨询 HICAP [[r1]]', cardIds: [] }] })) });
+  const result = await run(assistant, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？');
+  assert.equal(sent.length, 1); assert.equal(sent[0].model, 'claude-sonnet-5-5', 'never Haiku (RC-20)');
+  assert.equal(result.route.reason, 'professional_topic'); assert.equal(result.safetyRoute, 'professional');
+  const user = JSON.parse(sent[0].messages[0].content[0].text);
+  assert.equal(user.evidence[0].ref, 'r1'); assert.match(user.evidence[0].text, /1-800-434-0222/);
+  assert.match(result.answer, /1-800-434-0222/, 'the finish() floor appends the missing phone number');
+  assert.equal(result.points.at(-1).text.includes('1-800-434-0222'), true, 'the appended contact becomes the last point');
+});
+
+test('ISO dates and region codes become reader dates and names; parse and assembly helpers', () => {
+  assert.equal(readerProse('核对日期是 2026-09-28，在 south-bay', 'zh-Hans'), '核对日期是 9月28日（周一），在 南湾');
+  assert.equal(readerProse('Open 2026-10-17 in east-bay', 'en'), 'Open Sat, Oct 17 in East Bay');
+  assert.equal(readerDate('2026-10-17', 'zh-Hant'), '10月17日（週六）');
+  const draft = parseFastDraft({ status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ lead: '会。', points: [{ text: 'A', cardIds: ['e1', 7] }], candidateIds: ['e1'], followups: ['x', 'y', 'z'], coverage: [], gap: '日期待官方确认。' }) }] }] });
+  assert.deepEqual(draft.points, [{ text: 'A', cardIds: ['e1'] }]); assert.equal(draft.followups.length, 2);
+  assert.equal(assembleAnswer(draft), '会。\n\nA\n\n日期待官方确认。');
+  assert.equal(parseFastDraft({ status: 'incomplete', output: [] }), null);
+  assert.equal(parseFastDraft({ status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: '{"answer":"legacy"}' }] }] }), null);
+  assert.deepEqual(fastProblems(null), ['invalid_output']);
+  assert.deepEqual(fastProblems({ lead: '站内没有收录这个活动。', points: [], gap: '' }, { named: [{}] }), ['false_negative']);
+  assert.equal(FAST_FORMAT.schema.additionalProperties, false);
+});
+
+// ---------------------------------------------------------------- adapter
+
+test('role:system items fall back to a user-turn <system-reminder> after a 400 that says the role is unsupported, and stay converted for the run', async () => {
+  const sent = [];
+  const request = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'fixture' }, route: 'baybay_fast', fetchImpl: async (_url, init) => {
+    const body = JSON.parse(init.body); sent.push(body);
+    if (sent.length === 1) return { ok: false, status: 400, clone() { return this; }, text: async () => JSON.stringify({ type: 'error', error: { type: 'invalid_request_error', message: "role 'system' is not supported on this model" } }), json: async () => ({}) };
+    return reply(fast({ lead: 'ok' }));
+  } });
+  const result = await request({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rule X' }], tools: [], text: { format: FAST_FORMAT } });
+  assert.equal(sent.length, 2);
+  assert.equal(sent[0].messages[1].role, 'system');
+  assert.deepEqual(sent[1].messages[1], { role: 'user', content: [{ type: 'text', text: '<system-reminder>\nRule X\n</system-reminder>' }] });
+  assert.equal(result.transport.systemRole, 'reminder');
+  // Any other 400 is not retried.
+  let calls = 0;
+  const other = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'fixture' }, route: 'baybay_fast', fetchImpl: async () => { calls++; return { ok: false, status: 400, clone() { return this; }, text: async () => '{"error":{"message":"max_tokens too large"}}', json: async () => ({}) }; } });
+  await assert.rejects(other({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rule' }], tools: [] }), /HTTP 400/);
+  assert.equal(calls, 1);
+});
+
+test('no Anthropic payload carries temperature, top_p or top_k (RC-18), on any route or model, v1 or v2', async () => {
+  const bodies = [];
+  const fetchImpl = async (_url, init) => { bodies.push(JSON.parse(init.body)); return reply(fast({ lead: 'ok' })); };
+  for (const route of ROUTE_NAMES.filter(name => name.startsWith('baybay_') && name !== 'baybay_web' && name !== 'baybay_legacy')) for (const model of KNOWN_MODELS) {
+    const config = { ANTHROPIC_API_KEY: 'fixture', [`BAYBAY_MODEL_${aiRoute(route, {}).route.replace(/^baybay_/, '').toUpperCase()}`]: model };
+    await createAnthropicBaybay({ config, fetchImpl, route })({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }], tools: [], temperature: 0.2, top_p: 0.5, top_k: 3, text: { format: FAST_FORMAT } });
+    await createAnthropicBaybay({ config, fetchImpl, route })({ instructions: 'v1', input: [{ role: 'user', content: 'Q' }], tools: [{ type: 'function', name: 't', description: 'd', parameters: { type: 'object', properties: {}, required: [], additionalProperties: false } }], temperature: 0.2, top_p: 0.5, top_k: 3 });
+    assert.ok(requestControls(aiRoute(route, config), model).effort);
+  }
+  assert.ok(bodies.length >= 18);
+  for (const body of bodies) for (const key of ['temperature', 'top_p', 'top_k']) assert.equal(Object.hasOwn(body, key), false, key);
+  for (const body of bodies) assert.ok(['low', 'medium', 'high'].includes(body.output_config.effort), 'effort is explicit');
+});
+
+test('BAYBAY_ENGINE unset keeps the v1 request: an instructions string as system, tools on every call, no cache_control', async () => {
+  const sent = [];
+  const assistant = createBayBayAssistant({ config: base, guideCatalog: guides, catalog, now: () => NOW, isTest: false, Quota: quota(), fetchImpl: async (_url, init) => {
+    sent.push(JSON.parse(init.body));
+    return reply(message([{ type: 'text', text: JSON.stringify({ answer: 'v1 answer', candidateIds: [], followups: [], coverage: [] }) }]));
+  } });
+  const result = await run(assistant, '蓝天使这周末飞吗');
+  assert.equal(typeof sent[0].system, 'string'); assert.ok(Array.isArray(sent[0].tools) && sent[0].tools.length);
+  assert.equal(sent[0].cache_control, undefined); assert.equal(sent[0].max_tokens, 6000);
+  assert.equal(result.engine, undefined); assert.equal(result.lead, undefined); assert.equal(result.answer, 'v1 answer');
+});
+
+// ---------------------------------------------------------------- retrieval v2
+
+const evidence = (text, { currentPath = '/', locale = 'zh-Hans', state = {} } = {}) => {
+  const pageContext = page(currentPath, locale);
+  return buildFastEvidence({ query: text, originalQuery: text, state: { goal: 'information', ...state }, guideCatalog: guides, catalog, discoveries, today: TODAY, currentPath, locale,
+    selectedGuideUrls: pageContext.contextReferences.filter(ref => ref.kind === 'guide').map(ref => ref.url),
+    pageKeys: pageContext.contextReferences.map(ref => `${ref.kind}:${ref.id}`), pageTitles: pageContext.contextReferences.filter(ref => ref.kind !== 'guide').map(ref => ref.title) });
+};
+const keys = result => result.items.map(item => `${item.kind}:${item.id}`);
+
+test('aliases name the entity: 蓝天使 / 舰队周 -> Fleet Week, "Santana Row 那个玻璃南瓜展" -> the glass-pumpkin festival, Chez Maeju -> the opening', () => {
+  assert.deepEqual(queryAliases('舰队周在哪看').ids, ['fleet-week']);
+  assert.deepEqual(queryAliases('养老金怎么查').ids, ['social-security']);
+  const named = query => namedEntitiesV2(query, catalog, { discoveries }).map(item => `${item.kind}:${item.row.id}`);
+  assert.ok(named('蓝天使这周末飞吗').includes('event:san-francisco-fleet-week-2026'));
+  assert.ok(named('海军周哪天').includes('event:san-francisco-fleet-week-2026'));
+  assert.ok(named('Santana Row 那个玻璃南瓜展这周六还有吗？').includes('event:santana-row-glass-pumpkin-2026'));
+  assert.ok(named('Chez Maeju 开了吗').includes('opening:oakland-chez-maeju-soft-opening-2026'));
+  assert.deepEqual(named('明天下午想去 Berkeley 走走'), [], 'a bare city never names an entity');
+  const santana = evidence('Santana Row 那个玻璃南瓜展这周六还有吗？几点开门？', { state: { date: '2026-10-10' } });
+  assert.equal(keys(santana)[0], 'event:santana-row-glass-pumpkin-2026');
+  assert.equal(santana.items[0].status, '已结束'); assert.equal(santana.items[0].mismatch, 'date_mismatch');
+  assert.ok(keys(santana).includes('event:los-gatos-magical-glass-pumpkin-2026'), 'a current similar option is offered');
+});
+
+test('county-aware city recall: San Jose finds the Santa Clara County line; Fremont newcomers get the ACWD directory section', () => {
+  const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动', { state: { goal: 'discover', city: 'San Jose' } });
+  assert.ok(sanJose.items.some(item => /408-350-3200/.test(item.text)), 'Santa Clara County AAA line');
+  const fremont = evidence('我刚搬到 Fremont，第一周要办哪些事？', { state: { goal: 'newcomer', city: 'Fremont' } });
+  assert.ok(fremont.items.some(item => /ACWD|Alameda County Water/.test(item.text)));
+  const berkeley = evidence('明天下午想去 Berkeley 走走', { state: { city: 'Berkeley', date: '2026-10-09' } });
+  assert.ok(keys(berkeley).includes('place:berkeley'));
+  assert.ok(berkeley.items.every(item => !/household-bills|farmers-market/.test(item.id)), 'a shared bigram (下午) no longer pulls unrelated guides');
+  const food = evidence('加一个吃饭的地方，两个人预算 50 刀', { state: { city: 'Berkeley', date: '2026-10-09' } });
+  assert.ok(keys(food).some(key => /top-dog|hoagies|cere-tea/.test(key)), 'Berkeley food openings are recalled');
+});
+
+test('offers and openings are indexed in both locales, inside the asked city or region; every item is at most 400 characters', () => {
+  const museums = evidence('Any free museum days in SF this month?', { locale: 'en', state: { city: 'San Francisco' } });
+  assert.ok(keys(museums).includes('offer:sfmoma-family-oct25'));
+  assert.ok(!keys(museums).includes('offer:sonoma-county-museum-family-oct10'), 'a Santa Rosa offer is not an SF answer');
+  assert.ok(museums.items.length <= 10);
+  for (const result of [museums, evidence('蓝天使这周末飞吗'), evidence('IKEA 热饮要会员吗')]) for (const item of result.items) {
+    assert.ok(item.text.length <= 400, item.id); assert.match(item.page || '', /^https:\/\//);
+    assert.doesNotMatch(item.when || '', /20\d\d-\d\d-\d\d/);
+  }
+  const pastPage = evidence('还有吗', { currentPath: '/events/santana-row-glass-pumpkin-2026' });
+  assert.ok(!keys(pastPage).includes('event:santana-row-glass-pumpkin-2026'), 'the page itself is currentPage, not an item');
+  assert.ok(keys(pastPage).includes('event:los-gatos-magical-glass-pumpkin-2026'), 'retrieval follows the page subject');
+});
+
+test('a member asking to open or re-check an official page keeps the agent loop; a guest asking the same gets one site-only call', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '按站内资料回答。' })) });
+  const member = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.equal(member.route.path, 'agent'); assert.equal(member.route.reason, 'live_web'); assert.ok(sent[0].tools.length > 2);
+  sent.length = 0;
+  const guest = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件');
+  assert.equal(guest.route.path, 'fast'); assert.equal(sent[0].tools, undefined);
+});
+
+test('English requests to open an official page also keep the agent loop for a member', async () => {
+  const { assistant } = assistantWith({ respond: () => reply(fast({ lead: 'From the site record.' })) });
+  for (const text of ['Please open the official Fleet Week page and check what time the Blue Angels fly on Saturday.', 'Can you verify on the official site whether RSVP is required?']) {
+    const member = await run(assistant, text, { locale: 'en', searchMode: 'smart', member: true });
+    assert.equal(member.route.path, 'agent', text); assert.equal(member.route.reason, 'live_web');
+  }
+  const plain = await run(assistant, 'What is the official name of the Exploratorium?', { locale: 'en', searchMode: 'smart', member: true });
+  assert.equal(plain.route.path, 'fast');
+});
+
+test('v2 read_source opens the official page behind an evidence ref, never the BAYLINK page, and the agent is told to read it', async () => {
+  const fetched = [];
+  let officialItem;
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '2' },
+    sourceFetch: async source => { fetched.push(source.url); return { text: 'Library cards: bring a photo ID and proof of a current California address. eCards are available online.', links: [] }; },
+    webSearch: async () => ({ answer: '', sources: [], candidates: [], checkedAt: new Date(NOW).toISOString() }),
+    respond: (body, count) => {
+      if (count === 1) {
+        officialItem = JSON.parse(body.messages[0].content[0].text).evidence.find(item => item.official);
+        return reply(message([{ type: 'tool_use', id: 'tool-1', name: 'read_source', input: { sourceId: officialItem.ref } }], 'tool_use'));
+      }
+      return reply(fast({ lead: '带照片证件和加州地址证明。', points: [{ text: `官方页面列明要带照片证件和地址证明 [[${officialItem.ref}]]`, cardIds: [] }] }));
+    } });
+  const result = await run(assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.equal(result.route.path, 'agent'); assert.equal(sent.length, 2);
+  assert.ok(officialItem, 'an evidence item carries its official URL');
+  assert.equal(fetched.length, 1); assert.ok(!/baylink\.us/.test(fetched[0]), fetched[0]);
+  assert.equal(new URL(fetched[0]).hostname, new URL(officialItem.official).hostname);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /open or re-check an official page/);
+  assert.match(sent[0].tools.find(row => row.name === 'read_source').description, /evidence ref/);
+  const toolResult = sent[1].messages.find(row => row.role === 'user' && row.content[0]?.type === 'tool_result');
+  assert.match(JSON.stringify(toolResult), /proof of a current California address/);
+  assert.match(JSON.stringify(toolResult), /page-read/);
+});
+
+test('the v2 agent starts from the server web pre-search (summary and sources), and v1 tool text is unchanged', async () => {
+  const { assistant, sent } = assistantWith({
+    webSearch: async () => ({ answer: 'BART reports normal service today; one elevator outage at Powell.', sources: [{ title: 'BART advisories', url: 'https://www.bart.gov/schedules/advisories', text: 'No delays reported.' }], candidates: [], checkedAt: new Date(NOW).toISOString() }),
+    respond: () => reply(fast({ lead: 'BART 今天正常运行。' })) });
+  const result = await run(assistant, '今天 BART 有没有停运或者大面积延误？', { searchMode: 'smart', member: true });
+  assert.equal(result.route.path, 'agent'); assert.equal(sent.length, 1);
+  const user = JSON.parse(sent[0].messages[0].content[0].text);
+  assert.match(user.webResearch.results[0].summary, /normal service/);
+  assert.equal(user.webResearch.status, 'completed');
+  assert.equal(user.webResearch.sources[0].url, 'https://www.bart.gov/schedules/advisories');
+  assert.match(user.webResearch.sources[0].id, /^s-[0-9a-f]{16}$/);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /webResearch holds this run's web search/);
+  // v1 keeps its own read_source text.
+  const v1 = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, respond: () => reply(message([{ type: 'text', text: JSON.stringify({ answer: 'ok', candidateIds: [], followups: [], coverage: [] }) }])) });
+  await run(v1.assistant, '帮我打开 Fremont 图书馆办卡的官方页面，看看要带什么证件', { searchMode: 'smart', member: true });
+  assert.match(v1.sent[0].tools.find(row => row.name === 'read_source').description, /^Read an already-discovered source page by its source ID/);
+});
+
+test('a how-to question keeps to its topic: DMV questions get the driver-licence guide, never a yoga class or a museum that only shares 预约', () => {
+  for (const [text, locale] of [['加州驾照怎么考，要预约吗', 'zh-Hans'], ['加州駕照筆試可以考中文嗎？要先預約嗎？', 'zh-Hant']]) {
+    assert.deepEqual(queryAliases(text).ids, ['dmv'], text);
+    const result = evidence(text, { locale });
+    assert.ok(result.items.some(item => item.kind === 'guide' && /驾照与 ID/.test(item.title)), text);
+    for (const item of result.items) assert.match(`${item.title}\n${item.text}`, /[驾駕]照|DMV|路考|[笔筆]试/i, `${text}: ${item.title}`);
+    assert.ok(!result.items.some(item => /瑜伽|书法|OMCA|报税/.test(item.title)), text);
+  }
+  // Topics without a subject pattern (seniors, museums, …) are not gated.
+  assert.equal(queryAliases('带老人去哪里玩').onSubject, null);
+  assert.equal(queryAliases('养老金怎么查').onSubject('a classic mission'), false);
+  assert.equal(queryAliases('养老金怎么查').onSubject('my Social Security account'), true);
+});
+
+test('v2 answers "帮我订机票" by saying BayBay cannot book (no city question); v1 keeps its clarification', async () => {
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '我没法帮你订机票，请在航空公司官网预订。', points: [{ text: '飞北京的机票请到航空公司官网比价预订。', cardIds: [] }] })) });
+  const result = await run(assistant, '帮我订一张下周五从旧金山飞北京的机票');
+  assert.equal(result.route.path, 'fast'); assert.equal(sent.length, 1);
+  const rules = sent[0].messages.filter(row => row.role === 'system').map(row => row.content[0].text).join(' ');
+  assert.match(rules, /cannot book, reserve, pay for or hold anything/);
+  // Naming the declined destination is not a foreign recommendation.
+  assert.match(result.answer, /没法帮你订机票/); assert.match(result.answer, /飞北京的机票/);
+  assert.ok(!result.research.warnings.includes('answer_scope_rejected'));
+  assert.throws(() => assertSearchScope({ answer: '北京的活动很多。' }, { query: '这周末去哪', locale: 'zh-Hans' }), { reason: 'outside_bay_area' });
+  // Planning a day is not booking.
+  sent.length = 0;
+  await run(assistant, '帮我订个周六在 Berkeley 的行程，不开车');
+  assert.ok(!sent.some(body => JSON.stringify(body.messages).includes('cannot book, reserve')));
+  const v1 = assistantWith({ config: { BAYBAY_ENGINE: 'v1' }, respond: () => { throw new Error('v1 asks for a city without a model call'); } });
+  const legacy = await run(v1.assistant, '帮我订一张下周五从旧金山飞北京的机票');
+  assert.match(legacy.answer, /请确认一个湾区城市/); assert.equal(v1.sent.length, 0);
+});
+
+// ---------------------------------------------------------------- review fixes (10-09)
+
+test('points[].cardIds are keys of localMatches: a place with a guide page becomes its guide card, a venue with no BAYLINK page is left out', async () => {
+  const refOf = (body, pattern) => JSON.parse(body.messages[0].content[0].text).evidence.find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
+  let refs = {};
+  const { assistant } = assistantWith({ respond: body => {
+    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org/) };
+    return reply(refs.garden
+      ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
+      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `King 图书馆有中文馆藏和活动 [[${refs.library}]]`, cardIds: [refs.library, refs.sjma] }], candidateIds: [refs.library] }));
+  } });
+  const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
+  assert.ok(refs.garden && refs.tea, JSON.stringify(refs));
+  const shown = result => new Set(result.localMatches.map(card => `${card.kind}:${card.id}`));
+  assert.deepEqual(berkeley.points[0].cardIds, ['guide:berkeley-campus-botanical-garden-half-day'], 'the place is shown as its guide card');
+  assert.deepEqual(berkeley.points[1].cardIds, ['opening:berkeley-cere-tea-opening-2026'], 'an unknown ref is dropped');
+  for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
+  assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
+  const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动');
+  assert.ok(refs.library && refs.sjma, JSON.stringify(refs));
+  assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
+  assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));
+  assert.ok(sanJose.research.warnings.includes('answer_lead_long'), 'a lead over 40 characters is recorded');
+  assert.equal(leadUnits(sanJose.lead), 47); assert.equal(leadUnits('Yes, the Blue Angels fly Saturday [1]', 'en'), 6); assert.equal(leadUnits('会飞：航空展是10月9日至11日 [1]'), 13);
+});
+
+test('a booking request is one addressed to BayBay; shopping questions that say 给我买 are not', async () => {
+  for (const text of ['帮我订一张下周五从旧金山飞北京的机票', '你能不能帮我订酒店', '请你帮我买两张票', '可以帮我订机票吗', 'BayBay，帮我订个餐厅', '给我订一张周六的票', '我想让你帮我订机票',
+    'Can you book a flight to Beijing for me?', 'Please reserve a table for two', 'Could you buy two tickets for us']) assert.equal(isBookingRequest(text), true, text);
+  for (const text of ['老公说要给我买包，湾区哪里有奥特莱斯', '我想给我买个生日蛋糕，哪家好', '给我买点建议吧', '帮我订个周六在 Berkeley 的行程，不开车', '帮我买什么礼物好', '妈妈帮我订了机票，到机场怎么走',
+    'Can you buy tickets at the door?', 'Can you book online for the Exploratorium?', 'Can you book a day plan for Saturday', 'Help me plan a day']) assert.equal(isBookingRequest(text), false, text);
+  const { assistant, sent } = assistantWith({ respond: () => reply(fast({ lead: '可以去 Great Mall 看看。' })) });
+  await run(assistant, '老公说要给我买包，湾区哪里有奥特莱斯');
+  assert.equal(sent.length, 1);
+  assert.ok(!JSON.stringify(sent[0].messages).includes('cannot book, reserve'), 'a shopping question gets no "cannot book" rule');
+});
+
+test('the v2 agent carries the v1 plan and research rules after the user turn; the fast path and system block 1 do not', async () => {
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以安排半天。' })) });
+  const rulesOf = body => body.messages.filter(row => row.role === 'system').map(row => row.content[0].text).join('\n');
+  const guest = await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  assert.equal(guest.route.path, 'agent');
+  const siteRules = rulesOf(sent[0]);
+  for (const pattern of [/Plans and research/, /complete final ordered choice/, /within maxStops/, /fewer suitable stops/, /apply planEdit exactly/, /Weekly hours never guarantee/,
+    /city-only origin/, /admissionFacts/, /Check each traveler/, /Tool failures are unknowns/, /never move a named place to another day/, /one point each/]) assert.match(siteRules, pattern);
+  assert.doesNotMatch(siteRules, /verify_candidate|relatedSources/, 'site-only runs have no source-reading tools');
+  assert.deepEqual(sent[0].system, systemBlocks(), 'block 1 stays frozen');
+  assert.equal(sent[0].messages[0].role, 'user');
+  sent.length = 0;
+  await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车', { searchMode: 'smart', member: true });
+  assert.match(rulesOf(sent[0]), /verify_candidate/); assert.match(rulesOf(sent[0]), /relatedSources/);
+  sent.length = 0;
+  const quick = await run(assistant, '蓝天使这周末飞吗');
+  assert.equal(quick.route.path, 'fast');
+  assert.doesNotMatch(rulesOf(sent[0]), /Plans and research/);
+});
+
+test('reader prose: sf and peninsula codes become names only in a code context; the v2 false-negative template has its own zh-Hant text', async () => {
+  assert.equal(readerProse('这周末 sf 和 peninsula 有免费活动', 'zh-Hans'), '这周末 旧金山 和 半岛 有免费活动');
+  assert.equal(readerProse('在peninsula的南瓜园', 'zh-Hant'), '在半島的南瓜园');
+  assert.equal(readerProse('Events in region: peninsula and (peninsula) and sf', 'en'), 'Events in region: the Peninsula and (the Peninsula) and San Francisco');
+  assert.equal(readerProse('Half Moon Bay is on the peninsula; see sf.gov or SFMOMA.', 'en'), 'Half Moon Bay is on the peninsula; see sf.gov or SFMOMA.');
+  assert.equal(readerProse('先去 sfmoma', 'zh-Hans'), '先去 sfmoma');
+  const { assistant } = assistantWith({ respond: () => reply(fast({ lead: '站內沒有收錄這個活動的後續場次。' })) });
+  const result = await run(assistant, '還有嗎', { currentPath: '/events/santana-row-glass-pumpkin-2026', locale: 'zh-Hant' });
+  assert.ok(result.research.warnings.includes('false_negative_corrected'), 'the Traditional wording 站內沒有 is caught');
+  assert.match(result.answer, /^站內已收錄「/); assert.match(result.answer, /這一場已經結束/); assert.match(result.answer, /（週/);
+  assert.doesNotMatch(result.answer, /站内|这一场|请以/);
+});
+
+test('plan-shaped asks the task state does not classify still reach the v2 agent, as every v1 turn does', async () => {
+  for (const text of ['週六帶孩子在舊金山玩一天，不開車，幫我排行程', 'Plan a Saturday in San Francisco with two kids (4 and 8), no car, at most 3 stops.', '周六想去 Exploratorium 和 California Academy of Sciences，帮我排一下顺序',
+    '周六带老婆和两个孩子去 California Academy of Sciences 玩半天，我有图书馆的 Discover & Go 通行证，全家都免费吗？顺便排一下', 'In what order should we visit the Exploratorium and the Academy?']) assert.equal(asksForPlan(text), true, text);
+  for (const text of ['蓝天使这周末飞吗', '不要排行程，只告诉我门票', 'What does plan a day mean in Chinese?', '排队要多久', '这个活动安排在哪天', '我刚搬到 Fremont，第一周要办哪些事？', 'Any free museum days in SF this month?']) assert.equal(asksForPlan(text), false, text);
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以這樣排。' })) });
+  const result = await run(assistant, '週六帶孩子在舊金山玩一天，不開車，幫我排行程', { locale: 'zh-Hant' });
+  assert.equal(result.route.path, 'agent'); assert.equal(result.route.reason, 'plan_request'); assert.ok(sent[0].tools.some(tool => tool.name === 'create_plan'));
+});
