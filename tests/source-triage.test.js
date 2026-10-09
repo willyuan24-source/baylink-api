@@ -181,6 +181,13 @@ test('the daily call limit and a passed ANTHROPIC_USE_UNTIL both stop paid calls
   assert.deepEqual(await expired.triage.run(), { skipped: 'anthropic-use-until-passed', triaged: 0 });
 });
 
+test('expired sources are never classified', async () => {
+  const store = memoryStore(); const fake = fakeClaude(() => ({ material: true, fields: ['date'], summary_zh: '改期' }));
+  const triage = createSourceTriage({ store, registry: [{ ...source, endDate: '2026-10-01' }], config: ON, now: () => Date.UTC(2026, 9, 9, 15), logger: { info() {}, warn() {} }, items, fetchImpl: fake.fetchImpl });
+  store.rows.set(source.id, { sourceId: source.id, hash: 'f'.repeat(64), reviewStatus: 'pending', pendingChange: { removed: ['a'], added: ['b'], detectedAt: 1 } });
+  assert.equal((await triage.run()).triaged, 0); assert.equal(fake.bodies.length, 0);
+});
+
 test('reordered or duplicated lines are decided without a model call', async () => {
   const { store, service, claude, setLines, advance } = fixture();
   await service.run(); setLines(source.id, [BASE[1], BASE[0], BASE[2], BASE[0]]); advance(); await service.run();
