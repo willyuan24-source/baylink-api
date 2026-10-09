@@ -53,6 +53,7 @@ const { createClientIp } = require('./lib/clientIp');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
+const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
 const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
@@ -253,6 +254,9 @@ const UserSchema = new mongoose.Schema({
   passwordResetTokenHash: String,
   passwordResetExpires: Number,
   passwordResetRequestedAt: Number,
+  // Durable forgot-password ceiling (Bay Area day + emails issued that day); survives restarts.
+  passwordResetRequestDay: String,
+  passwordResetRequestCount: Number,
   passwordResetUsedAt: Number,
   passwordChangedAt: Number,
   sessionsRevokedAt: Number,
@@ -534,6 +538,8 @@ const AccountAuthChallenge = createAccountAuthChallengeModel(mongoose, injectedM
 const ConversationResponseMetric = createConversationResponseMetricModel(mongoose, injectedModels);
 const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModels);
 const contactAccessQuota = createContactAccessQuota({ Model: ContactAccessQuota, secret: config.JWT_SECRET, now: options.contactAccessNow || Date.now });
+const SmsQuota = createSmsQuotaModel(mongoose, injectedModels);
+const smsQuota = createSmsQuota({ Model: SmsQuota, secret: config.JWT_SECRET, config, now: options.smsQuotaNow || Date.now });
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -876,6 +882,9 @@ const authLimiter = createRateLimiter();
 const getClientIp = clientIp;
 
 const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
+// Login attempts on one account from all visitors together per 15 minutes (each visitor
+// is separately held to 10 attempts overall and 8 per account).
+const LOGIN_ACCOUNT_ANY_MAX = 100;
 
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
   return authLimiter.check(key, { windowMs, maxRequests });
@@ -1397,6 +1406,8 @@ const SENSITIVE_USER_FIELDS = [
   'passwordResetExpires',
   'passwordResetExpiresAt',
   'passwordResetRequestedAt',
+  'passwordResetRequestDay',
+  'passwordResetRequestCount',
   'passwordResetUsedAt',
   'passwordChangedAt',
   'phoneVerificationCodeHash',
@@ -1496,6 +1507,11 @@ const persistPhoneVerificationState = async (user, normalized, plainCode) => {
   await user.save();
 };
 
+const PHONE_SHARED_LIMIT_MSG = '这个手机号已在其他账号验证过，不能再用于验证新账号。如需帮助请联系我们。';
+// Counts OTHER accounts (any status, so a banned account still counts) holding this number verified.
+const phoneSharedTooWidely = async (user, phoneNormalized) => !!phoneNormalized
+  && await User.countDocuments({ phoneNormalized, isPhoneVerified: true, id: { $ne: user.id } }) >= MAX_OTHER_VERIFIED_ACCOUNTS;
+
 const startPhoneVerificationForUser = async (user, phoneInput) => {
   const normalized = normalizePhone(phoneInput);
   if (!normalized) return { ok: false, status: 400, error: '请输入有效的美国手机号。' };
@@ -1507,8 +1523,17 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
   const dayWindow = { windowMs: 86400000, maxRequests: 5 };
   if (!checkAuthRateLimit(`phone-user:${user.id}`, dayWindow) || !checkAuthRateLimit(`phone-number:${normalized.phoneNormalized}`, dayWindow)) return { ok: false, status: 429, error: '今日验证码发送次数已达上限。' };
 
+  // SEC-09: a number may be shared (families), but not verified on a third account.
+  if (await phoneSharedTooWidely(user, normalized.phoneNormalized)) return { ok: false, status: 409, code: 'PHONE_SHARED_LIMIT', error: PHONE_SHARED_LIMIT_MSG };
+
   const plainCode = generatePhoneCode();
   const hasTwilio = !!(twilioClient && TWILIO_PHONE);
+
+  if (hasTwilio || canReturnDevPhoneCode()) {
+    // Durable per-number, per-account and site-wide daily ceilings, reserved before any send.
+    const quota = await smsQuota.claim({ userId: user.id, phone: normalized.phoneNormalized });
+    if (!quota.ok) return { ok: false, status: quota.status, code: quota.code, error: quota.error };
+  }
 
   if (hasTwilio) {
     try {
@@ -1553,6 +1578,14 @@ const verifyPhoneCodeForUser = async (user, codeInput) => {
     return { ok: false, status: 400, error: '验证码不正确或已过期' };
   }
 
+  // Re-check at completion: other accounts may have verified this number since the code was sent.
+  if (await phoneSharedTooWidely(user, user.phoneNormalized)) {
+    user.phoneVerificationCodeHash = undefined;
+    user.phoneVerificationExpiresAt = undefined;
+    await user.save();
+    return { ok: false, status: 409, code: 'PHONE_SHARED_LIMIT', error: PHONE_SHARED_LIMIT_MSG };
+  }
+
   user.isPhoneVerified = true;
   user.phoneVerifiedAt = Date.now();
   user.phoneVerificationCodeHash = undefined;
@@ -1564,6 +1597,33 @@ const verifyPhoneCodeForUser = async (user, codeInput) => {
 };
 
 const FORGOT_PASSWORD_MESSAGE = '如果这个邮箱已注册，我们会发送重设密码链接。';
+const PASSWORD_RESET_COOLDOWN_MS = 5 * 60 * 1000;
+const PASSWORD_RESET_DAILY_LIMIT = 5;
+
+// Issues a fresh reset token only when the durable per-account cooldown and Bay Area
+// daily ceiling allow it. The previous request time is the optimistic-concurrency
+// guard, so two concurrent requests cannot both pass. Returns null when throttled.
+const reservePasswordReset = async (user) => {
+  const at = Date.now();
+  const day = bayAreaDate(() => at);
+  const previous = Number(user.passwordResetRequestedAt) || 0;
+  const issuedToday = user.passwordResetRequestDay === day ? Number(user.passwordResetRequestCount) || 0 : 0;
+  if (at - previous < PASSWORD_RESET_COOLDOWN_MS || issuedToday >= PASSWORD_RESET_DAILY_LIMIT) return null;
+  const plainToken = generateResetToken();
+  const reserved = await User.findOneAndUpdate(
+    {
+      id: user.id, accountDeletionPending: { $ne: true },
+      ...(previous ? { passwordResetRequestedAt: previous } : { $or: [{ passwordResetRequestedAt: { $exists: false } }, { passwordResetRequestedAt: null }, { passwordResetRequestedAt: 0 }] }),
+    },
+    {
+      $set: { passwordResetTokenHash: hashResetToken(plainToken), passwordResetExpires: at + 30 * 60 * 1000, passwordResetRequestedAt: at,
+        passwordResetRequestDay: day, passwordResetRequestCount: issuedToday + 1 },
+      $unset: { passwordResetUsedAt: '' },
+    },
+    { new: true },
+  );
+  return reserved ? { plainToken } : null;
+};
 
 const resend = !isTest && config.RESEND_API_KEY ? new Resend(config.RESEND_API_KEY) : null;
 
@@ -1694,8 +1754,19 @@ const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, c
   holdAccount: id => holdAccountOperation(User, id),
   sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });
 accountTotp.register(app, authenticateToken);
+// N2 "only if still unread", asked by the notification worker right before a send. An
+// explicit false cancels the queued notice; topics without a read state keep it.
+const notificationStillUnread = async ({ topic, recipientId, sourceId, since }) => {
+  if (topic === 'message') return !!await Message.exists({ conversationId: sourceId, senderId: { $ne: recipientId }, readBy: { $ne: recipientId } });
+  if (topic === 'contact_request') return !!await ContactRequest.exists({ postId: sourceId, postOwnerId: recipientId, status: { $in: ['pending', 'auto_sent'] }, createdAt: { $gte: since } });
+  if (topic === 'comment') {
+    const post = await Post.findOne({ id: sourceId, isDeleted: false }).select('comments').lean();
+    return !!post && (post.comments || []).some(comment => !comment.isDeleted && comment.authorId !== recipientId && Number(comment.createdAt) >= since);
+  }
+  return true;
+};
 const notifications = registerNotifications(app, { mongoose, models: injectedModels, User, UserBlock, authenticateToken,
-  holdAccount: id => holdAccountOperation(User, id),
+  holdAccount: id => holdAccountOperation(User, id), stillUnread: notificationStillUnread,
   checkRateLimit: checkAuthRateLimit, getClientIp, config, isTest, now: options.notificationNow,
   sendEmail: isTest ? options.notificationEmail : (resend && config.RESEND_FROM_EMAIL ? async ({ to, subject, text, idempotencyKey }) => {
     const { data, error } = await resend.emails.send({ from: config.RESEND_FROM_EMAIL, to, subject, text }, { idempotencyKey });
@@ -1806,12 +1877,12 @@ app.post('/api/auth/verify-phone', authenticateToken, async (req, res) => {
     const { phone, code } = req.body;
     if (phone && !code) {
       const result = await startPhoneVerificationForUser(req.user, phone);
-      if (!result.ok) return res.status(result.status).json({ error: result.error });
+      if (!result.ok) return res.status(result.status).json({ error: result.error, ...(result.code ? { code: result.code } : {}) });
       return res.json({ success: true, ...result.payload });
     }
     if (code) {
       const result = await verifyPhoneCodeForUser(req.user, code);
-      if (!result.ok) return res.status(result.status).json({ error: result.error });
+      if (!result.ok) return res.status(result.status).json({ error: result.error, ...(result.code ? { code: result.code } : {}) });
       return res.json({ success: true, ...result.payload });
     }
     return res.status(400).json({ error: '无效请求' });
@@ -1868,7 +1939,12 @@ app.post('/api/auth/login', async (req, res) => {
     }
     const { email, password } = req.body;
     const trimmedEmail = String(email || '').trim();
-    if (!checkAuthRateLimit(`login-account:${trimmedEmail.toLowerCase()}`, { windowMs: 15 * 60 * 1000, maxRequests: 8 })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    // N6: key the per-account limiter by account AND visitor so a stranger cannot lock an
+    // account (e.g. admin) out everywhere; a high cross-visitor ceiling still caps
+    // distributed guessing against one account.
+    const accountKey = trimmedEmail.toLowerCase();
+    if (!checkAuthRateLimit(`login-account:${accountKey}:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 8 })
+      || !checkAuthRateLimit(`login-account-any:${accountKey}`, { windowMs: 15 * 60 * 1000, maxRequests: LOGIN_ACCOUNT_ANY_MAX })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     let user = null;
     if (trimmedEmail === 'admin') {
       user = await User.findOne({ email: 'admin' });
@@ -1917,13 +1993,11 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     }
     let devResetLink;
     let devEmailError;
-    if (user && (!user.passwordResetRequestedAt || Date.now() - user.passwordResetRequestedAt >= 60000)) {
-      const plainToken = generateResetToken();
-      user.passwordResetTokenHash = hashResetToken(plainToken);
-      user.passwordResetExpires = Date.now() + 30 * 60 * 1000;
-      user.passwordResetRequestedAt = Date.now();
-      user.passwordResetUsedAt = undefined;
-      await user.save();
+    // SEC-08: the cooldown and daily ceiling live on the User document, so a deploy or
+    // restart (which clears the in-memory limiters above) cannot reopen them.
+    const reserved = user && await reservePasswordReset(user);
+    if (reserved) {
+      const { plainToken } = reserved;
 
       const resetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
       const hasResendConfig = Boolean(config.RESEND_API_KEY && config.RESEND_FROM_EMAIL);
@@ -2194,7 +2268,7 @@ app.post('/api/users/me/phone/start', authenticateToken, async (req, res) => {
   try {
     const { phone } = req.body || {};
     const result = await startPhoneVerificationForUser(req.user, phone);
-    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    if (!result.ok) return res.status(result.status).json({ error: result.error, ...(result.code ? { code: result.code } : {}) });
     res.json(result.payload);
   } catch (e) {
     res.status(500).json({ error: '操作失败，请稍后再试' });
@@ -2205,7 +2279,7 @@ app.post('/api/users/me/phone/verify', authenticateToken, async (req, res) => {
   try {
     const { code } = req.body || {};
     const result = await verifyPhoneCodeForUser(req.user, code);
-    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    if (!result.ok) return res.status(result.status).json({ error: result.error, ...(result.code ? { code: result.code } : {}) });
     res.json(result.payload);
   } catch (e) {
     res.status(500).json({ error: '操作失败，请稍后再试' });
@@ -2787,17 +2861,25 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
 
     const rawParentId = String(req.body?.parentId || '').trim();
     let parentId = null;
+    let parentAuthorId = null;
     if (rawParentId) {
       const parent = findCommentOnPost(post, rawParentId);
       if (!parent) return res.status(404).json({ error: '回复的评论不存在' });
       if (parent.isDeleted) return res.status(400).json({ error: '无法回复已删除的评论' });
       if (parent.parentId) return res.status(400).json({ error: '不支持回复二级评论' });
       parentId = parent.id;
+      parentAuthorId = parent.authorId || null;
     }
 
     const comment = createCommentDoc(req.user, normalized.content, parentId);
     post.comments.push(comment);
     await post.save();
+
+    // Opt-in `comment` notices for the post author and the replied-to commenter (never the
+    // commenter). The queue keeps only a generic notice and the post link, never the text.
+    for (const recipientId of new Set([post.authorId, parentAuthorId].filter(id => id && id !== req.user.id))) {
+      try { await notifications.enqueueEvent({ topic: 'comment', recipientId, actorId: req.user.id, sourceId: post.id, eventId: comment.id, createdAt: comment.createdAt }); } catch { /* The comment remains saved if the queue fails. */ }
+    }
 
     const payload = await buildCommentsApiPayload(post);
     res.json({ comment, ...payload });
@@ -4940,7 +5022,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -4967,6 +5049,7 @@ async function startProduction(config = process.env) {
   await application.models.AiGovernance.init();
   await application.models.AiRuntimeMetric.init();
   await application.models.ContactAccessQuota.init();
+  await application.models.SmsQuota.init();
   await application.models.AccountAuthChallenge.init();
   await application.models.ConversationResponseMetric.init();
   for (const Model of Object.values(application.notifications.models)) await Model.init();
