@@ -109,6 +109,14 @@ Gold fields (`scripts/eval/gold.mjs`): `expectRoute`, `mustInclude` (string = re
 
 When the pinned date moves, re-date the golds first ("this weekend", "tomorrow", ended events), then change `pinnedNow` in every casebook.
 
+**API-BB-QUALITY books (set `quality`, pinned Mon 2026-10-12 09:00 PT).** Block I (9 multi-turn items, 21 turns): the BB-LIVE 10-11 follow-up conversations W1, W2, M1, W3 and L2 turn for turn, plus new follow-ups that must carry child ages, budget and its scope, the part of the day, party size and transport, and turn 排/安排 into a plan card. Block J (15 items): professional-topic routing (SSN, Medi-Cal with a green card, DMV, antibiotics, H-1B, deposit), false negatives, a no-city clarifier, the newcomer checklist, English cards and a thin-evidence lawyer ask. Extra gold fields: `state` (the returned task state, arrays as sets, `null` = unset), `needsPlan`, `routeReason`, `safetyTopic` (`null` = no professional guard), `noDrafts`, `cardsLocale: 'en'`. Run them separately from the 10-08 books:
+
+```
+ANTHROPIC_WORKSPACE_ID=<eval workspace> node --env-file=<private env file> scripts/baybay-eval-local.mjs --set quality --now 2026-10-12T09:00:00-07:00 --live --budget-usd 1.3
+```
+
+The budget must exceed the expected spend by the judge's per-call reserve ($0.50 for Opus), or the judge stops early.
+
 ## Metrics
 
 | Metric | Definition |
