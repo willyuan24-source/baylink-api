@@ -106,6 +106,10 @@ test('turn rules: follow-ups keep every condition and choose; free asks list eve
   assert.equal(nearbyClarifier('附近有什么好吃的', { state: { city: 'Fremont' } }), null);
   assert.equal(nearbyClarifier('附近有什么好吃的', { state: {}, hasPage: true }), null);
   assert.match(nearbyClarifier('Any good food near me?', { state: {}, locale: 'en' }), /Which Bay Area city/);
+  // A named anchor is not asked again: 斯坦福附近, SFO 附近, near Stanford.
+  for (const message of ['斯坦福附近有什么好吃的', 'SFO 附近有什么吃的', 'near Stanford, where to eat?']) assert.equal(nearbyClarifier(message, { state: {} }), null, message);
+  // "这个活动免费吗？" about one item does not get the list-every-free-record rule.
+  assert.deepEqual(turnRules({ message: '这个活动免费吗？', state: { goal: 'information' } }), []);
 });
 
 // ---- the assistant (BAYBAY_ENGINE=v2, a local provider fixture) --------------------

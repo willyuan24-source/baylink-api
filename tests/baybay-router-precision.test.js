@@ -38,6 +38,7 @@ const TABLE = [
   ['房東不退押金，可以去小額法庭嗎？', ['legal']],
   ['My landlord kept my deposit. Can I sue him in small claims court?', ['legal']],
   ['我想找律师写遗嘱', ['legal']],
+  ['向老师报告他的情况', []],
   // Still not professional: life stages, places, shopping and plain how-tos.
   ['我们一家刚移民来湾区，第一个月要先办哪些事？', []],
   ['周末带刚移民来的爸妈去哪玩', []],
