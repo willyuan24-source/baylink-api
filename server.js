@@ -1545,9 +1545,13 @@ const EMAIL_FIRST_MSG = '请先验证邮箱，再验证手机号：在"我的 �
 
 const startPhoneVerificationForUser = async (user, phoneInput) => {
   const normalized = normalizePhone(phoneInput);
-  if (!normalized) return { ok: false, status: 400, error: '请输入有效的美国手机号。' };
+  const invalidPhone = { ok: false, status: 400, code: 'PHONE_INVALID', error: '请输入有效的美国手机号。' };
+  if (!normalized) return invalidPhone;
   // G76: United States numbers only (lib/usPhone.js: not Canada, the non-US Caribbean or toll-free/premium codes).
-  if (usPhoneProblem(normalized.phoneNormalized)) return { ok: false, status: 400, code: 'PHONE_NOT_US', error: '目前只能验证美国手机号（+1，美国区号）。' };
+  // A number that is not a valid NANP number at all (mistyped, N11, reserved code) is a typo, not a foreign number.
+  const phoneProblem = usPhoneProblem(normalized.phoneNormalized);
+  if (phoneProblem === 'format') return invalidPhone;
+  if (phoneProblem) return { ok: false, status: 400, code: 'PHONE_NOT_US', error: '目前只能验证美国手机号（+1，美国区号）。' };
   if (smsNeedsVerifiedEmail() && !(await notifications.isEmailVerified(user.id))) return { ok: false, status: 409, code: 'EMAIL_VERIFICATION_REQUIRED', error: EMAIL_FIRST_MSG };
 
   if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {

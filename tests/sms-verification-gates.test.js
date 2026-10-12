@@ -55,11 +55,16 @@ test('usPhoneProblem: US states, DC and territories pass; Canada, the non-US Car
   assert.ok(CANADA.every(code => !us.includes(code)) && CARIBBEAN.every(code => !us.includes(code)));
 });
 
-test('phone verification refuses non-US numbers before any SMS budget is spent; US and territory numbers proceed', async t => {
+test('phone verification refuses non-US numbers (PHONE_NOT_US) and mistyped ones (PHONE_INVALID) before any SMS budget is spent; US and territory numbers proceed', async t => {
   const f = await start(t, { users: [person('owner'), person('second'), person('third')] });
   for (const phone of ['(876) 555-0101', '+1 604 555 0101', '18095550101', '+1 800 555 0101', '+1 441 555 0101']) {
     const refused = await f.send('owner', phone);
     assert.equal(refused.status, 400, phone); assert.equal(refused.data.code, 'PHONE_NOT_US', phone); assert.equal(refused.data.devCode, undefined);
+  }
+  // A mistyped or impossible number is not a foreign one: PHONE_INVALID, "enter a valid US number".
+  for (const phone of ['(415) 911-0101', '0155550101', '1-115-555-0101', '(495) 555-0101', '(370) 555-0101', '415555010', 'not a phone']) {
+    const invalid = await f.send('owner', phone);
+    assert.equal(invalid.status, 400, phone); assert.equal(invalid.data.code, 'PHONE_INVALID', phone); assert.equal(invalid.data.error, '请输入有效的美国手机号。', phone);
   }
   assert.equal(f.quotaRows().length, 0);
   assert.equal((await f.send('owner', '(415) 555-0101')).status, 200);
