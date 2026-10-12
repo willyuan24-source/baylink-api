@@ -55,6 +55,7 @@ const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } =
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
 const { createAuthLimitModel, createLoginGuard } = require('./lib/loginGuard');
+const { usPhoneProblem } = require('./lib/usPhone');
 const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
@@ -117,7 +118,8 @@ if (!isTest) cloudinary.config({
 const TWILIO_SID = config.TWILIO_ACCOUNT_SID;
 const TWILIO_TOKEN = config.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE = config.TWILIO_PHONE_NUMBER;
-const twilioClient = !isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null;
+// options.twilioClient: a recording fake in tests (API-SEC G104); never a real client in tests.
+const twilioClient = options.twilioClient || (!isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null);
 
 if (!twilioClient && !isTest) console.warn('Twilio 未配置；生产短信验证不可用，开发测试码仅在显式开启时返回。');
 
@@ -1525,9 +1527,23 @@ const PHONE_SHARED_LIMIT_MSG = '这个手机号已在其他账号验证过，不
 const phoneSharedTooWidely = async (user, phoneNormalized) => !!phoneNormalized
   && await User.countDocuments({ phoneNormalized, isPhoneVerified: true, id: { $ne: user.id } }) >= MAX_OTHER_VERIFIED_ACCOUNTS;
 
+// G76: a verification SMS only for an account whose e-mail is verified. SMS_REQUIRE_VERIFIED_EMAIL
+// = true / false; unset = on whenever the site can send the verification e-mail (notification
+// delivery on), so members are never asked for a step the site cannot complete.
+const smsNeedsVerifiedEmail = () => {
+  const setting = String(config.SMS_REQUIRE_VERIFIED_EMAIL ?? '').trim().toLowerCase();
+  if (setting === 'true') return true;
+  if (setting === 'false') return false;
+  return notifications.emailVerificationDeliverable();
+};
+const EMAIL_FIRST_MSG = '请先验证邮箱，再验证手机号：在"我的 → 通知设置"里点"验证邮箱"，打开邮件里的链接后再回来。';
+
 const startPhoneVerificationForUser = async (user, phoneInput) => {
   const normalized = normalizePhone(phoneInput);
   if (!normalized) return { ok: false, status: 400, error: '请输入有效的美国手机号。' };
+  // G76: United States numbers only (lib/usPhone.js: not Canada, the non-US Caribbean or toll-free/premium codes).
+  if (usPhoneProblem(normalized.phoneNormalized)) return { ok: false, status: 400, code: 'PHONE_NOT_US', error: '目前只能验证美国手机号（+1，美国区号）。' };
+  if (smsNeedsVerifiedEmail() && !(await notifications.isEmailVerified(user.id))) return { ok: false, status: 409, code: 'EMAIL_VERIFICATION_REQUIRED', error: EMAIL_FIRST_MSG };
 
   if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
     return { ok: false, status: 429, error: '验证码发送太频繁，请稍后再试。' };
@@ -1539,16 +1555,21 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
   // SEC-09: a number may be shared (families), but not verified on a third account.
   if (await phoneSharedTooWidely(user, normalized.phoneNormalized)) return { ok: false, status: 409, code: 'PHONE_SHARED_LIMIT', error: PHONE_SHARED_LIMIT_MSG };
 
-  const plainCode = generatePhoneCode();
-  const hasTwilio = !!(twilioClient && TWILIO_PHONE);
-
-  if (hasTwilio || canReturnDevPhoneCode()) {
-    // Durable per-number, per-account and site-wide daily ceilings, reserved before any send.
-    const quota = await smsQuota.claim({ userId: user.id, phone: normalized.phoneNormalized });
-    if (!quota.ok) return { ok: false, status: quota.status, code: quota.code, error: quota.error };
+  // Which path would deliver the code. None: refuse before spending any SMS budget.
+  const channel = twilioClient && TWILIO_PHONE ? 'twilio' : canReturnDevPhoneCode() ? 'dev' : null;
+  if (!channel) {
+    if (!isTest) console.error('Twilio 未配置，无法发送短信验证码');
+    return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
   }
 
-  if (hasTwilio) {
+  // G104 / CODE-API-04: the durable per-number, per-account, new-account and site-wide daily
+  // ceilings are claimed here, before the send branch, whatever the delivery path. Every path
+  // below sends only after this claim succeeded.
+  const quota = await smsQuota.claim({ userId: user.id, phone: normalized.phoneNormalized, newAccount: smsQuota.isNewAccount(user) });
+  if (!quota.ok) return { ok: false, status: quota.status, code: quota.code, error: quota.error };
+
+  const plainCode = generatePhoneCode();
+  if (channel === 'twilio') {
     try {
       await sendPhoneVerificationViaTwilio(normalized.phoneNormalized, plainCode);
       await persistPhoneVerificationState(user, normalized, plainCode);
@@ -1561,13 +1582,8 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
     }
   }
 
-  if (canReturnDevPhoneCode()) {
-    await persistPhoneVerificationState(user, normalized, plainCode);
-    return { ok: true, payload: { message: '开发测试验证码已生成，未发送短信。', devCode: plainCode } };
-  }
-
-  if (!isTest) console.error('Twilio 未配置，无法发送短信验证码');
-  return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
+  await persistPhoneVerificationState(user, normalized, plainCode);
+  return { ok: true, payload: { message: '开发测试验证码已生成，未发送短信。', devCode: plainCode } };
 };
 
 const verifyPhoneCodeForUser = async (user, codeInput) => {
