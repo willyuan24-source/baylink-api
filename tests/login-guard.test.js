@@ -155,3 +155,67 @@ test('server: admin sign-in failures (password and authenticator) are counted, a
   const ok = await post('/api/auth/login/totp', { challengeToken: challenge.data.challengeToken, totpCode: totpAt(shared, Date.now()) }, '198.51.100.33');
   assert.equal(ok.status, 200); assert.ok(ok.data.token);
 });
+
+test('admin security events: one owner e-mail per change (authenticator, recovery codes, password, revoke); unknown kinds send nothing', async () => {
+  const f = guardFixture({ config: LIVE_ALERTS });
+  const sent = await f.guard.adminSecurityEvent({ kind: 'totp-enabled', accountId: 'admin-id' });
+  assert.equal(sent.sent, true); assert.match(sent.id, /^admin-event:totp-enabled:\d+$/);
+  assert.match(f.mail[0].subject, /管理员账号刚刚开启了验证器/);
+  assert.match(f.mail[0].text, /如果不是你/); assert.match(f.mail[0].text, /set-admin-password\.js --apply/);
+  assert.doesNotMatch(f.mail[0].text, /admin-id/);
+  for (const kind of ['totp-disabled', 'recovery-codes-replaced', 'password-changed', 'sessions-revoked']) assert.equal((await f.guard.adminSecurityEvent({ kind, accountId: 'admin-id' })).sent, true, kind);
+  assert.equal(f.mail.length, 5);
+  assert.deepEqual(await f.guard.adminSecurityEvent({ kind: 'something-else', accountId: 'admin-id' }), { sent: false, reason: 'unknown-event' });
+  assert.equal(f.mail.length, 5);
+});
+
+test('server: password change and session revoke on an admin account raise the owner notice (logged, never sent, in tests); members raise none', async t => {
+  const lines = [];
+  const models = createMemoryModels({ User: [person('admin', { email: 'admin', role: 'admin' }), person('member')] });
+  models.User = accountMemory(models.User.rows.map(row => ({ ...row })));
+  models.AccountAuthChallenge = accountMemory();
+  const sent = [];
+  const application = createApplication({ models, securityAlertEmail: async message => { sent.push(message); },
+    securityAlertLog: { info: line => lines.push(line), error: (...parts) => lines.push(parts.join(' ')) },
+    config: { NODE_ENV: 'test', JWT_SECRET: SECRET, ...LIVE_ALERTS, NODE_ENV: 'test' } });
+  await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => application.io.close(resolve)));
+  const post = (path, body, token) => fetch(`http://127.0.0.1:${application.server.address().port}${path}`, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) }).then(async response => ({ status: response.status, data: await response.json() }));
+  const member = await post('/api/auth/login', { email: 'member@example.test', password: PASSWORD });
+  assert.equal((await post('/api/users/me/password', { password: PASSWORD, newPassword: 'MemberNewMock8' }, member.data.token)).status, 200);
+  assert.equal(lines.filter(line => line.includes('admin-event')).length, 0, 'a member changing a password is not an admin event');
+  const admin = await post('/api/auth/login', { email: 'admin', password: PASSWORD });
+  const changed = await post('/api/users/me/password', { password: PASSWORD, newPassword: 'AdminNewMock8Pass' }, admin.data.token);
+  assert.equal(changed.status, 200);
+  assert.equal((await post('/api/admin/sessions/revoke', {}, changed.data.user.token)).status, 200);
+  await new Promise(resolve => setTimeout(resolve, 20));
+  const events = lines.filter(line => line.includes('admin-event'));
+  assert.equal(events.length, 2);
+  assert.match(events[0], /^\[security-alerts\] due, not sent \(test\): admin-event:password-changed:\d+$/);
+  assert.match(events[1], /admin-event:sessions-revoked:/);
+  assert.equal(sent.length, 0);
+});
+
+test('server: enabling and disabling the authenticator on the admin account raise the owner notice', async t => {
+  const key = Buffer.alloc(32, 5), lines = [];
+  const models = createMemoryModels();
+  models.User = accountMemory([person('admin', { email: 'admin', role: 'admin' })]);
+  models.AccountAuthChallenge = accountMemory();
+  const application = createApplication({ models, securityAlertLog: { info: line => lines.push(line), error: () => {} },
+    config: { NODE_ENV: 'test', JWT_SECRET: SECRET, ACCOUNT_SECURITY_ENCRYPTION_KEY: key.toString('base64') } });
+  await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => application.io.close(resolve)));
+  const post = (path, body, token) => fetch(`http://127.0.0.1:${application.server.address().port}${path}`, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) }).then(async response => ({ status: response.status, data: await response.json() }));
+  const login = await post('/api/auth/login', { email: 'admin', password: PASSWORD });
+  const setup = await post('/api/users/me/security/totp/setup', { password: PASSWORD }, login.data.token);
+  assert.equal(setup.status, 200);
+  const enabled = await post('/api/users/me/security/totp/confirm', { password: PASSWORD, totpCode: totpAt(setup.data.secret, Date.now()), recoveryCodesSaved: true }, login.data.token);
+  assert.equal(enabled.status, 200);
+  const disabled = await post('/api/users/me/security/totp/disable', { password: PASSWORD, recoveryCode: setup.data.recoveryCodes[0] }, enabled.data.user.token);
+  assert.equal(disabled.status, 200);
+  await new Promise(resolve => setTimeout(resolve, 20));
+  const events = lines.filter(line => line.includes('admin-event')).map(line => line.replace(/^.*admin-event:([a-z-]+):\d+$/, '$1'));
+  assert.deepEqual(events, ['totp-enabled', 'totp-disabled']);
+});

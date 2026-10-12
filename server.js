@@ -546,7 +546,7 @@ const SmsQuota = createSmsQuotaModel(mongoose, injectedModels);
 const smsQuota = createSmsQuota({ Model: SmsQuota, secret: config.JWT_SECRET, config, now: options.smsQuotaNow || Date.now });
 // G44: failed sign-ins counted in Mongo (survive restarts) + the owner alert on admin failures.
 const AuthLimit = createAuthLimitModel(mongoose, injectedModels);
-const loginGuard = createLoginGuard({ Model: AuthLimit, secret: config.JWT_SECRET, config, now: options.loginGuardNow || Date.now, sendEmail: options.securityAlertEmail });
+const loginGuard = createLoginGuard({ Model: AuthLimit, secret: config.JWT_SECRET, config, now: options.loginGuardNow || Date.now, sendEmail: options.securityAlertEmail, ...(options.securityAlertLog ? { logger: options.securityAlertLog } : {}) });
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -1784,6 +1784,8 @@ const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, c
   // G44: a wrong authenticator code after a correct password counts as a failed sign-in.
   loginBlocked: ({ visitor, user }) => loginGuard.blocked({ visitor, account: user.email }),
   onLoginFailure: ({ visitor, user }) => loginGuard.recordFailure({ visitor, account: user.email, adminAccountId: user.role === 'admin' ? user.id : null, factor: 'totp' }),
+  // G44: the owner hears about authenticator changes on an administrator account.
+  onSecurityEvent: ({ user, kind }) => { if (user?.role === 'admin') loginGuard.adminSecurityEvent({ kind, accountId: user.id }); },
   sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });
 accountTotp.register(app, authenticateToken);
 // N2 "only if still unread", asked by the notification worker right before a send. An
@@ -2145,6 +2147,7 @@ app.post('/api/users/me/password', authenticateToken, accountTotp.limit, async (
     $unset: { passwordResetTokenHash: '', passwordResetExpires: '' },
   }, { new: true });
   if (!changed) return res.status(409).json({ code: 'ACCOUNT_CHANGED', error: '账号凭证已变化，请重新登录后再试。' });
+  if (changed.role === 'admin') loginGuard.adminSecurityEvent({ kind: 'password-changed', accountId: changed.id });
   disconnectAccount(user.id);
   res.json({ ok: true, user: { ...sanitizeUserForClient(changed), token: issueToken(changed, { mfaVerified: accountTotp.enabled(changed) }) } });
 });
@@ -3900,6 +3903,7 @@ app.post('/api/admin/sessions/revoke', authenticateToken, requireAdmin, async (r
     if (!checkAuthRateLimit(`admin-session-revoke:${req.user.id}`, { windowMs: 60 * 60 * 1000, maxRequests: 5 })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     const result = await revokeAdminSessions({ User, now: options.adminSessionsNow || Date.now });
     for (const id of result.ids) disconnectAccount(id);
+    loginGuard.adminSecurityEvent({ kind: 'sessions-revoked', accountId: req.user.id });
     await createModerationLog({ admin: req.user, action: 'admin_sessions_revoked', targetType: 'admin_sessions', targetId: String(result.accounts),
       newValue: { accounts: result.accounts, revokedAt: result.at } });
     const fresh = await User.findOne({ id: req.user.id });
