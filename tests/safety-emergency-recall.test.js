@@ -100,3 +100,22 @@ test('SAFETY-1: each new topic has its own first-aid line in all three languages
     assert.ok(en.answer.split('. ').length >= 3, `${message}: 911, the topic line, then Poison Control / 988`);
   }
 });
+
+// The unanswered-message guard had a literal backspace (U+0008) where \b was meant,
+// so its English words never matched: "我给他发了 text，他没反应" got the unconscious card.
+test('an unanswered text or app message is not an unresponsive person, in English words too', () => {
+  for (const message of ['我给他发了 text，他没反应', '我发了 message 给我爸，他没反应', '我给她发了 email，她没反应', '我发消息给他，他没反应']) {
+    assert.equal(emergencyResponse(message), null, message);
+  }
+  assert.equal(emergencyResponse('叫他没反应')?.emergencyTopic, 'unconscious');
+  assert.equal(emergencyResponse('我爸倒在地上，他没反应')?.emergencyTopic, 'unconscious');
+});
+
+test('no source file in lib/ or server.js contains a control character (a backspace typed for a word boundary)', () => {
+  const fs = require('node:fs'); const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const files = ['server.js', ...fs.readdirSync(path.join(root, 'lib')).filter(file => file.endsWith('.js')).map(file => `lib/${file}`)];
+  const found = files.flatMap(file => fs.readFileSync(path.join(root, file), 'utf8').split('\n')
+    .map((line, index) => /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(line) ? `${file}:${index + 1}` : null).filter(Boolean));
+  assert.deepEqual(found, []);
+});
