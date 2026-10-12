@@ -57,6 +57,11 @@ test('with the authenticator on, the change also needs a current code; the new s
   const token = jwt.sign({ id: 'admin', purpose: 'session', sessionIssuedAt: Date.now(), sessionRevision: 0, mfaVerified: true }, SECRET, { expiresIn: '1h' });
   const noCode = await f.request('/api/users/me/password', { method: 'POST', token, body: { password: PASSWORD, newPassword: 'AdminNewMock8Pass' } });
   assert.equal(noCode.status, 403); assert.equal(noCode.data.code, 'MFA_INVALID');
+  // An administrator password needs 12+ characters here too (same rule as the offline script),
+  // refused before the authenticator code is used, so the same code still works below.
+  assert.equal(script.strongAdminPassword('AdminMock8a'), false); assert.equal(script.strongAdminPassword('AdminMock8ab'), true);
+  const short = await f.request('/api/users/me/password', { method: 'POST', token, body: { password: PASSWORD, newPassword: 'AdminMock8a', totpCode: totpAt(shared, Date.now()) } });
+  assert.equal(short.status, 400); assert.equal(short.data.code, 'WEAK_PASSWORD'); assert.match(short.data.error, /管理员新密码至少 12 位/);
   const done = await f.request('/api/users/me/password', { method: 'POST', token, body: { password: PASSWORD, newPassword: 'AdminNewMock8Pass', totpCode: totpAt(shared, Date.now()) } });
   assert.equal(done.status, 200);
   assert.equal(jwt.decode(done.data.user.token).mfaVerified, true);

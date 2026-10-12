@@ -2143,11 +2143,14 @@ app.post('/api/auth/reset-password', async (req, res) => {
 // e-mail reset, which the administrator account (login name "admin", no mailbox) cannot use.
 // Proof: the current password, plus the authenticator code or a recovery code when enabled
 // (accountTotp.confirmCredentials, rate-limited). Every other session of the account is
-// signed out; the response carries this browser's new session.
+// signed out; the response carries this browser's new session. An administrator account
+// needs 12+ characters, the same rule as scripts/set-admin-password.js.
+const ADMIN_PASSWORD_MIN_LENGTH = 12;
 app.post('/api/users/me/password', authenticateToken, accountTotp.limit, async (req, res) => {
   res.set('Cache-Control', 'no-store');
   const { newPassword } = req.body || {};
   if (!validatePasswordStrength(newPassword) || newPassword.length > 128) return res.status(400).json({ code: 'WEAK_PASSWORD', error: '新密码至少 8 位，包含大写字母、小写字母和数字（最多 128 位）。' });
+  if (req.user.role === 'admin' && newPassword.length < ADMIN_PASSWORD_MIN_LENGTH) return res.status(400).json({ code: 'WEAK_PASSWORD', error: `管理员新密码至少 ${ADMIN_PASSWORD_MIN_LENGTH} 位，包含大写字母、小写字母和数字（最多 128 位）。` });
   if (newPassword === req.body.password) return res.status(400).json({ code: 'SAME_PASSWORD', error: '新密码不能和当前密码相同。' });
   const user = await accountTotp.confirmCredentials(req);
   const passwordHash = await bcrypt.hash(newPassword, 10);
