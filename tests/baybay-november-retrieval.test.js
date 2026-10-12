@@ -19,7 +19,8 @@ test('the audited November family discovery and negative followup retain the act
     assert.equal(festival.planning.admissionUsd, 0);
     assert.match(festival.costLabel, /停车另付/);
     assert.equal(festival.planning.minAge, 0);
-    assert.deepEqual(festival.planning.schedule.dates['2026-11-07'], [{ open: '12:00', close: '15:00' }]);
+    // Web CNT-EVENTS read presidio.gov: "November 7, 2026 10:00 AM - 03:00 PM" (was 12:00–15:00).
+    assert.deepEqual(festival.planning.schedule.dates['2026-11-07'], [{ open: '10:00', close: '15:00' }]);
     assert.equal(festival.planning.reservation, 'unknown');
     assert.equal(festival.officialUrl, 'https://presidio.gov/explore/events/dia-de-los-muertos-and-diwali-festival');
     assert.equal(festival.verifiedLive, false);

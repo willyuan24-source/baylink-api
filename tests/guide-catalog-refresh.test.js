@@ -66,7 +66,7 @@ const retailCases = [
       '前 100 名 MyLowe’s Rewards 会员',
       '送完为止',
       '官方公开海报未公布开始时间或儿童年龄限制',
-      '本次未逐店确认库存',
+      '各店库存不同',
       'https://www.lowes.com/l/creator/mrbeast',
     ],
   },
