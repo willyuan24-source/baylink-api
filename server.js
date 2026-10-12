@@ -2028,6 +2028,14 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
 });
 
+// G78 / ENGSEC-12: the reset token goes in the URL fragment (#token=…), which a browser never
+// sends to a server, writes to access logs or puts in a Referer header. A web page that reads
+// the fragment says so with resetLinkStyle: 'fragment' in this request; an older page gets the
+// ?token= form it understands. PASSWORD_RESET_LINK_STYLE=fragment makes the fragment the only
+// form (set it once the fragment-reading page has been live for 7 days). Tokens last 30 minutes.
+const resetLinkInFragment = req => req.body?.resetLinkStyle === 'fragment'
+  || String(config.PASSWORD_RESET_LINK_STYLE || '').trim().toLowerCase() === 'fragment';
+
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
     const ip = getClientIp(req);
@@ -2051,7 +2059,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     if (reserved) {
       const { plainToken } = reserved;
 
-      const resetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
+      const resetLink = `${getFrontendBaseUrl()}/reset-password${resetLinkInFragment(req) ? '#' : '?'}token=${plainToken}`;
       const hasResendConfig = Boolean(config.RESEND_API_KEY && config.RESEND_FROM_EMAIL);
 
       if (hasResendConfig) {
