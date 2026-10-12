@@ -24,7 +24,7 @@
 | `SMS_VERIFY_DAILY_LIMIT` | 可不设（默认 100） | 全站每天验证码条数上限；`0` = 暂停所有验证码短信 |
 | `NOTIFICATION_EMAIL_DAILY_LIMIT` / `NOTIFICATION_EMAIL_USER_DAILY_LIMIT` | 可不设（默认 1000 / 20） | 通知邮件全站 / 每人每天上限 |
 | `NOTIFICATION_SMS_DAILY_LIMIT` / `NOTIFICATION_SMS_USER_DAILY_LIMIT` | 可不设（默认 100 / 5） | 通知短信全站 / 每人每天上限；`0` = 停发 |
-| `ACCOUNT_SECURITY_ENCRYPTION_KEY` | 开管理员两步验证前必须设置 | 32 字节以上随机串；设了之后不要再改（改了已绑定的验证器会失效） |
+| `ACCOUNT_SECURITY_ENCRYPTION_KEY` | 开管理员两步验证前必须设置 | **正好 32 个随机字节的 base64**（44 个字符、以 `=` 结尾），用 `openssl rand -base64 32` 生成；其他格式会让验证器设置显示"尚未配置"。设了之后不要再改（改了已绑定的验证器会失效） |
 
 部署完成后打开 `https://<api 域名>/api/health`，确认 200。
 
@@ -38,10 +38,10 @@
 4. **30 分钟合并**：收到第 2 步的邮件后，B 在 30 分钟内再发几条，A 不读 → 距上一封约 30 分钟时只再收到 1 封。
 5. **评论提醒**（网页端加上"新的评论"开关或"开启全部提醒"按钮之后再测，之前跳过）：A 开启"新的评论" → B 在 A 的帖子下评论 → 约 5 分钟后 A 收到"新的评论"邮件，链接打开 `/posts/…`。
 6. **忘记密码**：用 A 的邮箱申请重设 → 邮件到达、链接可重设。5 分钟内再申请一次**不会**再来第二封（正常现象）。
-7. **手机验证**：A 绑定手机 → 收到验证码并验证成功。Twilio 控制台核对：A2P 10DLC 或免费号码（toll-free）认证状态、地理权限只开美国（必要时加加拿大）、设置花费提醒（spend alert）。
+7. **手机验证**：A 先完成第 1 步的邮箱验证（投递打开后，没验证邮箱的账号会被提示"请先验证邮箱"）→ 绑定手机 → 收到验证码并验证成功。只接受美国号码（加拿大和加勒比的 +1 号码会被拒绝）。Twilio 控制台核对：A2P 10DLC 或免费号码（toll-free）认证状态、地理权限只开美国、设置花费提醒（spend alert）。
 8. **图片**：iPhone Safari 发帖，带一张 > 5 MB 的 HEIC 照片 → 图片正常显示（Cloudinary）。
 9. **5 个 AI 检查**（记录成功与否、耗时、返回里的 `model`）：BayBay 问一个需要上网查的问题；发帖助手普通一次 + 带"报税"一次；帖子翻译；小队草稿写"刚移民"；/plan 里"帮我挑选方案"。
-10. **管理员两步验证**：设置好 `ACCOUNT_SECURITY_ENCRYPTION_KEY` 后，用管理员账号开启 TOTP。
+10. **管理员账号**：按 `docs/account-privacy-and-mfa.md` 的"管理员账号：店主操作顺序"做——先换密码（`scripts/set-admin-password.js`），再设 `ACCOUNT_SECURITY_ENCRYPTION_KEY`、绑定验证器、设 `ADMIN_MFA_REQUIRED=true`，最后撤销所有管理员登录（`scripts/revoke-admin-sessions.js --apply`）。
 
 ## 3. 出问题怎么办
 

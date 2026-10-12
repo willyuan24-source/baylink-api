@@ -54,10 +54,13 @@ const { createAiGovernanceModel, createAiGovernance, governProviders } = require
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
+const { createAuthLimitModel, createLoginGuard } = require('./lib/loginGuard');
+const { usPhoneProblem } = require('./lib/usPhone');
 const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
+const { revokeAdminSessions } = require('./lib/adminSessions');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -115,7 +118,8 @@ if (!isTest) cloudinary.config({
 const TWILIO_SID = config.TWILIO_ACCOUNT_SID;
 const TWILIO_TOKEN = config.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE = config.TWILIO_PHONE_NUMBER;
-const twilioClient = !isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null;
+// options.twilioClient: a recording fake in tests (API-SEC G104); never a real client in tests.
+const twilioClient = options.twilioClient || (!isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null);
 
 if (!twilioClient && !isTest) console.warn('Twilio 未配置；生产短信验证不可用，开发测试码仅在显式开启时返回。');
 
@@ -540,6 +544,9 @@ const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModel
 const contactAccessQuota = createContactAccessQuota({ Model: ContactAccessQuota, secret: config.JWT_SECRET, now: options.contactAccessNow || Date.now });
 const SmsQuota = createSmsQuotaModel(mongoose, injectedModels);
 const smsQuota = createSmsQuota({ Model: SmsQuota, secret: config.JWT_SECRET, config, now: options.smsQuotaNow || Date.now });
+// G44: failed sign-ins counted in Mongo (survive restarts) + the owner alert on admin failures.
+const AuthLimit = createAuthLimitModel(mongoose, injectedModels);
+const loginGuard = createLoginGuard({ Model: AuthLimit, secret: config.JWT_SECRET, config, now: options.loginGuardNow || Date.now, sendEmail: options.securityAlertEmail, ...(options.securityAlertLog ? { logger: options.securityAlertLog } : {}) });
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -799,8 +806,9 @@ const MODERATION_LOG_ACTIONS = new Set([
   'account_suspended',
   'account_restored',
   'outing_cancelled',
+  'admin_sessions_revoked',
 ]);
-const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing']);
+const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing', 'admin_sessions']);
 
 const REPORT_TARGET_TYPES = new Set(['post', 'user', 'message', 'outing', 'outing_message']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
@@ -852,9 +860,9 @@ const validateNicknameReservedWords = (nickname, user) => {
   return null;
 };
 
-const assertPostCommentable = (post, user) => {
+const assertPostCommentable = (post, asAdmin) => {
   if (!post || post.isDeleted) return { status: 404, error: '内容不存在或已被移除。' };
-  if (post.adminHidden && user?.role !== 'admin') {
+  if (post.adminHidden && !asAdmin) {
     return { status: 404, error: '内容不存在或已被移除。' };
   }
   return null;
@@ -886,6 +894,11 @@ const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
 // is separately held to 10 attempts overall and 8 per account).
 const LOGIN_ACCOUNT_ANY_MAX = 100;
 const adminLoginId = String(config.ADMIN_LOGIN_ID || '').trim();
+// The login name an account signs in with: its e-mail field, except the administrator account
+// under ADMIN_LOGIN_ID, whose public name "admin" is retired. The sign-in limits key both steps
+// (password and authenticator) by this name, so failures typed against "admin" never count
+// toward the private name the owner uses.
+const signInName = user => (adminLoginId && user?.email === 'admin' && user?.role === 'admin' ? adminLoginId : user?.email);
 
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
   return authLimiter.check(key, { windowMs, maxRequests });
@@ -935,16 +948,11 @@ const formatContactTypeLabel = (contactType) => {
   return '联系方式';
 };
 
-const isAdminUserId = async (userId) => {
-  if (!userId) return false;
-  const user = await User.findOne({ id: userId }).select('role').lean();
-  return user?.role === 'admin';
-};
-
-const applyPublicPostVisibility = async (query, viewerUserId) => {
-  if (!(await isAdminUserId(viewerUserId))) {
-    query.adminHidden = { $ne: true };
-  }
+// Public routes read an optional session. `isAdmin` is the session rule (isAdminSession:
+// with ADMIN_MFA_REQUIRED=true only an authenticator session), never the stored role alone,
+// so hidden posts, report counts and contact values follow the same gate as admin routes.
+const applyPublicPostVisibility = (query, viewerIsAdmin) => {
+  if (!viewerIsAdmin) query.adminHidden = { $ne: true };
 };
 
 const getBlockedAuthorIdsForUser = async (userId) => {
@@ -1091,11 +1099,15 @@ const assertCanMessage = async (senderId, recipientId) => {
   }
 };
 
-const getCurrentUserIdFromRequest = async (req) => {
+const getPublicViewer = async (req) => {
   const token = extractBearerToken(req.headers.authorization);
-  if (!token) return null;
-  try { return (await verifySession(token)).user.id; } catch { return null; }
+  if (!token) return { userId: null, isAdmin: false };
+  try {
+    const session = await verifySession(token);
+    return { userId: session.user.id, isAdmin: isAdminSession({ user: session.user, session }) };
+  } catch { return { userId: null, isAdmin: false }; }
 };
+const getCurrentUserIdFromRequest = async req => (await getPublicViewer(req)).userId;
 
 const resolveReportTarget = async (targetType, targetId, reporterId, conversationId) => {
   const id = String(targetId ?? '').trim();
@@ -1520,9 +1532,27 @@ const PHONE_SHARED_LIMIT_MSG = '这个手机号已在其他账号验证过，不
 const phoneSharedTooWidely = async (user, phoneNormalized) => !!phoneNormalized
   && await User.countDocuments({ phoneNormalized, isPhoneVerified: true, id: { $ne: user.id } }) >= MAX_OTHER_VERIFIED_ACCOUNTS;
 
+// G76: a verification SMS only for an account whose e-mail is verified. SMS_REQUIRE_VERIFIED_EMAIL
+// = true / false; unset = on whenever the site can send the verification e-mail (notification
+// delivery on), so members are never asked for a step the site cannot complete.
+const smsNeedsVerifiedEmail = () => {
+  const setting = String(config.SMS_REQUIRE_VERIFIED_EMAIL ?? '').trim().toLowerCase();
+  if (setting === 'true') return true;
+  if (setting === 'false') return false;
+  return notifications.emailVerificationDeliverable();
+};
+const EMAIL_FIRST_MSG = '请先验证邮箱，再验证手机号：在"我的 → 通知设置"里点"验证邮箱"，打开邮件里的链接后再回来。';
+
 const startPhoneVerificationForUser = async (user, phoneInput) => {
   const normalized = normalizePhone(phoneInput);
-  if (!normalized) return { ok: false, status: 400, error: '请输入有效的美国手机号。' };
+  const invalidPhone = { ok: false, status: 400, code: 'PHONE_INVALID', error: '请输入有效的美国手机号。' };
+  if (!normalized) return invalidPhone;
+  // G76: United States numbers only (lib/usPhone.js: not Canada, the non-US Caribbean or toll-free/premium codes).
+  // A number that is not a valid NANP number at all (mistyped, N11, reserved code) is a typo, not a foreign number.
+  const phoneProblem = usPhoneProblem(normalized.phoneNormalized);
+  if (phoneProblem === 'format') return invalidPhone;
+  if (phoneProblem) return { ok: false, status: 400, code: 'PHONE_NOT_US', error: '目前只能验证美国手机号（+1，美国区号）。' };
+  if (smsNeedsVerifiedEmail() && !(await notifications.isEmailVerified(user.id))) return { ok: false, status: 409, code: 'EMAIL_VERIFICATION_REQUIRED', error: EMAIL_FIRST_MSG };
 
   if (user.phoneVerificationLastSentAt && Date.now() - user.phoneVerificationLastSentAt < PHONE_VERIFY_COOLDOWN_MS) {
     return { ok: false, status: 429, error: '验证码发送太频繁，请稍后再试。' };
@@ -1534,16 +1564,21 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
   // SEC-09: a number may be shared (families), but not verified on a third account.
   if (await phoneSharedTooWidely(user, normalized.phoneNormalized)) return { ok: false, status: 409, code: 'PHONE_SHARED_LIMIT', error: PHONE_SHARED_LIMIT_MSG };
 
-  const plainCode = generatePhoneCode();
-  const hasTwilio = !!(twilioClient && TWILIO_PHONE);
-
-  if (hasTwilio || canReturnDevPhoneCode()) {
-    // Durable per-number, per-account and site-wide daily ceilings, reserved before any send.
-    const quota = await smsQuota.claim({ userId: user.id, phone: normalized.phoneNormalized });
-    if (!quota.ok) return { ok: false, status: quota.status, code: quota.code, error: quota.error };
+  // Which path would deliver the code. None: refuse before spending any SMS budget.
+  const channel = twilioClient && TWILIO_PHONE ? 'twilio' : canReturnDevPhoneCode() ? 'dev' : null;
+  if (!channel) {
+    if (!isTest) console.error('Twilio 未配置，无法发送短信验证码');
+    return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
   }
 
-  if (hasTwilio) {
+  // G104 / CODE-API-04: the durable per-number, per-account, new-account and site-wide daily
+  // ceilings are claimed here, before the send branch, whatever the delivery path. Every path
+  // below sends only after this claim succeeded.
+  const quota = await smsQuota.claim({ userId: user.id, phone: normalized.phoneNormalized, newAccount: smsQuota.isNewAccount(user) });
+  if (!quota.ok) return { ok: false, status: quota.status, code: quota.code, error: quota.error };
+
+  const plainCode = generatePhoneCode();
+  if (channel === 'twilio') {
     try {
       await sendPhoneVerificationViaTwilio(normalized.phoneNormalized, plainCode);
       await persistPhoneVerificationState(user, normalized, plainCode);
@@ -1556,13 +1591,8 @@ const startPhoneVerificationForUser = async (user, phoneInput) => {
     }
   }
 
-  if (canReturnDevPhoneCode()) {
-    await persistPhoneVerificationState(user, normalized, plainCode);
-    return { ok: true, payload: { message: '开发测试验证码已生成，未发送短信。', devCode: plainCode } };
-  }
-
-  if (!isTest) console.error('Twilio 未配置，无法发送短信验证码');
-  return { ok: false, status: 503, error: '短信服务暂时不可用，请稍后再试。' };
+  await persistPhoneVerificationState(user, normalized, plainCode);
+  return { ok: true, payload: { message: '开发测试验证码已生成，未发送短信。', devCode: plainCode } };
 };
 
 const verifyPhoneCodeForUser = async (user, codeInput) => {
@@ -1760,6 +1790,13 @@ const authenticateToken = async (req, res, next) => {
 const disconnectAccount = userId => io.in(userId).disconnectSockets(true);
 const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, config, checkRateLimit: checkAuthRateLimit, getClientIp, issueToken,
   holdAccount: id => holdAccountOperation(User, id),
+  // G44: a wrong authenticator code after a correct password counts as a failed sign-in,
+  // keyed by the login name the password step used (signInName): failures typed against the
+  // retired name "admin" cannot hold the owner at the authenticator step.
+  loginBlocked: ({ visitor, user }) => loginGuard.blocked({ visitor, account: signInName(user) }),
+  onLoginFailure: ({ visitor, user }) => loginGuard.recordFailure({ visitor, account: signInName(user), adminAccountId: user.role === 'admin' ? user.id : null, factor: 'totp' }),
+  // G44: the owner hears about authenticator changes on an administrator account.
+  onSecurityEvent: ({ user, kind }) => { if (user?.role === 'admin') loginGuard.adminSecurityEvent({ kind, accountId: user.id }); },
   sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });
 accountTotp.register(app, authenticateToken);
 // N2 "only if still unread", asked by the notification worker right before a send. An
@@ -1978,12 +2015,19 @@ app.post('/api/auth/login', async (req, res) => {
       }
       if (adminLoginId && user?.email === 'admin') user = null;
     }
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    if (typeof password !== 'string') return res.status(401).json({ error: 'Invalid credentials' });
+    // G44: durable failed-sign-in limits (lib/loginGuard.js), checked before the password.
+    const attempt = { visitor: ip, account: accountKey };
+    if (await loginGuard.blocked(attempt)) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    const refuse = async () => {
+      await loginGuard.recordFailure({ ...attempt, adminAccountId: user?.role === 'admin' ? user.id : null });
+      return res.status(401).json({ error: 'Invalid credentials' });
+    };
+    if (!user) return refuse();
+    if (typeof password !== 'string') return refuse();
     
     // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!isMatch) return refuse();
     if (user.isBanned || user.accountStatus === 'suspended' || user.accountDeletionPending) return res.status(403).json({ error: '账号不可用或已被限制' });
     await holdAccountOperation(User, user.id);
     user = await User.findOne({ id: user.id, password: user.password, accountDeletionPending: { $ne: true },
@@ -1996,6 +2040,14 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({ ...sanitizeUserForClient(user), token });
   } catch (e) { res.status(500).json({ error: '操作失败，请稍后再试' }); }
 });
+
+// G78 / ENGSEC-12: the reset token goes in the URL fragment (#token=…), which a browser never
+// sends to a server, writes to access logs or puts in a Referer header. A web page that reads
+// the fragment says so with resetLinkStyle: 'fragment' in this request; an older page gets the
+// ?token= form it understands. PASSWORD_RESET_LINK_STYLE=fragment makes the fragment the only
+// form (set it once the fragment-reading page has been live for 7 days). Tokens last 30 minutes.
+const resetLinkInFragment = req => req.body?.resetLinkStyle === 'fragment'
+  || String(config.PASSWORD_RESET_LINK_STYLE || '').trim().toLowerCase() === 'fragment';
 
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
@@ -2020,7 +2072,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     if (reserved) {
       const { plainToken } = reserved;
 
-      const resetLink = `${getFrontendBaseUrl()}/reset-password?token=${plainToken}`;
+      const resetLink = `${getFrontendBaseUrl()}/reset-password${resetLinkInFragment(req) ? '#' : '?'}token=${plainToken}`;
       const hasResendConfig = Boolean(config.RESEND_API_KEY && config.RESEND_FROM_EMAIL);
 
       if (hasResendConfig) {
@@ -2085,6 +2137,33 @@ app.post('/api/auth/reset-password', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: '操作失败，请稍后再试' });
   }
+});
+
+// G44 (API-SEC): change the password while signed in. Until now the only way was the
+// e-mail reset, which the administrator account (login name "admin", no mailbox) cannot use.
+// Proof: the current password, plus the authenticator code or a recovery code when enabled
+// (accountTotp.confirmCredentials, rate-limited). Every other session of the account is
+// signed out; the response carries this browser's new session. An administrator account
+// needs 12+ characters, the same rule as scripts/set-admin-password.js.
+const ADMIN_PASSWORD_MIN_LENGTH = 12;
+app.post('/api/users/me/password', authenticateToken, accountTotp.limit, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const { newPassword } = req.body || {};
+  if (!validatePasswordStrength(newPassword) || newPassword.length > 128) return res.status(400).json({ code: 'WEAK_PASSWORD', error: '新密码至少 8 位，包含大写字母、小写字母和数字（最多 128 位）。' });
+  if (req.user.role === 'admin' && newPassword.length < ADMIN_PASSWORD_MIN_LENGTH) return res.status(400).json({ code: 'WEAK_PASSWORD', error: `管理员新密码至少 ${ADMIN_PASSWORD_MIN_LENGTH} 位，包含大写字母、小写字母和数字（最多 128 位）。` });
+  if (newPassword === req.body.password) return res.status(400).json({ code: 'SAME_PASSWORD', error: '新密码不能和当前密码相同。' });
+  const user = await accountTotp.confirmCredentials(req);
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  const changedAt = Date.now();
+  const changed = await User.findOneAndUpdate(accountTotp.proofFilter(user), {
+    $set: { password: passwordHash, passwordChangedAt: changedAt, sessionsRevokedAt: changedAt },
+    $inc: { sessionRevision: 1 },
+    $unset: { passwordResetTokenHash: '', passwordResetExpires: '' },
+  }, { new: true });
+  if (!changed) return res.status(409).json({ code: 'ACCOUNT_CHANGED', error: '账号凭证已变化，请重新登录后再试。' });
+  if (changed.role === 'admin') loginGuard.adminSecurityEvent({ kind: 'password-changed', accountId: changed.id });
+  disconnectAccount(user.id);
+  res.json({ ok: true, user: { ...sanitizeUserForClient(changed), token: issueToken(changed, { mfaVerified: accountTotp.enabled(changed) }) } });
 });
 
 app.get('/api/users/:id', async (req, res, next) => {
@@ -2245,7 +2324,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     if (nickname !== undefined) {
       const nextNickname = trimProfileString(nickname, 30);
       if (!nextNickname) return res.status(400).json({ error: 'Nickname is required' });
-      const reservedNicknameErr = validateNicknameReservedWords(nextNickname, user);
+      const reservedNicknameErr = validateNicknameReservedWords(nextNickname, { role: isAdminSession(req) ? 'admin' : 'user' });
       if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
       user.nickname = nextNickname;
     }
@@ -2266,7 +2345,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       if (socialLinks.instagram !== undefined) merged.instagram = trimProfileString(socialLinks.instagram, 120);
       user.socialLinks = merged;
     }
-    if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
+    if (isAdminSession(req) && user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
     for (const [field, imageCheck] of [['avatar', avatarCheck], ['coverImage', coverCheck]]) {
       if (imageCheck.action === 'remove') user[field] = '';
       if (imageCheck.action === 'upload') {
@@ -2409,8 +2488,8 @@ const countActiveComments = (comments) =>
 const findCommentOnPost = (post, commentId) =>
   (post?.comments || []).find((c) => c.id === commentId);
 
-const canManageComment = (user, comment) =>
-  user?.role === 'admin' || user?.id === comment?.authorId;
+const canManageComment = (req, comment) =>
+  isAdminSession(req) || req.user?.id === comment?.authorId;
 
 const createCommentDoc = (user, content, parentId = null) => ({
   id: `${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
@@ -2486,19 +2565,18 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, comme
   };
 };
 
-const formatPostsResponseList = async (posts, currentUserId) => {
+const formatPostsResponseList = async (posts, currentUserId, viewerIsAdmin = false) => {
   const authorById = await fetchAuthorTrustByIds(posts);
-  const isAdmin = await isAdminUserId(currentUserId);
-  return posts.map((p) => formatPostResponse(p, currentUserId, authorById, isAdmin));
+  return posts.map((p) => formatPostResponse(p, currentUserId, authorById, viewerIsAdmin));
 };
 
 app.get('/api/posts/featured', async (req, res) => {
   try {
     const limitRaw = parseInt(req.query.limit, 10);
     const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 0;
-    const currentUserId = await getCurrentUserIdFromRequest(req);
+    const { userId: currentUserId, isAdmin: viewerIsAdmin } = await getPublicViewer(req);
     let query = { ...publicPostFilters({ availability: 'current' }), isFeatured: true };
-    await applyPublicPostVisibility(query, currentUserId);
+    applyPublicPostVisibility(query, viewerIsAdmin);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
       if (blockedIds.length) query.authorId = { $nin: blockedIds };
@@ -2506,7 +2584,7 @@ app.get('/api/posts/featured', async (req, res) => {
     let q = Post.find(query).sort({ featuredAt: -1, createdAt: -1 });
     if (limit > 0) q = q.limit(limit);
     const posts = await q.lean();
-    res.json({ posts: await formatPostsResponseList(posts, currentUserId) });
+    res.json({ posts: await formatPostsResponseList(posts, currentUserId, viewerIsAdmin) });
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -2515,12 +2593,11 @@ app.get('/api/posts/:id', async (req, res) => {
     if (req.params.id === 'featured') return res.sendStatus(404);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
-    const currentUserId = await getCurrentUserIdFromRequest(req);
-    if (post.adminHidden && !(await isAdminUserId(currentUserId))) {
+    const { userId: currentUserId, isAdmin } = await getPublicViewer(req);
+    if (post.adminHidden && !isAdmin) {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
     const authorById = await fetchAuthorTrustByIds([post]);
-    const isAdmin = await isAdminUserId(currentUserId);
     const commentAuthorById = await fetchCommentAuthorsByIds(post.comments);
     const commentRoleById = new Map([...commentAuthorById.entries()].map(([id, u]) => [id, u.role]));
     res.json(formatPostResponse(post, currentUserId, authorById, isAdmin, commentRoleById, commentAuthorById));
@@ -2542,15 +2619,15 @@ app.get('/api/posts', async (req, res) => {
         catch (error) { return res.status(400).json({ error: error.message }); }
       }
     }
-    const currentUserId = await getCurrentUserIdFromRequest(req);
-    await applyPublicPostVisibility(query, currentUserId);
+    const { userId: currentUserId, isAdmin: viewerIsAdmin } = await getPublicViewer(req);
+    applyPublicPostVisibility(query, viewerIsAdmin);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
       if (blockedIds.length) query.authorId = { $nin: blockedIds };
     }
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
     const totalCount = await Post.countDocuments(query);
-    const formatted = await formatPostsResponseList(posts, currentUserId);
+    const formatted = await formatPostsResponseList(posts, currentUserId, viewerIsAdmin);
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length, filtersApplied: true });
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
@@ -2575,7 +2652,7 @@ app.get('/api/users/me/posts', authenticateToken, async (req, res) => {
     const query = { isDeleted: false, authorId: req.user.id };
     const posts = await Post.find(query).sort({ createdAt: -1, id: -1 }).skip(skip).limit(limit + 1).lean();
     const hasMore = posts.length > limit;
-    res.json({ posts: await formatPostsResponseList(posts.slice(0, limit), req.user.id), hasMore });
+    res.json({ posts: await formatPostsResponseList(posts.slice(0, limit), req.user.id, isAdminSession(req)), hasMore });
   } catch { res.status(500).json({ error: '无法加载你的发布，请重试。' }); }
 });
 
@@ -2592,8 +2669,8 @@ const pickUserPostFields = (body) => {
 const POST_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
 const POST_DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
 
-const getDailyPostLimit = (user) => {
-  if (user.role === 'admin') return null;
+const getDailyPostLimit = (user, asAdmin) => {
+  if (asAdmin) return null;
   if (user.isOfficialVerified) return 20;
   if (user.isPhoneVerified) return 10;
   return 3;
@@ -2611,8 +2688,8 @@ const isHighRiskPostCategory = (body) => {
   return HIGH_RISK_CATEGORY_SLUGS.has(raw.toLowerCase());
 };
 
-const checkCreatePostRateLimit = async (user) => {
-  const dailyLimit = getDailyPostLimit(user);
+const checkCreatePostRateLimit = async (user, asAdmin) => {
+  const dailyLimit = getDailyPostLimit(user, asAdmin);
   if (dailyLimit == null) return null;
   const windowStart = Date.now() - POST_DAILY_WINDOW_MS;
   const count = await Post.countDocuments({
@@ -2706,7 +2783,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
   try {
     const accountPostErr = assertAccountCanPost(req.user);
     if (accountPostErr) return res.status(403).json({ error: accountPostErr });
-    const rateErr = await checkCreatePostRateLimit(req.user);
+    const rateErr = await checkCreatePostRateLimit(req.user, isAdminSession(req));
     if (rateErr) return res.status(rateErr.status).json({ error: rateErr.error });
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
@@ -2874,7 +2951,7 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
     }
 
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const normalized = normalizeCommentContent(req.body?.content);
@@ -2913,12 +2990,12 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
 app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
-    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (!canManageComment(req, comment)) return res.sendStatus(403);
     if (comment.isDeleted) return res.status(400).json({ error: '评论已删除，无法编辑' });
 
     const normalized = normalizeCommentContent(req.body?.content);
@@ -2940,12 +3017,12 @@ app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, r
 app.delete('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
-    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (!canManageComment(req, comment)) return res.sendStatus(403);
     if (comment.isDeleted) return res.status(400).json({ error: '评论已删除' });
 
     const hasReplies = (post.comments || []).some((c) => c.parentId === comment.id);
@@ -3828,6 +3905,29 @@ app.get('/api/admin/moderation-logs', authenticateToken, requireAdmin, async (re
   } catch (e) {
     console.error('GET /api/admin/moderation-logs error:', e.message);
     return res.status(500).json({ error: '获取操作日志失败' });
+  }
+});
+
+// G44: sign every administrator account out everywhere (other browsers, phones, any
+// leaked token). The caller gets a fresh session in the response so this tab keeps
+// working; an authenticator session stays an authenticator session. The same
+// revocation is available offline: scripts/revoke-admin-sessions.js.
+app.post('/api/admin/sessions/revoke', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    if (!checkAuthRateLimit(`admin-session-revoke:${req.user.id}`, { windowMs: 60 * 60 * 1000, maxRequests: 5 })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    const result = await revokeAdminSessions({ User, now: options.adminSessionsNow || Date.now });
+    for (const id of result.ids) disconnectAccount(id);
+    loginGuard.adminSecurityEvent({ kind: 'sessions-revoked', accountId: req.user.id });
+    await createModerationLog({ admin: req.user, action: 'admin_sessions_revoked', targetType: 'admin_sessions', targetId: String(result.accounts),
+      newValue: { accounts: result.accounts, revokedAt: result.at } });
+    const fresh = await User.findOne({ id: req.user.id });
+    if (!fresh) return res.status(401).json({ error: '登录已过期，请重新登录。' });
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true, revokedAccounts: result.accounts, revokedAt: result.at,
+      user: { ...sanitizeUserForClient(fresh), token: issueToken(fresh, { mfaVerified: req.session.payload.mfaVerified === true }) } });
+  } catch (e) {
+    console.error('POST /api/admin/sessions/revoke error:', e.message);
+    res.status(503).json({ error: '暂时无法撤销管理员登录，请重试。' });
   }
 });
 
