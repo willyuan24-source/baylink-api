@@ -86,7 +86,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 function loadCasebook(probe) {
-  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-H]-.+\.json$/.test(file)).sort();
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-J]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);
@@ -351,7 +351,10 @@ async function main() {
       sources: (payload?.sources || []).map(({ title, url }) => ({ title, url })),
       localMatches: (payload?.localMatches || []).map(({ kind, id, title }) => ({ kind, id, title })),
       suggestedGuides: (payload?.suggestedGuides || []).map(({ title, url }) => ({ title, url })),
-      followups: payload?.followups || [], warnings, plan: payload?.assistantPlan ? { status: payload.assistantPlan.status, stops: (payload.assistantPlan.stops || []).map(stop => stop.title) } : null,
+      followups: payload?.followups || [], warnings, safetyTopic: payload?.safetyTopic ?? null,
+      // Block I (API-BB-QUALITY): the constraints this turn carried, compact (no tokens, no ids).
+      state: payload?.taskState ? Object.fromEntries(Object.entries(payload.taskState).filter(([key, value]) => value != null && !(Array.isArray(value) && !value.length)
+        && !['version', 'revision', 'clearedFields', 'excludedCandidateIds', 'selectedCandidateIds'].includes(key))) : null, plan: payload?.assistantPlan ? { status: payload.assistantPlan.status, stops: (payload.assistantPlan.stops || []).map(stop => stop.title) } : null,
       modelResponses: payload?.research?.modelResponses || [], steps: (payload?.research?.steps || []).map(step => ({ tool: step.tool, status: step.status })),
       calls: ctx.calls, toolRounds: toolRounds(ctx.calls), usage, costUsd: +ctx.calls.reduce((sum, call) => sum + (call.costUsd || 0), 0).toFixed(6),
       timings: { firstCardMs: ctx.firstCardMs ?? null, ttftMs: model ? ctx.calls.find(call => call.headersMs != null)?.headersMs ?? null : completeMs,

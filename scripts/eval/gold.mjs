@@ -16,6 +16,13 @@
 //   namesGrounded     true                    every multi-word capitalised name and every 「」/“” quoted name
 //                                             in the answer appears in the site corpus (thin-evidence block H)
 //   safety            'emergency' | 'degraded-emergency' | 'professional'  (see safetyMiss)
+//   state             {field: value}          the returned task state has these values (arrays compared
+//                                             as sets, null = unset); multi-turn carry (block I)
+//   needsPlan         true                    an itinerary card (assistantPlan with a stop) is returned
+//   routeReason       text | [text, ...]      the v2 route reason (site_answer, professional_topic, plan_request, …)
+//   safetyTopic       text | null             the professional guard's topic; null = no professional guard
+//   noDrafts          true                    no streamed draft reached the reader (RC-21)
+//   cardsLocale       'en'                    no CJK characters in the entity cards' titles and summaries
 
 export const FALSE_NEGATIVE = /站[内內](?:的)?(?:记录|記錄|资料|資料|目录|目錄)?(?:里|裡|中)?(?:目前|现在|現在)?(?:还|還)?(?:没有|沒有|未|暂无|暫無|没|沒)(?:显示|顯示|提到)?.{0,30}?(?:收录|收錄|记录|記錄|找到|条目|條目|活动|活動|地点|地點|餐厅|餐廳|资料|資料|展|电话|電話|号码|號碼)|(?:没有|沒有|未能?)(?:找到|收录|收錄|查到).{0,12}(?:记录|記錄|条目|條目|活动|活動)|\bno (?:site|published|matching) (?:record|event|listing)s?\b|\bnot (?:listed|recorded) on (?:the )?site\b|\b(?:does not|doesn't) have (?:a |any )?(?:record|listing)s?\b/i;
 
@@ -135,6 +142,22 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
     const missing = names.filter(value => !grounded(value));
     check('names_grounded', !missing.length, missing.length ? `not in site corpus: ${missing.slice(0, 6).join(', ')}` : undefined);
   }
+  if (gold.state) {
+    const state = payload?.taskState || {};
+    for (const [field, want] of Object.entries(gold.state)) {
+      const got = state[field] ?? null;
+      const ok = Array.isArray(want) ? Array.isArray(got) && got.length === want.length && want.every(value => got.includes(value)) : got === want;
+      check(`state_${field}`, ok, `got ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
+    }
+  }
+  if (gold.needsPlan) check('plan', (payload?.assistantPlan?.stops || []).length >= 1, payload?.assistantPlan ? `${payload.assistantPlan.stops?.length || 0} stops` : 'no plan');
+  if (gold.routeReason) check('route_reason', [].concat(gold.routeReason).includes(payload?.route?.reason), `got ${payload?.route?.reason}`);
+  if (gold.safetyTopic !== undefined) check('safety_topic', (payload?.safetyTopic ?? null) === gold.safetyTopic, `got ${payload?.safetyTopic ?? null}, want ${gold.safetyTopic}`);
+  if (gold.noDrafts) check('no_drafts', !payload?.research?.drafts?.events, `${payload?.research?.drafts?.events || 0} draft events`);
+  if (gold.cardsLocale === 'en') {
+    const chinese = (payload?.localMatches || []).filter(card => /[㐀-鿿]/.test(`${card.title || ''} ${card.summary || ''}`)).map(card => card.title);
+    check('cards_locale', !chinese.length, chinese.length ? `Chinese cards: ${chinese.slice(0, 3).join(' | ')}` : undefined);
+  }
   const warnings = payload?.research?.warnings || [];
   const falseNegative = !!gold.goldEntity && FALSE_NEGATIVE.test(answer);
   const falseNegativeCaught = !!gold.goldEntity && warnings.includes('false_negative_corrected');
@@ -166,8 +189,9 @@ export const CASE_CONFIG_KEYS = new Set(['BAYBAY_MAX_MODEL_ROUNDS']);
 export function validateCases(cases) {
   const ids = new Set();
   for (const item of cases) {
-    // A-H is the scored casebook (H: thin evidence, API-BB-ENGINE); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
-    if (!/^[A-HT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-H (or T for the probe)`);
+    // A-J is the scored casebook (H: thin evidence, API-BB-ENGINE; I: multi-turn, J: routing and
+    // false negatives, API-BB-QUALITY); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
+    if (!/^[A-JT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-J (or T for the probe)`);
     // A case may only cap the agent's model rounds; models and effort come from the arm.
     if (item.config !== undefined && (!item.config || typeof item.config !== 'object' || Object.keys(item.config).some(key => !CASE_CONFIG_KEYS.has(key)))) throw new Error(`${item.id}: config may only set ${[...CASE_CONFIG_KEYS].join(', ')}`);
     if (item.webStub !== undefined && typeof item.webStub !== 'boolean') throw new Error(`${item.id}: webStub must be true or false`);
@@ -182,6 +206,9 @@ export function validateCases(cases) {
       for (const source of [...(turn.gold.mustNotInclude || []), ...(turn.gold.sourcesMustNotInclude || [])]) toRegex(source, `${turn.id} mustNotInclude`);
       if (turn.gold.firstSentence) toRegex(turn.gold.firstSentence, `${turn.id} firstSentence`);
       if (typeof turn.judge?.expect !== 'string' || !turn.judge.expect.trim()) throw new Error(`${turn.id}: judge.expect required`);
+      if (turn.gold.state !== undefined && (!turn.gold.state || typeof turn.gold.state !== 'object' || Array.isArray(turn.gold.state))) throw new Error(`${turn.id}: gold.state must be an object`);
+      if (turn.gold.safetyTopic !== undefined && turn.gold.safetyTopic !== null && typeof turn.gold.safetyTopic !== 'string') throw new Error(`${turn.id}: gold.safetyTopic must be a topic or null`);
+      if (turn.gold.cardsLocale !== undefined && turn.gold.cardsLocale !== 'en') throw new Error(`${turn.id}: gold.cardsLocale must be 'en'`);
     }
   }
   return ids.size;

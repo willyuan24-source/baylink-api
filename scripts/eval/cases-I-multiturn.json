@@ -1,0 +1,165 @@
+{
+ "version": "2026-10-12",
+ "block": "I",
+ "title": "Multi-turn convergence (BBL-07, BBL-06, RC-34): the BB-LIVE 10-11 follow-up conversations W1, W2, M1, W3, L2 plus new follow-ups that must carry budget, time, region, child ages, party size and transport, and turn an explicit 排/安排 into a plan",
+ "pinnedNow": "2026-10-12T09:00:00-07:00",
+ "redating": "BB-LIVE ran Sun 10/11 22:48 and Mon 10/12 00:00 PT. Golds assume Mon 10/12 09:00 PT: 明天 = Tue 10/13, 这周六 = Sat 10/17, 这周末 = 10/17-10/18. searchContext copies the live request bodies (derived by the web client).",
+ "notes": "gold.state checks the signed task state the turn returns (arrays compared as sets). gold.needsPlan requires an itinerary card. Source transcripts: C:/Users/willy/opus-qa/audit-1011/BB-LIVE/transcripts.json (W1, W2, M1, W3, L2).",
+ "cases": [
+  {
+   "id": "I-W1", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "bblive-1011", "kids", "free", "plan"],
+   "turns": [
+    {
+     "id": "I-W1-1", "message": "这周末带 4 岁和 7 岁的孩子在东湾玩，有什么免费的活动？", "searchContext": { "region": "east-bay" },
+     "gold": { "expectRoute": "assistant", "state": { "childAges": [4, 7], "region": "east-bay", "freeOnly": true },
+      "mustInclude": [["丰收节", "Harvest", "Sandlot", "BORP", "大象", "Elephant", "Bird Festival", "观鸟"]],
+      "mustNotInclude": ["周日(?:暂无|没有|沒有)[^。]{0,16}免费"], "pricesGrounded": true },
+     "judge": { "expect": "这周末是 10月17日（周六）–18日（周日）。东湾免费、适合 4 岁和 7 岁：周六 Berkeley 丰收节（Cedar Rose Park 11:00–16:00）、San Leandro Floresta Park 免费电影；周日 Berkeley Bird Festival 讲座/展览免费、Livermore 大象公共艺术展免费。不要说周日东湾没有免费活动。" }
+    },
+    {
+     "id": "I-W1-2", "message": "只挑一个最适合 4 岁的，上午去还是下午去好？", "searchContext": { "region": "east-bay" },
+     "gold": { "expectRoute": "assistant", "state": { "childAges": [4, 7], "region": "east-bay" } },
+     "judge": { "expect": "延续东湾、免费、这周末、4 岁和 7 岁两个孩子（7 岁的孩子仍同行）。只选一个最适合 4 岁的（如 Berkeley 丰收节），明确建议上午或下午并给理由。" }
+    },
+    {
+     "id": "I-W1-3", "message": "帮我排成周六半天，我们坐 BART 去", "searchContext": { "region": "east-bay", "date": "2026-10-17" },
+     "gold": { "expectRoute": "assistant", "needsPlan": true, "state": { "childAges": [4, 7], "travelMode": "transit", "date": "2026-10-17" }, "mustInclude": ["BART"] },
+     "judge": { "expect": "给出周六 10/17 半天的行程卡：以 Berkeley 丰收节（Cedar Rose Park，1300 Rose St）为主，坐 BART（North Berkeley 站约 0.6 英里，或 Downtown Berkeley 再接驳），留出休息和午饭时间；保留 4 岁和 7 岁两个孩子与免费的条件。" }
+    }
+   ]
+  },
+  {
+   "id": "I-M1", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "bblive-1011", "budget", "transit"],
+   "turns": [
+    {
+     "id": "I-M1-1", "message": "明天下午想在 Palo Alto 附近走走，就我们两个大人", "searchContext": { "city": "Palo Alto", "date": "2026-10-13" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "Palo Alto", "partySize": 2, "date": "2026-10-13" }, "mustInclude": [["Baylands", "湿地", "Rinconada"]] },
+     "judge": { "expect": "明天是 10月13日（周二）下午、两位大人：推荐站内 Palo Alto Baylands 湿地短程散步（Lucy Evans 解说中心附近），提醒步道和中心开放时间要核对。" }
+    },
+    {
+     "id": "I-M1-2", "message": "加一个吃晚饭的地方，两个人预算 60 刀以内", "searchContext": { "city": "Palo Alto", "region": "peninsula", "date": "2026-10-13" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "Palo Alto", "partySize": 2, "budget": 60, "date": "2026-10-13" }, "pricesGrounded": true, "mustNotInclude": ["Point Reyes", "午餐还是晚餐"] },
+     "judge": { "expect": "延续 Palo Alto、明天下午、两人，加晚饭、两人 $60 以内：可提站内 Yutori（El Camino Real）但说明菜单价格未收录、需看官网确认是否在 $60 内；不编价格，不推荐外地餐厅。" }
+    },
+    {
+     "id": "I-M1-3", "message": "不想开车了，改成坐 Caltrain 能到的", "searchContext": { "city": "Palo Alto", "region": "peninsula", "date": "2026-10-13" },
+     "gold": { "expectRoute": "assistant", "state": { "travelMode": "transit", "budget": 60, "partySize": 2, "date": "2026-10-13" }, "mustInclude": ["Caltrain"], "mustNotInclude": ["午餐还是晚餐|预算是多少|几个人"] },
+     "judge": { "expect": "保留明天下午、两人、晚饭 $60：按 Caltrain 重排（Palo Alto 站附近的 Rinconada/University Ave 一带更顺，Baylands 离车站约 3 英里需接驳或打车），说清最后一段怎么走；不重复追问已知条件。" }
+    }
+   ]
+  },
+  {
+   "id": "I-W2", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "bblive-1011", "free", "family", "false-negative"],
+   "turns": [
+    {
+     "id": "I-W2-1", "message": "这周六旧金山有什么适合全家的活动？", "searchContext": { "city": "San Francisco", "date": "2026-10-17" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "San Francisco", "date": "2026-10-17" }, "mustInclude": [["科学节", "Science Festival"]] },
+     "judge": { "expect": "10月17日（周六）旧金山适合全家：首推免费的湾区科学节（UCSF Mission Bay，11:00–16:00），再给 Sunnydale 免费南瓜节、菲律宾裔书展等 1–2 项。" }
+    },
+    {
+     "id": "I-W2-2", "message": "一家四口预算 50 刀以内，哪些完全免费？", "searchContext": { "city": "San Francisco", "region": "sf", "date": "2026-10-17" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "San Francisco", "partySize": 4, "budget": 50, "date": "2026-10-17" },
+      "mustInclude": [["科学节", "Science Festival"], ["Sunnydale", "南瓜节", "书展", "FilBook", "OMI", "历史日", "Randall", "市集"]],
+      "mustNotInclude": ["完全免费的(?:只有|是)[^，。；]{0,30}[，；]\\s*其[他它]", "只有[^。]{0,16}(?:一个|一項|一项|一场|一場)[^。]{0,8}免费"],
+      "goldEntity": "10/17 旧金山免费活动：湾区科学节、Sunnydale 南瓜节、菲律宾裔书展、OMI History Day", "pricesGrounded": true },
+     "judge": { "expect": "四口之家、$50 以内：列出 10/17 旧金山完全免费的几项（湾区科学节、Sunnydale 南瓜节、菲律宾裔书展、OMI History Day），说明科学节分项目名额另看；不要说只有一个免费。" }
+    }
+   ]
+  },
+  {
+   "id": "I-W3", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "bblive-1011", "seniors", "consistency"],
+   "turns": [
+    {
+     "id": "I-W3-1", "message": "周末想带爸妈去北湾看秋天的风景，顺便吃点东西，有推荐吗？", "searchContext": { "region": "north-bay" },
+     "gold": { "expectRoute": "assistant", "state": { "region": "north-bay" }, "pricesGrounded": true },
+     "judge": { "expect": "这周末北湾：给 2–3 个适合长辈的秋景加吃东西的选择（市集、Petaluma 南瓜田、Sausalito 等），带日期时间，提醒核对。" }
+    },
+    {
+     "id": "I-W3-2", "message": "我爸膝盖不好，不能走太多路，哪个更合适？", "searchContext": { "region": "north-bay" },
+     "gold": { "expectRoute": "assistant", "state": { "region": "north-bay" }, "mustNotInclude": ["(?:不能|无法|無法)判断哪个更"] },
+     "judge": { "expect": "在上一轮的选项里明确选一个最省脚力的并说理由（停车近、平路、能坐下），结论和要点一致，不要先说某个更省力又说无法判断。" }
+    }
+   ]
+  },
+  {
+   "id": "I-PLAN-SF", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "plan", "kids"],
+   "turns": [
+    {
+     "id": "I-PLAN-SF-1", "message": "这周六带 6 岁的孩子在旧金山玩，有什么推荐？", "searchContext": { "city": "San Francisco", "date": "2026-10-17" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "San Francisco", "date": "2026-10-17", "childAges": [6] }, "mustInclude": [["科学节", "Science Festival", "Randall", "Exploratorium", "南瓜节"]] },
+     "judge": { "expect": "10/17 周六旧金山带 6 岁孩子：湾区科学节（免费）等 2–3 个具体选择，带时间。" }
+    },
+    {
+     "id": "I-PLAN-SF-2", "message": "那帮我安排一下周六下午的行程，最多两站", "searchContext": { "city": "San Francisco", "region": "sf", "date": "2026-10-17" },
+     "gold": { "expectRoute": "assistant", "needsPlan": true, "state": { "city": "San Francisco", "date": "2026-10-17", "childAges": [6], "maxStops": 2 } },
+     "judge": { "expect": "给出 10/17 周六下午最多两站的行程卡（如科学节 + 附近一站），保留 6 岁孩子；时间不冲突，未核实的交通和票价说明要确认。" }
+    }
+   ]
+  },
+  {
+   "id": "I-KIDS-PEN", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "kids", "budget", "time"],
+   "turns": [
+    {
+     "id": "I-KIDS-PEN-1", "message": "这周日想带 3 岁和 8 岁两个孩子去半岛玩", "searchContext": { "region": "peninsula" },
+     "gold": { "expectRoute": "assistant", "state": { "childAges": [3, 8], "region": "peninsula", "date": "2026-10-18" } },
+     "judge": { "expect": "10月18日（周日）半岛适合 3 岁和 8 岁：Half Moon Bay 南瓜节（9:00–17:00，免费入场）、Menlo Park 苏丹民间故事（免费）等，带时间。" }
+    },
+    {
+     "id": "I-KIDS-PEN-2", "message": "预算每人 20 刀以内", "searchContext": { "region": "peninsula", "date": "2026-10-18" },
+     "gold": { "expectRoute": "assistant", "state": { "childAges": [3, 8], "budget": 20, "budgetScope": "person", "date": "2026-10-18" }, "pricesGrounded": true, "mustNotInclude": ["几岁|幾歲|哪天|哪一天"] },
+     "judge": { "expect": "延续周日、半岛、3 岁和 8 岁：按每人 $20 以内筛选（免费入场的优先，说明餐饮停车另算），不再问年龄和日期。" }
+    },
+    {
+     "id": "I-KIDS-PEN-3", "message": "下午两点以后出发，有什么推荐？", "searchContext": { "region": "peninsula", "date": "2026-10-18" },
+     "gold": { "expectRoute": "assistant", "state": { "childAges": [3, 8], "budget": 20, "date": "2026-10-18", "startTime": "14:00" }, "mustNotInclude": ["几岁|幾歲|预算是多少|哪天"] },
+     "judge": { "expect": "保留周日、半岛、两个孩子、每人 $20：只推荐 14:00 以后还开着的（如 HMB 南瓜节到 17:00），提醒停车和人流。" }
+    }
+   ]
+  },
+  {
+   "id": "I-EN-SJ", "block": "I", "locale": "en", "currentPath": "/", "tags": ["multi-turn", "en", "transit", "thin-evidence"],
+   "turns": [
+    {
+     "id": "I-EN-SJ-1", "message": "Any free things to do in San Jose this Saturday with my 5-year-old?",
+     "gold": { "expectRoute": "assistant", "script": "en", "cardsLocale": "en", "state": { "childAges": [5], "city": "San Jose", "date": "2026-10-17" }, "namesGrounded": true, "pricesGrounded": true },
+     "judge": { "expect": "Sat, Oct 17 in San Jose with a 5-year-old: the site lists no free San Jose kids' event that day; say so briefly and offer the closest free South Bay options (Sunnyvale Hands on the Arts 10 AM-3 PM, Campbell Oktoberfest) or a free San Jose venue such as the King Library, in English." }
+    },
+    {
+     "id": "I-EN-SJ-2", "message": "We'll take VTA light rail. Which one is easiest to reach?",
+     "gold": { "expectRoute": "assistant", "script": "en", "cardsLocale": "en", "state": { "childAges": [5], "travelMode": "transit" }, "mustInclude": [["VTA", "light rail", "Light Rail"]], "namesGrounded": true },
+     "judge": { "expect": "Keep Saturday, the 5-year-old and free: pick the option easiest by VTA light rail and say what still needs checking (stop and last walk), without asking again for the child's age or the day." }
+    }
+   ]
+  },
+  {
+   "id": "I-HANT-SF", "block": "I", "locale": "zh-Hant", "currentPath": "/", "tags": ["multi-turn", "zh-Hant", "seniors", "consistency", "bblive-1011"],
+   "turns": [
+    {
+     "id": "I-HANT-SF-1", "message": "這週末舊金山有什麼適合長輩的免費活動？", "searchContext": { "city": "San Francisco" },
+     "gold": { "expectRoute": "assistant", "script": "zh-Hant", "state": { "city": "San Francisco", "freeOnly": true } },
+     "judge": { "expect": "這週末（10/17–18）舊金山適合長輩的免費活動：OMI History Day、Sunday Streets Excelsior、Sunnydale 南瓜節等，附時間，繁體。" }
+    },
+    {
+     "id": "I-HANT-SF-2", "message": "我媽不能走太多路，哪個最輕鬆？", "searchContext": { "city": "San Francisco" },
+     "gold": { "expectRoute": "assistant", "script": "zh-Hant", "state": { "city": "San Francisco" }, "mustNotInclude": ["(?:不能|無法|无法)判[斷断]哪[個个]"] },
+     "judge": { "expect": "從上一輪選一個最輕鬆的（如可坐著聽的 OMI 社區歷史講座），說明理由；結論和要點一致，繁體。" }
+    }
+   ]
+  },
+  {
+   "id": "I-FREMONT-TIME", "block": "I", "locale": "zh-Hans", "currentPath": "/", "tags": ["multi-turn", "time", "budget", "kids"],
+   "turns": [
+    {
+     "id": "I-FREMONT-TIME-1", "message": "明天上午想带孩子在 Fremont 附近玩一下", "searchContext": { "city": "Fremont", "date": "2026-10-13" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "Fremont", "date": "2026-10-13" }, "mustInclude": [["Coyote Hills", "湿地", "草坡"]] },
+     "judge": { "expect": "明天 10月13日（周二）上午 Fremont：推荐站内 Coyote Hills 湿地与草坡等，问一句孩子年龄或直接给适合大多数年龄的建议。" }
+    },
+    {
+     "id": "I-FREMONT-TIME-2", "message": "改成下午吧，孩子 6 岁，预算 30 刀", "searchContext": { "city": "Fremont", "date": "2026-10-13" },
+     "gold": { "expectRoute": "assistant", "state": { "city": "Fremont", "date": "2026-10-13", "childAges": [6], "budget": 30 }, "pricesGrounded": true, "mustNotInclude": ["哪天|哪一天|几号"] },
+     "judge": { "expect": "保留 Fremont、明天，改成下午、6 岁、$30：给下午适合 6 岁的安排（Coyote Hills 免费入园、带零食），不再问日期。" }
+    }
+   ]
+  }
+ ]
+}
