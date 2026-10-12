@@ -4864,7 +4864,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       // read them (WEB-BB-STREAMPREP sends streamVersion: 3); older tabs never get one.
       const drafts = progressStream && Number.isInteger(req.body?.streamVersion) && req.body.streamVersion >= 3;
       const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess, pageContext, signal: req.aiSignal,
-        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
+        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req), userId: currentUserId || undefined,
         ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard, ...(drafts ? { onDraft: progressStream.draft } : {}) } : {}) });
       const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
       const assistantMs = Math.max(0, Date.now() - assistantStartedAt);

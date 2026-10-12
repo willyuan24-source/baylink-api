@@ -326,10 +326,11 @@ test('soft cap: an edit of the plan in scope (换掉第二站) keeps the agent p
 
 test('the BayBay daily run limit defaults to 1000 and, when reached, gives the same daily notice', async () => {
   const filters = [];
-  const full = { updateOne: async () => ({}), findOneAndUpdate: async filter => { filters.push(filter); return null; } };
+  // The visitor's own share (CODE-API-02) has room; the site-wide count is full.
+  const full = { updateOne: async () => ({}), findOneAndUpdate: async filter => { filters.push(filter); return filter.id.startsWith('baybay-agent:') ? null : { count: 1 }; } };
   const { assistant, sent } = assistantWith({ config: { BAYBAY_DAILY_RUN_LIMIT: undefined }, Quota: full });
   const result = await ask(assistant, '蓝天使这周末飞吗');
-  assert.deepEqual(filters[0].count, { $lt: 1000 });
+  assert.deepEqual(filters.find(filter => filter.id.startsWith('baybay-agent:')).count, { $lt: 1000 });
   assert.equal(sent.length, 0);
   assert.equal(result.notice.kind, 'ai_daily_budget');
   assert.ok(result.research.warnings.includes('baybay_run_limit'));

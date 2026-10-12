@@ -66,6 +66,12 @@ The run has a 75-second deadline with 16 seconds reserved for final synthesis.
 1,000 shared model runs per Pacific day (API-BB-CUTOVER; 200 before). This is a
 run limit, not a currency cap (the daily $ caps are in `docs/ai-models.md`);
 one run can include several model requests and separately metered web lookup.
+Inside it, each member and each visitor has a daily share
+(`BAYBAY_MEMBER_RUN_LIMIT`, default 80; `BAYBAY_VISITOR_RUN_LIMIT`, default 30;
+keyed by an HMAC of the user id or client IP), claimed before the site-wide
+run, so one client cannot use up the day for everyone (CODE-API-02). A spent
+share gets the same `ai_daily_budget` notice and the warning
+`baybay_member_run_limit` / `baybay_visitor_run_limit`.
 The existing web-search cache and shared
 quota remain authoritative, including model-triggered searches; no tool bypasses
 that service. The service reads at most three pages and requests one weather
