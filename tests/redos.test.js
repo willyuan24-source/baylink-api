@@ -169,3 +169,60 @@ test('the sweep rewrites keep their matches', () => {
   assert.equal(unverifiedTransitTiming('about 20 to 25  minutes by bus'), true);
   assert.equal(fallbackExcerpt('开放时间：\n周二至周日开放。'), '周二至周日开放。');
 });
+
+// API-BB-QUALITY, stacked on this sweep: its new detectors (follow-up carry, the no-city
+// question, turn rules, the lead/points check, professional topics, the newcomer SSN
+// step) on its 500-character pathological messages, and its two citation patterns on
+// model-written text. Before the stack's fix, dropOffArea's /\[\[\s*([^\]]+?)\s*\]\]/
+// took ~0.6 s on [[ + 1,000 spaces (cubic) and overlap()'s /\[\[[^\]]*\]\]/ was quadratic.
+test('API-BB-QUALITY detectors and citation patterns stay under 50 ms at their input bounds', () => {
+  const timings = timeInChild(`
+const lib = name => require(require('path').join(ROOT, 'lib', name));
+const { nearbyClarifier, turnRules, leadConsistency, dropOffArea, ensureNewcomerSsn, failureReason } = lib('baybayQuality');
+const { professionalTopics } = lib('safetyRouting');
+const { resolveTaskState } = lib('baybayState');
+const { inferFilters } = lib('planner');
+const today = '2026-10-12';
+const fill = (head, pump, size, tail = 'x') => head + pump.repeat(Math.ceil((size - head.length - tail.length) / pump.length)).slice(0, size - head.length - tail.length) + tail;
+const message = text => {
+  nearbyClarifier(text, { state: {} });
+  turnRules({ message: text, state: { freeOnly: true, travelMode: 'transit', goal: 'newcomer' }, followup: true });
+  leadConsistency({ lead: text, points: [{ text, cardIds: ['e1'] }, { text, cardIds: [] }], gap: text });
+  professionalTopics(text);
+  resolveTaskState({ message: text, today, carry: true });
+  resolveTaskState({ message: text, previous: { childAges: [4, 7], goal: 'discover', region: 'east-bay' }, today, carry: true });
+  inferFilters(text, today);
+  ensureNewcomerSsn({ lead: text, points: [{ text, cardIds: [] }], gap: '' }, { message: text });
+};
+const cases = {};
+for (const pad of [' ', '\t', '\u3000', '一', '我', '的', 'a ', 'take the ', '每人 ', '预算 ', '排成 ', '，', '坐 ', '附近 ', '下午 ', '只带 ', '哪些'])
+  for (const head of ['', '预算', '每人', '排成', '坐', 'take ', '，', '我家', '帮我排到', '预算是每人', '哪些'])
+    cases['message ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad) + ' (500)'] = () => message(fill(head, pad, 500, '!'));
+const areaOf = ref => ref === 'e2' ? 'east-bay' : 'sf';
+const point = text => ({ text, cardIds: [] });
+Object.assign(cases, {
+  'dropOffArea [[ + spaces (6000)': () => dropOffArea({ points: [point(fill('[[', ' ', 6000)), point('[[e2]]')] }, { region: 'east-bay', areaOf }),
+  'dropOffArea [[ + U+3000 (6000)': () => dropOffArea({ points: [point(fill('[[', '\u3000', 6000)), point('[[e2]]')] }, { region: 'east-bay', areaOf }),
+  'dropOffArea [[ x 3000 (6000)': () => dropOffArea({ points: [point('[['.repeat(3000)), point('[[e2]]')] }, { region: 'east-bay', areaOf }),
+  // overlap(gap, lead + points): the joined lead and points of a 9,000-token final answer.
+  'gap overlap [[ runs (20000)': () => leadConsistency({ lead: fill('[[', '[[\u3000', 20000), points: [point(fill('[[', '[[ ', 20000)), point('乙')], gap: '请以官方页面为准。' + '[['.repeat(3000) }),
+  'failure reason HTTP digits (6000)': () => failureReason(new Error(fill('HTTP ', '1', 6000))),
+});
+for (const fn of Object.values(cases)) fn(); // warm up
+for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
+  assert.equal(timings.length, 17 * 11 + 5);
+  for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
+});
+
+test('the linearised API-BB-QUALITY citation patterns keep their matches', () => {
+  const { dropOffArea, leadConsistency } = require('../lib/baybayQuality');
+  const areaOf = ref => ({ sf1: 'sf', eb1: 'east-bay' })[ref] || null;
+  const draft = { lead: '周六去奥克兰。', points: [{ text: '湖边公园 [[ eb1 ]]', cardIds: [] }, { text: '旧金山博物馆 [[sf1]]', cardIds: [] }, { text: '带水。[[  ]]', cardIds: [] }], candidateIds: ['eb1', 'sf1'] };
+  const area = dropOffArea(draft, { region: 'east-bay', areaOf });
+  assert.equal(area.dropped, 1, 'the padded ref is read trimmed ([[ eb1 ]] is eb1)');
+  assert.deepEqual(area.draft.points.map(row => row.text), ['湖边公园 [[ eb1 ]]', '带水。[[  ]]']);
+  assert.deepEqual(area.draft.candidateIds, ['eb1']);
+  // A citation marker inside the gap is ignored when it is compared with the points.
+  const repeat = leadConsistency({ lead: '可以去。', points: [{ text: '入园免费，以官方页面为准。', cardIds: [] }, { text: '乙', cardIds: [] }], gap: '入园免费 [[e1]]，以官方页面为准 [[ e2 ]]。' });
+  assert.deepEqual(repeat.repairs, ['gap_repeat']);
+});

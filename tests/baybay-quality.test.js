@@ -202,10 +202,14 @@ test('the new detectors stay linear: 500-character pathological inputs finish in
   const pads = [' ', '一', '我', '的', 'a ', 'take the ', '每人 ', '预算 ', '排成 ', '，', '坐 ', '附近 '];
   for (const pad of pads) for (const head of ['', '预算', '每人', '排成', '坐', 'take ', '，', '我家']) {
     const text = (head + pad.repeat(Math.ceil(500 / pad.length))).slice(0, 499) + '!';
-    const started = process.hrtime.bigint();
-    nearbyClarifier(text, { state: {} }); turnRules({ message: text, state: { freeOnly: true, travelMode: 'transit', goal: 'newcomer' }, followup: true });
-    leadConsistency({ lead: text, points: [{ text, cardIds: ['e1'] }, { text, cardIds: [] }], gap: text }); professionalTopics(text);
-    const ms = Number(process.hrtime.bigint() - started) / 1e6;
+    // Best of three, as in tests/redos.test.js (which also times these detectors in a child
+    // process): one garbage collection while the whole suite runs is not a regression.
+    const ms = Math.min(...[0, 1, 2].map(() => {
+      const started = process.hrtime.bigint();
+      nearbyClarifier(text, { state: {} }); turnRules({ message: text, state: { freeOnly: true, travelMode: 'transit', goal: 'newcomer' }, followup: true });
+      leadConsistency({ lead: text, points: [{ text, cardIds: ['e1'] }, { text, cardIds: [] }], gap: text }); professionalTopics(text);
+      return Number(process.hrtime.bigint() - started) / 1e6;
+    }));
     assert.ok(ms < 50, `${JSON.stringify(head)} + ${JSON.stringify(pad)}: ${ms.toFixed(1)} ms`);
   }
 });
