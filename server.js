@@ -894,6 +894,11 @@ const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
 // is separately held to 10 attempts overall and 8 per account).
 const LOGIN_ACCOUNT_ANY_MAX = 100;
 const adminLoginId = String(config.ADMIN_LOGIN_ID || '').trim();
+// The login name an account signs in with: its e-mail field, except the administrator account
+// under ADMIN_LOGIN_ID, whose public name "admin" is retired. The sign-in limits key both steps
+// (password and authenticator) by this name, so failures typed against "admin" never count
+// toward the private name the owner uses.
+const signInName = user => (adminLoginId && user?.email === 'admin' && user?.role === 'admin' ? adminLoginId : user?.email);
 
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
   return authLimiter.check(key, { windowMs, maxRequests });
@@ -1781,9 +1786,11 @@ const authenticateToken = async (req, res, next) => {
 const disconnectAccount = userId => io.in(userId).disconnectSockets(true);
 const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, config, checkRateLimit: checkAuthRateLimit, getClientIp, issueToken,
   holdAccount: id => holdAccountOperation(User, id),
-  // G44: a wrong authenticator code after a correct password counts as a failed sign-in.
-  loginBlocked: ({ visitor, user }) => loginGuard.blocked({ visitor, account: user.email }),
-  onLoginFailure: ({ visitor, user }) => loginGuard.recordFailure({ visitor, account: user.email, adminAccountId: user.role === 'admin' ? user.id : null, factor: 'totp' }),
+  // G44: a wrong authenticator code after a correct password counts as a failed sign-in,
+  // keyed by the login name the password step used (signInName): failures typed against the
+  // retired name "admin" cannot hold the owner at the authenticator step.
+  loginBlocked: ({ visitor, user }) => loginGuard.blocked({ visitor, account: signInName(user) }),
+  onLoginFailure: ({ visitor, user }) => loginGuard.recordFailure({ visitor, account: signInName(user), adminAccountId: user.role === 'admin' ? user.id : null, factor: 'totp' }),
   // G44: the owner hears about authenticator changes on an administrator account.
   onSecurityEvent: ({ user, kind }) => { if (user?.role === 'admin') loginGuard.adminSecurityEvent({ kind, accountId: user.id }); },
   sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });

@@ -121,6 +121,11 @@ test('alert gates: off under NODE_ENV=test, without delivery or an owner address
   assert.equal(securityAlertState({ ...LIVE_ALERTS, OWNER_DIGEST_EMAIL: 'not-an-address' }).reason, 'no-owner-email');
   assert.equal(securityAlertState({ ...LIVE_ALERTS, SECURITY_ALERT_EMAIL: 'security@example.test', AI_ALERT_EMAIL: 'ai@example.test' }).to, 'security@example.test');
   assert.equal(securityAlertState({ ...LIVE_ALERTS, AI_ALERT_EMAIL: 'ai@example.test' }).to, 'ai@example.test');
+  // SECURITY_ALERT_EMAIL is enough on its own (no AI_ALERT_EMAIL / OWNER_DIGEST_EMAIL needed).
+  assert.deepEqual(securityAlertState({ NODE_ENV: 'production', NOTIFICATION_DELIVERY_ENABLED: 'true', SECURITY_ALERT_EMAIL: ' sec@example.test ' }), { enabled: true, reason: 'on', to: 'sec@example.test' });
+  assert.equal(securityAlertState({ NODE_ENV: 'test', NOTIFICATION_DELIVERY_ENABLED: 'true', SECURITY_ALERT_EMAIL: 'sec@example.test' }).reason, 'test');
+  assert.equal(securityAlertState({ NODE_ENV: 'production', SECURITY_ALERT_EMAIL: 'sec@example.test' }).reason, 'delivery-disabled');
+  assert.equal(securityAlertState({ NODE_ENV: 'production', NOTIFICATION_DELIVERY_ENABLED: 'true' }).reason, 'no-owner-email');
   assert.deepEqual(alertSteps({}), [10, 50, 200, 1000]);
   assert.deepEqual(alertSteps({ ADMIN_LOGIN_ALERT_STEPS: '5, 3, x, 3, 0' }), [3, 5]);
   const f = guardFixture({ config: { ...LIVE_ALERTS, NOTIFICATION_DELIVERY_ENABLED: 'false', ADMIN_LOGIN_ALERT_STEPS: '2' } });
@@ -154,6 +159,43 @@ test('server: admin sign-in failures (password and authenticator) are counted, a
   assert.equal(sent.length, 0, 'the third failure reached the alert step, but NODE_ENV=test never sends');
   const ok = await post('/api/auth/login/totp', { challengeToken: challenge.data.challengeToken, totpCode: totpAt(shared, Date.now()) }, '198.51.100.33');
   assert.equal(ok.status, 200); assert.ok(ok.data.token);
+});
+
+test('ADMIN_LOGIN_ID: 100 failures typed against the retired name "admin" never hold the owner at the authenticator step', async t => {
+  const shared = encodeBase32(crypto.randomBytes(20)), key = Buffer.alloc(32, 3), privateName = 'owner-private-login';
+  const models = createMemoryModels();
+  models.User = accountMemory([person('admin', { email: 'admin', role: 'admin', totpEnabledAt: Date.now(), accountSecurity: { secretCipher: encryptSecret(shared, 'admin', key), recoveryHashes: [] } })]);
+  models.AccountAuthChallenge = accountMemory();
+  const application = createApplication({ models,
+    config: { NODE_ENV: 'test', JWT_SECRET: SECRET, TRUST_PROXY_HOPS: 1, ACCOUNT_SECURITY_ENCRYPTION_KEY: key.toString('base64'), ADMIN_LOGIN_ID: privateName } });
+  await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => application.io.close(resolve)));
+  const post = (path, body, ip) => fetch(`http://127.0.0.1:${application.server.address().port}${path}`, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': ip }, body: JSON.stringify(body) }).then(async response => ({ status: response.status, data: await response.json() }));
+  // A stranger spreads 100 wrong passwords for "admin" over 13 visitor keys (each under its own ceilings).
+  for (let index = 0; index < LIMITS.account; index++) assert.equal((await post('/api/auth/login', { email: 'admin', password: 'WrongPassword1' }, `203.0.113.${index % 13}`)).status, 401);
+  assert.equal((await post('/api/auth/login', { email: 'admin', password: PASSWORD }, '198.51.100.40')).status, 429, 'the retired name is held (and refused anyway)');
+  const challenge = await post('/api/auth/login', { email: privateName, password: PASSWORD }, '198.51.100.41');
+  assert.equal(challenge.status, 200); assert.equal(challenge.data.mfaRequired, true);
+  const ok = await post('/api/auth/login/totp', { challengeToken: challenge.data.challengeToken, totpCode: totpAt(shared, Date.now()) }, '198.51.100.41');
+  assert.equal(ok.status, 200, 'the authenticator step is keyed by the private name the owner typed, not by "admin"'); assert.ok(ok.data.token);
+  // Wrong codes after the private name count toward the private name, as the password step does.
+  const wrongCode = totpAt(shared, Date.now()) === '000000' ? '111111' : '000000';
+  for (let round = 0; round < 2; round++) {
+    const again = await post('/api/auth/login', { email: privateName, password: PASSWORD }, '198.51.100.42');
+    assert.equal(again.status, 200);
+    for (let index = 0; index < 4; index++) assert.equal((await post('/api/auth/login/totp', { challengeToken: again.data.challengeToken, totpCode: wrongCode }, '198.51.100.42')).status, 403);
+  }
+  assert.equal((await post('/api/auth/login', { email: privateName, password: PASSWORD }, '198.51.100.42')).status, 429, 'eight authenticator failures on the private name from one visitor');
+});
+
+test('the failed-sign-in alert sends the owner to steps that exist today (the offline script), not to a missing web form', () => {
+  const { adminAlert } = require('../lib/loginGuard');
+  const { text } = adminAlert({ count: 10, totp: 0, step: 10, steps: [10, 50], at: Date.parse('2026-10-12T17:00:00Z') });
+  const first = text.split('\n').find(line => line.startsWith('1. '));
+  assert.match(first, /node scripts\/set-admin-password\.js --apply/);
+  assert.match(first, /--env=/); assert.match(first, /POST \/api\/users\/me\/password/); assert.match(first, /12 位/);
+  assert.doesNotMatch(text, /隐私与安全/);
 });
 
 test('admin security events: one owner e-mail per change (authenticator, recovery codes, password, revoke); unknown kinds send nothing', async () => {
