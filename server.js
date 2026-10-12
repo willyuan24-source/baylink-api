@@ -58,6 +58,7 @@ const { safetyResponse, emergencyResponse, professionalResponse } = require('./l
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
+const { revokeAdminSessions } = require('./lib/adminSessions');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -799,8 +800,9 @@ const MODERATION_LOG_ACTIONS = new Set([
   'account_suspended',
   'account_restored',
   'outing_cancelled',
+  'admin_sessions_revoked',
 ]);
-const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing']);
+const MODERATION_LOG_TARGET_TYPES = new Set(['user', 'post', 'report', 'official_verification', 'outing', 'admin_sessions']);
 
 const REPORT_TARGET_TYPES = new Set(['post', 'user', 'message', 'outing', 'outing_message']);
 const REPORT_REASONS = new Set(['spam', 'scam', 'harassment', 'illegal', 'misleading', 'duplicate', 'other']);
@@ -852,9 +854,9 @@ const validateNicknameReservedWords = (nickname, user) => {
   return null;
 };
 
-const assertPostCommentable = (post, user) => {
+const assertPostCommentable = (post, asAdmin) => {
   if (!post || post.isDeleted) return { status: 404, error: '内容不存在或已被移除。' };
-  if (post.adminHidden && user?.role !== 'admin') {
+  if (post.adminHidden && !asAdmin) {
     return { status: 404, error: '内容不存在或已被移除。' };
   }
   return null;
@@ -935,16 +937,11 @@ const formatContactTypeLabel = (contactType) => {
   return '联系方式';
 };
 
-const isAdminUserId = async (userId) => {
-  if (!userId) return false;
-  const user = await User.findOne({ id: userId }).select('role').lean();
-  return user?.role === 'admin';
-};
-
-const applyPublicPostVisibility = async (query, viewerUserId) => {
-  if (!(await isAdminUserId(viewerUserId))) {
-    query.adminHidden = { $ne: true };
-  }
+// Public routes read an optional session. `isAdmin` is the session rule (isAdminSession:
+// with ADMIN_MFA_REQUIRED=true only an authenticator session), never the stored role alone,
+// so hidden posts, report counts and contact values follow the same gate as admin routes.
+const applyPublicPostVisibility = (query, viewerIsAdmin) => {
+  if (!viewerIsAdmin) query.adminHidden = { $ne: true };
 };
 
 const getBlockedAuthorIdsForUser = async (userId) => {
@@ -1091,11 +1088,15 @@ const assertCanMessage = async (senderId, recipientId) => {
   }
 };
 
-const getCurrentUserIdFromRequest = async (req) => {
+const getPublicViewer = async (req) => {
   const token = extractBearerToken(req.headers.authorization);
-  if (!token) return null;
-  try { return (await verifySession(token)).user.id; } catch { return null; }
+  if (!token) return { userId: null, isAdmin: false };
+  try {
+    const session = await verifySession(token);
+    return { userId: session.user.id, isAdmin: isAdminSession({ user: session.user, session }) };
+  } catch { return { userId: null, isAdmin: false }; }
 };
+const getCurrentUserIdFromRequest = async req => (await getPublicViewer(req)).userId;
 
 const resolveReportTarget = async (targetType, targetId, reporterId, conversationId) => {
   const id = String(targetId ?? '').trim();
@@ -2245,7 +2246,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
     if (nickname !== undefined) {
       const nextNickname = trimProfileString(nickname, 30);
       if (!nextNickname) return res.status(400).json({ error: 'Nickname is required' });
-      const reservedNicknameErr = validateNicknameReservedWords(nextNickname, user);
+      const reservedNicknameErr = validateNicknameReservedWords(nextNickname, { role: isAdminSession(req) ? 'admin' : 'user' });
       if (reservedNicknameErr) return res.status(400).json({ message: reservedNicknameErr, error: reservedNicknameErr });
       user.nickname = nextNickname;
     }
@@ -2266,7 +2267,7 @@ app.patch('/api/users/me', authenticateToken, async (req, res) => {
       if (socialLinks.instagram !== undefined) merged.instagram = trimProfileString(socialLinks.instagram, 120);
       user.socialLinks = merged;
     }
-    if (user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
+    if (isAdminSession(req) && user.role === 'admin' && isOfficialVerified !== undefined) user.isOfficialVerified = isOfficialVerified;
     for (const [field, imageCheck] of [['avatar', avatarCheck], ['coverImage', coverCheck]]) {
       if (imageCheck.action === 'remove') user[field] = '';
       if (imageCheck.action === 'upload') {
@@ -2409,8 +2410,8 @@ const countActiveComments = (comments) =>
 const findCommentOnPost = (post, commentId) =>
   (post?.comments || []).find((c) => c.id === commentId);
 
-const canManageComment = (user, comment) =>
-  user?.role === 'admin' || user?.id === comment?.authorId;
+const canManageComment = (req, comment) =>
+  isAdminSession(req) || req.user?.id === comment?.authorId;
 
 const createCommentDoc = (user, content, parentId = null) => ({
   id: `${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
@@ -2486,19 +2487,18 @@ const formatPostResponse = (p, currentUserId, authorById, isAdmin = false, comme
   };
 };
 
-const formatPostsResponseList = async (posts, currentUserId) => {
+const formatPostsResponseList = async (posts, currentUserId, viewerIsAdmin = false) => {
   const authorById = await fetchAuthorTrustByIds(posts);
-  const isAdmin = await isAdminUserId(currentUserId);
-  return posts.map((p) => formatPostResponse(p, currentUserId, authorById, isAdmin));
+  return posts.map((p) => formatPostResponse(p, currentUserId, authorById, viewerIsAdmin));
 };
 
 app.get('/api/posts/featured', async (req, res) => {
   try {
     const limitRaw = parseInt(req.query.limit, 10);
     const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 0;
-    const currentUserId = await getCurrentUserIdFromRequest(req);
+    const { userId: currentUserId, isAdmin: viewerIsAdmin } = await getPublicViewer(req);
     let query = { ...publicPostFilters({ availability: 'current' }), isFeatured: true };
-    await applyPublicPostVisibility(query, currentUserId);
+    applyPublicPostVisibility(query, viewerIsAdmin);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
       if (blockedIds.length) query.authorId = { $nin: blockedIds };
@@ -2506,7 +2506,7 @@ app.get('/api/posts/featured', async (req, res) => {
     let q = Post.find(query).sort({ featuredAt: -1, createdAt: -1 });
     if (limit > 0) q = q.limit(limit);
     const posts = await q.lean();
-    res.json({ posts: await formatPostsResponseList(posts, currentUserId) });
+    res.json({ posts: await formatPostsResponseList(posts, currentUserId, viewerIsAdmin) });
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
 
@@ -2515,12 +2515,11 @@ app.get('/api/posts/:id', async (req, res) => {
     if (req.params.id === 'featured') return res.sendStatus(404);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false }).lean();
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
-    const currentUserId = await getCurrentUserIdFromRequest(req);
-    if (post.adminHidden && !(await isAdminUserId(currentUserId))) {
+    const { userId: currentUserId, isAdmin } = await getPublicViewer(req);
+    if (post.adminHidden && !isAdmin) {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
     const authorById = await fetchAuthorTrustByIds([post]);
-    const isAdmin = await isAdminUserId(currentUserId);
     const commentAuthorById = await fetchCommentAuthorsByIds(post.comments);
     const commentRoleById = new Map([...commentAuthorById.entries()].map(([id, u]) => [id, u.role]));
     res.json(formatPostResponse(post, currentUserId, authorById, isAdmin, commentRoleById, commentAuthorById));
@@ -2542,15 +2541,15 @@ app.get('/api/posts', async (req, res) => {
         catch (error) { return res.status(400).json({ error: error.message }); }
       }
     }
-    const currentUserId = await getCurrentUserIdFromRequest(req);
-    await applyPublicPostVisibility(query, currentUserId);
+    const { userId: currentUserId, isAdmin: viewerIsAdmin } = await getPublicViewer(req);
+    applyPublicPostVisibility(query, viewerIsAdmin);
     if (currentUserId) {
       const blockedIds = await getBlockedAuthorIdsForUser(currentUserId);
       if (blockedIds.length) query.authorId = { $nin: blockedIds };
     }
     const posts = await Post.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
     const totalCount = await Post.countDocuments(query);
-    const formatted = await formatPostsResponseList(posts, currentUserId);
+    const formatted = await formatPostsResponseList(posts, currentUserId, viewerIsAdmin);
     res.json({ posts: formatted, hasMore: totalCount > skip + posts.length, filtersApplied: true });
   } catch (e) { res.status(500).json({ error: '加载失败，请稍后再试' }); }
 });
@@ -2575,7 +2574,7 @@ app.get('/api/users/me/posts', authenticateToken, async (req, res) => {
     const query = { isDeleted: false, authorId: req.user.id };
     const posts = await Post.find(query).sort({ createdAt: -1, id: -1 }).skip(skip).limit(limit + 1).lean();
     const hasMore = posts.length > limit;
-    res.json({ posts: await formatPostsResponseList(posts.slice(0, limit), req.user.id), hasMore });
+    res.json({ posts: await formatPostsResponseList(posts.slice(0, limit), req.user.id, isAdminSession(req)), hasMore });
   } catch { res.status(500).json({ error: '无法加载你的发布，请重试。' }); }
 });
 
@@ -2592,8 +2591,8 @@ const pickUserPostFields = (body) => {
 const POST_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
 const POST_DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
 
-const getDailyPostLimit = (user) => {
-  if (user.role === 'admin') return null;
+const getDailyPostLimit = (user, asAdmin) => {
+  if (asAdmin) return null;
   if (user.isOfficialVerified) return 20;
   if (user.isPhoneVerified) return 10;
   return 3;
@@ -2611,8 +2610,8 @@ const isHighRiskPostCategory = (body) => {
   return HIGH_RISK_CATEGORY_SLUGS.has(raw.toLowerCase());
 };
 
-const checkCreatePostRateLimit = async (user) => {
-  const dailyLimit = getDailyPostLimit(user);
+const checkCreatePostRateLimit = async (user, asAdmin) => {
+  const dailyLimit = getDailyPostLimit(user, asAdmin);
   if (dailyLimit == null) return null;
   const windowStart = Date.now() - POST_DAILY_WINDOW_MS;
   const count = await Post.countDocuments({
@@ -2706,7 +2705,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
   try {
     const accountPostErr = assertAccountCanPost(req.user);
     if (accountPostErr) return res.status(403).json({ error: accountPostErr });
-    const rateErr = await checkCreatePostRateLimit(req.user);
+    const rateErr = await checkCreatePostRateLimit(req.user, isAdminSession(req));
     if (rateErr) return res.status(rateErr.status).json({ error: rateErr.error });
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
@@ -2874,7 +2873,7 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
     }
 
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const normalized = normalizeCommentContent(req.body?.content);
@@ -2913,12 +2912,12 @@ app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
 app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
-    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (!canManageComment(req, comment)) return res.sendStatus(403);
     if (comment.isDeleted) return res.status(400).json({ error: '评论已删除，无法编辑' });
 
     const normalized = normalizeCommentContent(req.body?.content);
@@ -2940,12 +2939,12 @@ app.patch('/api/posts/:id/comments/:commentId', authenticateToken, async (req, r
 app.delete('/api/posts/:id/comments/:commentId', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
-    const postErr = assertPostCommentable(post, req.user);
+    const postErr = assertPostCommentable(post, isAdminSession(req));
     if (postErr) return res.status(postErr.status).json({ error: postErr.error });
 
     const comment = findCommentOnPost(post, req.params.commentId);
     if (!comment) return res.status(404).json({ error: '评论不存在' });
-    if (!canManageComment(req.user, comment)) return res.sendStatus(403);
+    if (!canManageComment(req, comment)) return res.sendStatus(403);
     if (comment.isDeleted) return res.status(400).json({ error: '评论已删除' });
 
     const hasReplies = (post.comments || []).some((c) => c.parentId === comment.id);
@@ -3828,6 +3827,28 @@ app.get('/api/admin/moderation-logs', authenticateToken, requireAdmin, async (re
   } catch (e) {
     console.error('GET /api/admin/moderation-logs error:', e.message);
     return res.status(500).json({ error: '获取操作日志失败' });
+  }
+});
+
+// G44: sign every administrator account out everywhere (other browsers, phones, any
+// leaked token). The caller gets a fresh session in the response so this tab keeps
+// working; an authenticator session stays an authenticator session. The same
+// revocation is available offline: scripts/revoke-admin-sessions.js.
+app.post('/api/admin/sessions/revoke', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    if (!checkAuthRateLimit(`admin-session-revoke:${req.user.id}`, { windowMs: 60 * 60 * 1000, maxRequests: 5 })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    const result = await revokeAdminSessions({ User, now: options.adminSessionsNow || Date.now });
+    for (const id of result.ids) disconnectAccount(id);
+    await createModerationLog({ admin: req.user, action: 'admin_sessions_revoked', targetType: 'admin_sessions', targetId: String(result.accounts),
+      newValue: { accounts: result.accounts, revokedAt: result.at } });
+    const fresh = await User.findOne({ id: req.user.id });
+    if (!fresh) return res.status(401).json({ error: '登录已过期，请重新登录。' });
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true, revokedAccounts: result.accounts, revokedAt: result.at,
+      user: { ...sanitizeUserForClient(fresh), token: issueToken(fresh, { mfaVerified: req.session.payload.mfaVerified === true }) } });
+  } catch (e) {
+    console.error('POST /api/admin/sessions/revoke error:', e.message);
+    res.status(503).json({ error: '暂时无法撤销管理员登录，请重试。' });
   }
 });
 
