@@ -12,6 +12,8 @@ Frontend: `src/features/profile/PrivacySecurity.tsx`, `ProfileView.tsx`, `Profil
 | `POST /api/users/me/privacy/export` | Authenticated owner plus fresh current password and MFA factor when enabled; downloads explicitly whitelisted owned records. |
 | `DELETE /api/users/me/privacy/account` | Same proof plus a typed confirmation phrase in any site language: `注销我的账号`, `註銷我的帳號` or `DELETE MY ACCOUNT` (whitespace, letter case and the 账/帐/賬/帳, 注/註, 销/銷, 号/號 variants are ignored). Optional `locale` (`zh-Hans`, `zh-Hant`, `en`) picks the language of the refusal and failure messages. Administrator deletion is refused until safe role handover. Claims deletion only when account work is idle, then clears owned data transactionally. A failed transaction answers `500 ACCOUNT_DELETE_FAILED` (nothing changed, still signed in) or, if the account could not be reopened or the outcome is unknown (the driver reported a failure but the User row is gone), `503 ACCOUNT_DELETE_INTERRUPTED`. |
 | `POST /api/users/me/security/revoke-sessions` | Fresh proof; increments session revision, revokes existing tokens and disconnects sockets. |
+| `POST /api/users/me/password` | Current password plus the MFA factor when enabled (same proof and rate limit); new password with the sign-up strength rule; signs every other session out and returns this browser's new session. API-SEC. |
+| `POST /api/admin/sessions/revoke` | Admin route (`requireAdmin`, so an authenticator session under `ADMIN_MFA_REQUIRED`); signs every administrator account out everywhere and returns the caller a fresh session. API-SEC. |
 | `POST /api/users/me/security/totp/setup` | Administrator plus fresh password; requires a separate configured encryption key; returns pending secret and recovery codes once. Does not enable MFA. |
 | `POST /api/users/me/security/totp/confirm` | Fresh password, saved-recovery acknowledgement, valid first six-digit code, unexpired pending setup and atomic proof comparison; activates and rotates session. |
 | `POST /api/auth/login/totp` | Password-created, five-minute challenge; code/recovery verification completes sign-in. Challenge tokens have a distinct purpose and cannot authenticate API or sockets. |
@@ -55,7 +57,7 @@ Pure counters deliberately fail closed after an unclean API/worker shutdown or f
 
 ## MFA configuration and recovery
 
-**Administrator sign-in (ENGSEC-03, both opt-in, off by default so the owner is never locked out).** `ADMIN_LOGIN_ID`: a private login name for the administrator account, whose legacy login name is the public word `admin`; once set, `admin` is refused like an unknown name and the owner signs in with the private name and the same password (giving the account a real e-mail address has the same effect). `ADMIN_MFA_REQUIRED=true`: admin routes (`requireAdmin`) and the admin checks inside member routes act only for a session signed in with the authenticator (`mfaVerified`); the administrator can still sign in, use member features and set up the authenticator, so turn it on after enrolling. Not covered by the flag: the public-page view of admin-hidden posts and the posting/messaging limit exemptions, which read the stored role.
+**Administrator sign-in (ENGSEC-03, both opt-in, off by default so the owner is never locked out).** `ADMIN_LOGIN_ID`: a private login name for the administrator account, whose legacy login name is the public word `admin`; once set, `admin` is refused like an unknown name and the owner signs in with the private name and the same password (giving the account a real e-mail address has the same effect). `ADMIN_MFA_REQUIRED=true`: admin routes (`requireAdmin`) and the admin checks inside member routes act only for a session signed in with the authenticator (`mfaVerified`); the administrator can still sign in, use member features and set up the authenticator, so turn it on after enrolling. Since API-SEC (2026-10-12) the same session rule also decides the public post views (admin-hidden posts, report counts and contact values on `/api/posts`, `/api/posts/featured`, `/api/posts/:id`), commenting on hidden posts, editing or deleting other members' comments, reserved nicknames, the self-set official badge and the unlimited daily post count; a password-only administrator session is an ordinary member there. Only the administrator's own `limited`/`suspended` exemption and the admin badge on posts and comments (the account's identity, not a power) still read the stored role. See "Administrator account: the owner's safe order" below.
 
 Set `ACCOUNT_SECURITY_ENCRYPTION_KEY` to a canonical base64 encoding of exactly 32 cryptographically random bytes, stored as a server secret. It is separate from `JWT_SECRET`; no key is generated, installed or enabled for an administrator by this patch. Missing/invalid configuration disables new enrollment and leaves existing password-only administrators usable.
 
@@ -64,6 +66,55 @@ Per-user secrets use AES-256-GCM with user-specific associated data. Codes follo
 Password reset increments `sessionRevision`; issued tokens carry the revision from the credential-proved snapshot. Login rechecks that password proof after bcrypt, security mutations compare that proof atomically, and activation/disable mint their new token from the CAS result rather than rereading a later reset revision. A password reset at any point invalidates tokens based on the older proof. Do not replace the encryption key blindly while enrolled users rely on it: first confirm recovery access and use a controlled disable/re-enrollment or separately reviewed migration.
 
 Reference design sources: [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238), [OWASP MFA guidance](https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html), [OWASP authentication guidance](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
+
+## Administrator account: the owner's safe order / 管理员账号：店主操作顺序
+
+API-SEC, 2026-10-12. Everything below is opt-in: with no env change the site behaves as before and the owner cannot be locked out.
+
+### 中文
+
+**先知道：** 管理员账号的登录名是公开的单词 `admin`，没有邮箱，所以"忘记密码"邮件到不了它；最早的种子密码还在公开的代码历史里。下面的顺序先换密码、再加验证器、最后把旧登录全部踢掉。每一步做完都可以停，不会把自己锁在外面。
+
+1. **换密码（任选一种）**
+   - 已登录时：`POST /api/users/me/password`，正文 `{ "password": "当前密码", "newPassword": "新密码" }`（开了验证器再加 `"totpCode"`）。网页上的"修改密码"表单还没做（已交给网页端）。
+   - 不用登录：在自己电脑的 baylink-backend 目录运行 `node scripts/set-admin-password.js --env=<含 MONGO_URI 的 .env 路径>`（先空跑，看清是哪个账号），再加 `--apply`，按提示输入两次新密码（屏幕不显示；至少 12 位，含大写字母、小写字母和数字）。Render 的 Shell 里也能跑，那里不用 `--env`。
+   - 换完以后，这个账号所有已登录的设备都会退出，用新密码重新登录。
+2. **设置加密密钥** `ACCOUNT_SECURITY_ENCRYPTION_KEY`（Render → Environment）。必须是**正好 32 个随机字节的 base64**（44 个字符、以 `=` 结尾），用 `openssl rand -base64 32` 或 `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` 生成。格式不对时，验证器设置会显示"尚未配置"，不会报错，也不会锁人。设好以后不要再改。
+3. **绑定验证器：** 用管理员登录 → 我的 → 隐私与安全 → 开启验证器 → 用手机验证器 App 扫码 → **把 10 个恢复码抄下来离线保存** → 输入 6 位代码确认。确认的那一刻，这个账号其他所有登录都会失效；之后登录要"密码 + 6 位代码"。
+4. **打开开关** `ADMIN_MFA_REQUIRED=true`（Render）。之后只用密码登录的管理员会话不能做任何管理员操作，也看不到被隐藏的帖子和别人的联系方式。
+5. **撤销所有管理员登录**（第 3 步已经踢掉这个账号的旧登录；这一步再确认一次，也覆盖其他管理员账号）：
+   - 已登录（验证器会话）时：`POST /api/admin/sessions/revoke`，当前页面拿到新的登录，其他设备全部退出；
+   - 或者：`node scripts/revoke-admin-sessions.js --env=<.env 路径>`（空跑显示有几个管理员账号），再加 `--apply`。
+6. **（可选）** `ADMIN_LOGIN_ID=<一个不公开的长登录名>`：之后 `admin` 不能再登录，改用这个名字加原密码登录。
+
+**登录失败提醒：** 管理员账号当天登录失败到 10 / 50 / 200 / 1000 次（`ADMIN_LOGIN_ALERT_STEPS` 可改）时给店主发一封邮件，每档每天一封；"密码对了但验证器代码错"的次数单独写出来（说明密码可能已经泄露）。管理员账号开启或停用验证器、换恢复码、改密码、撤销所有管理员登录时，也各发一封"刚刚发生了什么、如果不是你本人该怎么办"的邮件。需要 `NOTIFICATION_DELIVERY_ENABLED=true`、Resend 配好、收件人 `SECURITY_ALERT_EMAIL`（没有就用 `AI_ALERT_EMAIL`，再没有就用 `OWNER_DIGEST_EMAIL`）。
+
+**登录限制（重启不清零）：** 同一访客 15 分钟内失败 10 次、同一访客对同一账号失败 8 次、所有访客对同一账号失败 100 次后，暂停到这 15 分钟结束。计数存在 Mongo 的 `authlimits` 集合，只存加密摘要，不存 IP、邮箱或账号 id，过期自动删除。
+
+**万一出问题：** 验证器丢了 → 用恢复码登录，再在"隐私与安全"停用后重新绑定；恢复码也丢了 → 需要核实身份后人工处理数据库（API 不会自动绕过验证器）。管理员操作被挡（`ADMIN_MFA_REQUIRED`）→ 退出后用验证器重新登录；急用时删掉 `ADMIN_MFA_REQUIRED` 就恢复旧行为。
+
+### English
+
+**Why:** the administrator's login name is the public word `admin`, it has no mailbox (the e-mail reset cannot reach it), and the original seed password is in the public repository history. The order below replaces the password, adds the authenticator, then signs every old session out. It is safe to stop after any step.
+
+1. **Replace the password.** Signed in: `POST /api/users/me/password` with `{ "password", "newPassword" }` (plus `totpCode` or `recoveryCode` once the authenticator is on); the web form is a follow-up. Not signed in: `node scripts/set-admin-password.js --env=<file with MONGO_URI>` (dry run), then `--apply`; the new password is typed twice at a hidden prompt (12-128 characters, upper- and lower-case letters and a digit) and never printed. Either way every session of the account is signed out.
+2. **Set `ACCOUNT_SECURITY_ENCRYPTION_KEY`:** exactly 32 random bytes in base64 (44 characters ending in `=`), e.g. `openssl rand -base64 32`. Any other value leaves authenticator setup unavailable (not an error, no lockout). Never change it after enrolling.
+3. **Enroll the authenticator** (Me → Privacy & security), save the 10 recovery codes offline, confirm with a code. Confirming signs out every other session of the account; from then on sign-in is password + code.
+4. **Set `ADMIN_MFA_REQUIRED=true`.** A password-only administrator session then has no admin power anywhere: admin routes, hidden posts, contact values and report counts on public post views, comment moderation, reserved nicknames, the official badge, the unlimited post count.
+5. **Revoke every administrator session:** `POST /api/admin/sessions/revoke` from the authenticator session (the caller gets a fresh session), or `node scripts/revoke-admin-sessions.js --env=<file> --apply`. Both bump `sessionRevision` and `sessionsRevokedAt` on every `role: 'admin'` account; the endpoint also disconnects their sockets and logs `admin_sessions_revoked`.
+6. **Optional:** `ADMIN_LOGIN_ID=<a long private login name>`; `admin` then stops working.
+
+**Sign-in limits** (`lib/loginGuard.js`, survive restarts): failed sign-ins per 15-minute window, 10 per visitor, 8 per visitor on one account, 100 per account across visitors. HMAC-keyed TTL documents in the `authlimits` collection; no IP, login name or account id is stored. An unreadable store fails open (the in-memory limiter still applies). A wrong authenticator code after a correct password counts too.
+
+**Owner alert:** administrator sign-in failures per Pacific day at 10 / 50 / 200 / 1000 (`ADMIN_LOGIN_ALERT_STEPS`) send one e-mail per step per day, with the authenticator-failure count and these steps, and no address or IP. A change on an administrator account (authenticator enabled or disabled, recovery codes replaced, password changed, all admin sessions revoked) sends one notice each, so a change made by someone else is noticed. Gates: `NOTIFICATION_DELIVERY_ENABLED=true`, Resend configured, an owner address (`SECURITY_ALERT_EMAIL`, else `AI_ALERT_EMAIL`, else `OWNER_DIGEST_EMAIL`); never under `NODE_ENV=test`.
+
+## Phone verification SMS and reset links (API-SEC, 2026-10-12)
+
+- **US numbers only** (`lib/usPhone.js`): Canada, the non-US Caribbean, Bermuda and non-geographic codes (toll-free, premium, 5XX personal, 456, 710, reserved) are refused with `400 PHONE_NOT_US` before any SMS budget is spent. US territories (787/939, 340, 671, 670, 684) are accepted. It is a refusal list, so a new US overlay code keeps working; keep Twilio geo permissions on United States only as the provider-side backstop.
+- **Verified e-mail first:** `409 EMAIL_VERIFICATION_REQUIRED` until the account's current e-mail is verified (Me → notification settings → verify e-mail). `SMS_REQUIRE_VERIFIED_EMAIL` = `true` / `false`; unset = on exactly when notification e-mail delivery is on (`NOTIFICATION_DELIVERY_ENABLED=true` with Resend), so nobody is asked for a step the site cannot complete.
+- **New-account share:** accounts younger than 24 hours draw on at most `SMS_NEW_ACCOUNT_DAILY_LIMIT` (default 40% of `SMS_VERIFY_DAILY_LIMIT`) of the day's pool (`503 SMS_NEW_ACCOUNT_CAPACITY`); the rest is kept for older accounts. Accounts without a creation time count as old.
+- **Claim before send (CODE-API-04):** the durable per-number, per-account, new-account and site-wide ceilings are claimed before the send branch, for every delivery path; with no delivery path the request is refused without spending budget.
+- **Reset links:** `forgot-password` puts the token in the fragment (`/reset-password#token=…`) when the request carries `resetLinkStyle: "fragment"` (the page that reads `location.hash` sends it) or `PASSWORD_RESET_LINK_STYLE=fragment` is set; otherwise the `?token=` form older pages read. `reset-password` takes the token from the JSON body either way. Tokens last 30 minutes.
 
 ## Error responses and process lifecycle
 
