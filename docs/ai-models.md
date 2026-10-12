@@ -199,10 +199,14 @@ pause: null | { reason: 'daily_budget' | 'paused' | 'provider_unavailable',   //
                 resumesAt?: ISO,                  // daily_budget only: next Pacific midnight
                 actions: [{ id: 'call-911', label: '911', href: 'tel:911' }, { id: 'call-211', label: '211', href: 'tel:211' }] }
 reduced: null | { reason: 'daily_budget_soft', kind: 'ai_budget_reduced', banner: {…3 locales}, resumesAt?: ISO }
+aiUntil?: ISO                                    // API-BB-QUALITY: ANTHROPIC_USE_UNTIL, when set
+pauseScheduled?: { kind: 'ai_pause_scheduled', at: ISO, banner: {…3 locales} }   // the last 7 days before aiUntil
 
 // guide-chat result (v1 and v2)
 notice?: { kind: 'ai_daily_budget' | 'ai_paused' | 'ai_budget_reduced', text: string /* reader's locale */, resumesAt?: ISO }
 ```
+
+**API-BB-QUALITY additions.** A v2 BayBay call refused by the visitor's daily AI count (`AI_DAILY_LIMIT`) or a $ cap is not retried and returns `notice.kind = 'ai_daily_budget'` (`ai_paused` when the quota store cannot be read), on the fast path and the agent path. The governance refusals (`AI_DAILY_LIMIT` 429, `AI_CONCURRENCY_LIMIT` 429, `AI_QUOTA_UNAVAILABLE` 503) follow the request `locale`. Before the Claude cutoff, `pauseScheduled.banner` says when BayBay pauses (for example `AI 助手预计 10月29日（周四）17:00 起暂停；之后仍可查看站内资料，紧急情况请直接拨打 911。`); after it the `ai_paused` pause above applies. A failed provider call adds `failure: { kind: 'quota' | 'timeout' | 'cancelled' | 'http' | 'stream' | 'other', status?, code? }` to its `research.modelResponses` row (never provider text); a 429/5xx first call waits 0.6–1.2 s before the one retry, and when nothing was drafted yet the retry streams its lead.
 
 Show `pause.banner` (or `notice.text`) above the answer, with the 911 / 211 actions first; never show dollar amounts. Banner texts: 今日 AI 名额已满，以下为站内资料；明天会恢复。 / AI 助手暂停，以下为站内资料。 / 今天 AI 用量较高：先用站内资料快速回答，暂不联网查询。
 

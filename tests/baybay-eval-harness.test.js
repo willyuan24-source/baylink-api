@@ -26,6 +26,41 @@ test('casebook has the planned 66 turns, valid golds and the RC-34 follow-up and
   for (const book of casebooks()) assert.equal(book.pinnedNow, '2026-10-08T10:00:00-07:00');
 });
 
+test('API-BB-QUALITY books: >= 8 multi-turn items in block I, >= 6 routing / false-negative / thin-evidence items in block J, pinned 10-12', async () => {
+  const { validateCases } = await load('gold.mjs');
+  const books = fs.readdirSync(EVAL).filter(file => /^cases-[IJ]-.+\.json$/.test(file)).map(file => JSON.parse(fs.readFileSync(path.join(EVAL, file), 'utf8')));
+  const cases = books.flatMap(book => book.cases);
+  assert.ok(validateCases(cases) >= 30);
+  for (const book of books) assert.equal(book.pinnedNow, '2026-10-12T09:00:00-07:00');
+  const multi = cases.filter(item => item.block === 'I' && item.turns.length >= 2);
+  assert.ok(multi.length >= 8, 'at least eight multi-turn items');
+  assert.ok(multi.every(item => item.turns.slice(1).some(turn => turn.gold.state)), 'every follow-up item checks the carried state');
+  // The BB-LIVE 10-11 conversations W1, W2 and M1 are reproduced turn for turn.
+  for (const id of ['I-W1', 'I-W2', 'I-M1']) assert.ok(cases.some(item => item.id === id && item.tags.includes('bblive-1011')), id);
+  const j = cases.filter(item => item.block === 'J');
+  assert.ok(j.filter(item => item.tags.some(tag => ['false-negative', 'thin-evidence', 'clarifier', 'newcomer'].includes(tag))).length >= 6);
+  assert.ok(j.filter(item => item.turns.some(turn => turn.gold.safetyTopic !== undefined)).length >= 6, 'routing golds');
+  const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json', 'discoveries.json', 'discoveries.en.json']
+    .map(file => fs.readFileSync(path.join(ROOT, 'data', file), 'utf8')).join('\n');
+  for (const turn of cases.flatMap(item => item.turns).filter(turn => turn.gold.goldEntity)) {
+    for (const rule of turn.gold.mustInclude || []) assert.ok([].concat(rule).some(source => new RegExp(source, 'iu').test(corpus)), `${turn.id}: ${rule}`);
+  }
+  const arms = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
+  assert.deepEqual(arms.sets.quality, { blocks: ['I', 'J'], arms: ['code-defaults'], baselineArm: 'code-defaults' });
+});
+
+test('gold: carried state (arrays as sets), plan card, route reason, safety topic, no drafts and English cards', async () => {
+  const { scoreTurn } = await load('gold.mjs');
+  const payload = { responseMode: 'assistant', answer: 'Sat, Oct 17: the Berkeley harvest festival is free.', taskState: { childAges: [7, 4], travelMode: 'transit', budget: null },
+    assistantPlan: { stops: [{ id: 'a' }] }, route: { reason: 'plan_request' }, safetyTopic: 'ssa', research: { drafts: { events: 0 } },
+    localMatches: [{ title: 'Berkeley Harvest Festival', summary: 'Free' }] };
+  const ok = scoreTurn({ state: { childAges: [4, 7], travelMode: 'transit', budget: null }, needsPlan: true, routeReason: ['plan_request', 'day_plan'], safetyTopic: 'ssa', noDrafts: true, cardsLocale: 'en' }, payload);
+  assert.equal(ok.pass, true, JSON.stringify(ok.checks.filter(row => !row.ok)));
+  const bad = scoreTurn({ state: { childAges: [4, 7] }, needsPlan: true, safetyTopic: null, noDrafts: true, cardsLocale: 'en' },
+    { ...payload, taskState: { childAges: [4] }, assistantPlan: null, research: { drafts: { events: 3 } }, localMatches: [{ title: '金门大桥与 Fort Point' }] });
+  assert.deepEqual(bad.checks.filter(row => !row.ok).map(row => row.id).sort(), ['cards_locale', 'no_drafts', 'plan', 'safety_topic', 'state_childAges']);
+});
+
 test('every gold entity is attainable from the site catalogs the assistant reads', () => {
   const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json', 'discoveries.json', 'discoveries.en.json']
     .map(file => fs.readFileSync(path.join(ROOT, 'data', file), 'utf8')).join('\n');
