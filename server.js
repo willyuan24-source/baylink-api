@@ -5034,6 +5034,11 @@ app.post('/api/ai/guide-chat', async (req, res) => {
   }
 });
 
+// CODE-API-03: an /api path that no route matched (or a method a route does not take)
+// answers JSON like every other API error, not Express's HTML "Cannot GET" page.
+// Paths outside /api keep Express's default 404.
+app.use('/api', (req, res) => res.status(404).json({ code: 'NOT_FOUND', error: req.body?.locale === 'en' || /^en\b/i.test(String(req.headers['accept-language'] || '')) ? 'This API endpoint does not exist.' : '接口不存在' }));
+
 // Always JSON; numeric driver codes (e.g. Mongo 40) are logged, never echoed or
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
