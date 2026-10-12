@@ -180,3 +180,19 @@ test('BBENG-12: system block 1 names only the fields the v2 user turn sends and 
   for (const present of ['currentPage', 'otherSelected', 'evidence', 'state', 'recentConversation', 'M月D日（周X）']) assert.ok(FROZEN_SYSTEM.includes(present), present);
   assert.match(FROZEN_SYSTEM, /The lead is the answer, not a count/);
 });
+
+test('answer shape: padding from another region is dropped only when an in-area pick remains; a gap that repeats a point is dropped; a poem request gets the writing rule', () => {
+  const { dropOffArea } = require('../lib/baybayQuality');
+  const areas = { e1: 'east-bay', e2: 'sf' };
+  const draft = { lead: '奥克兰周六有免费活动。', points: [{ text: 'Chabot 望远镜夜免费[[e1]]', cardIds: ['e1'] }, { text: '旧金山 Randall 免费[[e2]]', cardIds: ['e2'] }, { text: '出门前看天气。', cardIds: [] }], candidateIds: ['e1', 'e2'], gap: '' };
+  const trimmed = dropOffArea(draft, { region: 'east-bay', areaOf: ref => areas[ref] || null });
+  assert.equal(trimmed.dropped, 1); assert.deepEqual(trimmed.draft.candidateIds, ['e1']); assert.equal(trimmed.draft.points.length, 2);
+  // The only recommendation is elsewhere: kept (it is the answer, not padding).
+  const only = { ...draft, points: [draft.points[1], draft.points[2]] };
+  assert.equal(dropOffArea(only, { region: 'east-bay', areaOf: ref => areas[ref] || null }).dropped, 0);
+  assert.equal(dropOffArea(draft, { region: 'all', areaOf: ref => areas[ref] || null }).dropped, 0);
+  const gap = leadConsistency({ lead: '可以去 Coyote Hills。', points: [{ text: 'Coyote Hills 免费入园，开放时间请以官方页面为准。', cardIds: [] }, { text: '带零食。', cardIds: [] }], gap: '开放时间请以官方页面为准。' });
+  assert.deepEqual(gap.repairs, ['gap_repeat']); assert.equal(gap.draft.gap, '');
+  assert.deepEqual(leadConsistency({ lead: '可以。', points: [{ text: '甲', cardIds: [] }, { text: '乙', cardIds: [] }], gap: 'Happy Hollow 陪同者是否免费，请看官方页面。' }).repairs, []);
+  assert.match(turnRules({ message: '帮我写一首关于金门大桥的诗', state: {} }).join('\n'), /piece of writing/);
+});

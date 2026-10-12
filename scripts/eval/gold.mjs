@@ -36,8 +36,10 @@ export const GLOBAL_MUST_NOT = [
 
 const CJK = /[㐀-鿿]/g;
 // Characters whose Simplified and Traditional forms differ, common in BayBay prose.
-const SIMPLIFIED_ONLY = '这们说时会么为过还进动问发对开关题东车门长区优费买卖带让个从后来实际应该处图书馆农场饭点给须选择网线话证据经历记录虽然样钟头图书义务办宁';
-const TRADITIONAL_ONLY = '這們說時會麼為過還進動問發對開關題東車門長區優費買賣帶讓個從後來實際應該處圖書館農場飯點給須選擇網線話證據經歷記錄雖然樣鐘頭圖書義務辦寧';
+// 然 is the same in both scripts (虽然 / 雖然), so it is in neither list: three 突然 in a
+// Simplified answer once failed the zh-Hans check (API-BB-QUALITY).
+const SIMPLIFIED_ONLY = '这们说时会么为过还进动问发对开关题东车门长区优费买卖带让个从后来实际应该处图书馆农场饭点给须选择网线话证据经历记录虽样钟头图书义务办宁';
+const TRADITIONAL_ONLY = '這們說時會麼為過還進動問發對開關題東車門長區優費買賣帶讓個從後來實際應該處圖書館農場飯點給須選擇網線話證據經歷記錄雖樣鐘頭圖書義務辦寧';
 
 const toRegex = (source, field) => {
   try { return new RegExp(source, 'iu'); } catch (error) { throw new Error(`Invalid ${field} regex ${JSON.stringify(source)}: ${error.message}`); }
