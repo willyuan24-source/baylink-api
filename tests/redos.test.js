@@ -111,6 +111,9 @@ const cases = {
   'plan edit 那就 then 只去 (500)': () => preparePlanEdit({ message: fill('', '那就', 498, '只去'), catalog: { events: [], places: [] } }),
   'planner budget + spaces (500)': () => inferFilters(fill('budget', ' ', 500), '2026-10-12'),
   'planner 预算： + U+3000 (500)': () => inferFilters(fill('预算：', '\\u3000', 500), '2026-10-12'),
+  // The API-BB-QUALITY report: 预算 + ~250 spaces took ~5 s on guide-chat and planner/recommend.
+  'planner 预算 + 250 spaces': () => inferFilters(fill('预算', ' ', 253), '2026-10-12'),
+  'planner 预算 + spaces (800)': () => inferFilters(fill('预算', ' ', 800), '2026-10-12'),
   'planner party count digits (800)': () => inferFilters(fill('two', '50', 800), '2026-10-12'),
   'planner party count + spaces (800)': () => inferFilters(fill('3', ' ', 800), '2026-10-12'),
   'history budget phrase (500)': () => resolveConversationRequest('预算再低一点', [{ role: 'user', content: fill('月租', ' ', 500) }, { role: 'assistant', content: '好的' }]),
@@ -140,7 +143,7 @@ const cases = {
 };
 for (const fn of Object.values(cases)) fn(); // warm up (regex compilation, catalog load)
 for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
-  assert.equal(timings.length, 30);
+  assert.equal(timings.length, 32);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
 
