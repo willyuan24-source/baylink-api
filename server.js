@@ -54,6 +54,7 @@ const { createAiGovernanceModel, createAiGovernance, governProviders } = require
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
+const { createAuthLimitModel, createLoginGuard } = require('./lib/loginGuard');
 const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
 const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
@@ -541,6 +542,9 @@ const ContactAccessQuota = createContactAccessQuotaModel(mongoose, injectedModel
 const contactAccessQuota = createContactAccessQuota({ Model: ContactAccessQuota, secret: config.JWT_SECRET, now: options.contactAccessNow || Date.now });
 const SmsQuota = createSmsQuotaModel(mongoose, injectedModels);
 const smsQuota = createSmsQuota({ Model: SmsQuota, secret: config.JWT_SECRET, config, now: options.smsQuotaNow || Date.now });
+// G44: failed sign-ins counted in Mongo (survive restarts) + the owner alert on admin failures.
+const AuthLimit = createAuthLimitModel(mongoose, injectedModels);
+const loginGuard = createLoginGuard({ Model: AuthLimit, secret: config.JWT_SECRET, config, now: options.loginGuardNow || Date.now, sendEmail: options.securityAlertEmail });
 
 const sessionError = (status, message) => Object.assign(new Error(message), { status });
 const verifySession = async (token) => {
@@ -1761,6 +1765,9 @@ const authenticateToken = async (req, res, next) => {
 const disconnectAccount = userId => io.in(userId).disconnectSockets(true);
 const accountTotp = createAccountTotp({ User, Challenge: AccountAuthChallenge, config, checkRateLimit: checkAuthRateLimit, getClientIp, issueToken,
   holdAccount: id => holdAccountOperation(User, id),
+  // G44: a wrong authenticator code after a correct password counts as a failed sign-in.
+  loginBlocked: ({ visitor, user }) => loginGuard.blocked({ visitor, account: user.email }),
+  onLoginFailure: ({ visitor, user }) => loginGuard.recordFailure({ visitor, account: user.email, adminAccountId: user.role === 'admin' ? user.id : null, factor: 'totp' }),
   sanitizeUser: sanitizeUserForClient, disconnectUser: disconnectAccount, now: options.accountSecurityNow });
 accountTotp.register(app, authenticateToken);
 // N2 "only if still unread", asked by the notification worker right before a send. An
@@ -1979,12 +1986,19 @@ app.post('/api/auth/login', async (req, res) => {
       }
       if (adminLoginId && user?.email === 'admin') user = null;
     }
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    if (typeof password !== 'string') return res.status(401).json({ error: 'Invalid credentials' });
+    // G44: durable failed-sign-in limits (lib/loginGuard.js), checked before the password.
+    const attempt = { visitor: ip, account: accountKey };
+    if (await loginGuard.blocked(attempt)) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
+    const refuse = async () => {
+      await loginGuard.recordFailure({ ...attempt, adminAccountId: user?.role === 'admin' ? user.id : null });
+      return res.status(401).json({ error: 'Invalid credentials' });
+    };
+    if (!user) return refuse();
+    if (typeof password !== 'string') return refuse();
     
     // ✨ 修改：利用 bcrypt.compare 來安全验证加密後的密碼
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!isMatch) return refuse();
     if (user.isBanned || user.accountStatus === 'suspended' || user.accountDeletionPending) return res.status(403).json({ error: '账号不可用或已被限制' });
     await holdAccountOperation(User, user.id);
     user = await User.findOne({ id: user.id, password: user.password, accountDeletionPending: { $ne: true },
