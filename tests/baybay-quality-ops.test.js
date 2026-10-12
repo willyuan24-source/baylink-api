@@ -115,3 +115,16 @@ test('ai-metrics: route, drafts, corrections, retries and provider statuses are 
   assert.ok(Number.isInteger(report.samples) && Number.isInteger(report.sinceMs));
   for (const key of ['p50Ms', 'p99Ms', 'maxMs', 'meanMs']) if (key in report) assert.ok(Number.isInteger(report[key]) || report[key] === null, key);
 });
+
+test('a broken stream (not an HTTP refusal) is retried without streaming, so the answer still arrives', async () => {
+  const bodies = [];
+  const bot = assistant(async (_url, init) => {
+    const body = JSON.parse(init.body); bodies.push(!!body.stream);
+    // A transport that cannot stream: a JSON body where SSE was expected.
+    return new Response(JSON.stringify(reply({})), { status: 200, headers: { 'content-type': 'application/json' } });
+  });
+  const drafts = [];
+  const result = await ask(bot, '这周六旧金山有什么适合全家的活动？', 'zh-Hans', drafts);
+  assert.deepEqual(bodies, [true, false]);
+  assert.match(result.answer, /蓝天使周六下午飞/); assert.equal(result.degraded, false);
+});

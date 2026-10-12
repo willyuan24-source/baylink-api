@@ -215,3 +215,19 @@ test('the San Jose county line stays in the evidence of a services ask (it leads
   const items = buildFastEvidence({ query: 'San Jose 有没有讲中文的长者服务？我妈想找人陪她参加活动', state, guideCatalog: guides, catalog, today: TODAY, audience: true }).items;
   assert.ok(items.some(item => /408-350-3200/.test(item.text)), items.map(item => item.id).join(', '));
 });
+
+test('B8: a newcomer setup answer without the SSN step gets it appended last (the guide-only answer of the live eval)', async () => {
+  const { ensureNewcomerSsn } = require('../lib/baybayQuality');
+  const draft = { lead: '第一周先稳住住处、出行和通讯。', points: [{ text: '先把住处稳定下来。', cardIds: [] }, { text: '办图书馆卡。', cardIds: [] }], gap: '' };
+  const added = ensureNewcomerSsn(draft, { message: '我是新移民，刚到湾区第一周要办什么？', state: { goal: 'information' } });
+  assert.equal(added.added, true); assert.equal(added.draft.points.length, 3); assert.match(added.draft.points[2].text, /社安号（SSN）.*1-800-772-1213/);
+  assert.equal(ensureNewcomerSsn({ ...draft, gap: '社安号以 SSA 为准。' }, { message: '我是新移民，刚到湾区第一周要办什么？' }).added, false);
+  assert.equal(ensureNewcomerSsn(draft, { message: '这周末去哪玩？', state: { goal: 'discover' } }).added, false);
+  assert.match(ensureNewcomerSsn(draft, { message: 'We just moved here, what should we set up first?', locale: 'en' }).draft.points.at(-1).text, /Social Security number/);
+  // Through the assistant: the appended point reaches the answer and its shape.
+  const { assistant } = assistantWith({ lead: '第一周先稳住住处。', points: [{ text: '住处先稳定。', cardIds: [] }] });
+  const result = await assistant.run({ message: '我是新移民，刚到湾区第一周要办什么？', locale: 'zh-Hans', currentPath: '/', searchMode: 'site', webAccess: { allowed: false },
+    pageContext: publicContext.resolve({ context: { currentPath: '/' }, currentPath: '/', today: TODAY, locale: 'zh-Hans' }) });
+  assert.match(result.answer, /社安号（SSN）/); assert.ok(result.research.warnings.includes('answer_newcomer_ssn_added'));
+  assert.match(result.points.at(-1).text, /SSA/);
+});
