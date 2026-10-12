@@ -169,3 +169,10 @@ test('BBL-02: the first progress frame is sent before the budget read and retrie
   const { progress } = await ask(assistant, '蓝天使这周末飞吗');
   assert.deepEqual(progress[0], { phase: 'site', status: 'running' });
 });
+
+test('BBENG-12: system block 1 names only the fields the v2 user turn sends and carries no literal example date', () => {
+  const { FROZEN_SYSTEM } = require('../lib/baybayFastPath');
+  for (const absent of ['localMatches', 'contextReferences', 'contextUsed', 'sourceUrl', 'verifiedAt', '10月17日', 'Oct 17', '2026-']) assert.ok(!FROZEN_SYSTEM.includes(absent), absent);
+  for (const present of ['currentPage', 'otherSelected', 'evidence', 'state', 'recentConversation', 'M月D日（周X）']) assert.ok(FROZEN_SYSTEM.includes(present), present);
+  assert.match(FROZEN_SYSTEM, /The lead is the answer, not a count/);
+});
