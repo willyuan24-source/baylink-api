@@ -51,7 +51,7 @@ const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createClientIp } = require('./lib/clientIp');
 const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
-const { createAiRuntimeMetricModel, createAiRuntimeMetrics } = require('./lib/aiRuntimeMetrics');
+const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
 const { safetyResponse, emergencyResponse, professionalResponse } = require('./lib/safetyRouting');
@@ -1797,6 +1797,9 @@ registerAccountPrivacy(app, { models: { User, Post, Message, Conversation, Conta
 const AiGovernance = createAiGovernanceModel(mongoose, injectedModels);
 const AiRuntimeMetric = createAiRuntimeMetricModel(mongoose, injectedModels);
 const aiRuntimeMetrics = createAiRuntimeMetrics({ Model: AiRuntimeMetric, now: options.aiMetricsNow || Date.now, enabled: !isTest || !!injectedModels.AiRuntimeMetric });
+// Event-loop delay since the process started (API-BB-QUALITY item f): a blocked loop
+// delays every BayBay stream on the instance (BBENG-01). Reported by /api/admin/ai-metrics.
+const eventLoop = eventLoopMonitor();
 const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: options.plannerNow || Date.now, isTest, metrics: aiRuntimeMetrics });
 // API-BB-CUTOVER: owner e-mails at $100/$150/$180 month-to-date, at the daily hard cap and
 // 7/3/1 days before ANTHROPIC_USE_UNTIL (lib/aiSpendAlerts.js; same delivery gates as the digest).
@@ -1845,7 +1848,7 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
     const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
       ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
-    res.json({ days, runtime, spend });
+    res.json({ days, runtime, spend, eventLoop: eventLoop.report() });
   } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
 });
 
@@ -4883,6 +4886,8 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       // Numeric duration aggregates explain time outside the model workflow
       // without logging the user's prompt, account, origin or session token.
       response.research = { ...response.research, timings: { ...response.research?.timings, preparationMs, assistantMs, requestMs } };
+      // ai-metrics: route, drafts, corrections and retries of this answer (no text, no ids).
+      req.aiRuntime?.outcome?.({ path: response.route?.path, reason: response.route?.reason, drafted: !!response.research?.drafts?.events, corrected: response.corrected === true, warnings: response.research?.warnings });
       if (progressStream) { progressStream.validatedText(response.answer); return progressStream.result(decorateAccess(response)); }
       res.set('Server-Timing', `baybay_prepare;dur=${preparationMs}, baybay_assistant;dur=${assistantMs}`);
       return res.json(response);
