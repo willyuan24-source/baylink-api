@@ -412,7 +412,9 @@ async function main() {
   }
 
   const baseConfig = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: apiKey, ...(workspaceId ? { ANTHROPIC_WORKSPACE_ID: workspaceId } : {}),
-    BAYBAY_STATE_SECRET: secret, BAYBAY_DAILY_RUN_LIMIT: '100000', BAYBAY_AGENT_ENABLED: 'true' };
+    BAYBAY_STATE_SECRET: secret, BAYBAY_DAILY_RUN_LIMIT: '100000',
+    // Every eval item runs as one local visitor: its per-person share (CODE-API-02) must not cut the run short.
+    BAYBAY_VISITOR_RUN_LIMIT: '100000', BAYBAY_MEMBER_RUN_LIMIT: '100000', BAYBAY_AGENT_ENABLED: 'true' };
   // A probe case's web search is a local stub: no network, one fixed lead without sources.
   const stubWebSearch = async () => ({ answer: 'Eval probe stub: no live web result is available in the local eval.', sources: [], candidates: [], checkedAt: new Date(nowMs).toISOString(), cached: false, model: 'eval-stub' });
   // read_source has its own page reader (lib/sourceMonitor), not fetchImpl: block it
