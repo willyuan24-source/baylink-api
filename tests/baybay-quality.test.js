@@ -196,3 +196,22 @@ test('answer shape: padding from another region is dropped only when an in-area 
   assert.deepEqual(leadConsistency({ lead: '可以。', points: [{ text: '甲', cardIds: [] }, { text: '乙', cardIds: [] }], gap: 'Happy Hollow 陪同者是否免费，请看官方页面。' }).repairs, []);
   assert.match(turnRules({ message: '帮我写一首关于金门大桥的诗', state: {} }).join('\n'), /piece of writing/);
 });
+
+test('the new detectors stay linear: 500-character pathological inputs finish in under 50 ms', () => {
+  const { professionalTopics } = require('../lib/safetyRouting');
+  const pads = [' ', '一', '我', '的', 'a ', 'take the ', '每人 ', '预算 ', '排成 ', '，', '坐 ', '附近 '];
+  for (const pad of pads) for (const head of ['', '预算', '每人', '排成', '坐', 'take ', '，', '我家']) {
+    const text = (head + pad.repeat(Math.ceil(500 / pad.length))).slice(0, 499) + '!';
+    const started = process.hrtime.bigint();
+    nearbyClarifier(text, { state: {} }); turnRules({ message: text, state: { freeOnly: true, travelMode: 'transit', goal: 'newcomer' }, followup: true });
+    leadConsistency({ lead: text, points: [{ text, cardIds: ['e1'] }, { text, cardIds: [] }], gap: text }); professionalTopics(text);
+    const ms = Number(process.hrtime.bigint() - started) / 1e6;
+    assert.ok(ms < 50, `${JSON.stringify(head)} + ${JSON.stringify(pad)}: ${ms.toFixed(1)} ms`);
+  }
+});
+
+test('the San Jose county line stays in the evidence of a services ask (it leads the city queue)', () => {
+  const state = conversation([['San Jose 有没有讲中文的长者服务？我妈想找人陪她参加活动', { city: 'San Jose' }]], true)[0];
+  const items = buildFastEvidence({ query: 'San Jose 有没有讲中文的长者服务？我妈想找人陪她参加活动', state, guideCatalog: guides, catalog, today: TODAY, audience: true }).items;
+  assert.ok(items.some(item => /408-350-3200/.test(item.text)), items.map(item => item.id).join(', '));
+});
