@@ -31,6 +31,9 @@ test('explicit date and weekday describe the same outing without the old October
   assert.ok(resolveDraftDate('周末', '2026-09-30').question);
   assert.ok(resolveDraftDate('2026-02-30', '2026-09-30').question);
   assert.deepEqual(resolveDraftDate('下周六', '2026-09-30'), { date: '2026-10-10' });
+  // 一下 + 周六 is this Saturday (2026-10-03), not 下周六.
+  for (const value of ['帮我安排一下周六去金门公园散步', '看一下周六有没有空', '安排一下週六']) assert.deepEqual(resolveDraftDate(value, '2026-09-30'), { date: '2026-10-03' }, value);
+  assert.deepEqual(resolveDraftDate('帮我安排一下下周六', '2026-09-30'), { date: '2026-10-10' });
   assert.deepEqual(resolveDraftDate('tomorrow', '2026-09-30'), { date: '2026-10-01' });
   for (const value of ['10/17/2027', '10/17/27', '明年10月17日', 'next year October 17', '明天周六', 'October 17-18']) assert.ok(resolveDraftDate(value, '2026-09-30').question, value);
   assert.deepEqual(resolveDraftDate('10/17/2026 Saturday', '2026-09-30'), { date: '2026-10-17' });

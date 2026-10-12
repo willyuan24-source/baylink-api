@@ -19,6 +19,8 @@ const EMERGENCIES = [
   ['zh-Hans', '我爸嘴有点歪，说话不清楚', 'stroke'], ['zh-Hans', '我爸说话含糊，脸有点歪', 'stroke'], ['zh-Hans', '我爸嘴巴有点歪', 'stroke'],
   ['zh-Hans', '我妈口眼歪斜', 'stroke'], ['zh-Hans', '奶奶一边脸歪了', 'stroke'], ['zh-Hant', '我爸的嘴巴有點歪', 'stroke'],
   ['zh-Hant', '爺爺突然說話不清楚，嘴角歪了', 'stroke'], ['en', "My mom's face is drooping", 'stroke'], ['en', 'Grandpa has face drooping and slurred speech', 'stroke'],
+  // A new droop after an old stroke is still a stroke sign.
+  ['zh-Hans', '我爸前年中风过，今天早上起来嘴歪了', 'stroke'], ['zh-Hans', '我爸去年中风过，嘴歪了怎么办', 'stroke'],
   // Seizures.
   ['zh-Hans', '孩子发烧抽筋了', 'seizure'], ['zh-Hans', '孩子高烧惊厥', 'seizure'], ['zh-Hans', '孩子突然全身抽筋', 'seizure'], ['zh-Hans', '我爸突然抽搐口吐白沫', 'seizure'],
   ['zh-Hant', '寶寶發燒抽筋了', 'seizure'], ['zh-Hant', '孩子驚厥了', 'seizure'], ['en', 'My daughter is having a seizure', 'seizure'], ['en', 'My son is convulsing', 'seizure'],
@@ -28,6 +30,7 @@ const EMERGENCIES = [
   ['zh-Hans', '孩子吃了一整瓶维生素', 'poisoning'], ['zh-Hans', '孩子偷吃了药', 'poisoning'], ['zh-Hans', '我妈一氧化碳中毒了', 'poisoning'],
   ['zh-Hant', '孩子誤喝了漂白水', 'poisoning'], ['zh-Hant', '寶寶把洗衣球咬破吃了', 'poisoning'], ['en', 'My toddler swallowed bleach', 'poisoning'],
   ['en', 'My son ate a laundry detergent pod', 'poisoning'], ['en', 'My kid got into my pills and ate some', 'poisoning'], ['en', 'I think my dad took an overdose', 'poisoning'],
+  ['zh-Hans', '孩子吃了一颗洗衣凝珠', 'poisoning'], ['zh-Hans', '宝宝喝了奶奶的消毒水', 'poisoning'],
   // Fainting, unconscious, collapse.
   ['zh-Hans', '我妈突然昏倒了', 'unconscious'], ['zh-Hans', '我爸晕倒了', 'unconscious'], ['zh-Hans', '奶奶倒在地上叫不醒', 'unconscious'], ['zh-Hans', '爷爷突然昏厥', 'unconscious'],
   ['zh-Hant', '爺爺暈倒叫不醒', 'unconscious'], ['en', 'My mom collapsed and is unresponsive', 'unconscious'], ['en', "My husband passed out and won't wake up", 'unconscious'],
@@ -50,7 +53,7 @@ const NEAR_MISSES = [
   '孩子吃了退烧药，什么时候可以再吃', '我吃了药还是头痛', '提醒爸爸把降压药吃了', '洗衣凝珠哪里买便宜',
   '自杀预防热线志愿者培训在哪里报名', '我想死你了，这周末见面去哪', 'She wants to end it with her boyfriend',
   'I almost passed out from laughing', 'The tent collapsed in the wind last night', 'The stock market collapsed today', 'Her tent collapsed in the storm',
-  '煤气费怎么交', 'How do I pay my PG&E gas bill?', 'Where can I see poison oak on the trail?',
+  '煤气费怎么交', 'How do I pay my PG&E gas bill?', 'Where can I see poison oak on the trail?', '吃完饭用洗洁精洗碗要冲几遍', 'Her phone has been totally unresponsive',
   '孩子撞到头起了个包，没有流血', '他笑得嘴都歪了', '这张照片里我的脸有点歪', '我爸去年中风，嘴有点歪，有适合他的活动吗', '小心别被车撞',
   'Where can I take a first aid class?', '心肺复苏 CPR 课程在哪里报名？', '孩子眼皮一直抽搐，要看哪个科？',
 ];
@@ -99,4 +102,23 @@ test('SAFETY-1: each new topic has its own first-aid line in all three languages
     assert.doesNotMatch(en.answer, /[一-鿿]/, `${message}: the English card has no CJK`);
     assert.ok(en.answer.split('. ').length >= 3, `${message}: 911, the topic line, then Poison Control / 988`);
   }
+});
+
+// The unanswered-message guard had a literal backspace (U+0008) where \b was meant,
+// so its English words never matched: "我给他发了 text，他没反应" got the unconscious card.
+test('an unanswered text or app message is not an unresponsive person, in English words too', () => {
+  for (const message of ['我给他发了 text，他没反应', '我发了 message 给我爸，他没反应', '我给她发了 email，她没反应', '我发消息给他，他没反应']) {
+    assert.equal(emergencyResponse(message), null, message);
+  }
+  assert.equal(emergencyResponse('叫他没反应')?.emergencyTopic, 'unconscious');
+  assert.equal(emergencyResponse('我爸倒在地上，他没反应')?.emergencyTopic, 'unconscious');
+});
+
+test('no source file in lib/ or server.js contains a control character (a backspace typed for a word boundary)', () => {
+  const fs = require('node:fs'); const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const files = ['server.js', ...fs.readdirSync(path.join(root, 'lib')).filter(file => file.endsWith('.js')).map(file => `lib/${file}`)];
+  const found = files.flatMap(file => fs.readFileSync(path.join(root, file), 'utf8').split('\n')
+    .map((line, index) => /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(line) ? `${file}:${index + 1}` : null).filter(Boolean));
+  assert.deepEqual(found, []);
 });

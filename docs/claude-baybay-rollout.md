@@ -16,7 +16,7 @@
 | 流式 | v2 下对能读草稿的页面（网站 #25 已上线，`streamVersion: 3`）默认开：第一句先出来，完整答案随后 | 同（STREAM #32），但 v2 原来没开 |
 | 模型 | 不变：普通问答、行程、专业话题都是 Claude Sonnet 5.5，effort low。联网搜索仍按 `ANTHROPIC_BAYBAY_MODEL`（生产是 Opus）。翻译、发帖助手等**助手类不变**（HELPERS #33 的评测以后再决定是否换 Haiku） | 同 |
 | 每日花费上限（太平洋时间按天，按站内账本估算） | **软上限 $6**：BayBay 只用站内资料快速回答（改已有行程，比如"换掉第二站"，仍走 agent，但只有站内工具），全站不联网查询。**硬上限 $10**：当天不再调用 AI——BayBay 用站内资料回答并显示"今日 AI 名额已满"；发帖助手、帖子翻译、私信和活动截图 AI、约伴草稿返回同样意思的 429；联网查询返回 `web_daily_limit`（429，不提示重试）；约伴草稿和联网查询在扣自己的次数之前就拒绝；行程推荐退回规则排序。**紧急 911 卡片不受影响** | 只记录，不拦截 |
-| BayBay 每日次数 `BAYBAY_DAILY_RUN_LIMIT` | 默认 1000（达到后同样显示"今日 AI 名额已满"） | 200 |
+| BayBay 每日次数 `BAYBAY_DAILY_RUN_LIMIT` | 默认 1000（达到后同样显示"今日 AI 名额已满"）。其中每位会员每天最多 80 次（`BAYBAY_MEMBER_RUN_LIMIT`）、每个访客最多 30 次（`BAYBAY_VISITOR_RUN_LIMIT`），一个人用完只影响他自己 | 200（全站共用，一个访客能用光） |
 | 同时处理的 AI 请求 `AI_CONCURRENCY_LIMIT` | 默认 12 | 6 |
 | 暂停模式 | `/api/ai/baybay-capabilities` 在暂停时返回 `enabled: false` 和 `pause`（三种语言的横幅文字、911/211 按钮）；每条回答带 `notice`。暂停的原因：`BAYBAY_PAUSED=true`、Claude 不可用（没有 key 或 `ANTHROPIC_USE_UNTIL` 已过）、当天到了硬上限。`BAYBAY_AGENT_ENABLED=false` 不算暂停：问答走旧版路径，`enabled` 照旧是 `false`，不显示暂停横幅（只有到硬上限时显示"今日 AI 名额已满"） | 没有 |
 | 提醒邮件 | 本月 Claude 花费过 $100 / $150 / $180、当天到硬上限、`ANTHROPIC_USE_UNTIL` 前 7 / 3 / 1 天，各发一次 | 没有 |

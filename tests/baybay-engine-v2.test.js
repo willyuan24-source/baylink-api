@@ -125,7 +125,9 @@ test('an agent run: call 2 replays call 1 unchanged and adds only the new turn; 
   const [first, second] = sent;
   assert.deepEqual(second.messages.slice(0, first.messages.length), first.messages, 'append-only: call 1 is a prefix of call 2');
   const added = second.messages.slice(first.messages.length);
-  assert.deepEqual(added.map(row => row.role), ['assistant', 'user', 'user', 'system']);
+  // BBENG-03: the final-round instruction is a user-turn <system-reminder>, not role:system.
+  assert.deepEqual(added.map(row => row.role), ['assistant', 'user', 'user', 'user']);
+  assert.match(added[3].content[0].text, /^<system-reminder>\n/);
   assert.equal(added[1].content[0].type, 'tool_result');
   const firstBytes = JSON.stringify(first.messages).length, delta = JSON.stringify(added).length;
   assert.ok(JSON.stringify(second.messages).length <= firstBytes + delta + 2);
@@ -235,6 +237,52 @@ test('role:system items fall back to a user-turn <system-reminder> after a 400 t
   const other = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'fixture' }, route: 'baybay_fast', fetchImpl: async () => { calls++; return { ok: false, status: 400, clone() { return this; }, text: async () => '{"error":{"message":"max_tokens too large"}}', json: async () => ({}) }; } });
   await assert.rejects(other({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rule' }], tools: [] }), /HTTP 400/);
   assert.equal(calls, 1);
+});
+
+// BBENG-03: the Messages API takes a role:'system' message only as the last message or
+// right before an assistant turn. Every body the adapter sends keeps that placement.
+const systemPlacementOk = body => body.messages.every((row, index, rows) => row.role !== 'system' || index === rows.length - 1 || rows[index + 1].role === 'assistant');
+const reminderOf = text => ({ role: 'user', content: [{ type: 'text', text: `<system-reminder>\n${text}\n</system-reminder>` }] });
+
+test('adapter: a system message before a user turn, or marked reminder, goes as a <system-reminder>; one answered by the model stays native', async () => {
+  const sent = [];
+  const request = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'fixture' }, route: 'baybay_agent', fetchImpl: async (_url, init) => { sent.push(JSON.parse(init.body)); return reply(fast({ lead: 'ok' })); } });
+  const first = await request({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rules' }], tools: [], text: { format: FAST_FORMAT } });
+  assert.equal(sent[0].messages[1].role, 'system', 'last in its request: native');
+  // Second request of the run: the model's reply follows "Rules", then a user delta and the final instruction.
+  await request({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rules' }, ...first.output,
+    { role: 'user', content: 'Delta' }, { role: 'system', content: 'Final', reminder: true }], tools: [], text: { format: FAST_FORMAT } });
+  const [call1, call2] = sent;
+  assert.deepEqual(call2.messages.slice(0, call1.messages.length), call1.messages, 'append-only on the wire');
+  assert.deepEqual(call2.messages.map(row => row.role), ['user', 'system', 'assistant', 'user', 'user']);
+  assert.deepEqual(call2.messages.at(-1), reminderOf('Final'));
+  // A failed first call does not extend history: the retry's earlier system message would
+  // now be followed by a user turn, so it goes as a reminder.
+  const bodies = [];
+  const retry = createAnthropicBaybay({ config: { ANTHROPIC_API_KEY: 'fixture' }, route: 'baybay_agent', fetchImpl: async (_url, init) => {
+    bodies.push(JSON.parse(init.body));
+    return bodies.length === 1 ? { ok: false, status: 500, clone() { return this; }, text: async () => '{}', json: async () => ({}) } : reply(fast({ lead: 'ok' }));
+  } });
+  await assert.rejects(retry({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rules' }], tools: [], text: { format: FAST_FORMAT } }));
+  await retry({ system: systemBlocks(), input: [{ role: 'user', content: 'Q' }, { role: 'system', content: 'Rules' }, { role: 'user', content: 'Delta' }, { role: 'system', content: 'Final', reminder: true }], tools: [], text: { format: FAST_FORMAT } });
+  assert.deepEqual(bodies.at(-1).messages.slice(1), [reminderOf('Rules'), { role: 'user', content: [{ type: 'text', text: 'Delta' }] }, reminderOf('Final')]);
+  for (const body of [...sent, ...bodies]) assert.ok(systemPlacementOk(body), JSON.stringify(body.messages.map(row => row.role)));
+});
+
+test('agent: a guest named-venue day plan (forced final on call 1) and a recovery after a 529 send no misplaced system message', async () => {
+  const named = assistantWith({ respond: () => reply(fast({ lead: '可以这样安排。' })) });
+  await run(named.assistant, '周六想去金门大桥和 Exploratorium，帮我安排一天行程');
+  assert.ok(named.sent.length >= 1);
+  for (const body of named.sent) assert.ok(systemPlacementOk(body), JSON.stringify(body.messages.map(row => row.role)));
+  const final = named.sent.find(body => body.tool_choice?.type === 'none');
+  assert.ok(final, 'a final round was sent');
+  assert.equal(final.messages.at(-1).role, 'user');
+  assert.match(final.messages.at(-1).content[0].text, /^<system-reminder>\n[\s\S]*Research is complete/);
+  const overloaded = { ok: false, status: 529, clone() { return this; }, text: async () => '{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}', json: async () => ({}) };
+  const recovered = assistantWith({ respond: (_body, count) => count === 1 ? overloaded : reply(fast({ lead: '可以安排半天。' })) });
+  await run(recovered.assistant, '周六带孩子在 Berkeley 安排一天行程');
+  assert.ok(recovered.sent.length >= 2, `${recovered.sent.length} calls`);
+  for (const body of recovered.sent) assert.ok(systemPlacementOk(body), JSON.stringify(body.messages.map(row => row.role)));
 });
 
 test('no Anthropic payload carries temperature, top_p or top_k (RC-18), on any route or model, v1 or v2', async () => {
@@ -469,7 +517,9 @@ test('a booking request is one addressed to BayBay; shopping questions that say 
 
 test('the v2 agent carries the v1 plan and research rules after the user turn; the fast path and system block 1 do not', async () => {
   const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以安排半天。' })) });
-  const rulesOf = body => body.messages.filter(row => row.role === 'system').map(row => row.content[0].text).join('\n');
+  // Operator text is a role:system message or, where that placement is not allowed
+  // (BBENG-03: before a user turn, or the final-round instruction), a <system-reminder>.
+  const rulesOf = body => body.messages.filter(row => row.role === 'system' || /^<system-reminder>/.test(row.content?.[0]?.text || '')).map(row => row.content[0].text).join('\n');
   const guest = await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
   assert.equal(guest.route.path, 'agent');
   const siteRules = rulesOf(sent[0]);

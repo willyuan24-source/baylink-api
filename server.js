@@ -885,15 +885,23 @@ const AUTH_RATE_LIMIT_MSG = '操作太频繁，请稍后再试。';
 // Login attempts on one account from all visitors together per 15 minutes (each visitor
 // is separately held to 10 attempts overall and 8 per account).
 const LOGIN_ACCOUNT_ANY_MAX = 100;
+const adminLoginId = String(config.ADMIN_LOGIN_ID || '').trim();
 
 const checkAuthRateLimit = (key, { windowMs = 15 * 60 * 1000, maxRequests = 5 } = {}) => {
   return authLimiter.check(key, { windowMs, maxRequests });
 };
 
+// ENGSEC-03. ADMIN_MFA_REQUIRED=true: an administrator session acts as admin (admin
+// routes and the admin checks in member routes) only after an authenticator sign-in.
+// Off by default: the owner has no authenticator yet. Either way the administrator can
+// sign in, use member features and set up the authenticator.
+const adminMfaRequired = String(config.ADMIN_MFA_REQUIRED || '').trim().toLowerCase() === 'true';
+const isAdminSession = req => req.user?.role === 'admin' && (!adminMfaRequired || req.session?.payload?.mfaVerified === true);
 const requireAdmin = (req, res, next) => {
   if (req.user?.role !== 'admin') {
     return res.status(403).json({ ok: false, error: '需要管理员权限' });
   }
+  if (!isAdminSession(req)) return res.status(403).json({ ok: false, code: 'ADMIN_MFA_REQUIRED', error: '管理员操作需要验证器：请先在“隐私与安全”中开启验证器，再用验证器重新登录。' });
   next();
 };
 
@@ -1953,14 +1961,19 @@ app.post('/api/auth/login', async (req, res) => {
     if (!checkAuthRateLimit(`login-account:${accountKey}:${ip}`, { windowMs: 15 * 60 * 1000, maxRequests: 8 })
       || !checkAuthRateLimit(`login-account-any:${accountKey}`, { windowMs: 15 * 60 * 1000, maxRequests: LOGIN_ACCOUNT_ANY_MAX })) return res.status(429).json({ error: AUTH_RATE_LIMIT_MSG });
     let user = null;
-    if (trimmedEmail === 'admin') {
-      user = await User.findOne({ email: 'admin' });
+    // ENGSEC-03: the administrator account's legacy login name is the public word
+    // "admin" (no special case: it is that account's stored e-mail field). ADMIN_LOGIN_ID,
+    // unset by default, gives it a private login name instead; once set, "admin" no
+    // longer signs in. Giving the account a real e-mail address works the same way.
+    if (adminLoginId && trimmedEmail === adminLoginId) {
+      user = await User.findOne({ email: 'admin', role: 'admin' });
     } else {
       const lowerEmail = trimmedEmail.toLowerCase();
       user = await User.findOne({ email: lowerEmail });
       if (!user && lowerEmail !== trimmedEmail) {
         user = await User.findOne({ email: trimmedEmail });
       }
+      if (adminLoginId && user?.email === 'admin') user = null;
     }
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     if (typeof password !== 'string') return res.status(401).json({ error: 'Invalid credentials' });
@@ -1994,10 +2007,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     }
     const lowerEmail = trimmedEmail.toLowerCase();
     if (!checkAuthRateLimit(`forgot-account:${lowerEmail}`, { windowMs: 60 * 60 * 1000, maxRequests: 3 })) return res.json({ message: FORGOT_PASSWORD_MESSAGE });
-    let user = await User.findOne({ email: lowerEmail });
-    if (!user && trimmedEmail === 'admin') {
-      user = await User.findOne({ email: 'admin' });
-    }
+    // ENGSEC-03: no "admin" special case (EMAIL_REGEX above already refuses it).
+    const user = await User.findOne({ email: lowerEmail });
     let devResetLink;
     let devEmailError;
     // SEC-08: the cooldown and daily ceiling live on the User document, so a deploy or
@@ -2729,7 +2740,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
     });
     const p = typeof newPost.toObject === 'function' ? newPost.toObject() : newPost;
     const authorById = await fetchAuthorTrustByIds([p]);
-    const payload = formatPostResponse(p, req.user.id, authorById, req.user.role === 'admin');
+    const payload = formatPostResponse(p, req.user.id, authorById, isAdminSession(req));
     if (!req.user.isPhoneVerified && isHighRiskPostCategory(postData)) {
       payload.trustWarning = '为了提升可信度，建议完成手机验证后再发布租房、服务或接送相关信息。';
     }
@@ -2742,7 +2753,7 @@ app.post('/api/posts', authenticateToken, async (req, res) => {
 
 app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.sendStatus(403);
+    if (!isAdminSession(req)) return res.sendStatus(403);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
     if (!post) return res.sendStatus(404);
     post.isFeatured = true;
@@ -2756,7 +2767,7 @@ app.patch('/api/posts/:id/feature', authenticateToken, async (req, res) => {
 
 app.patch('/api/posts/:id/unfeature', authenticateToken, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.sendStatus(403);
+    if (!isAdminSession(req)) return res.sendStatus(403);
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
     if (!post) return res.sendStatus(404);
     post.isFeatured = false;
@@ -2772,7 +2783,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
     if (!post) return res.sendStatus(404);
-    if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+    if (!isAdminSession(req) && post.authorId !== req.user.id) return res.sendStatus(403);
     const validationErr = validatePostBody(req.body);
     if (validationErr) return res.status(validationErr.status).json({ error: validationErr.error });
     let lifecycle;
@@ -2797,7 +2808,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     await post.save();
     const p = post.toObject();
     const authorById = await fetchAuthorTrustByIds([p]);
-    res.json(formatPostResponse(p, req.user.id, authorById, req.user.role === 'admin'));
+    res.json(formatPostResponse(p, req.user.id, authorById, isAdminSession(req)));
   } catch (e) {
     if (e instanceof PostImageUploadError) return res.status(502).json({ error: e.message, code: 'POST_IMAGE_UPLOAD_FAILED' });
     res.status(500).json({ error: '更新失败，请稍后再试' });
@@ -2815,7 +2826,7 @@ app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
 
     const post = await Post.findOne({ id: req.params.id, isDeleted: false });
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
-    if (post.adminHidden && req.user.role !== 'admin') {
+    if (post.adminHidden && !isAdminSession(req)) {
       return res.status(404).json({ error: '内容不存在或已被移除。' });
     }
 
@@ -2839,7 +2850,7 @@ app.delete('/api/posts/:id', authenticateToken, async (req, res, next) => {
   try {
     const post = await Post.findOne({ id: req.params.id });
     if (!post) return res.sendStatus(404);
-    if (req.user.role !== 'admin' && post.authorId !== req.user.id) return res.sendStatus(403);
+    if (!isAdminSession(req) && post.authorId !== req.user.id) return res.sendStatus(403);
     // Mark unavailable first, including on a retry; no contact endpoint can issue a fresh snapshot after removal.
     post.isDeleted = true; post.contactPreference = { ...(post.contactPreference || {}), methods: [] };
     await post.save();
@@ -2962,7 +2973,7 @@ app.post('/api/posts/:postId/contact-requests', authenticateToken, async (req, r
 
     const post = await Post.findOne({ id: req.params.postId, isDeleted: false });
     if (!post) return res.status(404).json({ error: '内容不存在或已被移除。' });
-    if (post.adminHidden && req.user.role !== 'admin') return res.status(404).json({ error: '内容不存在或已被移除。' });
+    if (post.adminHidden && !isAdminSession(req)) return res.status(404).json({ error: '内容不存在或已被移除。' });
     if (post.status === 'closed') return res.status(409).json({ error: '这条信息已结束，不再接受新的联系请求。', status: 'closed' });
     if (post.authorId === req.user.id) return res.status(400).json({ error: '不能请求自己帖子的联系方式。' });
 
@@ -3110,7 +3121,7 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
     const accountMsgErr = assertAccountCanMessage(req.user);
     if (accountMsgErr) return res.status(403).json({ error: accountMsgErr });
 
-    const ownerFilter = req.user.role === 'admin'
+    const ownerFilter = isAdminSession(req)
       ? { id: req.params.requestId, status: 'pending' }
       : { id: req.params.requestId, status: 'pending', postOwnerId: req.user.id };
 
@@ -3122,7 +3133,7 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
     if (!reqDoc) {
       const existing = await ContactRequest.findOne({ id: req.params.requestId });
       if (!existing) return res.status(404).json({ error: '请求不存在' });
-      if (existing.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+      if (existing.postOwnerId !== req.user.id && !isAdminSession(req)) return res.sendStatus(403);
       return res.status(400).json({ error: '该请求已处理', status: existing.status });
     }
 
@@ -3134,7 +3145,7 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
       );
       return res.status(404).json({ error: '帖子不存在' });
     }
-    if (post.adminHidden && req.user.role !== 'admin') {
+    if (post.adminHidden && !isAdminSession(req)) {
       await ContactRequest.findOneAndUpdate(
         { id: reqDoc.id },
         { $set: { status: 'pending', respondedAt: null } },
@@ -3185,7 +3196,7 @@ app.patch('/api/contact-requests/:requestId/approve', authenticateToken, async (
 
 app.patch('/api/contact-requests/:requestId/decline', authenticateToken, async (req, res) => {
   try {
-    const ownerFilter = { id: req.params.requestId, status: 'pending', ...(req.user.role === 'admin' ? {} : { postOwnerId: req.user.id }) };
+    const ownerFilter = { id: req.params.requestId, status: 'pending', ...(isAdminSession(req) ? {} : { postOwnerId: req.user.id }) };
     const reqDoc = await ContactRequest.findOneAndUpdate(
       ownerFilter,
       { $set: { status: 'declined', respondedAt: Date.now() } },
@@ -3194,7 +3205,7 @@ app.patch('/api/contact-requests/:requestId/decline', authenticateToken, async (
     if (!reqDoc) {
       const existing = await ContactRequest.findOne({ id: req.params.requestId });
       if (!existing) return res.status(404).json({ error: '请求不存在' });
-      if (existing.postOwnerId !== req.user.id && req.user.role !== 'admin') return res.sendStatus(403);
+      if (existing.postOwnerId !== req.user.id && !isAdminSession(req)) return res.sendStatus(403);
       return res.status(400).json({ error: '该请求已处理', status: existing.status });
     }
 
@@ -3208,7 +3219,7 @@ app.patch('/api/contact-requests/:requestId/decline', authenticateToken, async (
 app.get('/api/ads', async (req, res) => { const ads = await Ad.find({}); res.json(ads); });
 app.post('/api/ads', authenticateToken, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
     const payload = buildAdPayload(req.body);
     const ad = await Ad.create({ ...payload, id: Date.now().toString() });
     res.json(ad);
@@ -3220,7 +3231,7 @@ app.post('/api/ads', authenticateToken, async (req, res) => {
 });
 app.put('/api/ads/:id', authenticateToken, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
     const payload = buildAdPayload(req.body);
     const ad = await Ad.findOneAndUpdate(
       { id: req.params.id },
@@ -3235,9 +3246,9 @@ app.put('/api/ads/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ error: '更新推荐失败，请稍后再试' });
   }
 });
-app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
+app.delete('/api/ads/:id', authenticateToken, async (req, res) => { if (!isAdminSession(req)) return res.sendStatus(403); await Ad.deleteOne({ id: req.params.id }); res.json({ success: true }); });
 app.get('/api/content/:key', async (req, res) => { const content = await Content.findOne({ key: req.params.key }); res.json({ value: content ? content.value : '' }); });
-app.post('/api/content', authenticateToken, async (req, res) => { if (req.user.role !== 'admin') return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
+app.post('/api/content', authenticateToken, async (req, res) => { if (!isAdminSession(req)) return res.sendStatus(403); await Content.findOneAndUpdate({ key: req.body.key }, { value: req.body.value }, { upsert: true, new: true }); res.json({ success: true }); });
 
 app.get('/api/conversations', authenticateToken, async (req, res) => {
   try {
@@ -4864,7 +4875,7 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       // read them (WEB-BB-STREAMPREP sends streamVersion: 3); older tabs never get one.
       const drafts = progressStream && Number.isInteger(req.body?.streamVersion) && req.body.streamVersion >= 3;
       const response = await baybayAssistant.run({ message, history, searchContext, searchMode, locale, currentPath, webAccess, pageContext, signal: req.aiSignal,
-        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req),
+        sessionToken: isSearchReset(message) ? undefined : req.body.assistantSessionToken, preferences, ip: getClientIp(req), userId: currentUserId || undefined,
         ...(progressStream ? { onProgress: progressStream.progress, onQuickCard: progressStream.quickCard, ...(drafts ? { onDraft: progressStream.draft } : {}) } : {}) });
       const preparationMs = Math.max(0, assistantStartedAt - requestStartedAt);
       const assistantMs = Math.max(0, Date.now() - assistantStartedAt);
@@ -5033,6 +5044,11 @@ app.post('/api/ai/guide-chat', async (req, res) => {
     return send(localized(fallback(searchPlan ? '目前无法完成站内检索，请稍后重试；以下基础建议不代表帖子查询结果。' : undefined)));
   }
 });
+
+// CODE-API-03: an /api path that no route matched (or a method a route does not take)
+// answers JSON like every other API error, not Express's HTML "Cannot GET" page.
+// Paths outside /api keep Express's default 404.
+app.use('/api', (req, res) => res.status(404).json({ code: 'NOT_FOUND', error: req.body?.locale === 'en' || /^en\b/i.test(String(req.headers['accept-language'] || '')) ? 'This API endpoint does not exist.' : '接口不存在' }));
 
 // Always JSON; numeric driver codes (e.g. Mongo 40) are logged, never echoed or
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).

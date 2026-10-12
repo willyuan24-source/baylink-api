@@ -188,3 +188,20 @@ test('an error after a stream has started is logged once and ends the response; 
   ]);
   assert.ok(!JSON.stringify(logs).includes(PRIVATE));
 });
+
+// CODE-API-03: an unmatched /api path was Express's HTML "Cannot GET" page.
+test('an unknown /api path or method answers a JSON 404; paths outside /api keep the default 404', async t => {
+  const f = await fixture(t);
+  for (const [path, method] of [['/api/does-not-exist', 'GET'], ['/api/ai/guide-chat-v9', 'POST'], ['/api/health', 'DELETE'], ['/api', 'GET']]) {
+    const response = await f.request(path, { method, ...(method === 'POST' ? { body: {} } : {}) });
+    assert.equal(response.status, 404, `${method} ${path}`);
+    assert.match(response.type, /application\/json/, `${method} ${path}`);
+    assert.deepEqual(response.data, { code: 'NOT_FOUND', error: '接口不存在' }, `${method} ${path}`);
+    assert.doesNotMatch(response.text, /Cannot (?:GET|POST|DELETE)|<pre>/);
+  }
+  const outside = await f.request('/not-an-api-path');
+  assert.equal(outside.status, 404);
+  assert.doesNotMatch(outside.type, /application\/json/);
+  assert.equal((await f.request('/api/health')).status, 200, 'known routes are unchanged');
+  assert.deepEqual(f.logs, [], 'a 404 is not logged as a server error');
+});
