@@ -1986,7 +1986,7 @@
   },
   {
     "id": "sonoma-dia-movie-night-2026",
-    "title": "Sonoma 免费亡灵节电影夜：户外电影与社区游戏",
+    "title": "Sonoma 亡灵节电影夜：户外电影与社区游戏",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17"
   },
@@ -2073,13 +2073,7 @@
   },
   {
     "id": "sf-cline-composio-hackathon-2026",
-    "title": "Cline 与 Composio 开源 AI 黑客松",
-    "startDate": "2026-10-19",
-    "endDate": "2026-10-19"
-  },
-  {
-    "id": "sf-doja-cat-2026",
-    "title": "Doja Cat：Tour Ma Vie 演唱会",
+    "title": "Cline、Parallel 与 Composio 开源 AI 黑客松",
     "startDate": "2026-10-19",
     "endDate": "2026-10-19"
   },
@@ -2137,7 +2131,7 @@
   },
   {
     "id": "orinda-trunk-and-treat-october-2026",
-    "title": "Trunk & Treat 分三场，只给儿童登记",
+    "title": "Orinda Trunk & Treat：三场任选，只给儿童登记",
     "startDate": "2026-10-22",
     "endDate": "2026-10-22"
   },
@@ -2267,7 +2261,7 @@
   },
   {
     "id": "belmont-centennial-fest-2026",
-    "title": "百年庆典：游行、时光胶囊与无人机表演",
+    "title": "Belmont 百年庆典：游行、时光胶囊与无人机表演",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
   },
@@ -2514,6 +2508,15 @@
     ]
   },
   {
+    "id": "sf-doja-cat-2026",
+    "title": "Doja Cat：Tour Ma Vie 演唱会",
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-25",
+    "occurrenceDates": [
+      "2026-10-25"
+    ]
+  },
+  {
     "id": "sf-thrive-football-sunday-2026",
     "title": "Thrive City 周日橄榄球观赛",
     "startDate": "2026-10-25",
@@ -2584,9 +2587,7 @@
     "title": "South San Francisco城市近况交流会",
     "startDate": "2026-10-27",
     "endDate": "2026-10-27",
-    "occurrenceDates": [
-      "2026-10-27"
-    ]
+    "occurrenceDates": []
   },
   {
     "id": "uptown-be-like-blippi-tour-2026",
@@ -2653,7 +2654,7 @@
   },
   {
     "id": "san-pablo-city-hall-o-ween-2026",
-    "title": "City Hall-o-Ween 已公布日期",
+    "title": "San Pablo City Hall-o-Ween 市政厅万圣节",
     "startDate": "2026-10-29",
     "endDate": "2026-10-29"
   },
@@ -2738,7 +2739,7 @@
   },
   {
     "id": "san-ramon-nature-halloween-storytime-2026",
-    "title": "自然故事时间有万圣节专场",
+    "title": "San Ramon 自然故事时间：万圣节专场",
     "startDate": "2026-10-30",
     "endDate": "2026-10-30"
   },
@@ -2931,7 +2932,8 @@
     "id": "san-mateo-downtown-market-nov5-2026",
     "title": "San Mateo 周四傍晚农贸市场",
     "startDate": "2026-11-05",
-    "endDate": "2026-11-05"
+    "endDate": "2026-11-05",
+    "occurrenceDates": []
   },
   {
     "id": "sf-warriors-heat-november-2026",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-07",
+  "checkedAt": "2026-10-12",
   "items": [
     {
       "kind": "offer",
@@ -1210,15 +1210,15 @@
     {
       "kind": "offer",
       "id": "sf-opera-dolby-figaro-offer-2026",
-      "title": "$10 opera tickets go on sale for eligible new Bay Area audiences",
+      "title": "$10 opera tickets for eligible new Bay Area audiences, sold in batches by production",
       "path": "/offers/sf-opera-dolby-figaro-offer-2026",
-      "summary": "Dolby Opera for the Bay offers discounted tickets to eligible new Bay Area audiences; this listing covers the on-sale date for The Marriage of Figaro.",
+      "summary": "Dolby Opera for the Bay sells $10 tickets to eligible new Bay Area audiences in batches by production; the Manon and Figaro batches are sold out, and Tosca is next.",
       "details": [
         "$10 per ticket; each eligible attendee may buy up to two tickets during the 2026–27 season. You must not have purchased SF Opera mainstage performance tickets in the previous three seasons. Online purchase only, maximum two tickets, and not combinable with other offers. Register first to verify eligibility."
       ],
       "region": "sf",
       "startDate": "2026-09-30",
-      "dateLabel": "9/30 · On sale September 30 at 12:00 noon; limited availability, with no end date announced.",
+      "dateLabel": "Manon and Figaro batches sold out · next batch (Tosca) on sale Apr 27, 2027 at noon",
       "costLabel": "Purchase required",
       "status": "check-local",
       "verifiedAt": "2026-09-28",
@@ -2397,7 +2397,7 @@
       "id": "lowes-mrbeast-swarms-oct24-2026",
       "title": "October 24: two exclusive Swarms for the first 100 members",
       "path": "/offers/lowes-mrbeast-swarms-oct24-2026",
-      "summary": "MrBeast Day is advertised on Lowe’s national website. Use the official locator for Bay Area stores; local stock has not been individually confirmed. Kits cost extra. The banner also advertises $5 off MrBeast kits and 10% off apparel that day; verify eligible products and member pricing.",
+      "summary": "Lowe’s nationwide MrBeast Day; find Bay Area stores on the official store page, and stock varies by store. The free gift is separate from paid kits: MrBeast kits are $5 off and apparel 10% off that day, so check member prices and eligible items before buying.",
       "details": [
         "Lowe’s official banner says the first 100 MyLowe’s Rewards members in store get two exclusive Lowe’s Swarms. Have your membership ready; supplies are limited. The public banner does not specify a start time or child age limit, so check locally before going."
       ],
@@ -2417,7 +2417,7 @@
       "path": "/offers/lowes-holiday-engine-nov14-2026",
       "summary": "The official schedule lists Holiday Engine. Select a Bay Area store and available time when registration opens. Builds usually take 30–45 minutes within the 10 AM–1 PM event window. Capacity varies; follow your booking confirmation.",
       "details": [
-        "Free Kids Workshop with MyLowe’s Rewards, a Kids Profile and advance registration. Recommended for ages 4–11 with a parent or guardian. Registration opens October 10, 2026; it was not yet open when checked."
+        "Free Kids Workshop: requires MyLowe’s Rewards, a Kids Profile and a booking; suggested for ages 4–11 with a parent or guardian. Registration opened Oct 10, 2026."
       ],
       "startDate": "2026-11-14",
       "endDate": "2026-11-14",
@@ -2435,7 +2435,7 @@
       "path": "/offers/lowes-holiday-trolley-dec12-2026",
       "summary": "The official schedule lists Holiday Trolley Car. Select a Bay Area store and available time when registration opens. Builds usually take 30–45 minutes within the 10 AM–1 PM event window. Capacity varies; follow your booking confirmation.",
       "details": [
-        "Free Kids Workshop with MyLowe’s Rewards, a Kids Profile and advance registration. Recommended for ages 4–11 with a parent or guardian. Registration opens November 14, 2026; it was not yet open when checked."
+        "Free Kids Workshop: requires MyLowe’s Rewards, a Kids Profile and a booking; suggested for ages 4–11 with a parent or guardian. Registration opens Nov 14, 2026."
       ],
       "startDate": "2026-12-12",
       "endDate": "2026-12-12",
@@ -2453,7 +2453,7 @@
       "path": "/offers/lowes-winter-play-lodge-jan16-2027",
       "summary": "The official schedule lists Winter Play Lodge. Select a Bay Area store and available time when registration opens. Builds usually take 30–45 minutes within the 10 AM–1 PM event window. Capacity varies; follow your booking confirmation.",
       "details": [
-        "Free Kids Workshop with MyLowe’s Rewards, a Kids Profile and advance registration. Recommended for ages 4–11 with a parent or guardian. Registration opens December 12, 2026; it was not yet open when checked."
+        "Free Kids Workshop: requires MyLowe’s Rewards, a Kids Profile and a booking; suggested for ages 4–11 with a parent or guardian. Registration opens Dec 12, 2026."
       ],
       "startDate": "2027-01-16",
       "endDate": "2027-01-16",
@@ -2838,7 +2838,7 @@
       "id": "homedepot-monthly-kids-workshops",
       "title": "Free kids’ building workshop: Check the next local booking",
       "path": "/offers/homedepot-monthly-kids-workshops",
-      "summary": "Build the project announced for your booked session. The Oct 3 event has ended; this is the ongoing booking program. The next project and remaining supplies are unconfirmed, so do not rely on an old poster for kit pickup.",
+      "summary": "Kids build a wood project announced on the day. The Oct 3 session is over; check your store’s booking page for the next project and supplies.",
       "details": [
         "The official Kids Workshops program is free in store, while supplies last. Select a Bay Area store and use Register Now to confirm the session and register."
       ],
@@ -3660,18 +3660,37 @@
       "path": "/openings/old-post-office-burlingame",
       "summary": "The former post office now serves French-influenced California cuisine. The official address is 222 Park Road, with dinner daily from 5–10 PM.",
       "details": [
-        "Weekday lunch starts Oct 12, 11:30 AM–2 PM; weekend brunch starts Oct 17, 11 AM–2 PM. Check menus and reservations. This is opening news, not a dining review; no opening discount is confirmed.",
+        "Weekday lunch runs 11:30 am–2 pm from Oct 12; weekend brunch runs 11 am–2 pm but starts on Sunday, Oct 18, so there is no brunch on Saturday, Oct 17. Lunch and brunch can be booked on the official site.",
         "222 Park Road, Burlingame, CA 94010",
         "New restaurant in a historic building"
       ],
       "region": "peninsula",
       "city": "Burlingame",
       "startDate": "2026-10-01",
-      "dateLabel": "Open since Oct 1 · lunch from Oct 12, brunch from Oct 17",
+      "dateLabel": "Open since Oct 1 · lunch from Oct 12, brunch from Oct 18",
       "status": "open",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
       "sourceLabel": "The Old Post Office · Official website"
+    },
+    {
+      "kind": "opening",
+      "id": "marufuku-burlingame-announced",
+      "title": "Marufuku Ramen · Burlingame",
+      "path": "/openings/marufuku-burlingame-announced",
+      "summary": "Marufuku Ramen’s Burlingame branch at 225 Lorton Avenue. The store page lists a grand opening on Oct 11 and regular hours from Oct 12; the brand homepage and location list still say Coming Soon.",
+      "details": [
+        "Closed 2–5 pm on weekdays; open straight through 11 am–9 pm on weekends.",
+        "225 Lorton Ave, Burlingame, CA 94010",
+        "Upcoming ramen restaurant"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "dateLabel": "Grand opening Oct 11 · from Oct 12: weekdays 11 am–2 pm and 5–9 pm, weekends 11 am–9 pm",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.marufukuramen.com/burlingame",
+      "sourceLabel": "Marufuku Ramen · Burlingame · Official website"
     },
     {
       "kind": "opening",
@@ -3680,7 +3699,7 @@
       "path": "/openings/passdoor-santa-rosa-opening-2026",
       "summary": "The Passdoor's website lists its Santa Rosa address, operating hours and later events. The jewelry, art and home-design business relocated to 1160 4th Street; its October 1–3 opening celebration has ended.",
       "details": [
-        "Hours differ between pages on the official website; contact the store before visiting. The celebration dates do not establish the first day of public service or an ongoing giveaway or opening offer.",
+        "The official homepage lists hours: Monday–Saturday, 11 am–5:30 pm.",
         "1160 4th Street, Santa Rosa, CA",
         "Retail relocation"
       ],
@@ -3689,7 +3708,7 @@
       "dateLabel": "Santa Rosa address now lists operating information · October 1–3 opening celebration has ended",
       "status": "open",
       "verifiedAt": "2026-10-05",
-      "sourceUrl": "https://www.thepassdoor.net/new-page",
+      "sourceUrl": "https://www.thepassdoor.net/",
       "sourceLabel": "The Passdoor · Official website"
     },
     {
@@ -3928,12 +3947,13 @@
       "path": "/openings/san-jose-bitterbuck-soft-opening-2026",
       "summary": "A small spot offering pour-over coffee by day and amaro and spritzes in the evening, adding morning and evening gathering options to Fountain Alley.",
       "details": [
-        "Pay according to the à la carte menu; drink prices were not verified in this review. The business does not accept reservations. Menu and hours may change during the soft opening. The soft-opening date comes from local media; no dated opening announcement from the business was found. Its current website has operating information, but the listing retains its media-reported and soft-opening status.",
+        "Order from the menu; prices are posted in the shop. No reservations; the menu and hours may change during the soft opening. The soft-opening date comes from local news coverage.",
         "30 Fountain Alley, Suite 170, San Jose, CA 95113",
         "Coffee, tea and baked goods"
       ],
       "region": "south-bay",
       "city": "San Jose",
+      "startDate": "2026-09-04",
       "dateLabel": "Local reporting explicitly identifies 9/4/2026 as the soft opening. The official site lists coffee service until 16:00; recheck evening service and individual daily hours.",
       "status": "soft_open",
       "verifiedAt": "2026-09-29",
@@ -3947,12 +3967,13 @@
       "path": "/openings/santa-clara-cider-valley-fair-opening-2026",
       "summary": "The fashion brand opens its second permanent U.S. store at Valley Fair, including fitting rooms and digital interactive spaces.",
       "details": [
-        "Merchandise is sold at marked prices. Opening giveaways that have ended are not presented as current offers. No event reservation is needed for regular shopping; see the mall's store page for hours. Included as an earlier new opening: first service was outside September–October. 9/4 was a celebration; the press release date is not treated as the first opening date.",
+        "Regular prices; the opening giveaways have ended. No booking needed to shop; see the mall store page for hours.",
         "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
         "New retail store"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
+      "startDate": "2026-08-29",
       "dateLabel": "The brand's press release states that regular business began August 29, 2026; the grand-opening celebration was September 4, 2026.",
       "status": "open",
       "verifiedAt": "2026-09-29",
@@ -4102,7 +4123,7 @@
       "path": "/openings/oakland-55-coffee-pop-up-2026",
       "summary": "A pop-up for coffee, matcha and Vietnamese sandwiches.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
+        "The pop-up runs inside The Saap Avenue; it also sells pastries.",
         "4395 Piedmont Ave, Oakland, CA",
         "Coffee, tea and baked goods"
       ],
@@ -4119,9 +4140,9 @@
       "id": "anya-gifting-larkspur",
       "title": "Anya’s Gifting Agency",
       "path": "/openings/anya-gifting-larkspur",
-      "summary": "Gifts, leather handbags and customizable products. The shopping center currently labels the store newly opened, but the exact opening month was not confirmed in this review.",
+      "summary": "Gifts, leather bags and personalized products. The mall lists it as newly open; the opening month is not published.",
       "details": [
-        "Items sold at their listed prices; no opening offer confirmed. Follow the registration and admission requirements on the official page. Additional new-business lead: currently operating, but a September–October 2026 opening cannot be claimed.",
+        "Inside Marin Country Mart, across from the Larkspur Ferry Terminal.",
         "2417 Larkspur Landing Circle, Larkspur, CA 94939",
         "New retail store"
       ],
@@ -4159,7 +4180,7 @@
       "path": "/openings/berkeley-cere-tea-opening-2026",
       "summary": "A newly opened tea shop serving matcha, hojicha and other drinks.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
+        "In the former Happy Lemon storefront; it also serves blended ube drinks and coffee.",
         "2106 Shattuck Ave, Berkeley, CA",
         "Coffee, tea and baked goods"
       ],
@@ -4178,7 +4199,7 @@
       "path": "/openings/oakland-chez-maeju-soft-opening-2026",
       "summary": "Features Korean fermented sauces, with a smaller menu during the soft opening.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
+        "Dinner only, closed Tuesdays; reservations on its website.",
         "6200 Claremont Ave, Oakland, CA",
         "New dining spot"
       ],
@@ -4235,7 +4256,7 @@
       "path": "/openings/alameda-juxi-soft-opening-2026",
       "summary": "A new Alameda restaurant is in its soft-opening phase.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. The business provides a reservation link. Check hours and the menu before visiting during the soft opening.",
+        "Cantonese American cooking; book through the Resy link on its website.",
         "1231 Park St, Alameda, CA 94501",
         "New dining spot"
       ],
@@ -4252,9 +4273,9 @@
       "id": "margaux-larkspur",
       "title": "Margaux",
       "path": "/openings/margaux-larkspur",
-      "summary": "A women's footwear brand where shoppers can explore size and width options in person. The mall currently labels it newly open, but the exact opening month was not confirmed in this review.",
+      "summary": "A women’s shoe brand where you can try sizes and widths in person. The mall lists it as newly open; the opening month is not published.",
       "details": [
-        "Items sold at their listed prices; no opening offer confirmed. Follow the registration and admission requirements on the official page. Additional new-business lead: currently operating, but a September–October 2026 opening cannot be claimed.",
+        "Sizes EU 33–44 in three widths; store phone (415) 306-7425.",
         "2207 Larkspur Landing Circle, Larkspur, CA 94939",
         "New retail store"
       ],
@@ -4273,7 +4294,7 @@
       "path": "/openings/pittsburg-nekter-opening-2026",
       "summary": "A new juice and smoothie branch.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
+        "Besides juices and smoothies it serves bowls and waffles; there are also branches in Fremont and Danville.",
         "2261 West Leland Road, Pittsburg, CA",
         "New dining spot"
       ],
@@ -4287,12 +4308,31 @@
     },
     {
       "kind": "opening",
+      "id": "albany-o2-sushi-opening-2026",
+      "title": "O2 Sushi",
+      "path": "/openings/albany-o2-sushi-opening-2026",
+      "summary": "A sushi restaurant on San Pablo Avenue from the O2 Eatery team; it celebrated its opening on Sept 23, and its official Instagram bio says Now Open.",
+      "details": [
+        "From the team behind O2 Eatery on Solano Avenue; besides sushi rolls it serves udon, ramen and bento boxes.",
+        "977 San Pablo Ave, Albany, CA",
+        "New dining spot"
+      ],
+      "region": "east-bay",
+      "city": "Albany",
+      "dateLabel": "Official Instagram says Now Open · no hours listed",
+      "status": "open",
+      "verifiedAt": "2026-09-28",
+      "sourceUrl": "https://www.instagram.com/o2.sushi/",
+      "sourceLabel": "O2 Sushi · Official website"
+    },
+    {
+      "kind": "opening",
       "id": "berkeley-top-dog-downtown-opening-2026",
       "title": "Top Dog／The BreakRoom",
       "path": "/openings/berkeley-top-dog-downtown-opening-2026",
       "summary": "A new branch of a longstanding hot dog brand inside a billiards and cocktail venue.",
       "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
+        "Inside The BreakRoom, a billiards hall and cocktail bar at Shattuck and University Avenue.",
         "2021 Shattuck Ave, Berkeley, CA",
         "New dining spot"
       ],
@@ -4309,9 +4349,9 @@
       "id": "varley-larkspur",
       "title": "Varley",
       "path": "/openings/varley-larkspur",
-      "summary": "Knitwear, outerwear, and everyday clothing. The shopping center currently labels the store newly open, but the exact opening month was not confirmed during this check.",
+      "summary": "Knitwear, outerwear and everyday clothes. The mall lists it as newly open; the opening month is not published.",
       "details": [
-        "Items sold at their listed prices; no opening offer confirmed. Follow the registration and admission requirements on the official page. Additional new-business lead: currently operating, but a September–October 2026 opening cannot be claimed.",
+        "Inside Marin Country Mart; store phone (628) 229-2058.",
         "2409 Larkspur Landing Circle, Larkspur, CA 94939",
         "New retail store"
       ],
@@ -4557,25 +4597,6 @@
     },
     {
       "kind": "opening",
-      "id": "marufuku-burlingame-announced",
-      "title": "Marufuku Ramen · Burlingame",
-      "path": "/openings/marufuku-burlingame-announced",
-      "summary": "The Burlingame location page announces an Oct 11 grand opening with lunch and dinner hours at 225 Lorton Avenue. The date is still ahead as of this review, so this remains an announcement; other branches being open does not confirm this branch is operating.",
-      "details": [
-        "The page header announces the Oct 11 grand opening while the location directory still says Coming Soon. Check this branch again before visiting. No opening gift, discount or queue guarantee was verified, and a celebration date does not establish the first day of public service.",
-        "225 Lorton Ave, Burlingame, CA 94010",
-        "Upcoming ramen restaurant"
-      ],
-      "region": "peninsula",
-      "city": "Burlingame",
-      "dateLabel": "Official grand opening announced for Oct 11 · 11am–2pm / 5pm–9pm",
-      "status": "announced",
-      "verifiedAt": "2026-10-07",
-      "sourceUrl": "https://www.marufukuramen.com/burlingame",
-      "sourceLabel": "Marufuku Ramen · Burlingame · Official website"
-    },
-    {
-      "kind": "opening",
       "id": "shinka-the-jay-announced",
       "title": "Shinka",
       "path": "/openings/shinka-the-jay-announced",
@@ -4674,15 +4695,15 @@
       "id": "los-altos-coffeebar-announced-2026",
       "title": "Coffeebar at State Street Market",
       "path": "/openings/los-altos-coffeebar-announced-2026",
-      "summary": "A new State Street Market location for an Italian cafe, with plans to add Bay Area baking production. Local media expects an early-October opening; the official first day has not been confirmed.",
+      "summary": "A new espresso bar at State Street Market, planned to add baking for the Bay Area. The official locations page says it opens in October 2026 (“Opening soon”); the first day is not announced.",
       "details": [
-        "Food and drink are charged by the menu; per-person spending has not been confirmed and this is not a fixed admission price. Reconfirm with the business before the opening; this listing does not guarantee it will be operating that day. Only the anticipated opening month is known, which does not establish operation throughout the month or a confirmed first day. Not counted among confirmed openings.",
+        "To try it before this one opens, the Menlo Park shop at 1149 Chestnut St. is open daily 6:30 am–6 pm.",
         "170 State Street, Los Altos, CA",
         "New dining spot"
       ],
       "region": "south-bay",
       "city": "Los Altos",
-      "dateLabel": "This is only an expected opening window reported by the media; specific operating dates and hours are unconfirmed.",
+      "dateLabel": "Official site: opening October 2026 · first day not announced",
       "status": "announced",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://coffeebar.com/",
@@ -4706,25 +4727,6 @@
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.millbraescafe.com/",
       "sourceLabel": "Millbrae’s Cafe · Official website"
-    },
-    {
-      "kind": "opening",
-      "id": "albany-o2-sushi-opening-2026",
-      "title": "O2 Sushi",
-      "path": "/openings/albany-o2-sushi-opening-2026",
-      "summary": "The new sushi restaurant announced a September 23 opening celebration; its actual operating status needs to be rechecked.",
-      "details": [
-        "Pay according to the menu; complete prices and opening offers were not verified during this check. Confirm current hours before visiting; walk-in access or immediate seating is not assumed.",
-        "977 San Pablo Ave, Albany, CA",
-        "New dining spot"
-      ],
-      "region": "east-bay",
-      "city": "Albany",
-      "dateLabel": "Check the business's latest announcements for regular hours and future plans.",
-      "status": "announced",
-      "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.instagram.com/o2.sushi/",
-      "sourceLabel": "O2 Sushi · Official website"
     },
     {
       "kind": "opening",

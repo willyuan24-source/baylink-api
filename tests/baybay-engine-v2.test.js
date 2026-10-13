@@ -487,7 +487,8 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
     refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org/) };
     return reply(refs.garden
       ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
-      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `King 图书馆有中文馆藏和活动 [[${refs.library}]]`, cardIds: [refs.library, refs.sjma] }], candidateIds: [refs.library] }));
+      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync; SJMA is still there.
+      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${refs.sjma}]]`, cardIds: [refs.library, refs.sjma].filter(Boolean) }], candidateIds: [refs.sjma] }));
   } });
   const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
   assert.ok(refs.garden && refs.tea, JSON.stringify(refs));
@@ -497,7 +498,7 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
   assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
   const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动');
-  assert.ok(refs.library && refs.sjma, JSON.stringify(refs));
+  assert.ok(refs.sjma, JSON.stringify(refs));
   assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
   assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));
   assert.ok(sanJose.research.warnings.includes('answer_lead_long'), 'a lead over 40 characters is recorded');

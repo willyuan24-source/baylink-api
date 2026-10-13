@@ -293,6 +293,16 @@
     ]
   },
   {
+    "id": "source-047c0cb738806479",
+    "title": "The Passdoor",
+    "url": "https://www.thepassdoor.net/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "passdoor-santa-rosa-opening-2026"
+    ]
+  },
+  {
     "id": "source-0485cd5fc33dd9e2",
     "title": "唐人街秋月节：看舞狮，找一口中秋味道",
     "url": "https://www.moonfestival.org/",
@@ -8371,7 +8381,7 @@
     "contentIds": [
       "sf-doja-cat-2026"
     ],
-    "endDate": "2026-10-19"
+    "endDate": "2026-10-25"
   },
   {
     "id": "source-9da88d408423b561",
@@ -9386,6 +9396,15 @@
     "kind": "guide",
     "contentIds": [
       "south-bay-school-district-enrollment-guide"
+    ]
+  },
+  {
+    "id": "source-afac187b7c92f5aa",
+    "title": "在湾区准备入籍：先确认申请路径，再整理材料与考试版本",
+    "url": "https://www.uscis.gov/citizenship/learn-about-citizenship/the-naturalization-interview-and-test",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-naturalization-official-path-guide"
     ]
   },
   {

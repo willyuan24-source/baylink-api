@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-07",
+  "checkedAt": "2026-10-12",
   "items": [
     {
       "kind": "offer",
@@ -1210,15 +1210,15 @@
     {
       "kind": "offer",
       "id": "sf-opera-dolby-figaro-offer-2026",
-      "title": "湾区新观众 $10 歌剧票开售",
+      "title": "湾区新观众 $10 歌剧票：按剧目分批开售",
       "path": "/offers/sf-opera-dolby-figaro-offer-2026",
-      "summary": "Dolby Opera for the Bay 为符合条件的湾区新观众提供折扣票；本条关注《费加罗的婚礼》开售节点。",
+      "summary": "Dolby Opera for the Bay 为符合条件的湾区新观众按剧目分批发售 $10 票；《Manon》与《费加罗的婚礼》批次已售罄，下一批为《Tosca》。",
       "details": [
         "每张 $10；每名合资格观众 2026–27 季最多两张 须过去三个演出季未买过 SF Opera 主舞台演出票；仅官网购买，限额两张，不能叠加优惠；先注册核验资格。"
       ],
       "region": "sf",
       "startDate": "2026-09-30",
-      "dateLabel": "9/30 · 9 月 30 日中午 12:00 开售；供应有限、结束日未公布",
+      "dateLabel": "《Manon》《费加罗的婚礼》批次已售罄 · 下一批《Tosca》2027/4/27 中午开售",
       "costLabel": "需消费",
       "status": "check-local",
       "verifiedAt": "2026-09-28",
@@ -2397,7 +2397,7 @@
       "id": "lowes-mrbeast-swarms-oct24-2026",
       "title": "10/24 首 100 名会员领两只限定 Swarms",
       "path": "/offers/lowes-mrbeast-swarms-oct24-2026",
-      "summary": "Lowe’s 全美官网公布的 MrBeast Day，湾区可从官方门店页查询；本次未逐店确认库存。免费赠品与需购买的套件分开：当天另有 MrBeast 套件减 $5、服饰减 10% 宣传，购买前核对会员价和适用款式。",
+      "summary": "Lowe’s 全美官网公布的 MrBeast Day，湾区门店可在官方门店页查询；各店库存不同。免费赠品与需购买的套件分开：当天另有 MrBeast 套件减 $5、服饰减 10% 宣传，购买前核对会员价和适用款式。",
       "details": [
         "官方海报宣布：到店前 100 名 MyLowe’s Rewards 会员可领两只 Lowe’s 限定 Swarms。提前准备会员账户；送完为止。官方公开海报未公布开始时间或儿童年龄限制，出发前向本店确认。"
       ],
@@ -2417,7 +2417,7 @@
       "path": "/offers/lowes-holiday-engine-nov14-2026",
       "summary": "官网已公布 Holiday Engine 场次。报名时选择湾区门店和可用时段；活动通常约 30–45 分钟，10:00–13:00 是活动范围。各店名额有限，以预约确认信息为准。",
       "details": [
-        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/10/10 开放报名，本次核验时尚未开放。"
+        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/10/10 起开放报名。"
       ],
       "startDate": "2026-11-14",
       "endDate": "2026-11-14",
@@ -2435,7 +2435,7 @@
       "path": "/offers/lowes-holiday-trolley-dec12-2026",
       "summary": "官网已公布 Holiday Trolley Car 场次。报名时选择湾区门店和可用时段；活动通常约 30–45 分钟，10:00–13:00 是活动范围。各店名额有限，以预约确认信息为准。",
       "details": [
-        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/11/14 开放报名，本次核验时尚未开放。"
+        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/11/14 起开放报名。"
       ],
       "startDate": "2026-12-12",
       "endDate": "2026-12-12",
@@ -2453,7 +2453,7 @@
       "path": "/offers/lowes-winter-play-lodge-jan16-2027",
       "summary": "官网已公布 Winter Play Lodge 场次。报名时选择湾区门店和可用时段；活动通常约 30–45 分钟，10:00–13:00 是活动范围。各店名额有限，以预约确认信息为准。",
       "details": [
-        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/12/12 开放报名，本次核验时尚未开放。"
+        "免费 Kids Workshop，须 MyLowe’s Rewards 会员、儿童 Kids Profile 并提前预约；建议 4–11 岁，家长或监护人陪同。2026/12/12 起开放报名。"
       ],
       "startDate": "2027-01-16",
       "endDate": "2027-01-16",
@@ -2838,7 +2838,7 @@
       "id": "homedepot-monthly-kids-workshops",
       "title": "免费儿童木工：查下一场本店预约",
       "path": "/offers/homedepot-monthly-kids-workshops",
-      "summary": "带孩子动手搭建当场公布的木作项目。10/3 场已结束，本条保留长期预约入口；未确认下一款作品或材料余量，不应按旧海报直接到店领套件。",
+      "summary": "带孩子动手搭建当场公布的木作项目。10/3 场已结束，下一场作品和材料以本店预约页为准。",
       "details": [
         "官网列免费门店 Kids Workshops，材料数量有限；先选湾区门店并使用 Register Now 确认场次与报名。"
       ],
@@ -3660,18 +3660,37 @@
       "path": "/openings/old-post-office-burlingame",
       "summary": "旧邮局改成餐厅，保留历史建筑氛围，供应带法式影响的加州菜。官网确认地址是 222 Park Road，晚餐每日 17:00–22:00。",
       "details": [
-        "10/12 起周一至周五午餐 11:30–14:00；10/17 起周末早午餐 11:00–14:00。先查菜单与订位；本文是开业资讯，非亲测食评，也没有已核实的开业折扣。",
+        "10/12 起周一至周五午餐 11:30–14:00；周末早午餐 11:00–14:00，10/18（周日）才开始，10/17 周六还没有早午餐。午餐和早午餐都可在官网订位。",
         "222 Park Road, Burlingame, CA 94010",
         "历史建筑里的新餐厅"
       ],
       "region": "peninsula",
       "city": "Burlingame",
       "startDate": "2026-10-01",
-      "dateLabel": "10/1 已开业 · 午餐 10/12、早午餐 10/17 起",
+      "dateLabel": "10/1 已开业 · 午餐 10/12、早午餐 10/18 起",
       "status": "open",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
       "sourceLabel": "The Old Post Office · 官方入口"
+    },
+    {
+      "kind": "opening",
+      "id": "marufuku-burlingame-announced",
+      "title": "Marufuku Ramen · Burlingame",
+      "path": "/openings/marufuku-burlingame-announced",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
+      "details": [
+        "平日 14:00–17:00 不营业；周末 11:00–21:00 中午不休息。",
+        "225 Lorton Ave, Burlingame, CA 94010",
+        "拉面新店预告"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "dateLabel": "10/11 Grand Opening · 10/12 起平日 11:00–14:00、17:00–21:00，周末 11:00–21:00",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.marufukuramen.com/burlingame",
+      "sourceLabel": "Marufuku Ramen · Burlingame · 官方入口"
     },
     {
       "kind": "opening",
@@ -3680,7 +3699,7 @@
       "path": "/openings/passdoor-santa-rosa-opening-2026",
       "summary": "The Passdoor 官网已列出 Santa Rosa 新址、营业时段及后续活动。珠宝、艺术及家居精选品牌迁至 1160 4th Street；10/1–3 的开业庆典已结束。",
       "details": [
-        "官网不同页面的营业时段不一致，出发前联系门店确认。开业庆典日期不等于首次接客日，也不代表当前仍有赠品或开业优惠。",
+        "官网首页列营业时间：周一至周六 11:00–17:30。",
         "1160 4th Street, Santa Rosa, CA",
         "零售迁址"
       ],
@@ -3689,7 +3708,7 @@
       "dateLabel": "Santa Rosa 新址已列营业信息 · 10/1–3 开业庆典已结束",
       "status": "open",
       "verifiedAt": "2026-10-05",
-      "sourceUrl": "https://www.thepassdoor.net/new-page",
+      "sourceUrl": "https://www.thepassdoor.net/",
       "sourceLabel": "The Passdoor · 官方入口"
     },
     {
@@ -3928,12 +3947,13 @@
       "path": "/openings/san-jose-bitterbuck-soft-opening-2026",
       "summary": "白天手冲咖啡、傍晚转为amaro与spritz的小店，为Fountain Alley补充早间和晚间聚会选择。",
       "details": [
-        "按单点菜单消费；本次未核实饮品价格。 官方不接受预约；试营业阶段菜单和时段可能调整。 试营业日期依据当地媒体，未找到店方带日期的开业公告；当前官网已存在营业信息，仍保留媒体报道与试营业状态。",
+        "按单点菜单消费，价格见店内菜单。店方不接受预约；试营业阶段菜单和时段可能调整。试营业日期来自当地媒体报道。",
         "30 Fountain Alley, Suite 170, San Jose, CA 95113",
         "咖啡、茶与烘焙"
       ],
       "region": "south-bay",
       "city": "San Jose",
+      "startDate": "2026-09-04",
       "dateLabel": "当地报道明确9/4/2026试营业；官网咖啡服务至16:00，晚间及各日时段请再核实。",
       "status": "soft_open",
       "verifiedAt": "2026-09-29",
@@ -3947,12 +3967,13 @@
       "path": "/openings/santa-clara-cider-valley-fair-opening-2026",
       "summary": "服装品牌在Valley Fair开设美国第二家常设店，包含试衣与数字互动空间。",
       "details": [
-        "商品按标价；不把已结束的开幕赠品作为当前优惠。 普通购物无需活动预约；营业时间以商场门店页为准。 补充较早新店：首次营业不在9–10月。9/4是庆祝，不把新闻稿发布日期等同首次开业。",
+        "商品按标价；开幕赠品已结束。普通购物无需预约，营业时间以商场门店页为准。",
         "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
         "零售新店"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
+      "startDate": "2026-08-29",
       "dateLabel": "品牌新闻稿称8/29/2026正式营业；大开幕庆祝为9/4/2026。",
       "status": "open",
       "verifiedAt": "2026-09-29",
@@ -4102,7 +4123,7 @@
       "path": "/openings/oakland-55-coffee-pop-up-2026",
       "summary": "咖啡、抹茶与越式三明治快闪。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
+        "快闪设在 The Saap Avenue 店内；也卖糕点。",
         "4395 Piedmont Ave, Oakland, CA",
         "咖啡、茶与烘焙"
       ],
@@ -4119,9 +4140,9 @@
       "id": "anya-gifting-larkspur",
       "title": "Anya’s Gifting Agency",
       "path": "/openings/anya-gifting-larkspur",
-      "summary": "礼品、皮革手袋与可个性化产品。商场当前标注新开业，但本次未确认确切开业月份。",
+      "summary": "礼品、皮革手袋与可个性化产品。商场标注为新开业，具体开业月份未公布。",
       "details": [
-        "按商品售价，未确认开业优惠。 以官方页面的报名与入场要求为准。 补充新店线索：当前在营已确认，不能宣称2026年9–10月开业。",
+        "店在 Marin Country Mart 商场，对面就是 Larkspur 渡轮码头。",
         "2417 Larkspur Landing Circle, Larkspur, CA 94939",
         "零售新店"
       ],
@@ -4159,7 +4180,7 @@
       "path": "/openings/berkeley-cere-tea-opening-2026",
       "summary": "新开茶饮店，提供抹茶、焙茶等饮品。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
+        "开在原 Happy Lemon 店面；也有紫薯冰沙和咖啡。",
         "2106 Shattuck Ave, Berkeley, CA",
         "咖啡、茶与烘焙"
       ],
@@ -4178,7 +4199,7 @@
       "path": "/openings/oakland-chez-maeju-soft-opening-2026",
       "summary": "以韩式发酵酱料为特色，试营业菜单较精简。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
+        "只做晚餐，周二休息；官网可订位。",
         "6200 Claremont Ave, Oakland, CA",
         "餐饮新店"
       ],
@@ -4235,7 +4256,7 @@
       "path": "/openings/alameda-juxi-soft-opening-2026",
       "summary": "Alameda 新餐厅处于试营业阶段。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 商家提供预约入口；试营业前核对时间与菜单。",
+        "粤式美式菜；订位走官网的 Resy 入口。",
         "1231 Park St, Alameda, CA 94501",
         "餐饮新店"
       ],
@@ -4252,9 +4273,9 @@
       "id": "margaux-larkspur",
       "title": "Margaux",
       "path": "/openings/margaux-larkspur",
-      "summary": "女性鞋履品牌；可现场了解尺码及宽度选择。商场当前标注新开业，但本次未确认确切开业月份。",
+      "summary": "女性鞋履品牌，可现场了解尺码及宽度选择。商场标注为新开业，具体开业月份未公布。",
       "details": [
-        "按商品售价，未确认开业优惠。 以官方页面的报名与入场要求为准。 补充新店线索：当前在营已确认，不能宣称2026年9–10月开业。",
+        "鞋码 EU 33–44，有三种宽度；门店电话 (415) 306-7425。",
         "2207 Larkspur Landing Circle, Larkspur, CA 94939",
         "零售新店"
       ],
@@ -4273,7 +4294,7 @@
       "path": "/openings/pittsburg-nekter-opening-2026",
       "summary": "新设果汁与 smoothie 分店。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
+        "除果汁和 smoothie 也有果碗和华夫饼；Fremont、Danville 另有分店。",
         "2261 West Leland Road, Pittsburg, CA",
         "餐饮新店"
       ],
@@ -4287,12 +4308,31 @@
     },
     {
       "kind": "opening",
+      "id": "albany-o2-sushi-opening-2026",
+      "title": "O2 Sushi",
+      "path": "/openings/albany-o2-sushi-opening-2026",
+      "summary": "O2 Eatery 团队在 San Pablo Avenue 开的寿司餐厅，9/23 庆祝开业，官方 Instagram 简介写着 Now Open。",
+      "details": [
+        "与 Solano Avenue 的 O2 Eatery 同一团队；除寿司卷也有乌冬、拉面和便当。",
+        "977 San Pablo Ave, Albany, CA",
+        "餐饮新店"
+      ],
+      "region": "east-bay",
+      "city": "Albany",
+      "dateLabel": "官方 Instagram 写 Now Open · 未列营业时间",
+      "status": "open",
+      "verifiedAt": "2026-09-28",
+      "sourceUrl": "https://www.instagram.com/o2.sushi/",
+      "sourceLabel": "O2 Sushi · 官方入口"
+    },
+    {
+      "kind": "opening",
       "id": "berkeley-top-dog-downtown-opening-2026",
       "title": "Top Dog／The BreakRoom",
       "path": "/openings/berkeley-top-dog-downtown-opening-2026",
       "summary": "老字号热狗品牌进驻台球与鸡尾酒场地的新分店。",
       "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
+        "在 Shattuck 与 University Avenue 路口的台球酒吧 The BreakRoom 里。",
         "2021 Shattuck Ave, Berkeley, CA",
         "餐饮新店"
       ],
@@ -4309,9 +4349,9 @@
       "id": "varley-larkspur",
       "title": "Varley",
       "path": "/openings/varley-larkspur",
-      "summary": "针织、外套与日常服饰。商场当前标注新开业，但本次未确认确切开业月份。",
+      "summary": "针织、外套与日常服饰。商场标注为新开业，具体开业月份未公布。",
       "details": [
-        "按商品售价，未确认开业优惠。 以官方页面的报名与入场要求为准。 补充新店线索：当前在营已确认，不能宣称2026年9–10月开业。",
+        "在 Marin Country Mart 商场内；门店电话 (628) 229-2058。",
         "2409 Larkspur Landing Circle, Larkspur, CA 94939",
         "零售新店"
       ],
@@ -4557,25 +4597,6 @@
     },
     {
       "kind": "opening",
-      "id": "marufuku-burlingame-announced",
-      "title": "Marufuku Ramen · Burlingame",
-      "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Burlingame 门店页已公布 10/11 Grand Opening 与当天两段营业时间，地址为 225 Lorton Avenue。核对时尚未到开业日，保留预告状态，不把其他分店营业状态当成本店已开门。",
-      "details": [
-        "官网页首为 10/11 开业预告，分店目录仍写 Coming Soon。临行前再次查看本店安排；没有核实到开业赠品、折扣或排队保证，也不把庆祝日期当作已证实的首次接客日。",
-        "225 Lorton Ave, Burlingame, CA 94010",
-        "拉面新店预告"
-      ],
-      "region": "peninsula",
-      "city": "Burlingame",
-      "dateLabel": "官网预告 10/11 Grand Opening · 11:00–14:00／17:00–21:00",
-      "status": "announced",
-      "verifiedAt": "2026-10-07",
-      "sourceUrl": "https://www.marufukuramen.com/burlingame",
-      "sourceLabel": "Marufuku Ramen · Burlingame · 官方入口"
-    },
-    {
-      "kind": "opening",
       "id": "shinka-the-jay-announced",
       "title": "Shinka",
       "path": "/openings/shinka-the-jay-announced",
@@ -4674,15 +4695,15 @@
       "id": "los-altos-coffeebar-announced-2026",
       "title": "Coffeebar at State Street Market",
       "path": "/openings/los-altos-coffeebar-announced-2026",
-      "summary": "State Street Market 的意式咖啡店新据点，计划加入湾区烘焙生产功能。 当地媒体预计 10 月初 开业，尚未确认正式首日。",
+      "summary": "State Street Market 的意式咖啡店新据点，计划加入湾区烘焙生产功能。官网门店页写 2026 年 10 月开业（Opening soon），首日未公布。",
       "details": [
-        "按餐饮菜单消费，未确认人均费用；不是固定门票价。 开业前需再次向商家确认；不可据此保证当天营业。 目前仅知预计开业月份，不代表整月营业或已确认首日；不计入已确认开业数。",
+        "开门前想先喝，可去已营业的 Menlo Park 店：1149 Chestnut St.，每天 6:30–18:00。",
         "170 State Street, Los Altos, CA",
         "餐饮新店"
       ],
       "region": "south-bay",
       "city": "Los Altos",
-      "dateLabel": "仅为媒体报道的预计开业窗口；具体营业日和时段未确认。",
+      "dateLabel": "官网写 2026 年 10 月开业 · 首日未公布",
       "status": "announced",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://coffeebar.com/",
@@ -4706,25 +4727,6 @@
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.millbraescafe.com/",
       "sourceLabel": "Millbrae’s Cafe · 官方入口"
-    },
-    {
-      "kind": "opening",
-      "id": "albany-o2-sushi-opening-2026",
-      "title": "O2 Sushi",
-      "path": "/openings/albany-o2-sushi-opening-2026",
-      "summary": "新寿司餐厅宣布 9 月 23 日庆祝开业，实际营业状态待复核。",
-      "details": [
-        "按菜单消费；本次没有验证完整价格或开业优惠。 到访前核对最新营业时间；未推断免预约或随时有位。",
-        "977 San Pablo Ave, Albany, CA",
-        "餐饮新店"
-      ],
-      "region": "east-bay",
-      "city": "Albany",
-      "dateLabel": "日常营业时间及未来安排需查商家最新公告。",
-      "status": "announced",
-      "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.instagram.com/o2.sushi/",
-      "sourceLabel": "O2 Sushi · 官方入口"
     },
     {
       "kind": "opening",
