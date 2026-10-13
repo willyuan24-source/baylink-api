@@ -159,12 +159,12 @@ test('the follow-up rules reach the model after the user turn; system block 1 is
   assert.deepEqual(JSON.parse(last.messages[0].content[0]?.text ?? last.messages[0].content).state.childAges, [4, 7]);
 });
 
-test('professional topics found by the new detectors never stream drafts (RC-21) and run on the professional route', async () => {
+test('professional topics found by the new detectors stream their lead only (H03, was none under RC-21) and run on the professional route', async () => {
   for (const message of ['孩子发烧 38.5 度两天了，要不要给他吃抗生素？', '我 H-1B 被裁员了，60 天宽限期内找不到工作会怎样？', '刚拿移民签证来美国，社安号 SSN 怎么申请？']) {
     const { assistant, sent } = assistantWith({ lead: '一般来说……', points: [{ text: '请咨询专业人士。', cardIds: [] }] });
     const { result, drafts } = await ask(assistant, message);
-    assert.deepEqual(drafts, [], message); assert.equal(result.route.reason, 'professional_topic', message);
-    assert.ok(sent.every(body => body.stream === undefined), message);
+    assert.deepEqual([...new Set(drafts.map(draft => draft.field))], drafts.length ? ['lead'] : [], message); assert.equal(result.route.reason, 'professional_topic', message);
+    assert.ok(sent.filter(body => body.stream === true).length <= 1, message);
   }
 });
 

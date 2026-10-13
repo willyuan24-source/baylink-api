@@ -120,7 +120,10 @@ function noteEdgeRejection(variant, response) {
 }
 
 function usageFrom(response, what) {
-  if (response.status === 200 && Number.isInteger(response.data?.remaining)) return response.data;
+  // The canary's asks are BayBay (guide-chat) asks: since H10 they spend BayBay's own share,
+  // reported as baybay; an API without it reports the one shared share at the top level.
+  const share = response.data?.baybay && Number.isInteger(response.data.baybay.remaining) ? { ...response.data, ...response.data.baybay } : response.data;
+  if (response.status === 200 && Number.isInteger(share?.remaining)) return share;
   const edge = edgeRejected(response) ? ' from Cloudflare, before the API' : '';
   throw new Error(`${what} GET /ai/usage returned ${response.status}${edge} "${snippet(response)}"`);
 }
