@@ -174,7 +174,7 @@ test('the real library chain preserves Fremont and recalls AC card/film facts, n
   assert.equal(state.goal, 'newcomer'); assert.equal(state.city, 'Fremont'); assert.equal(state.region, 'east-bay');
   const followup = buildSiteEvidence({ query: message, originalQuery: message, state, guideCatalog, catalog, today: '2026-10-05' });
   const ac = followup.guides.find(row => /AC Library：先分清/.test(row.sectionHeading));
-  assert.ok(ac); assert.match(ac.text, /hoopla/); assert.match(ac.text, /未找到 AC 卡适用的 Kanopy/);
+  assert.ok(ac); assert.match(ac.text, /hoopla/); assert.match(ac.text, /没有列出 AC 卡可用的 Kanopy/);
   assert.ok(ac.sourceUrls.some(source => source.url === 'https://aclibrary.org/movies-tv/'));
   assert.ok(followup.guides.some(row => /SFPL：Kanopy/.test(row.sectionHeading)));
   assert.ok(followup.guides.every(row => !/rent|rental|housing/.test(row.slug)));

@@ -1985,6 +1985,28 @@
     ]
   },
   {
+    "id": "sjpl-almaden-20th-harvest-festival-2026",
+    "title": "Almaden 图书馆 20 周年暨丰收节：乐团、泡泡派对和南瓜园",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
+    "id": "sjpl-berryessa-mandarin-ell-club-fall-2026",
+    "title": "Berryessa 分馆英语会话俱乐部：普通话老师带练",
+    "startDate": "2026-10-17",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14"
+    ]
+  },
+  {
     "id": "sonoma-dia-movie-night-2026",
     "title": "Sonoma 亡灵节电影夜：户外电影与社区游戏",
     "startDate": "2026-10-17",
@@ -2064,6 +2086,16 @@
     "title": "圣何塞互动悬疑晚餐：《Funeral For a Gangster》",
     "startDate": "2026-10-18",
     "endDate": "2026-10-18"
+  },
+  {
+    "id": "smcl-millbrae-chinese-storytime-oct-2026",
+    "title": "Millbrae 图书馆国语、粤语故事会",
+    "startDate": "2026-10-18",
+    "endDate": "2026-10-25",
+    "occurrenceDates": [
+      "2026-10-18",
+      "2026-10-25"
+    ]
   },
   {
     "id": "santa-clara-49ers-commanders-2026",
@@ -2258,6 +2290,15 @@
     "title": "Stanford 橄榄球主场对 NC State",
     "startDate": "2026-10-23",
     "endDate": "2026-10-23"
+  },
+  {
+    "id": "acl-cherryland-chinese-storytimes-oct24-2026",
+    "title": "Cherryland 图书馆粤语、国语故事会",
+    "startDate": "2026-10-24",
+    "endDate": "2026-10-24",
+    "occurrenceDates": [
+      "2026-10-24"
+    ]
   },
   {
     "id": "belmont-centennial-fest-2026",
@@ -2529,6 +2570,15 @@
     "endDate": "2026-10-25"
   },
   {
+    "id": "smcl-portola-valley-mid-autumn-lantern-2026",
+    "title": "中秋中文书法纸灯笼：学写毛笔字，做一盏扇形灯",
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-25",
+    "occurrenceDates": [
+      "2026-10-25"
+    ]
+  },
+  {
     "id": "srsymphony-boo-dance-oct25-2026",
     "title": "Boo! Let’s Dance：和 Snoopy 一起听交响乐",
     "startDate": "2026-10-25",
@@ -2765,6 +2815,24 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "acl-dublin-halloween-crafts-costume-2026",
+    "title": "Dublin 图书馆万圣节手工与装扮比赛",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
+    "id": "ccclib-crockett-halloween-hullabaloo-2026",
+    "title": "Crockett 图书馆万圣节嘉年华：游戏、手工和找找看",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "cupertino-baer-blacksmith-fall-2026",
     "title": "免费观察 Baer Blacksmith Shop 锻造示范",
     "startDate": "2026-10-31",
@@ -2824,6 +2892,42 @@
     "title": "圣何塞 Sharks 对 Senators：Los Tiburones 主题场",
     "startDate": "2026-10-31",
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "sjpl-berryessa-halloween-party-2026",
+    "title": "Berryessa 分馆万圣节派对：手工、讨糖和装扮游行",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
+    "id": "sjpl-joyce-ellington-halloween-2026",
+    "title": "Joyce Ellington 分馆万圣节：故事会、游行和馆内讨糖",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
+    "id": "smcl-brisbane-sugar-skull-2026",
+    "title": "Brisbane 图书馆亡灵节糖骷髅彩绘",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
+    "id": "smcl-san-carlos-ofrenda-musical-2026",
+    "title": "San Carlos 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
   },
   {
     "id": "vacaville-candy-stroll-20261031",
@@ -2902,6 +3006,24 @@
     "endDate": "2026-11-01"
   },
   {
+    "id": "smcl-foster-city-nidhi-chanani-2026",
+    "title": "Foster City 图书馆：绘本作家 Nidhi Chanani 讲故事、现场画画",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
+  },
+  {
+    "id": "smcl-pacifica-robotics-team5940-2026",
+    "title": "Pacifica 图书馆机器人入门：高中战队 Team 5940 带孩子编程",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
+  },
+  {
     "id": "midpen-hiking-highlights-nov2-2026",
     "title": "林地看古树与砂岩：El Corte de Madera 导览",
     "startDate": "2026-11-02",
@@ -2965,6 +3087,43 @@
     "endDate": "2026-11-06"
   },
   {
+    "id": "acl-castro-valley-ohlone-tapestries-2026",
+    "title": "Castro Valley 图书馆：Muwekma Ohlone 原住民挂毯展",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-07",
+      "2026-11-08"
+    ]
+  },
+  {
+    "id": "acl-san-lorenzo-diwali-diya-2026",
+    "title": "San Lorenzo 图书馆儿童美术课：用黏土做排灯节小油灯",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
+    "id": "ccclib-martinez-friends-book-sale-nov7-2026",
+    "title": "Martinez 图书馆之友季度旧书义卖：一袋 $10",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
+    "id": "ccclib-martinez-mug-swap-2026",
+    "title": "Martinez 图书馆马克杯交换",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
     "id": "nov2026-presidio-dia-muertos-diwali",
     "title": "Presidio：亡灵节与排灯节文化庆典",
     "startDate": "2026-11-07",
@@ -2992,10 +3151,37 @@
     "endDate": "2026-11-07"
   },
   {
+    "id": "smcl-atherton-diwali-henna-2026",
+    "title": "Atherton 图书馆排灯节手绘指甲花",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
+    "id": "smcl-portola-valley-nahuatl-prints-2026",
+    "title": "Portola Valley 图书馆版画课：刻一枚阿兹特克历法日符",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
     "id": "ssf-senior-holiday-boutique-nov7-2026",
     "title": "South San Francisco 节日手作市集",
     "startDate": "2026-11-07",
     "endDate": "2026-11-07"
+  },
+  {
+    "id": "acl-castro-valley-military-records-2026",
+    "title": "退伍军人节前的家谱课：查家人的军队服役记录",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
   },
   {
     "id": "midpen-sentinel-sky-nov8-2026",
@@ -3047,6 +3233,33 @@
     "endDate": "2026-11-08"
   },
   {
+    "id": "smcl-brisbane-puzzle-swap-2026",
+    "title": "Brisbane 图书馆拼图交换会",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
+  },
+  {
+    "id": "smcl-brisbane-zuni-water-jar-2026",
+    "title": "Brisbane 图书馆儿童画：祖尼族水罐图案",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
+  },
+  {
+    "id": "smcl-north-fair-oaks-diwali-henna-2026",
+    "title": "North Fair Oaks 图书馆排灯节手绘指甲花",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
+  },
+  {
     "id": "nov2026-martinez-monday-birding",
     "title": "Martinez 滨水周一观鸟",
     "startDate": "2026-11-09",
@@ -3060,6 +3273,15 @@
     "title": "Pearls Jubilee：Stephan Pastis 对谈与签书",
     "startDate": "2026-11-10",
     "endDate": "2026-11-10"
+  },
+  {
+    "id": "sj-veterans-day-parade-2026",
+    "title": "圣何塞退伍军人节游行：北加州规模最大的 Veterans Day 游行",
+    "startDate": "2026-11-11",
+    "endDate": "2026-11-11",
+    "occurrenceDates": [
+      "2026-11-11"
+    ]
   },
   {
     "id": "nov2026-arion-press-public-tours",
@@ -3113,6 +3335,24 @@
     ]
   },
   {
+    "id": "ccclib-hercules-library-20th-2026",
+    "title": "Hercules 图书馆 20 周年派对：泡泡秀、脸部彩绘和气球",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "ccclib-lafayette-half-price-books-2026",
+    "title": "Lafayette 图书馆之友书店半价日",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
     "id": "filoli-holidays-from-nov14-2026",
     "title": "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
     "startDate": "2026-11-14",
@@ -3120,6 +3360,33 @@
     "occurrenceDates": [
       "2026-11-14",
       "2026-11-15"
+    ]
+  },
+  {
+    "id": "marin-bolinas-saturday-crafts-nov14-2026",
+    "title": "Bolinas 图书馆周六亲子手工与游戏",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "marin-corte-madera-quiltmaking-talk-2026",
+    "title": "Corte Madera 图书馆讲座：两位非裔拼布艺术家的创作之路",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "marin-point-reyes-librito-concert-2026",
+    "title": "Point Reyes 图书馆亲子音乐会：Rositas Arribeñas 演奏墨西哥 son huasteco",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
     ]
   },
   {
@@ -3169,6 +3436,62 @@
     "endDate": "2026-11-14"
   },
   {
+    "id": "sccl-campbell-friends-book-sale-nov14-2026",
+    "title": "Campbell 图书馆之友旧书义卖：书、拼图和桌游",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sjpl-almaden-sounds-of-south-asia-2026",
+    "title": "Almaden 分馆南亚音乐小演出：西塔琴与萨罗德琴",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sjpl-west-valley-book-sale-nov-2026",
+    "title": "West Valley 分馆旧书义卖：周日一袋 $5",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-14",
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "smcl-belmont-friends-book-sale-nov-2026",
+    "title": "Belmont 图书馆之友旧书义卖",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-14",
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "smcl-pacifica-ofrenda-musical-nov14-2026",
+    "title": "Pacifica 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "chsa-taiwanese-chinese-roots-seminar-2026",
+    "title": "台湾与中国寻根讲座：查家谱、找祖籍、规划回乡",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-15"
+    ]
+  },
+  {
     "id": "nov2026-hayward-bay-bird-morning",
     "title": "Hayward 海湾晨间观鸟：6岁起报名",
     "startDate": "2026-11-15",
@@ -3197,10 +3520,37 @@
     ]
   },
   {
+    "id": "petaluma-vintage-market-nov15-2026",
+    "title": "Petaluma 复古市集 11 月场：免费入场、免费停车",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-15"
+    ]
+  },
+  {
     "id": "ravenswood-tidal-marsh-nov15-2026",
     "title": "Ravenswood 潮汐湿地慢走与观鸟",
     "startDate": "2026-11-15",
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "sjpl-berryessa-diwali-2026",
+    "title": "Berryessa 分馆排灯节：故事、手工、舞蹈和小点心",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-15"
+    ]
+  },
+  {
+    "id": "smcl-san-carlos-friends-book-sale-nov15-2026",
+    "title": "San Carlos 图书馆之友旧书义卖：25 美分到 2 美元",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-11-15"
+    ]
   },
   {
     "id": "nov2026-presidio-campfire-history-talks",
@@ -3285,6 +3635,15 @@
     ]
   },
   {
+    "id": "sjpl-evergreen-thanksgiving-storytime-2026",
+    "title": "Evergreen 分馆感恩节故事会与手工",
+    "startDate": "2026-11-19",
+    "endDate": "2026-11-19",
+    "occurrenceDates": [
+      "2026-11-19"
+    ]
+  },
+  {
     "id": "nov2026-fort-point-history-talks",
     "title": "Fort Point 历史短讲：金门大桥下的15分钟",
     "startDate": "2026-11-20",
@@ -3306,6 +3665,15 @@
     "occurrenceDates": [
       "2026-11-20",
       "2026-11-27"
+    ]
+  },
+  {
+    "id": "sjpl-village-square-thanksgiving-2026",
+    "title": "Village Square 分馆感恩节派对：手工、点心和小奖品",
+    "startDate": "2026-11-20",
+    "endDate": "2026-11-20",
+    "occurrenceDates": [
+      "2026-11-20"
     ]
   },
   {
@@ -3389,6 +3757,15 @@
     "occurrenceDates": [
       "2026-11-23",
       "2026-11-24"
+    ]
+  },
+  {
+    "id": "sv-turkey-trot-2026",
+    "title": "感恩节 Silicon Valley Turkey Trot：圣何塞市中心 5K、10K 和儿童跑",
+    "startDate": "2026-11-26",
+    "endDate": "2026-11-26",
+    "occurrenceDates": [
+      "2026-11-26"
     ]
   },
   {

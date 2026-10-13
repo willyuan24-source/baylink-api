@@ -261,7 +261,7 @@ test('the complete multi-library question retains printing, films and separate p
   for (const url of ['https://aclibrary.org/faq/print-scan-fax/', 'https://smcl.org/printanywhere/', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv', 'https://smcl.org/faq/museum-passes-discover-go/']) assert.ok(sources.includes(url), url);
   assert.ok(result.guides.length <= 8);
   assert.ok(text.includes('每月 30 tickets'));
-  assert.ok(text.includes('本次未找到 AC 卡适用的 Kanopy 官方入口'));
+  assert.ok(text.includes('AC Library 官网没有列出 AC 卡可用的 Kanopy 入口'));
 });
 
 test('the audited school question and short email followup keep the retained South Bay guide scope', () => {

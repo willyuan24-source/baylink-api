@@ -108,7 +108,7 @@ test('the actual bad library response is repaired from original scoped source pa
   // unrelated SMCL museum-pass restriction needs correction here.
   assert.match(summaries.printing, /Alameda County Library.*eCard不适用/);
   assert.match(summaries.kanopy, /加州居民可免费申请 SFPL 卡/);
-  assert.match(summaries.kanopy, /未找到 AC 卡适用的 Kanopy 官方入口/);
+  assert.match(summaries.kanopy, /AC Library 官网没有列出 AC 卡可用的 Kanopy 入口/);
   assert.doesNotMatch(summaries.kanopy, /SFPL需旧金山居民|图书证不包含Kanopy权益/);
   assert.match(summaries.card_eligibility, /在加州居住、工作或就学者可申请免费实体卡/);
   assert.doesNotMatch(summaries.card_eligibility, /年龄15岁及以上|年龄16岁及以上|SFPL要求旧金山居民/);

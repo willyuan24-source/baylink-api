@@ -12,7 +12,7 @@ const QUESTION = '我住 Fremont，只有 Alameda County Library 图书证。想
 const notes = [
   ['SFPL：Kanopy 与 Discover & Go 资格分别核对', '加州居民可免费申请 SFPL 卡', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv'],
   ['SMCL：Kanopy 每月额度与馆票是两套条件', '每月 30 tickets', 'https://smcl.org/resources-types/evideos/'],
-  ['AC Library：先分清实体卡、eCard 与影音入口', '本次未找到 AC 卡适用的 Kanopy 官方入口', 'https://aclibrary.org/movies-tv/'],
+  ['AC Library：先分清实体卡、eCard 与影音入口', 'AC Library 官网没有列出 AC 卡可用的 Kanopy 入口', 'https://aclibrary.org/movies-tv/'],
 ];
 
 test('the real resolved multi-service question retains all scoped notes despite an inferred arts topic', () => {
@@ -74,8 +74,8 @@ test('explicit multi-topic retrieval takes precedence without dropping topic con
 
 test('the full new-resident DMV question reaches the initial model with distinct deadlines, documents and official entries', async () => {
   const cases = [
-    ['zh-Hans', '假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。', ['最多 10 天', '20 天内登记', '已有加州 DMV 记录', '尚无加州 DL/ID', 'REG 343', 'REG 31', '不能把这理解成只要 10 天内提交申请']],
-    ['en', 'Assume I am an adult who just moved from another state to Fremont, with a valid out-of-state driver license and a personal vehicle registered in that state. Explain California driver license, vehicle registration and address change deadlines, required documents and official entry points separately. Give only sourced rules and identify uncertain eligibility or exceptions; do not mix these three deadlines.', ['at most 10 days', 'within 20 days', 'existing California record', 'without a California DL/ID', 'REG 343', 'REG 31', 'does not extend permission to drive']],
+    ['zh-Hans', '假设我是刚从外州搬到 Fremont 的成年人，已有有效外州驾照和一辆外州登记的自用车。请分别说明加州驾照、车辆登记、地址更新的办理期限、所需材料和官方入口。只给已查到的规则，不确定的资格或例外要明确说明，不要把这三件事的期限混在一起。', ['最多再用外州驾照开 10 天', '20 天内办加州登记', '已有加州 DMV 记录', '还没有加州驾照或 ID', 'REG 343', 'REG 31', '不是到达当天自动起算']],
+    ['en', 'Assume I am an adult who just moved from another state to Fremont, with a valid out-of-state driver license and a personal vehicle registered in that state. Explain California driver license, vehicle registration and address change deadlines, required documents and official entry points separately. Give only sourced rules and identify uncertain eligibility or exceptions; do not mix these three deadlines.', ['at most 10 days', 'within 20 days', 'already have a California DMV record', 'no California license or ID yet', 'REG 343', 'REG 31', 'not simply the day you arrived']],
   ];
   for (const [locale, message, expected] of cases) {
     let first;
@@ -92,6 +92,8 @@ test('the full new-resident DMV question reaches the initial model with distinct
     const text = [...first.evidence.map(row => row.text || ''), ...(first.sourceScopes || []).map(row => row.text)].join('\n');
     for (const value of expected) assert.ok(text.includes(value), `${locale}: ${value}`);
     const urls = first.evidence.map(row => row.url);
-    for (const url of ['https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=12505.', 'https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california', 'https://www.dmv.ca.gov/portal/online-change-of-address-coa-system']) assert.ok(urls.includes(url), `${locale}: ${url}`);
+    // The 10-12 driver guide names Vehicle Code 12505(c) in the text and lists it in its sources; the paragraph no longer links it inline.
+    assert.ok(text.includes(locale === 'en' ? 'California Vehicle Code 12505(c)' : '加州车辆法 12505(c)'), `${locale}: 12505(c)`);
+    for (const url of ['https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california', 'https://www.dmv.ca.gov/portal/online-change-of-address-coa-system']) assert.ok(urls.includes(url), `${locale}: ${url}`);
   }
 });
