@@ -21,7 +21,8 @@ test('Old Post Office brunch starts Sunday 10/18 in both languages (audit G03)',
 
 test('moved and unconfirmed dates agree across the planner and event catalogs', () => {
   const doja = event('sf-doja-cat-2026');
-  assert.deepEqual(events.get(doja.id), { id: doja.id, startDate: '2026-10-25', endDate: '2026-10-25' });
+  // The interest loader now keeps confirmed days (API-STATUS).
+  assert.deepEqual(events.get(doja.id), { id: doja.id, startDate: '2026-10-25', endDate: '2026-10-25', occurrenceDates: ['2026-10-25'] });
   assert.equal(eventOccursOn(doja, '2026-10-25'), true);
   assert.equal(eventOccursOn(doja, '2026-10-19'), false);
   const market = event('san-mateo-downtown-market-nov5-2026');

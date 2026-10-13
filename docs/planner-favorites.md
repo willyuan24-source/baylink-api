@@ -41,3 +41,13 @@ The web must treat that code as "not yet", not as an error:
 API-SYNC runs after every content merge, including GPT content PRs, so the window is normally hours. On 2026-10-08 the API copy and web `main` held the same 269 discoveries (209 offers, 60 openings).
 
 Tests: `tests/planner-favorites-discoveries.test.js` (kinds, 404 code, retired removal, catalog independence, shipped catalog) and `tests/planner.test.js`.
+
+## Editorial status and price (API-STATUS)
+
+The synced planner catalog carries the web overlay's `status` and `price` (`lib/eventStatus.js` reads the status):
+
+- `postponed` and `cancelled` events are not `active()`, never occur on a date (`eventOccursOn`), are never planner suggestions or BayBay candidates or plan stops, and cannot be saved in a plan (`410` with `code: "EVENT_POSTPONED"` / `"EVENT_CANCELLED"`; 410 because the web reads a 409 here as another device's edit), tied to an outing (`400` with the same codes) or given new interest (`docs/event-engagement.md`). Favorites are unaffected.
+- `sold_out` events still take place: they stay `active()` and keep their dates, a saved plan may keep one (a member may hold a ticket) and interest stays open, but they are never planner suggestions, BayBay candidates or plan stops (plan rejection code `full`). BayBay may name one only as sold out: the evidence item reads "已售罄 / sold out" with a note never to recommend it, and the page being viewed carries `eventStatus`.
+- Budget checks (`admissionLowerBound`, used by the planner and BayBay) take the overlay `price` first: `free: true` → 0, else `min` (the lowest general ticket; member and affiliation prices stay in `note`); a malformed price is ignored. Only then the planning amount and the cost-label parser. `priceOf` (a known price, free-only filters) is unchanged.
+
+Tests: `tests/event-status.test.js` (real catalog rows).

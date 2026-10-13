@@ -28,15 +28,18 @@ const freshEvent = id => {
 };
 const canonical = value => { const url = new URL(value); url.hash = ''; return url.href; };
 
-test('runtime event, outing and planner loaders read the same published IDs and occurrence dates', () => {
+test('runtime event, outing and planner loaders read the same published IDs, occurrence dates and editorial statuses', () => {
   assert.ok(events && outings && planner);
   const ids = planner.events.map(row => row.id).sort();
   assert.deepEqual([...events.keys()].sort(), ids);
   assert.deepEqual([...outings.keys()].sort(), ids);
   for (const row of planner.events) {
-    assert.deepEqual(events.get(row.id), { id: row.id, startDate: row.startDate, endDate: row.endDate });
+    // API-STATUS: the interest loader keeps confirmed days and takes the overlay status from the planner catalog.
+    assert.deepEqual(events.get(row.id), { id: row.id, startDate: row.startDate, endDate: row.endDate,
+      ...(row.occurrenceDates !== undefined ? { occurrenceDates: row.occurrenceDates } : {}), ...(row.status ? { status: row.status } : {}) }, row.id);
     assert.deepEqual(outings.get(row.id).occurrenceDates, row.occurrenceDates, row.id);
     assert.equal(outings.get(row.id).officialUrl, row.officialUrl, row.id);
+    assert.equal(outings.get(row.id).status, row.status, row.id);
   }
 });
 

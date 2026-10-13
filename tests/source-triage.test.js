@@ -410,16 +410,29 @@ test('organiser image candidates come from the page head as text only and are ne
   assert.equal(store.rows.get(source.id).mediaCandidates.seenAt, 1);
 });
 
-test('freshness fields: changedAt, material, changeFields and reviewedBy without reviewer identity', () => {
+test('freshness fields: changedAt, lastChangedAt, material, changeFields and reviewedBy without reviewer identity', () => {
   const hash = 'b'.repeat(64);
   const base = { hash, reviewStatus: 'pending', pendingChange: { detectedAt: 200, firstDetectedAt: 100 } };
-  assert.deepEqual(freshnessFields(base), { changedAt: 100, material: null, changeFields: [], reviewedBy: null });
-  assert.deepEqual(freshnessFields({ ...base, triage: { hash, material: true, fields: ['cancel', 'date'] } }), { changedAt: 100, material: true, changeFields: ['cancel', 'date'], reviewedBy: null });
+  assert.deepEqual(freshnessFields(base), { changedAt: 100, lastChangedAt: 200, material: null, changeFields: [], reviewedBy: null });
+  assert.deepEqual(freshnessFields({ ...base, triage: { hash, material: true, fields: ['cancel', 'date'] } }), { changedAt: 100, lastChangedAt: 200, material: true, changeFields: ['cancel', 'date'], reviewedBy: null });
+  // API-STATUS (WEB-FRESH2's ask): lastChangedAt is the latest detection, never earlier than changedAt.
+  const cases = [
+    [{ detectedAt: 200, firstDetectedAt: 100 }, 100, 200],
+    [{ detectedAt: 150, firstDetectedAt: 150 }, 150, 150],
+    [{ detectedAt: 300 }, 300, 300], // a change recorded before firstDetectedAt existed
+    [{ firstDetectedAt: 120 }, 120, 120],
+    [{}, null, null],
+    [null, null, null],
+  ];
+  for (const [pendingChange, changedAt, lastChangedAt] of cases) {
+    const fields = freshnessFields({ hash, reviewStatus: 'pending', pendingChange });
+    assert.deepEqual([fields.changedAt, fields.lastChangedAt], [changedAt, lastChangedAt], JSON.stringify(pendingChange));
+  }
   // A decision about an older page version says nothing about the current one.
   assert.equal(freshnessFields({ ...base, triage: { hash: 'c'.repeat(64), material: false, fields: [] } }).material, null);
   assert.equal(freshnessFields({ ...base, reviewStatus: 'acknowledged', lastReviewedAt: 300, reviewedBy: 'user-123' }).reviewedBy, 'editor');
   assert.equal(freshnessFields({ ...base, reviewStatus: 'dismissed', lastReviewedAt: 300, reviewedBy: 'auto-triage', triage: { hash, material: false, fields: [] } }).reviewedBy, 'auto-triage');
-  assert.deepEqual(freshnessFields({ hash, reviewStatus: 'baseline' }), { changedAt: null, material: null, changeFields: [], reviewedBy: null });
+  assert.deepEqual(freshnessFields({ hash, reviewStatus: 'baseline' }), { changedAt: null, lastChangedAt: null, material: null, changeFields: [], reviewedBy: null });
 });
 
 async function serve(t, options) {
@@ -445,7 +458,25 @@ test('public freshness: identical to the pre-triage shape while off; additive co
   const on = await run({ NODE_ENV: 'test', ...ON });
   assert.equal(on.needsReview, false); assert.equal(on.material, false); assert.deepEqual(on.changeFields, []); assert.equal(on.reviewedBy, 'auto-triage');
   assert.equal(typeof on.changedAt, 'number'); assert.equal(on.lastReviewedAt > 0, true);
+  assert.equal(on.lastChangedAt, on.changedAt, 'one detection: the first is the latest');
   for (const field of ['text', 'hash', 'pendingChange', 'triage', 'mediaCandidates', 'reviewNote', 'url']) assert.equal(on[field], undefined, field);
+});
+
+test('public freshness: lastChangedAt moves with each new detection of an unreviewed change while changedAt keeps the first', async t => {
+  const store = memoryStore(); let clock = Date.UTC(2026, 9, 9, 15); let lines = BASE;
+  const claude = fakeClaude(() => ({ material: true, fields: ['date'], summary_zh: '日期有变化' }));
+  const { monitor, url } = await serve(t, { store, registry: [source], config: { NODE_ENV: 'test', ...ON }, now: () => clock, fetch: async () => response(page(lines)), triageFetch: claude.fetchImpl, recordSpend: () => {} });
+  const read = async () => (await (await fetch(`${url}/api/sources/freshness?ids=harvest-2026`)).json()).sources[0];
+  await monitor.service.run();
+  const baseline = await read();
+  assert.deepEqual([baseline.changedAt, baseline.lastChangedAt], [null, null]);
+  lines = [BASE[0].replace('October 17', 'October 24'), ...BASE.slice(1)]; clock += INTERVAL_MS + 1; await monitor.service.run();
+  const first = clock, once = await read();
+  assert.deepEqual([once.needsReview, once.material, once.changedAt, once.lastChangedAt], [true, true, first, first]);
+  lines = [BASE[0].replace('October 17', 'October 31'), ...BASE.slice(1)]; clock += INTERVAL_MS + 1; await monitor.service.run();
+  const twice = await read();
+  assert.deepEqual([twice.needsReview, twice.changedAt, twice.lastChangedAt], [true, first, clock]);
+  assert.ok(twice.lastChangedAt > twice.changedAt);
 });
 
 test('admin digest preview and media candidates are admin-only and send nothing', async t => {
