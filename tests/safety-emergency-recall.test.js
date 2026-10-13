@@ -153,7 +153,21 @@ const H11_NEAR_MISSES = [
   '被蚊子叮了起了个包，有点痒', '感冒了嗓子有点肿，吃了药', '吃了辣的嗓子有点疼', 'My throat feels tight after singing all day',
   '我练完胸肌胸口有点紧，左手也酸', '胸闷是不是空气不好', 'I ate too much and my chest feels heavy',
   '外公突然看不清东西，眼镜找不到了', '血糖低的时候吃什么好', '老人防跌倒讲座', '我爸以前胸闷左手发麻过，现在好了',
+  // Review of 3efe2b8: an object a person owns falls (他的手机 / 女儿的玩具 / 孩子的球), spicy food
+  // and a limb that will not move are not the 911 card.
+  '他的手机从阳台掉下去了，怎么办', '我女儿的玩具从窗户掉下去了', '孩子的球从二楼掉下去了，去哪买新的',
+  '他的手機從陽台掉下去了，怎麼辦', '我女兒的玩具從窗戶掉下去了', '孩子的球從二樓掉下去了，去哪買新的', '孩子手机从阳台掉下去了',
+  '吃了辣的嗓子有点肿', '吃了火锅以后嗓子有点紧', '吃了火鍋以後嗓子有點緊', 'I ate spicy noodles and my throat feels tight',
+  "My son fell off his bike and can't move his arm",
 ];
+// The same review: the person (not an object) falling, or not moving at all, is still the card.
+const H11_REVIEW_POSITIVES = [
+  ['zh-Hans', '他的孩子从阳台摔下来了', 'trauma'], ['zh-Hant', '我女兒的朋友從三樓窗戶掉下去了', 'trauma'],
+  ['en', "My son fell off the ladder and can't move", 'trauma'], ['zh-Hans', '吃了花生以后嗓子发紧', 'anaphylaxis'],
+];
+test('H11 review: a person falling or not moving at all stays the 911 card', () => {
+  assert.deepEqual(H11_REVIEW_POSITIVES.filter(([locale, message, topic]) => emergencyResponse(message, locale)?.emergencyTopic !== topic).map(([, message]) => `${message} -> ${currentEmergencyTopic(message)}`), []);
+});
 
 test('H11: the 10-13 audit\'s 20 fresh phrasings and the four new combinations get the 911 card in every language', () => {
   const missed = [...AUDIT_1013_FRESH, ...H11_COMBINATIONS].filter(([locale, message, topic]) => emergencyResponse(message, locale)?.emergencyTopic !== topic);
