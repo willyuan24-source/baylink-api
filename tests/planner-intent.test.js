@@ -177,8 +177,11 @@ test('clear admission lower bounds reject over-budget text without treating park
   for (const costLabel of ['停车 $20', '普通票待核；赞助 $1200', '入场 $20；儿童免费', '官网居民 $10，非居民 $20', '官方票价参考 $30', '官网 VIP $150', '官网每车 $25', '会员入场 $10']) assert.equal(admissionLowerBound(event('unclear', { costLabel, planning: {} })), null, costLabel);
   const real = id => loadPlannerCatalog().events.find(row => row.id === id);
   assert.equal(admissionLowerBound(real('sf-opera-figaro-opening-2026')), 30);
-  // Web CNT-EVENTS corrected Pleasanton to age tiers ($28.80 / $22.80 / under 4 free; parking $15): no single clear lower bound.
-  assert.equal(admissionLowerBound(real('pleasanton-pumpkins-after-dark-2026')), null);
+  // Web CNT-EVENTS corrected Pleasanton to age tiers ($28.80 / $22.80 / under 4 free; parking $15): the label alone has
+  // no single clear lower bound; the overlay's structured price ({min: 22.8, max: 28.8}) gives one (API-STATUS).
+  const pleasanton = real('pleasanton-pumpkins-after-dark-2026');
+  assert.equal(admissionLowerBound({ ...pleasanton, price: undefined }), null);
+  assert.equal(admissionLowerBound(pleasanton), 22.8);
 });
 
 test('automatically added nearby stops preserve free-only, remaining admission budget and every child age', async () => {

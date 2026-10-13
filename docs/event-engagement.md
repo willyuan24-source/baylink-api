@@ -1,6 +1,6 @@
 # Event interest and local buddies
 
-The official event catalog is `data/event-catalog.json`, an array of `{ id, title, startDate, endDate }`. The frontend repository exports it from the same event data used by the calendar. It is loaded once when the application starts. Missing, malformed, duplicate-ID or invalid-date catalogs make these endpoints return 503; arbitrary client event IDs cannot become database records.
+The official event catalog is `data/event-catalog.json`, an array of `{ id, title, startDate, endDate, occurrenceDates? }` (`occurrenceDates`: the confirmed days; `[]` means none is confirmed). The frontend repository exports it from the same event data used by the calendar. The editorial `status` (`postponed`, `cancelled`, `sold_out`; web `EditorialStatus`) is not in that export: the loader takes it from `data/planner-catalog.json`, which carries the overlay (an unreadable planner file leaves sign-ups as they were without statuses). It is loaded once when the application starts. Missing, malformed, duplicate-ID or invalid-date catalogs (including confirmed days outside the event's range) make these endpoints return 503; arbitrary client event IDs cannot become database records.
 
 `EventInterest` stores a single document per `(eventId, userId)` with `interested`, `lookingForBuddy`, `createdAt` and `updatedAt`. Looking for a buddy requires interest. Production startup waits for the compound unique index before listening. Concurrent upsert duplicate-key races retry an explicit update to the existing document. Cancelling an absent registration does not insert an empty document. There are no seeded participant counts and no messages are sent by these endpoints.
 
@@ -53,7 +53,16 @@ Only users who explicitly selected both `interested` and `lookingForBuddy` appea
 
 Both fields must be booleans. Missing fields, extra fields (including forged user IDs) and `{ "interested": false, "lookingForBuddy": true }` return 400. The member ID always comes from the current validated session. Successful writes return one engagement object (the object inside `events` above).
 
-The operation is an idempotent set, not a toggle. To withdraw from the buddy list while retaining interest, send true/false. To withdraw fully, send false/false. No DELETE endpoint is needed. Joining an event whose `endDate` precedes today's America/Los_Angeles calendar date returns 410. The final local date is still eligible. Cancelling an existing expired event is allowed. Limited accounts cannot join or opt in, but can withdraw. Standard authentication still rejects banned or suspended accounts.
+The operation is an idempotent set, not a toggle. To withdraw from the buddy list while retaining interest, send true/false. To withdraw fully, send false/false. No DELETE endpoint is needed. New interest or a buddy opt-in is refused, with `{ "code": "...", "error": "..." }`, when (dates are America/Los_Angeles calendar days):
+
+| Code | HTTP | When |
+|---|---|---|
+| `EVENT_CANCELLED` | 410 | the editorial status is `cancelled` |
+| `EVENT_POSTPONED` | 409 | the editorial status is `postponed` (no new date yet) |
+| `EVENT_ENDED` | 410 | `endDate` precedes today, or every confirmed day in `occurrenceDates` does |
+| `EVENT_NO_CONFIRMED_DATE` | 409 | `occurrenceDates` is `[]` (for example San Mateo's 11/5 market, which the official calendar does not list) |
+
+`error` is localized: `?locale=en|zh-Hant|zh-Hans` (the body takes no extra keys), else the first `Accept-Language` tag (`en…` → English, `zh-Hant`/`zh-TW`/`zh-HK`/`zh-MO` → Traditional), else Simplified Chinese. The final local date is still eligible. A `sold_out` event still takes place, so interest and buddy opt-in stay open. Withdrawing (false/false, or true/false that only leaves the buddy list while an interest exists) is always allowed. Limited accounts cannot join or opt in, but can withdraw. Standard authentication still rejects banned or suspended accounts.
 
 Use `POST /api/conversations/open-or-create` with `{ "targetUserId": "member-id" }` when the user explicitly chooses to open a conversation. Existing message authorization and block checks remain in force. The event endpoints never create conversations or send messages.
 
