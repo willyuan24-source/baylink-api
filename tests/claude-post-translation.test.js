@@ -5,7 +5,8 @@ const { createMemoryModels } = require('./support/memory-models');
 const { translateWithProvider, cacheKey, failureCacheKey } = require('../lib/postTranslation');
 
 const SECRET = 'isolated-claude-post-translation-test-secret';
-const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'synthetic-claude-key', OPENAI_API_KEY: 'synthetic-openai-key' };
+// These requests are anonymous; guests read cached translations only (H10) unless the opt-in is set.
+const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'synthetic-claude-key', OPENAI_API_KEY: 'synthetic-openai-key', POST_TRANSLATION_GUEST_GENERATE: 'true' };
 const source = { title: 'Fremont 房间出租', description: '月租 $1900。请看 https://example.test/room?id=12 ，周末可看房。', budget: '$1900/月', timeInfo: '10月1日起入住' };
 const translated = { title: 'Room for rent in Fremont', description: 'Rent is $1900 per month. See https://example.test/room?id=12 . Viewings are available on weekends.', budget: '$1900/month', timeInfo: 'Move in from 10/1' };
 const native = (value = translated, extra = {}) => ({ type: 'message', role: 'assistant', model: 'claude-opus-5-5', stop_reason: 'end_turn',
@@ -154,4 +155,23 @@ test('Claude concurrent translations still share one reservation and failure rem
   const restart = await fixture(t, { models: f.models });
   assert.equal((await restart.request()).status, 503);
   assert.equal(restart.calls.length, 0);
+});
+
+// H10 (audit 10-13, BB-1013-03): passive translation of every visible card spent a guest's
+// AI share. A guest now reads cached translations only; a member's request generates and
+// caches one, which guests then read. No provider call or quota for the guest's miss.
+test('a guest reads cached translations only: a miss is 403 TRANSLATION_SIGN_IN with no provider call or AI quota', async t => {
+  const f = await fixture(t, { config: { POST_TRANSLATION_GUEST_GENERATE: '' } });
+  const miss = await f.request();
+  assert.equal(miss.status, 403);
+  assert.equal(miss.data.code, 'TRANSLATION_SIGN_IN');
+  assert.equal(f.calls.length, 0);
+  assert.equal(f.models.PostTranslationQuota.rows.length, 0, 'no translation quota spent');
+  assert.ok(!(f.models.AiGovernance?.rows || []).some(row => /^ai:\d/.test(row.id) && row.count > 0), 'no AI share spent');
+  // A cached translation (as a member's request leaves it) is served to the guest.
+  f.models.PostTranslation.rows.push({ id: cacheKey('public', source), postId: 'public', kind: 'translation', sourceVersion: 'public-post-en-v2', translation: { ...translated }, expiresAt: new Date(Date.now() + 86400000) });
+  const hit = await f.request();
+  assert.equal(hit.status, 200, JSON.stringify(hit.data));
+  assert.equal(hit.data.translation.title, translated.title);
+  assert.equal(f.calls.length, 0);
 });

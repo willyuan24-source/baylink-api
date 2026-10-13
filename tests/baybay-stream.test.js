@@ -384,12 +384,13 @@ test('v2 fast path with a capable client: one streamed call, lead drafts first, 
   assert.ok(!result.research.warnings.includes('draft_corrected'));
 });
 
-test('no drafts and no streamed call for old tabs, v1, professional topics, plans, thin evidence or BAYBAY_STREAM=off', async () => {
+test('no drafts and no streamed call for old tabs, v1, thin evidence or BAYBAY_STREAM=off', async () => {
   const answer = { lead: '一句话回答。', points: [{ text: '一点。', cardIds: [] }] };
   const cases = [
     ['old tab (no onDraft)', {}, '蓝天使这周末飞吗', { drafts: false }],
-    ['professional topic (RC-21)', {}, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？'],
-    ['agent route (day plan)', {}, '周六带孩子在 Berkeley 安排一天行程，不开车'],
+    ['professional topic, old tab', {}, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？', { drafts: false }],
+    ['agent route (day plan), old tab', {}, '周六带孩子在 Berkeley 安排一天行程，不开车', { drafts: false }],
+    ['professional topic, streaming off', { BAYBAY_STREAM: 'off' }, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？'],
     ['thin evidence (<2 records)', {}, 'xyzzy'],
     ['streaming switched off', { BAYBAY_STREAM: 'off' }, '蓝天使这周末飞吗'],
     ['engine v1', { BAYBAY_ENGINE: 'v1' }, '蓝天使这周末飞吗'],
@@ -401,6 +402,31 @@ test('no drafts and no streamed call for old tabs, v1, professional topics, plan
     assert.ok(sent.every(body => body.stream === undefined), `${label}: the provider call is not streamed`);
     assert.equal(result.corrected, undefined, label);
   }
+});
+
+// H03 (audit 10-13, BBENG-07): a professional answer and the agent's final synthesis stream
+// their lead only (was none: P3-1 7.2 s and W3-3 12.8 s of spinner); the result replaces it.
+test('professional answers and the agent final round stream the lead only, then the validated result', async () => {
+  const answer = { lead: 'A 部分管住院，B 部分管门诊。', points: [{ text: '是否加入 B 部分要看是否有雇主保险[[r1]]。', cardIds: [] }] };
+  const professional = assistantWith({ answers: () => claude(answer) });
+  const pro = await ask(professional.assistant, 'Medicare A 部分和 B 部分有什么区别？我该选哪个？');
+  assert.equal(pro.result.safetyRoute, 'professional');
+  assert.ok(pro.events.length > 0, 'the professional lead streams');
+  assert.deepEqual([...new Set(pro.events.map(event => event.field))], ['lead']);
+  assert.equal(joined(pro.events, 'lead'), answer.lead);
+  assert.equal(professional.sent.filter(body => body.stream === true).length, 1);
+  const plan = assistantWith({ answers: () => claude(answer) });
+  const day = await ask(plan.assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  assert.equal(day.result.route.path, 'agent');
+  assert.deepEqual([...new Set(day.events.map(event => event.field))], ['lead'], 'the answering round streams its lead only');
+  assert.equal(joined(day.events, 'lead'), answer.lead);
+  assert.ok(plan.sent.some(body => body.stream === true));
+  assert.equal(typeof day.result.corrected, 'boolean', 'the result says whether it continues the draft');
+  // Never beside a possible emergency (the floor may replace the answer).
+  const floor = assistantWith({ answers: () => claude(answer) });
+  const worry = await ask(floor.assistant, '我爸胸闷，要紧吗？');
+  assert.deepEqual(worry.events, []);
+  assert.ok(floor.sent.every(body => body.stream === undefined));
 });
 
 test('engine v1 with a capable client sends the byte-identical request and result it sends without one', async () => {

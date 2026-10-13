@@ -39,7 +39,8 @@ async function fixture(t, options = {}) {
   t.after(() => new Promise(resolve => app.io.close(resolve)));
   const raw = (path, { body, headers = {} } = {}) => fetch(`http://127.0.0.1:${app.server.address().port}/api${path}`, { method: body === undefined ? 'GET' : 'POST', headers: { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...headers }, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });
   const request = async (path, options) => { const response = await raw(path, options); return { status: response.status, data: await response.json(), headers: response.headers }; };
-  const read = async headers => { const result = await request('/ai/usage', { headers }); assert.equal(result.status, 200); return result.data.remaining; };
+  // The asks below are BayBay (guide-chat) asks, which spend BayBay's own share since H10.
+  const read = async headers => { const result = await request('/ai/usage', { headers }); assert.equal(result.status, 200); return result.data.baybay.remaining; };
   // A guest BayBay ask that really reaches the (stubbed) provider, so it reserves exactly one unit.
   const ask = async headers => {
     const before = calls;

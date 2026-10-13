@@ -20,7 +20,8 @@ async function fixture(t, options = {}) {
   });
   const calls = [];
   const ai = options.unconfigured ? undefined : { postTranslation: async input => { calls.push(input); return options.ai ? options.ai(input) : { ...translated }; } };
-  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, ...options.config }, models, ai, postTranslationNow: options.now });
+  // These anonymous requests exercise generation; guests read cached translations only (H10) unless opted in.
+  const application = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, POST_TRANSLATION_GUEST_GENERATE: 'true', ...options.config }, models, ai, postTranslationNow: options.now });
   await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => application.io.close(resolve)));
   const request = async (id = 'public', { body = { target: 'en' }, user, token, forwarded } = {}) => {

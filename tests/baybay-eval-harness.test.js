@@ -207,7 +207,7 @@ test('dry run needs no key, makes no network call and writes only outside the re
 
 // API-BB-STREAM: the harness is a capable client, so a v2 fast-path turn streams its
 // call, reports draft events as lead TTFT and still prices the streamed usage.
-test('stream set dry run: a site answer drafts its lead from a streamed call; a professional topic and --no-drafts do not stream', async () => {
+test('stream set dry run: a site answer drafts its lead from a streamed call; a professional topic streams its lead (H03); --no-drafts does not stream', async () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'baybay-eval-'));
   const env = { ...process.env, ANTHROPIC_API_KEY: '', BAYLINK_EVAL_ANTHROPIC_KEY: '' };
   const script = path.join(ROOT, 'scripts', 'baybay-eval-local.mjs');
@@ -221,7 +221,8 @@ test('stream set dry run: a site answer drafts its lead from a streamed call; a 
   assert.ok(site.timings.leadMs <= site.timings.completeMs);
   assert.equal(site.calls[0].streamed, true); assert.ok(site.calls[0].usage.inputTokens > 0, 'usage read from the streamed body');
   assert.equal(professional.routeReason, 'professional_topic');
-  assert.equal(professional.drafts, null); assert.equal(professional.calls[0].streamed, undefined);
+  // H03 (audit 10-13, BBENG-07): a professional answer streams its lead only.
+  assert.equal(professional.calls[0].streamed, true); assert.ok(professional.drafts?.events >= 1, JSON.stringify(professional.drafts));
   assert.equal(fs.readdirSync(path.join(out, 'dry-stream', 'sse')).length, 1);
   assert.match(fs.readFileSync(path.join(out, 'dry-stream', 'summary.md'), 'utf8'), /Drafted turns: lead TTFT p50 \/ p90/);
   const plain = spawnSync(process.execPath, [script, '--out', out, '--run-id', 'dry-no-drafts', '--set', 'stream', '--items', 'C05', '--no-judge', '--no-drafts'], { cwd: ROOT, env, encoding: 'utf8', timeout: 120000 });

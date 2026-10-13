@@ -180,7 +180,8 @@ test('outing draft: a capped Claude call is the honest 429, not the generic 503 
   // The visitor's AI count used up: the same honest 429.
   const counted = createMemoryModels();
   const limited = createAiGovernance({ Model: counted.AiGovernance, config: { JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1' }, now: () => NOW });
-  await governed(limited, () => reserveAiCall());
+  // (BayBay's guide-chat has its own share since H10, so the visitor's count is spent on the shared one.)
+  await governed(limited, () => reserveAiCall(), { path: '/api/ai/outing-draft' });
   await assert.rejects(governed(limited, () => createOutingDraft(input, { config, fetchImpl }), { path: '/api/ai/outing-draft' }),
     error => error.status === 429 && error.code === 'AI_DAILY_LIMIT');
   assert.equal(fetched, 0);
@@ -457,7 +458,8 @@ test('server: a translation whose provider call is refused for the day is an hon
   const models = createMemoryModels({ User: [{ id: 'owner', role: 'user', accountStatus: 'active' }], Post: [hanPost('first', 'owner'), hanPost('second', 'owner')] });
   let translated = 0;
   // One governed AI call per guest per day: the second post's provider call is refused (AI_DAILY_LIMIT).
-  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1' }, models, plannerNow: () => NOW,
+  // Guests read cached translations only (H10); the opt-in keeps a guest's refused provider call covered here.
+  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, AI_GUEST_DAILY_LIMIT: '1', POST_TRANSLATION_GUEST_GENERATE: 'true' }, models, plannerNow: () => NOW,
     ai: { postTranslation: async () => { translated++; return { title: 'Room for rent in Fremont', description: 'Viewings on weekends.', budget: '', timeInfo: '' }; } } });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise(resolve => app.io.close(resolve)));

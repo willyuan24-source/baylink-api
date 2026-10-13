@@ -50,7 +50,7 @@ const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJs
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createClientIp } = require('./lib/clientIp');
-const { createAiGovernanceModel, createAiGovernance, governProviders } = require('./lib/aiGovernance');
+const { createAiGovernanceModel, createAiGovernance, governProviders, aiExecution } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
@@ -4986,6 +4986,10 @@ app.post('/api/ai/guide-chat', async (req, res) => {
       // Numeric duration aggregates explain time outside the model workflow
       // without logging the user's prompt, account, origin or session token.
       response.research = { ...response.research, timings: { ...response.research?.timings, preparationMs, assistantMs, requestMs } };
+      // H10: BayBay's own daily share after this answer {remaining, limit, resetAt}, when this
+      // answer claimed one (a model call), so the panel can show 剩余 N 次 from the first answer.
+      const quota = aiExecution()?.quota;
+      if (quota && !response.quota) response.quota = quota;
       // ai-metrics: route, drafts, corrections and retries of this answer (no text, no ids).
       req.aiRuntime?.outcome?.({ path: response.route?.path, reason: response.route?.reason, drafted: !!response.research?.drafts?.events, corrected: response.corrected === true, warnings: response.research?.warnings });
       if (progressStream) { progressStream.validatedText(response.answer); return progressStream.result(decorateAccess(response)); }
