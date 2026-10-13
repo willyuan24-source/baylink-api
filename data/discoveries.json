@@ -537,13 +537,14 @@
     {
       "kind": "offer",
       "id": "poppy-claro-doggie-dinners-fall",
-      "title": "周五带狗出门：$6 三道宠物晚餐延长至秋季",
+      "title": "周五带狗出门：$6 三道宠物晚餐，本季到 10 月",
       "path": "/offers/poppy-claro-doggie-dinners-fall",
-      "summary": "50 West San Fernando Street。官网宣布延长至秋季；按周五规则，十月为 10/2、9、16、23、30，店方尚未公布最终结束日。",
+      "summary": "50 West San Fernando Street。按周五规则，十月的周五是 10/2、9、16、23、30。官网 10 月活动写明，万圣节狗狗服装比赛那晚是本季最后一次狗狗晚餐（晚上 7 点前到场报名，10/31 公布获胜者），没写是哪个周五。",
       "details": [
         "$6 套餐供宠物狗享用，仅周五 17:00–20:00 露台、天气允许时供应；成人餐饮另付，先向店家确认座位与当日供应。"
       ],
-      "dateLabel": "秋季每周五 · 17:00–20:00 露台",
+      "endDate": "2026-10-30",
+      "dateLabel": "10 月每周五 · 17:00–20:00 露台 · 最后一次是万圣节服装比赛那晚（10/31 前）",
       "costLabel": "需消费",
       "status": "check-local",
       "verifiedAt": "2026-09-15",
@@ -1363,9 +1364,9 @@
       "id": "berkeley-cal-golden-bear-oct-sale-2026",
       "title": "UC Berkeley 学生 $10 演出票：10 月 8 日开售",
       "path": "/offers/berkeley-cal-golden-bear-oct-sale-2026",
-      "summary": "面向当前 UCB 学生，10/8 批次包含 10/23、24、25、28 的指定演出或讲座；每场最多买两张，可带非学生来宾。",
+      "summary": "面向当前 UCB 学生，10/8 批次包含 10/23、24、25、28 和 11/1 的指定演出或讲座；截至 10/12，10/23、25、28 三场已售完，10/24 和 11/1 仍有票。每场最多买两张，可带非学生来宾。",
       "details": [
-        "Golden Bear Circle 指定场次 $10／票；名额有限，服务费是否另收需结算确认。 须当前 UCB 学生身份；只在线出售，每场最多两张，余票未查询。应逐个查看场次与售票规则。"
+        "Golden Bear Circle 指定场次 $10／票；名额有限，服务费是否另收需结算确认。 须当前 UCB 学生身份；只在线出售，每场最多两张。应逐个查看场次与售票规则。"
       ],
       "region": "east-bay",
       "startDate": "2026-10-08",
@@ -2775,7 +2776,7 @@
       "path": "/offers/lego-hillsdale-little-builders",
       "summary": "San Mateo 的 341 Hillsdale Mall。每月通过动手拼搭练习发展技能；请从本店页面核对预约地点，避免通用链接跳到外州。不承诺带走整套积木。",
       "details": [
-        "Hillsdale 店页明示免费，建议 2–5 岁儿童与一名监护成人参加；须先确认本店名额并预约。"
+        "免费，适合 2–5 岁儿童与一名监护成人；近期场次不在店页活动栏，出发前先打电话问 Hillsdale 店的日期并预约。"
       ],
       "region": "peninsula",
       "dateLabel": "长期项目 · 日期与空位查 Hillsdale 店",

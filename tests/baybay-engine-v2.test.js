@@ -484,10 +484,10 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   const refOf = (body, pattern) => JSON.parse(body.messages[0].content[0].text).evidence.find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
   let refs = {};
   const { assistant } = assistantWith({ respond: body => {
-    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org/) };
+    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org\/visit/) };
     return reply(refs.garden
       ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
-      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync; SJMA is still there.
+      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync; SJMA (sjmusart.org/visit, not its free-night offer page) is still there.
       : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${refs.sjma}]]`, cardIds: [refs.library, refs.sjma].filter(Boolean) }], candidateIds: [refs.sjma] }));
   } });
   const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
@@ -497,7 +497,9 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   assert.deepEqual(berkeley.points[1].cardIds, ['opening:berkeley-cere-tea-opening-2026'], 'an unknown ref is dropped');
   for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
   assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
-  const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动');
+  // After the 10-13 sync the 41 new library events fill the top evidence for the plain elder question and SJMA drops out;
+  // naming 美术馆 keeps a venue that has only an official site in the evidence.
+  const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
   assert.ok(refs.sjma, JSON.stringify(refs));
   assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
   assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));

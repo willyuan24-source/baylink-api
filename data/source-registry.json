@@ -109,6 +109,15 @@
     ]
   },
   {
+    "id": "source-01d2680ec207e2c3",
+    "title": "新来湾区第一个月 checklist：租房、交通、手机、生活怎么安排",
+    "url": "https://www.ssa.gov/ssnvisa/whatyou_need.htm",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-newcomer-first-month-checklist"
+    ]
+  },
+  {
     "id": "source-01d9d3a4a19e3c02",
     "title": "搬到湾区的第一天：把提醒、停电与家庭准备设好",
     "url": "https://marinsheriff.gov/emergency-services/emergency-alert-and-warning-tools",
@@ -325,6 +334,16 @@
     ]
   },
   {
+    "id": "source-04b4e338e8ecf789",
+    "title": "Hercules 图书馆 20 周年派对：泡泡秀、脸部彩绘和气球",
+    "url": "https://ccclib.bibliocommons.com/events/6a77be55c7e02e3d006ee576",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-hercules-library-20th-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-04da2be8de8cc37c",
     "title": "Alameda 青少年制作的万圣节鬼屋",
     "url": "https://www.alamedaca.gov/Departments/Recreation-Parks/ARPD-Events",
@@ -364,6 +383,25 @@
       "sf-exploratorium-after-dark-22-oct2026"
     ],
     "endDate": "2026-10-22"
+  },
+  {
+    "id": "source-063813a9637ce3d7",
+    "title": "Portola Valley 图书馆版画课：刻一枚阿兹特克历法日符",
+    "url": "https://smcl.bibliocommons.com/events/6a9204474cb69d003e2424d1",
+    "kind": "event",
+    "contentIds": [
+      "smcl-portola-valley-nahuatl-prints-2026"
+    ],
+    "endDate": "2026-11-07"
+  },
+  {
+    "id": "source-06613e39e76981f5",
+    "title": "新来湾区第一个月 checklist：租房、交通、手机、生活怎么安排",
+    "url": "https://www.coveredca.com/support/contact-us/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-newcomer-first-month-checklist"
+    ]
   },
   {
     "id": "source-0668aecc8cb16af3",
@@ -438,6 +476,16 @@
     "contentIds": [
       "rainy-day-museum-family-guide"
     ]
+  },
+  {
+    "id": "source-07b55ce03fcabab8",
+    "title": "感恩节 Silicon Valley Turkey Trot：圣何塞市中心 5K、10K 和儿童跑",
+    "url": "https://runsignup.com/Race/CA/SanJose/SiliconValleyTurkeyTrot",
+    "kind": "event",
+    "contentIds": [
+      "sv-turkey-trot-2026"
+    ],
+    "endDate": "2026-11-26"
   },
   {
     "id": "source-07b5f7d0178c31cf",
@@ -723,6 +771,7 @@
     "url": "https://oag.ca.gov/news/press-releases/attorney-general-bonta-issues-consumer-alerts-guidance-protect-california",
     "kind": "guide",
     "contentIds": [
+      "bay-area-rental-scam-guide",
       "california-tenant-deposit-rights-help-guide"
     ]
   },
@@ -1039,6 +1088,16 @@
       "bay-area-freebies-deals-2026-09"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-11ae0622b4296b76",
+    "title": "Martinez 图书馆之友季度旧书义卖：一袋 $10",
+    "url": "https://ccclib.bibliocommons.com/events/696935881e64afd01e548be7",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-martinez-friends-book-sale-nov7-2026"
+    ],
+    "endDate": "2026-11-07"
   },
   {
     "id": "source-125966bb984d591e",
@@ -1697,6 +1756,16 @@
     ]
   },
   {
+    "id": "source-1cc38891116c2ecb",
+    "title": "Millbrae 图书馆国语、粤语故事会",
+    "url": "https://smcl.bibliocommons.com/events/6ab6e6d208693b0f7374a99f",
+    "kind": "event",
+    "contentIds": [
+      "smcl-millbrae-chinese-storytime-oct-2026"
+    ],
+    "endDate": "2026-10-25"
+  },
+  {
     "id": "source-1cc87dc682d6c68e",
     "title": "Alameda 一日两种节奏：USS Hornet 航母与海岸散步",
     "url": "https://uss-hornet.org/visitor-tips/",
@@ -1923,6 +1992,15 @@
       "sccld-sharks-library-card-september-2026"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-21195988b8b7f48b",
+    "title": "在湾区弄清 Medicare、Medi-Cal：先找免费 HICAP 咨询",
+    "url": "https://www.dhcs.ca.gov/medi-cal/apply/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-medicare-hicap-medi-cal-guide"
+    ]
   },
   {
     "id": "source-2146c68e3ac5f770",
@@ -2155,6 +2233,16 @@
     ]
   },
   {
+    "id": "source-24a8747e869db8d2",
+    "title": "美国华人历史学会讲座：Lily Qi 谈新书《Elected American》",
+    "url": "https://chsa.org/event/book-talk-with-lily-qi-elected-american/",
+    "kind": "event",
+    "contentIds": [
+      "chsa-lily-qi-book-talk-nov8-2026"
+    ],
+    "endDate": "2026-11-08"
+  },
+  {
     "id": "source-250a906114f447dc",
     "title": "南瓜季已经开始：九月去 Half Moon Bay，十月再看巨型南瓜",
     "url": "https://www.hmbpumpkinfest.com/event-details/about-the-event",
@@ -2201,6 +2289,16 @@
     "contentIds": [
       "sf-fishermans-wharf-pier39-guide"
     ]
+  },
+  {
+    "id": "source-25853bee2168de60",
+    "title": "Berryessa 分馆英语会话俱乐部：普通话老师带练",
+    "url": "https://sjpl.bibliocommons.com/events/6a67cc6b7b79214226abb91f",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-berryessa-mandarin-ell-club-fall-2026"
+    ],
+    "endDate": "2026-11-14"
   },
   {
     "id": "source-25c8cb3a23a10892",
@@ -2295,6 +2393,16 @@
     ]
   },
   {
+    "id": "source-274f11014ac08197",
+    "title": "圣何塞退伍军人节游行：北加州规模最大的 Veterans Day 游行",
+    "url": "https://sjveteransparade.org/san-jose-veterans-day-parade",
+    "kind": "event",
+    "contentIds": [
+      "sj-veterans-day-parade-2026"
+    ],
+    "endDate": "2026-11-11"
+  },
+  {
     "id": "source-2758ceec9f70bb04",
     "title": "Schulz Museum《大南瓜》60周年活动",
     "url": "https://schulzmuseum.org/its-the-great-pumpkin-60th-anniversary-event/",
@@ -2367,6 +2475,15 @@
       "muir-woods-fee-free-oct27",
       "muir-woods-reservation-day-trip",
       "muir-woods-veterans-day-nov11-2026"
+    ]
+  },
+  {
+    "id": "source-27c7788c2dfc0a41",
+    "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+    "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/learners-permits/",
+    "kind": "guide",
+    "contentIds": [
+      "california-driver-license-id-preparation-guide"
     ]
   },
   {
@@ -2867,6 +2984,16 @@
       "sf-greyhound-trivia-happy-hour-2026"
     ],
     "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-3295088b54f017c7",
+    "title": "Pacifica 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
+    "url": "https://smcl.bibliocommons.com/events/6aaa340cca248a0029162a85",
+    "kind": "event",
+    "contentIds": [
+      "smcl-pacifica-ofrenda-musical-nov14-2026"
+    ],
+    "endDate": "2026-11-14"
   },
   {
     "id": "source-32b0c206b758e3d4",
@@ -3527,6 +3654,7 @@
     "url": "https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/new-to-california/",
     "kind": "guide",
     "contentIds": [
+      "bay-area-newcomer-first-month-checklist",
       "california-driver-license-id-preparation-guide"
     ]
   },
@@ -3811,6 +3939,16 @@
     "contentIds": [
       "angel-island-ferry-first-day-guide"
     ]
+  },
+  {
+    "id": "source-4469115e8e98bff8",
+    "title": "退伍军人节前的家谱课：查家人的军队服役记录",
+    "url": "https://aclibrary.bibliocommons.com/events/6ab311fcda318a10e63609a4",
+    "kind": "event",
+    "contentIds": [
+      "acl-castro-valley-military-records-2026"
+    ],
+    "endDate": "2026-11-08"
   },
   {
     "id": "source-446f44337e115d06",
@@ -4153,6 +4291,16 @@
     "contentIds": [
       "bay-area-fastrak-bridge-express-lanes-guide"
     ]
+  },
+  {
+    "id": "source-4b3ed591438fcd7f",
+    "title": "Point Reyes 图书馆亲子音乐会：Rositas Arribeñas 演奏墨西哥 son huasteco",
+    "url": "https://marinlibrary.bibliocommons.com/events/6aca449ffee2d21deb225dba",
+    "kind": "event",
+    "contentIds": [
+      "marin-point-reyes-librito-concert-2026"
+    ],
+    "endDate": "2026-11-14"
   },
   {
     "id": "source-4b5e635cd5ab475b",
@@ -5017,6 +5165,15 @@
     ]
   },
   {
+    "id": "source-5d78307a40989b35",
+    "title": "在湾区准备入籍：先确认申请路径，再整理材料与考试版本",
+    "url": "https://www.uscis.gov/citizenship/find-study-materials-and-resources/study-for-the-test",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-naturalization-official-path-guide"
+    ]
+  },
+  {
     "id": "source-5d99abaf4157ff92",
     "title": "湾区看牙与牙科费用：保险网络、Medi-Cal Dental 和低费入口",
     "url": "https://www.nems.org/services/dental/",
@@ -5206,6 +5363,16 @@
     "endDate": "2026-10-03"
   },
   {
+    "id": "source-61f8d224ec4b8c4c",
+    "title": "香港动作经典《辣手神探》：粤语原声放映",
+    "url": "https://sfpl.org/events/2026/11/14/film-hard-boiled",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-richmond-hk-film-hard-boiled-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-6213597c2802",
     "title": "San José Avenida de Altares 亡灵节文化夜",
     "url": "https://mhplaza.org/allevents/avenida26",
@@ -5328,6 +5495,16 @@
       "nov2026-sf-renegade-craft-winter"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-63c32af04909bc2d",
+    "title": "Crockett 图书馆万圣节嘉年华：游戏、手工和找找看",
+    "url": "https://ccclib.bibliocommons.com/events/6abc44a4a85a2c00337bfcb5",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-crockett-halloween-hullabaloo-2026"
+    ],
+    "endDate": "2026-10-31"
   },
   {
     "id": "source-63cbf5346b50eea3",
@@ -5585,6 +5762,16 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "source-68d6230888fd8e45",
+    "title": "Pacifica 图书馆机器人入门：高中战队 Team 5940 带孩子编程",
+    "url": "https://smcl.bibliocommons.com/events/6abadaa39abb62002c6ac8d1",
+    "kind": "event",
+    "contentIds": [
+      "smcl-pacifica-robotics-team5940-2026"
+    ],
+    "endDate": "2026-11-01"
+  },
+  {
     "id": "source-692868a70afcaf28",
     "title": "Sunnyvale Spooky StoryWalk：穿着装扮读故事",
     "url": "https://www.library.sunnyvale.ca.gov/Home/Components/Calendar/Event/12565/74?curm=10&cury=2026",
@@ -5753,6 +5940,16 @@
     ]
   },
   {
+    "id": "source-6ba48aec7389aead",
+    "title": "华埠分馆周六午后：中文书法、填色与桌游",
+    "url": "https://sfpl.org/events/2026/10/17/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-chinatown-creative-saturdays-fall-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-6ba65a45dca7bc50",
     "title": "Fremont NAMIWalks 心理健康社区步行",
     "url": "https://content.govdelivery.com/accounts/CAFREMONT/bulletins/429d29d",
@@ -5875,6 +6072,16 @@
     ]
   },
   {
+    "id": "source-6e09345764fd42c8",
+    "title": "Belmont 图书馆之友旧书义卖",
+    "url": "https://smcl.bibliocommons.com/events/6941f5eb7ed7c62f00aad129",
+    "kind": "event",
+    "contentIds": [
+      "smcl-belmont-friends-book-sale-nov-2026"
+    ],
+    "endDate": "2026-11-15"
+  },
+  {
     "id": "source-6e93a68ae10b5cd6",
     "title": "从校园钟楼到山中植物园：Berkeley 的两种慢生活",
     "url": "https://botanicalgarden.berkeley.edu/visit/plan-your-visit/directions-parking/",
@@ -5987,6 +6194,16 @@
     ]
   },
   {
+    "id": "source-70792e74350f560d",
+    "title": "Berryessa 分馆万圣节派对：手工、讨糖和装扮游行",
+    "url": "https://sjpl.bibliocommons.com/events/6abc15d2035faf0033d92969",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-berryessa-halloween-party-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-70b56e8fda1a9240",
     "title": "Benicia Witching Wine Walk 品酒漫步",
     "url": "https://www.zeffy.com/en-US/ticketing/witching-wine-walk--2026",
@@ -6046,6 +6263,16 @@
       "bay-area-freebies-deals-2026-11",
       "sfpl-radon-detector-loan"
     ]
+  },
+  {
+    "id": "source-72067b4718768c68",
+    "title": "Brisbane 图书馆亡灵节糖骷髅彩绘",
+    "url": "https://smcl.bibliocommons.com/events/6ab6e6fe3dd190003e749f25",
+    "kind": "event",
+    "contentIds": [
+      "smcl-brisbane-sugar-skull-2026"
+    ],
+    "endDate": "2026-10-31"
   },
   {
     "id": "source-7207a6abdd10e425",
@@ -6345,6 +6572,16 @@
     ]
   },
   {
+    "id": "source-7897aa137a16c650",
+    "title": "Lafayette 图书馆之友书店半价日",
+    "url": "https://ccclib.bibliocommons.com/events/6aa1b929ca248a002914a0a3",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-lafayette-half-price-books-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-789e7b975942c063",
     "title": "跟志愿导览认识 SF 街区，常规散步免费",
     "url": "https://www.sfcityguides.org/",
@@ -6485,6 +6722,16 @@
     "endDate": "2026-10-01"
   },
   {
+    "id": "source-7adc0c7a8b188e92",
+    "title": "Bolinas 图书馆周六亲子手工与游戏",
+    "url": "https://marinlibrary.bibliocommons.com/events/6a84e038be148200298848cc",
+    "kind": "event",
+    "contentIds": [
+      "marin-bolinas-saturday-crafts-nov14-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-7b117dcc2c6d85c3",
     "title": "Oakland、Emeryville、Piedmont 居民可借工具",
     "url": "https://oaklandlibrary.org/otll/lending/",
@@ -6494,6 +6741,16 @@
       "bay-area-freebies-deals-2026-11",
       "oakland-tool-library"
     ]
+  },
+  {
+    "id": "source-7b299290af0e3dae",
+    "title": "Bernal Heights 社区亡灵节：一起搭祭坛、听现场音乐",
+    "url": "https://sfpl.org/events/2026/11/01/social-bernal-community-dia-de-los-muertos",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-bernal-dia-de-los-muertos-2026"
+    ],
+    "endDate": "2026-11-01"
   },
   {
     "id": "source-7b318384e4de87ad",
@@ -6746,6 +7003,16 @@
     ]
   },
   {
+    "id": "source-7fb7bdcbebc4bc39",
+    "title": "旧金山总馆中文读书会：陈年喜《活着就是冲天一喊》",
+    "url": "https://sfpl.org/events/2026/11/14/dushuhuihuozhejiushichongtianyihan",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-chinese-book-club-nov14-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-7fbd08d2ede7ec0f",
     "title": "10/6–7 会员促销：指定衣物六折、美妆七折",
     "url": "https://www.prnewswire.com/news-releases/target-circle-deal-days-returns-with-major-savings-on-stylish-fall-and-holiday-finds-302878903.html",
@@ -6769,6 +7036,26 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-7fd3f426f0bd839f",
+    "title": "North Fair Oaks 图书馆排灯节手绘指甲花",
+    "url": "https://smcl.bibliocommons.com/events/6aaa33f04b3b0600308414d5",
+    "kind": "event",
+    "contentIds": [
+      "smcl-north-fair-oaks-diwali-henna-2026"
+    ],
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "source-7fdff3b3f04df972",
+    "title": "Atherton 图书馆排灯节手绘指甲花",
+    "url": "https://smcl.bibliocommons.com/events/6aa9bb61ab7a8e0037c21242",
+    "kind": "event",
+    "contentIds": [
+      "smcl-atherton-diwali-henna-2026"
+    ],
+    "endDate": "2026-11-07"
+  },
+  {
     "id": "source-80e395ae8e506617",
     "title": "圣何塞攻略",
     "url": "https://www.thetech.org/visit",
@@ -6776,6 +7063,16 @@
     "contentIds": [
       "san-jose-guide"
     ]
+  },
+  {
+    "id": "source-80e49880b160b833",
+    "title": "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
+    "url": "https://sfpl.org/events/2026/10/25/tutorial-drop-tech-help-english-spanish-filipino-cantonese-mandarin",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-excelsior-multilingual-tech-help-2026"
+    ],
+    "endDate": "2026-11-15"
   },
   {
     "id": "source-81243e37ea9f990e",
@@ -7016,6 +7313,16 @@
     ]
   },
   {
+    "id": "source-861c04d7e72f3b8a",
+    "title": "West Valley 分馆旧书义卖：周日一袋 $5",
+    "url": "https://sjpl.bibliocommons.com/events/690e9ccafbf38a280022a873",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-west-valley-book-sale-nov-2026"
+    ],
+    "endDate": "2026-11-15"
+  },
+  {
     "id": "source-862b24c942cb1576",
     "title": "Downtown Vacaville 21+ Boo Bash",
     "url": "https://downtownvacaville.com/events-in-downtown-vacaville/",
@@ -7167,6 +7474,16 @@
     "endDate": "2026-11-30"
   },
   {
+    "id": "source-884abc426a2f545c",
+    "title": "台湾与中国寻根讲座：查家谱、找祖籍、规划回乡",
+    "url": "https://chsa.org/event/finding-your-taiwanese-and-chinese-roots-seminar/",
+    "kind": "event",
+    "contentIds": [
+      "chsa-taiwanese-chinese-roots-seminar-2026"
+    ],
+    "endDate": "2026-11-15"
+  },
+  {
     "id": "source-885c1e8a288fa339",
     "title": "基础会员生日选 Cookie 或 Brownie",
     "url": "https://www.chick-fil-a.com/locations/ca/sunnyvale",
@@ -7258,6 +7575,16 @@
     "endDate": "2026-11-28"
   },
   {
+    "id": "source-8a1e375236526cbc",
+    "title": "Almaden 分馆南亚音乐小演出：西塔琴与萨罗德琴",
+    "url": "https://sjpl.bibliocommons.com/events/6ac02d38de300e004517d3f5",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-almaden-sounds-of-south-asia-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-8a41b4cd9a576864",
     "title": "湾区购物去哪儿：Outlet、Shopping Mall 与热门购物街区全攻略",
     "url": "https://www.premiumoutlets.com/outlet/petaluma-village/about",
@@ -7273,6 +7600,15 @@
     "kind": "guide",
     "contentIds": [
       "east-bay-first-weekend-guide"
+    ]
+  },
+  {
+    "id": "source-8a755238d2ff7828",
+    "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+    "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/licensing-fees/",
+    "kind": "guide",
+    "contentIds": [
+      "california-driver-license-id-preparation-guide"
     ]
   },
   {
@@ -7609,6 +7945,15 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "pittsburg-nekter-opening-2026"
+    ]
+  },
+  {
+    "id": "source-90b2fff1ab85ad86",
+    "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+    "url": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/",
+    "kind": "guide",
+    "contentIds": [
+      "california-driver-license-id-preparation-guide"
     ]
   },
   {
@@ -8292,6 +8637,16 @@
     ]
   },
   {
+    "id": "source-9c1b776289f68d75",
+    "title": "Almaden 图书馆 20 周年暨丰收节：乐团、泡泡派对和南瓜园",
+    "url": "https://sjpl.bibliocommons.com/events/69cd448ae2a2952aed0bf2ba",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-almaden-20th-harvest-festival-2026"
+    ],
+    "endDate": "2026-10-17"
+  },
+  {
     "id": "source-9c2b362c40b5139c",
     "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
     "url": "https://www.cal-sailing.org/activities/csc-open-house",
@@ -8718,9 +9073,10 @@
     "url": "https://www.petalumavintage.com/",
     "kind": "event",
     "contentIds": [
+      "petaluma-vintage-market-nov15-2026",
       "r2-petaluma-vintage-market-oct2026"
     ],
-    "endDate": "2026-10-18"
+    "endDate": "2026-11-15"
   },
   {
     "id": "source-a5405e4b77ca",
@@ -8926,6 +9282,16 @@
     "endDate": "2026-10-11"
   },
   {
+    "id": "source-a7740cfd0620433b",
+    "title": "Cherryland 图书馆粤语、国语故事会",
+    "url": "https://aclibrary.bibliocommons.com/events/6a174e9ec6a1dc3d00d67cec",
+    "kind": "event",
+    "contentIds": [
+      "acl-cherryland-chinese-storytimes-oct24-2026"
+    ],
+    "endDate": "2026-10-24"
+  },
+  {
     "id": "source-a77cfd3a9f0ad578",
     "title": "半岛与南湾秋季买菜：先查市场有没有换址或停开",
     "url": "https://uvfm.org/campbell-sundays",
@@ -9052,6 +9418,16 @@
     ]
   },
   {
+    "id": "source-a9d9c553eefede5a",
+    "title": "Berryessa 分馆排灯节：故事、手工、舞蹈和小点心",
+    "url": "https://sjpl.bibliocommons.com/events/6a7cfa34b204780029928736",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-berryessa-diwali-2026"
+    ],
+    "endDate": "2026-11-15"
+  },
+  {
     "id": "source-aa6c4a383f250c79",
     "title": "从校园钟楼到山中植物园：Berkeley 的两种慢生活",
     "url": "https://botanicalgarden.berkeley.edu/visit/plan-your-visit/",
@@ -9075,6 +9451,16 @@
       "lakeshore-keepsakes-dec5-2026",
       "lakeshore-mosaic-nov7-2026",
       "lakeshore-stained-glass-oct24-2026"
+    ]
+  },
+  {
+    "id": "source-aa89b1e6d2160a02",
+    "title": "湾区 101 城水电、垃圾、宽带与手机联络大全",
+    "url": "https://abag.ca.gov/about-abag/what-we-do/how-we-govern",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-101-city-exploration-living-guide",
+      "bay-area-city-utilities-internet-phone-directory"
     ]
   },
   {
@@ -9123,6 +9509,16 @@
     "kind": "event",
     "contentIds": [
       "sf-halloween-broadside-printing-oct17-2026"
+    ],
+    "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-ab6374c9df716be6",
+    "title": "香港动作经典《喋血双雄》：粤语原声放映",
+    "url": "https://sfpl.org/events/2026/10/17/film-killer",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-richmond-hk-film-the-killer-2026"
     ],
     "endDate": "2026-10-17"
   },
@@ -9205,6 +9601,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-first-7-30-days-action-plan-october-2026"
+    ]
+  },
+  {
+    "id": "source-ac9f440220cb55c3",
+    "title": "在湾区弄清 Medicare、Medi-Cal：先找免费 HICAP 咨询",
+    "url": "https://www.medicare.gov/basics/costs/medicare-costs",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-medicare-hicap-medi-cal-guide"
     ]
   },
   {
@@ -9568,6 +9973,16 @@
     "endDate": "2026-10-08"
   },
   {
+    "id": "source-b2f6f82a3bf35b14",
+    "title": "Marina 分馆大雁功：普通话和英语讲解的户外晨练",
+    "url": "https://sfpl.org/events/2026/10/17/activity-wild-goose-qigong-chunfu-cai",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-marina-wild-goose-qigong-oct-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-b2f8493b54c7c028",
     "title": "宝宝／婚礼清单八五折，最多用两次",
     "url": "https://www.target.com/help/article/000062273",
@@ -9691,6 +10106,16 @@
     ]
   },
   {
+    "id": "source-b5711ff1650629cc",
+    "title": "Castro Valley 图书馆：Muwekma Ohlone 原住民挂毯展",
+    "url": "https://aclibrary.bibliocommons.com/events/6abef89debad2200454279ac",
+    "kind": "event",
+    "contentIds": [
+      "acl-castro-valley-ohlone-tapestries-2026"
+    ],
+    "endDate": "2026-11-08"
+  },
+  {
     "id": "source-b5c7dcaa58491b72",
     "title": "黄线深夜光纤施工：十月三组日期",
     "url": "https://www.bart.gov/news/articles/2026/news20260902",
@@ -9699,6 +10124,15 @@
       "east-bay-yellow-digital-oct2026"
     ],
     "endDate": "2026-10-22"
+  },
+  {
+    "id": "source-b5e3ee94aa6e696b",
+    "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+    "url": "https://www.dmv.ca.gov/portal/driver-education-and-safety/special-interest-driver-guides/senior-drivers/",
+    "kind": "guide",
+    "contentIds": [
+      "california-driver-license-id-preparation-guide"
+    ]
   },
   {
     "id": "source-b61a0779761dd3e2",
@@ -9797,6 +10231,15 @@
       "union-city-cert-shakealert-october-2026"
     ],
     "endDate": "2026-10-14"
+  },
+  {
+    "id": "source-b739f0a5dae7eb15",
+    "title": "新来湾区第一个月 checklist：租房、交通、手机、生活怎么安排",
+    "url": "https://www.coveredca.com/enrollment/open-enrollment",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-newcomer-first-month-checklist"
+    ]
   },
   {
     "id": "source-b7cd903fc371aa42",
@@ -10129,6 +10572,16 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "source-bc1f604ae90cb4c7",
+    "title": "San Carlos 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
+    "url": "https://smcl.bibliocommons.com/events/6aa8571f56fe62004a2fc09e",
+    "kind": "event",
+    "contentIds": [
+      "smcl-san-carlos-ofrenda-musical-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-bd064b62963b1a72",
     "title": "东湾 Tilden 两小时：看动物、读森林，也把最新关闭信息带上",
     "url": "https://www.ebparks.org/parks/tilden-nature-area",
@@ -10212,6 +10665,15 @@
       "bay-area-freebies-deals-2026-11",
       "sonoma-autumn-art-plaza-2026",
       "svma-free-wednesdays-october"
+    ]
+  },
+  {
+    "id": "source-bf25d3b6baeeaaff",
+    "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始",
+    "url": "https://www.ftb.ca.gov/file/ways-to-file/online/calfile/index.asp",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-free-tax-help-vita-calfile-guide"
     ]
   },
   {
@@ -10618,6 +11080,26 @@
     ]
   },
   {
+    "id": "source-c683f8ee05ef77e6",
+    "title": "Brisbane 图书馆拼图交换会",
+    "url": "https://smcl.bibliocommons.com/events/6ac7ef9329c3d600332e9e65",
+    "kind": "event",
+    "contentIds": [
+      "smcl-brisbane-puzzle-swap-2026"
+    ],
+    "endDate": "2026-11-08"
+  },
+  {
+    "id": "source-c6be23257388f3e3",
+    "title": "中秋中文书法纸灯笼：学写毛笔字，做一盏扇形灯",
+    "url": "https://smcl.bibliocommons.com/events/6a92017e4cb69d003e242443",
+    "kind": "event",
+    "contentIds": [
+      "smcl-portola-valley-mid-autumn-lantern-2026"
+    ],
+    "endDate": "2026-10-25"
+  },
+  {
     "id": "source-c6da8ca419c4a3dd",
     "title": "Stanford 的免费艺术下午：Main Quad、Cantor 与一小段校园散步",
     "url": "https://visit.stanford.edu/",
@@ -10673,6 +11155,15 @@
       "san-jose-first-friday-ballet-2026"
     ],
     "endDate": "2026-10-02"
+  },
+  {
+    "id": "source-c80a08bc8275599c",
+    "title": "新来湾区第一个月 checklist：租房、交通、手机、生活怎么安排",
+    "url": "https://www.ssa.gov/number-card/request-number-first-time",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-newcomer-first-month-checklist"
+    ]
   },
   {
     "id": "source-c81e91359f468da1",
@@ -10818,6 +11309,16 @@
       "half-moon-bay-october-pumpkin-coast-guide-2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-cb26ab6c2915754a",
+    "title": "San Lorenzo 图书馆儿童美术课：用黏土做排灯节小油灯",
+    "url": "https://aclibrary.bibliocommons.com/events/6ac6a340295b3b0033cadefa",
+    "kind": "event",
+    "contentIds": [
+      "acl-san-lorenzo-diwali-diya-2026"
+    ],
+    "endDate": "2026-11-07"
   },
   {
     "id": "source-cb54de4f22a5ef48",
@@ -11206,6 +11707,16 @@
     "endDate": "2026-10-07"
   },
   {
+    "id": "source-d12d7579c08589d6",
+    "title": "Martinez 图书馆马克杯交换",
+    "url": "https://ccclib.bibliocommons.com/events/6a8f544229a7dd0d6746e5b3",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-martinez-mug-swap-2026"
+    ],
+    "endDate": "2026-11-07"
+  },
+  {
     "id": "source-d15365a736efbbbe",
     "title": "Lafayette Res Run 秋季社区跑",
     "url": "https://lafayettechamber.org/resrun/",
@@ -11419,6 +11930,25 @@
     ]
   },
   {
+    "id": "source-d628fef1c22c3320",
+    "title": "San Carlos 图书馆之友旧书义卖：25 美分到 2 美元",
+    "url": "https://smcl.bibliocommons.com/events/69375c607ed7c62f00a97cb8",
+    "kind": "event",
+    "contentIds": [
+      "smcl-san-carlos-friends-book-sale-nov15-2026"
+    ],
+    "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-d665f09e4ac610dd",
+    "title": "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
+    "url": "https://www.ssa.gov/cola/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-social-security-retirement-preparation-guide"
+    ]
+  },
+  {
     "id": "source-d6d816bbb4d1f2e7",
     "title": "顾客问卷券：买中杯饮品赠甜甜圈",
     "url": "https://www.dunkindonuts.com/locations/us/ca/san-carlos/240-el-camino-real/store-357824/",
@@ -11624,7 +12154,8 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "poppy-claro-doggie-dinners-fall"
-    ]
+    ],
+    "endDate": "2026-11-30"
   },
   {
     "id": "source-da222a968b3c",
@@ -11697,6 +12228,15 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-dbbb0d14273449e1",
+    "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
+    "url": "https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/",
+    "kind": "guide",
+    "contentIds": [
+      "california-driver-license-id-preparation-guide"
+    ]
+  },
+  {
     "id": "source-dbcebf776b835e4a",
     "title": "旧火车站博物馆 10 月 18 日揭幕",
     "url": "https://www.athertonca.gov/Calendar.aspx?EID=4034&calType=0&day=30&month=9&year=2026",
@@ -11742,6 +12282,16 @@
     "contentIds": [
       "san-francisco-guide"
     ]
+  },
+  {
+    "id": "source-dc5ac38b5ac3de8b",
+    "title": "Campbell 图书馆之友旧书义卖：书、拼图和桌游",
+    "url": "https://sccl.bibliocommons.com/events/6a4ec0bfc7e02e3d0067c3ea",
+    "kind": "event",
+    "contentIds": [
+      "sccl-campbell-friends-book-sale-nov14-2026"
+    ],
+    "endDate": "2026-11-14"
   },
   {
     "id": "source-dc6a1214d704701b",
@@ -11924,6 +12474,16 @@
     "endDate": "2026-10-09"
   },
   {
+    "id": "source-e02e1bbb6fecf020",
+    "title": "Joyce Ellington 分馆万圣节：故事会、游行和馆内讨糖",
+    "url": "https://sjpl.bibliocommons.com/events/6ac4082ede300e0045186d78",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-joyce-ellington-halloween-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-e03e74b9fe12032e",
     "title": "圣何塞互动悬疑晚餐：《Funeral For a Gangster》",
     "url": "https://www.sanjose.org/events/murder-mystery-dinner-theatre-funeral-gangster",
@@ -11961,6 +12521,15 @@
       "homedepot-october-preview"
     ],
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "source-e119e8de76998c7f",
+    "title": "在湾区弄清 Medicare、Medi-Cal：先找免费 HICAP 咨询",
+    "url": "https://www.dhcs.ca.gov/medi-cal/help/asset-limit-frequently-asked-questions/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-medicare-hicap-medi-cal-guide"
+    ]
   },
   {
     "id": "source-e121e559fe3a537d",
@@ -12095,6 +12664,16 @@
     "endDate": "2026-09-30"
   },
   {
+    "id": "source-e506294fafbd6fda",
+    "title": "Corte Madera 图书馆讲座：两位非裔拼布艺术家的创作之路",
+    "url": "https://marinlibrary.bibliocommons.com/events/6abc235a035faf0033d92f29",
+    "kind": "event",
+    "contentIds": [
+      "marin-corte-madera-quiltmaking-talk-2026"
+    ],
+    "endDate": "2026-11-14"
+  },
+  {
     "id": "source-e5ea5bb7d6029a3d",
     "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
     "url": "https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/real-id/real-id-checklist/",
@@ -12141,6 +12720,16 @@
       "bay-area-new-openings-2026-09",
       "broken-dreams-oakland"
     ]
+  },
+  {
+    "id": "source-e6c7403aa0f0c051",
+    "title": "North Beach 分馆万圣节开放日：故事会、芭蕾游戏与鬼故事导览",
+    "url": "https://sfpl.org/events/2026/10/31/celebration-north-beach-branch-open-house",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-north-beach-open-house-oct31-2026"
+    ],
+    "endDate": "2026-10-31"
   },
   {
     "id": "source-e743f4251d67479a",
@@ -12212,6 +12801,16 @@
     "contentIds": [
       "east-bay-first-weekend-guide"
     ]
+  },
+  {
+    "id": "source-e88d5c13b269a6fd",
+    "title": "Village Square 分馆感恩节派对：手工、点心和小奖品",
+    "url": "https://sjpl.bibliocommons.com/events/6a7a43adb3bdcec4a6676595",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-village-square-thanksgiving-2026"
+    ],
+    "endDate": "2026-11-20"
   },
   {
     "id": "source-e89b208faa8e71ea",
@@ -13018,6 +13617,16 @@
     ]
   },
   {
+    "id": "source-f8c2b483548cb71f",
+    "title": "Evergreen 分馆感恩节故事会与手工",
+    "url": "https://sjpl.bibliocommons.com/events/6acaac15754bb0003ac3a888",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-evergreen-thanksgiving-storytime-2026"
+    ],
+    "endDate": "2026-11-19"
+  },
+  {
     "id": "source-f9291b01c5edef4d",
     "title": "Los Altos 第50届节日灯光游行",
     "url": "https://www.losaltosparade.org/welcome",
@@ -13066,6 +13675,16 @@
     "contentIds": [
       "san-jose-tech-japantown-day-trip"
     ]
+  },
+  {
+    "id": "source-fa237868117c0bb3",
+    "title": "Foster City 图书馆：绘本作家 Nidhi Chanani 讲故事、现场画画",
+    "url": "https://smcl.bibliocommons.com/events/6ab5876708693b0f7374643a",
+    "kind": "event",
+    "contentIds": [
+      "smcl-foster-city-nidhi-chanani-2026"
+    ],
+    "endDate": "2026-11-01"
   },
   {
     "id": "source-fa3b9d945cf9d8f4",
@@ -13190,6 +13809,16 @@
     "endDate": "2026-11-22"
   },
   {
+    "id": "source-fc0653a5fd202ed6",
+    "title": "Dublin 图书馆万圣节手工与装扮比赛",
+    "url": "https://aclibrary.bibliocommons.com/events/6a83981ad4b10d0030073337",
+    "kind": "event",
+    "contentIds": [
+      "acl-dublin-halloween-crafts-costume-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-fc28e5d4bcaebabb",
     "title": "South San Francisco城市近况交流会",
     "url": "https://www.ssfca.gov/Events/2026-State-of-the-City",
@@ -13251,6 +13880,16 @@
       "sf-downtown-first-thursday-oct-2026"
     ],
     "endDate": "2026-10-01"
+  },
+  {
+    "id": "source-fd9df39310ad21e2",
+    "title": "Brisbane 图书馆儿童画：祖尼族水罐图案",
+    "url": "https://smcl.bibliocommons.com/events/6ab6e72008693b0f7374a9b3",
+    "kind": "event",
+    "contentIds": [
+      "smcl-brisbane-zuni-water-jar-2026"
+    ],
+    "endDate": "2026-11-08"
   },
   {
     "id": "source-fdc56c2247dbcf81",

@@ -357,8 +357,12 @@ test('the real supplied DMV question starts a 28-second site final with exceptio
     const payload = payloads[0], context = JSON.parse(payload.input[0].content);
     assert.equal(context.state.goal, 'newcomer');
     const text = [...context.evidence.map(source => source.text || ''), ...context.sourceScopes.map(source => source.text)].join('\n');
-    for (const fact of ['继续驾驶最多 10 天', '成为居民后受雇从事驾驶，须先取得加州驾照', '不能把这理解成只要 10 天内提交申请或约到 DMV', '普通非 REAL ID 的住址清单至少需一份合格文件，REAL ID 另需两份', '材料未齐时，仍应按期提交申请和应缴费用', '已有加州 DMV 记录', 'REG 343', 'REG 31']) assert.ok(text.includes(fact), fact);
-    assert.ok(context.evidence.some(source => source.url.includes('sectionNum=12505.')));
+    // The driver guide was rewritten from Vehicle Code 12505(c) and the DMV new-resident pages read 2026-10-12 (web CNT-GUIDES). The
+    // standard-vs-REAL ID document count now sits in its own REAL ID section, which this question does not retrieve; the two DMV
+    // document lists still reach the model as official entries. The statute is named in the text and listed in the guide's sources,
+    // no longer linked inline in the 10-day paragraph.
+    for (const fact of ['最多再用外州驾照开 10 天', '成为居民后受雇开车的，要先拿到加州驾照', '不是到达当天自动起算', '交申请和身份、住址材料', '不用等加州驾照寄到', '已有加州 DMV 记录', 'REG 343', 'REG 31', '加州车辆法 12505(c)']) assert.ok(text.includes(fact), fact);
+    for (const list of ['residency-documents-list', 'real-id-checklist']) assert.ok(context.evidence.some(source => source.url.includes(list)), list);
     assert.match(payload.instructions, /triggering event, qualifying status, action required and exceptions/);
     assert.match(payload.instructions, /distinct document categories, required counts/);
     if (searchMode === 'site') {

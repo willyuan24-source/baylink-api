@@ -30,7 +30,8 @@ const CASES = [
       'zh-Hant': '牙醫牙科醫保網絡與低費牙科預約準備',
       en: 'dental care dentist insurance network and lower-cost appointment preparation',
     },
-    facts: { zh: '有医疗保险不代表所有牙科项目都被支付', en: 'Medical insurance does not mean every dental service is covered' },
+    // Rewritten 10-12 from Medicare.gov ("in most cases" Medicare does not cover routine dental care).
+    facts: { zh: '多数情况下 Medicare 不付洗牙、补牙、拔牙', en: "in most cases Medicare doesn't cover routine cleanings, fillings or extractions" },
   },
   {
     slug: 'bay-area-chinese-senior-services-referral-guide',
@@ -40,7 +41,8 @@ const CASES = [
       'zh-Hant': '中文長者服務餐食日間照護與縣級AAA轉介',
       en: 'Chinese senior services meals adult day care county AAA referral',
     },
-    facts: { zh: '活动中心不自动提供医疗照护', en: 'An activity center does not automatically provide medical care' },
+    // De-hedged 10-12 (web CNT-GUIDES): same caveat, said directly.
+    facts: { zh: '活动中心不提供医疗照护', en: 'A senior center does not give medical care' },
   },
   {
     slug: 'bay-area-social-security-retirement-preparation-guide',
@@ -50,7 +52,8 @@ const CASES = [
       'zh-Hant': 'SSA 社會保障退休福利工作積分、個人估算與免費口譯準備',
       en: 'SSA Social Security retirement work credits, personal estimates and free interpreter preparation',
     },
-    facts: { zh: '并非在美国住满十年自动取得', en: 'living in the United States for ten years does not automatically earn them' },
+    // Rewritten 10-12 from SSA: credits come from covered earnings, $1,890 per credit in 2026.
+    facts: { zh: '每有 $1,890 的受保收入记 1 个积分', en: 'one credit for every $1,890 of covered earnings' },
   },
   {
     slug: 'bay-area-naturalization-official-path-guide',
@@ -60,7 +63,7 @@ const CASES = [
       'zh-Hant': 'USCIS N-400 入籍準備、考試版本與官方法律服務入口',
       en: 'USCIS N-400 naturalization preparation, test version and official legal services',
     },
-    facts: { zh: '年龄与年限要同时满足', en: 'Both age and resident years must be met' },
+    facts: { zh: '年龄与年限要同时满足', en: 'Age and years must both be met' },
   },
 ];
 
@@ -199,7 +202,11 @@ test('explicitly hiring or paying for an interpreter still selects translation-s
     const rows = /[\u3400-\u9fff]/.test(query) ? zh : en;
     const selected = selectConversationGuides([...rows, service], normalizeGuideQuery(query), 'translation', '/', [], TODAY);
     assert.ok(selected.some(row => row.slug === service.slug), query);
-    assert.ok(selected.every(row => (row.categories || []).includes('translation')), 'hired-service questions must retain translation-service guidance');
+    // Since the 10-13 sync the newcomer guide carries the SSA card facts (ssa.gov, web CNT-GUIDES BBL-05), so "SSA" is in more than
+    // three guides and no longer a distinctive name; the first-doctor guide, whose own summary is about arranging an interpreter, can
+    // now clear the relevance cut. Translation guidance must still rank first and every pick must be about interpreting.
+    assert.ok((selected[0].categories || []).includes('translation'), 'hired-service questions must retain translation-service guidance first');
+    assert.ok(selected.every(row => (row.categories || []).includes('translation') || /口译|口譯|interpreter/i.test(row.summary || '')), 'hired-service questions must retain translation-service guidance');
     assert.ok(selected.every(row => !PUBLIC_SERVICE_SLUGS.includes(row.slug)), 'free public-agency guides must not replace the explicit hired-service request');
   }
 });

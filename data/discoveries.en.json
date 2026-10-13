@@ -537,13 +537,14 @@
     {
       "kind": "offer",
       "id": "poppy-claro-doggie-dinners-fall",
-      "title": "Friday outings with your dog: $6 three-course dinners continue into fall",
+      "title": "Friday outings with your dog: $6 three-course dinners, this season through October",
       "path": "/offers/poppy-claro-doggie-dinners-fall",
-      "summary": "50 West San Fernando Street. The restaurant has extended the offer into fall. Under its Friday rule, October dates are 2, 9, 16, 23 and 30; no final end date is published.",
+      "summary": "50 West San Fernando Street. Under its Friday rule, the October Fridays are Oct 2, 9, 16, 23 and 30. The restaurant’s October news says the Howl-O-Ween pup costume contest night is the season’s last dog day dinner (enter before 7 pm; the winner is named on Oct 31), without saying which Friday.",
       "details": [
         "The $6 meal is for dogs, on the patio Fridays from 5 to 8 PM, weather permitting. Human food and drinks cost extra; confirm seating and availability with the restaurant."
       ],
-      "dateLabel": "Fall Fridays · Patio, 5–8 PM",
+      "endDate": "2026-10-30",
+      "dateLabel": "Fridays in October · Patio, 5–8 PM · the last one is the Halloween costume contest night (before Oct 31)",
       "costLabel": "Purchase required",
       "status": "check-local",
       "verifiedAt": "2026-09-15",
@@ -1363,9 +1364,9 @@
       "id": "berkeley-cal-golden-bear-oct-sale-2026",
       "title": "UC Berkeley Student $10 Performance Tickets: On Sale October 8",
       "path": "/offers/berkeley-cal-golden-bear-oct-sale-2026",
-      "summary": "For current UCB students. The 10/8 release includes selected performances or talks on 10/23, 24, 25, and 28. Buy up to two tickets per event and bring a nonstudent guest.",
+      "summary": "For current UCB students. The 10/8 release covers selected performances or talks on 10/23, 24, 25 and 28 and 11/1; as of 10/12 the 10/23, 25 and 28 events are sold out and 10/24 and 11/1 still have tickets. Buy up to two tickets per event and bring a nonstudent guest.",
       "details": [
-        "Golden Bear Circle tickets are $10 for selected performances, with limited availability; check at checkout whether service fees apply. Current UC Berkeley student status required. Online sales only, with a maximum of two tickets per performance. Availability has not been checked. Review each performance and its ticket rules separately."
+        "Golden Bear Circle tickets are $10 for selected performances, with limited availability; check at checkout whether service fees apply. Current UC Berkeley student status required. Online sales only, with a maximum of two tickets per performance. Review each performance and its ticket rules separately."
       ],
       "region": "east-bay",
       "startDate": "2026-10-08",
@@ -2775,7 +2776,7 @@
       "path": "/offers/lego-hillsdale-little-builders",
       "summary": "At 341 Hillsdale Mall in San Mateo, monthly hands-on building supports developmental skills. Confirm the booking location from the local store page because generic links may lead out of state. A take-home set is not promised.",
       "details": [
-        "The Hillsdale store lists the workshops as free, recommended for ages 2–5 with a supervising adult. Confirm local availability and reserve first."
+        "Free, for ages 2–5 with one supervising adult; upcoming sessions are not in the store page’s events list, so call the Hillsdale store for dates and book before you go."
       ],
       "region": "peninsula",
       "dateLabel": "Ongoing program · Check Hillsdale dates and spaces",
