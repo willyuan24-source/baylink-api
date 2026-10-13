@@ -122,3 +122,47 @@ test('no source file in lib/ or server.js contains a control character (a backsp
     .map((line, index) => /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(line) ? `${file}:${index + 1}` : null).filter(Boolean));
   assert.deepEqual(found, []);
 });
+
+// H11 (audit 10-13, BB-1013-04): the audit's 20 fresh phrasings (14 caught, 3 floor-only,
+// 3 missed on 188d957) are all 911 cards now, with the four new combinations in all three
+// languages. Near misses around the same words stay plain questions.
+const AUDIT_1013_FRESH = [
+  ['zh-Hans', '我朋友刚发消息说他不想活了，遗书都写好了，我该怎么办？', 'self-harm'], ['zh-Hans', '我爸吃饭的时候一边脸突然垂下来了，筷子也拿不住', 'stroke'],
+  ['zh-Hans', '孩子吞了一块小磁铁，现在肚子疼', 'ingestion'], ['zh-Hans', '我同事说他刚吞了一整瓶安眠药', 'poisoning'],
+  ['zh-Hans', '我老婆说胸闷，左手发麻，脸色很白', 'cardiac'], ['zh-Hans', '孩子掉进泳池，捞上来没有呼吸', 'breathing'],
+  ['zh-Hans', '奶奶在浴室摔倒起不来，头一直在流血', 'head-injury'], ['zh-Hans', '我室友喝了很多酒，怎么叫都叫不醒', 'unconscious'],
+  ['zh-Hans', '外公突然看不清东西，走路也不稳，说话怪怪的', 'stroke'], ['zh-Hans', '宝宝被蜜蜂蛰了以后全身起疹子，嗓子发紧', 'anaphylaxis'],
+  ['zh-Hans', '我妈血糖很低，人有点迷糊，叫她不太答应', 'unconscious'], ['zh-Hans', '我觉得活着没意思，想结束这一切', 'self-harm'],
+  ['zh-Hans', '我儿子说他想死', 'self-harm'], ['zh-Hant', '爸爸剛才突然說不出話，右手沒力', 'stroke'],
+  ['en', 'My friend just texted that he took a whole bottle of pills', 'poisoning'], ['en', "my dad's speech is slurred and one side of his face looks droopy", 'stroke'],
+  ['en', 'My daughter fell off the balcony and is not moving', 'trauma'], ['en', "there's a strong gas smell in our apartment and I feel dizzy", 'gas'],
+  ['en', "my baby is turning blue and can't breathe", 'breathing'], ['en', 'My teenage son says he wants to end his life', 'self-harm'],
+];
+const H11_COMBINATIONS = [
+  ['zh-Hant', '奶奶在浴室摔倒起不來，頭一直在流血', 'head-injury'], ['en', 'Grandma slipped in the bathroom and her head keeps bleeding', 'head-injury'],
+  ['zh-Hant', '寶寶被蜜蜂螫了以後全身起疹子，喉嚨發緊', 'anaphylaxis'], ['zh-Hans', '孩子吃了虾以后嘴唇肿了', 'anaphylaxis'],
+  ['en', 'My son was stung by a wasp and his throat feels tight', 'anaphylaxis'],
+  ['zh-Hans', '孩子从阳台上摔下来了', 'trauma'], ['zh-Hant', '我兒子從二樓窗戶掉下去了', 'trauma'], ['zh-Hans', '爸爸从梯子上摔下来，一动不动', 'trauma'],
+  ['en', 'My husband fell off the ladder and is not moving', 'trauma'],
+  ['zh-Hant', '我老婆說胸悶，左手發麻，臉色很白', 'cardiac'], ['en', 'My dad has chest tightness and his left arm is numb', 'cardiac'],
+  ['zh-Hant', '外公突然看不清東西，走路也不穩', 'stroke'],
+];
+const H11_NEAR_MISSES = [
+  '手机从阳台掉下去了', 'My phone fell off the balcony', '孩子从床上摔下来了，现在没事，还在玩', '我去年从楼梯上摔下来过一次', '防坠楼安全讲座在哪里',
+  '孩子摔倒了膝盖流血，头没事', 'My daughter fell off her bike and scraped her knee', 'The kid fell asleep in the car and is not moving an inch',
+  '被蚊子叮了起了个包，有点痒', '感冒了嗓子有点肿，吃了药', '吃了辣的嗓子有点疼', 'My throat feels tight after singing all day',
+  '我练完胸肌胸口有点紧，左手也酸', '胸闷是不是空气不好', 'I ate too much and my chest feels heavy',
+  '外公突然看不清东西，眼镜找不到了', '血糖低的时候吃什么好', '老人防跌倒讲座', '我爸以前胸闷左手发麻过，现在好了',
+];
+
+test('H11: the 10-13 audit\'s 20 fresh phrasings and the four new combinations get the 911 card in every language', () => {
+  const missed = [...AUDIT_1013_FRESH, ...H11_COMBINATIONS].filter(([locale, message, topic]) => emergencyResponse(message, locale)?.emergencyTopic !== topic);
+  assert.deepEqual(missed.map(([, message, topic]) => `${message} -> ${topic} (got ${currentEmergencyTopic(message)})`), []);
+  for (const [locale, message] of [...AUDIT_1013_FRESH, ...H11_COMBINATIONS]) assert.ok(emergencyResponse(message, locale).answer.startsWith(FIRST_SENTENCE[locale]), message);
+  assert.deepEqual(new Set(H11_COMBINATIONS.map(([locale]) => locale)), new Set(['zh-Hans', 'zh-Hant', 'en']));
+});
+
+test('H11: near misses around falls, stings, chest tightness and vision stay questions (0 false positives)', () => {
+  const flagged = [...H11_NEAR_MISSES, ...NEAR_MISSES].filter(message => emergencyResponse(message, /[㐀-鿿]/u.test(message) ? 'zh-Hans' : 'en'));
+  assert.deepEqual(flagged.map(message => `${message} -> ${currentEmergencyTopic(message)}`), []);
+});
