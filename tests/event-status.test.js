@@ -290,16 +290,27 @@ test('budget checks read the overlay price before the planning amount and the co
     ['fremont-fog-diwali-mela-2026', 5, 0.22], // the parser took the $0.22 fee for a ticket
     ['half-moon-bay-pumpkin-festival-2026', 0, null], // free entry, extras paid
     ['nov2026-botanical-one-day-choir', 0, null], // Free–$75 tiers
-    ['napa-tulocay-heritage-halloween-tour-2026', 45, 45],
+    ['napa-tulocay-heritage-halloween-tour-2026', 45, 45], // NCHS members $30: a member price is not a general tier
+    ['sausalito-goblin-jamboree-2026', 30, null], // members usually $5: same
     ['sf-opera-figaro-opening-2026', 30, 30],
+    // `min` is not a per-person floor here, so the overlay adds no bound:
+    ['cupertino-monster-mash-2026', null, null], // $17 is one registration for 1 child + 2 adults
+    ['r2-benicia-witching-wine-walk-2026', null, null], // two presale tickets $65
+    ['santa-rosa-halloween-howarth-2026', null, null], // $25 includes two adults
+    ['nov2026-ardenwood-chestnut-treats', null, null], // 11/27 free entry
+    ['roundup-schulz-pearls-jubilee-2026', null, null], // the 20:00 signing is free
+    ['november-north-eames-exhibition-2026', null, null], // min is the adult $25; 6–17 is $15
     [DOJA, null, null], // no overlay price: unchanged
   ];
   for (const [id, bound, legacy] of cases) {
     assert.equal(admissionLowerBound(row(id)), bound, id);
     assert.equal(admissionLowerBound(without(row(id), 'price')), legacy, `${id} without price`);
   }
+  // On every priced row the bound is free → 0, or never above the overlay min nor a known general price.
   for (const event of planner.events.filter(item => item.price)) {
-    assert.equal(admissionLowerBound(event), event.price.free ? 0 : event.price.min ?? admissionLowerBound(without(event, 'price')), event.id);
+    const bound = admissionLowerBound(event);
+    if (event.price.free === true) assert.equal(bound, 0, event.id);
+    else if (bound !== null) for (const ceiling of [event.price.min, priceOf(event)].filter(value => typeof value === 'number')) assert.ok(bound <= ceiling, `${event.id} ${bound} > ${ceiling}`);
   }
   // A malformed price is ignored; the quoted known price (priceOf) is unchanged by the overlay.
   for (const price of ['free', null, [], { min: -1 }, { min: Number.NaN }, { min: '20' }, { free: 'yes' }, { max: 40 }]) assert.equal(admissionLowerBound({ ...row('stanford-halloween-concert-2026'), price }), 32, JSON.stringify(price));
@@ -314,10 +325,16 @@ test('planner and BayBay budgets follow the overlay lower bound (Stanford 65+ ti
     [stanford, '2026-10-30', 25, false],
     [pleasanton, '2026-10-24', 20, false], // was kept as "unknown"
     [pleasanton, '2026-10-24', 25, true],
+    // Overlay prices that are not per-person floors never reject (review of the first commit):
+    [row('nov2026-ardenwood-chestnut-treats'), '2026-11-27', 0, true], // free entry that day
+    [row('roundup-schulz-pearls-jubilee-2026'), '2026-11-10', 5, true], // free 20:00 signing
+    [row('cupertino-monster-mash-2026'), '2026-10-24', 20, true, { budgetScope: 'total', partySize: 3 }], // $17 covers 1 child + 2 adults
+    // A members-only price does not lower the bound.
+    [row('sausalito-goblin-jamboree-2026'), '2026-10-17', 20, false],
   ];
-  for (const [event, date, budget, expected] of cases) {
-    assert.deepEqual(await suggest(event, { date, budget }), expected ? [event.id] : [], `${event.id} $${budget}`);
-    const site = buildSiteEvidence({ query: `${event.city} ${event.title}`, state: { goal: 'discover', city: event.city, date, budget }, guideCatalog: guides, catalog: planner, today: TODAY });
+  for (const [event, date, budget, expected, scope = {}] of cases) {
+    assert.deepEqual(await suggest(event, { date, budget, ...scope }), expected ? [event.id] : [], `${event.id} $${budget}`);
+    const site = buildSiteEvidence({ query: `${event.city} ${event.title}`, state: { goal: 'discover', city: event.city, date, budget, ...scope }, guideCatalog: guides, catalog: planner, today: TODAY });
     assert.equal(site.candidates.some(candidate => candidate.id === event.id), expected, `BayBay ${event.id} $${budget}`);
   }
   // Kept only by the cheaper tier: never reported as a known budget match, and the general $32 stays visible.
@@ -329,4 +346,94 @@ test('planner and BayBay budgets follow the overlay lower bound (Stanford 65+ ti
   const [general] = (await recommend({ body: { filters: { date: '2026-10-30', budget: 40 } }, catalog: oneRow(stanford), now: () => NOW })).suggestions;
   assert.equal(general.budgetStatus, 'known');
   assert.doesNotMatch(general.unknowns.join(' '), /只有部分票种/);
+});
+
+test('BayBay on a sold-out or postponed page: the model sees the status, the guard names it, and there is no "plan around this event"', async () => {
+  const crypto = require('node:crypto');
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const context = createPublicContext({ catalog: planner, guideCatalog: guides });
+  const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_STATE_SECRET: 'private-test-task-secret-0123456789', BAYBAY_DAILY_RUN_LIMIT: '1000', BAYBAY_ENGINE: 'v2' };
+  const quota = { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) };
+  const cases = [
+    // [page, locale, model answer, answer pattern, no dates, now]
+    [NAPA, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「21\+ · Napa Harvest After Dark 面具晚宴」（10月30日（周五）），已售罄。请以项目页/, false, NOW],
+    [NAPA, 'en', 'There is no published record of this event.', /^The site has a record for .+ \(Fri, Oct 30\); sold out\. Check the published/, false, NOW],
+    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco城市近况交流会」，已延期，新日期未公布。请以项目页/, true, NOW],
+    // After its original 10/27 it is still postponed, never "ended".
+    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco城市近况交流会」，已延期，新日期未公布。请以项目页/, true, Date.parse('2026-10-28T19:00:00Z')],
+  ];
+  for (const [id, locale, lead, pattern, undated, now] of cases) {
+    const sent = [];
+    const today = new Date(now - 7 * 3600000).toISOString().slice(0, 10);
+    const assistant = createBayBayAssistant({ config, guideCatalog: guides, catalog: planner, now: () => now, isTest: false, Quota: quota,
+      fetchImpl: async (url, init) => {
+        sent.push(JSON.parse(init.body));
+        const value = { type: 'message', id: `msg-${crypto.randomUUID()}`, model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', usage: { input_tokens: 40, output_tokens: 60 },
+          content: [{ type: 'text', text: JSON.stringify({ lead, points: [], candidateIds: [], followups: [], coverage: [], gap: '' }) }] };
+        return { ok: true, status: 200, json: async () => value, clone() { return this; }, text: async () => JSON.stringify(value) };
+      } });
+    const currentPath = `/events/${id}`;
+    const result = await assistant.run({ message: '这个还能去吗', locale, currentPath, history: [], pageContext: context.resolve({ context: { currentPath }, currentPath, today, locale }), searchMode: 'site', webAccess: { allowed: false } });
+    const input = JSON.stringify(sent[0].messages);
+    assert.match(input, new RegExp(`eventStatus\\\\":\\\\"${row(id).status}`), `${id}: the model input carries the status`);
+    assert.match(input, /never recommend it/);
+    assert.ok(result.research.warnings.includes('false_negative_corrected'), id);
+    assert.match(result.answer, pattern, `${id} ${locale}`);
+    if (undated) assert.doesNotMatch(result.answer, /10月27日|Oct 27|已经结束/);
+    assert.deepEqual(result.nextSteps, [], `${id}: no "plan around this event"`);
+  }
+});
+
+test('the legacy `cancelled: true` flag counts as cancelled for interest and outings', () => {
+  const rows = [{ id: 'flagged', title: 'Legacy flag', startDate: '2026-10-25', endDate: '2026-10-25', cancelled: true }];
+  const events = loadEventCatalog(rows);
+  assert.equal(events.get('flagged').status, 'cancelled');
+  assert.equal(signUpClosed(events.get('flagged'), TODAY), 'EVENT_CANCELLED');
+  const input = { title: '一起去看看', description: '公共场所集合', city: 'San Francisco', venue: '市政广场入口', capacity: 3, costNote: '各自承担', transport: 'own', language: 'any',
+    eventId: 'flagged', date: '2026-10-25', startTime: '10:00', endTime: '12:00' };
+  assert.throws(() => validateOutingInput(input, loadOutingCatalog(rows), NOW), error => error.code === 'EVENT_CANCELLED');
+});
+
+test('an outing whose event is later postponed or cancelled takes no new join requests and shows the status', async t => {
+  const users = ['host', 'alice'].map(id => ({ id, nickname: id, email: `${id}@private.test`, password: 'private', role: 'user', accountStatus: 'active', isPhoneVerified: true }));
+  const models = createMemoryModels({ User: users });
+  const event = { id: 'linked', title: 'Linked event', startDate: '2026-10-25', endDate: '2026-10-25', occurrenceDates: ['2026-10-25'] };
+  const serve = async catalog => {
+    const application = createApplication({ models, config: { NODE_ENV: 'test', JWT_SECRET: SECRET }, outingCatalog: catalog, outingNow: () => NOW });
+    await new Promise(resolve => application.server.listen(0, '127.0.0.1', resolve));
+    t.after(() => new Promise(resolve => application.io.close(resolve)));
+    return async (path, as, body) => {
+      const response = await fetch(`http://127.0.0.1:${application.server.address().port}/api/outings${path}`, { method: body ? 'POST' : 'GET',
+        headers: { Authorization: `Bearer ${jwt.sign({ id: as }, SECRET, { expiresIn: '1h' })}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) });
+      return { status: response.status, data: await response.json() };
+    };
+  };
+  const before = await serve([event]);
+  const created = await before('', 'host', { title: '一起去', description: '公共场所集合', eventId: 'linked', date: '2026-10-25', startTime: '10:00', endTime: '12:00', city: 'Oakland', venue: '市政广场入口', capacity: 3,
+    costNote: '各自承担', transport: 'own', language: 'any', adultConsent: true, publicPlaceConsent: true, idempotencyKey: 'create-linked' });
+  assert.equal(created.status, 200, JSON.stringify(created.data));
+  const id = created.data.outing.id;
+  assert.equal(created.data.outing.eventStatus, undefined);
+  let key = 0;
+  for (const [status, code] of [['postponed', 'EVENT_POSTPONED'], ['cancelled', 'EVENT_CANCELLED']]) {
+    const request = await serve([{ ...event, status }]); // the next catalog sync carries the status
+    const outing = (await request(`/${id}`, 'alice')).data.outing;
+    assert.equal(outing.eventStatus, status);
+    const join = await request(`/${id}/actions`, 'alice', { action: 'request', revision: outing.revision, adultConsent: true, idempotencyKey: `join-request-${++key}` });
+    assert.deepEqual([join.status, join.data.code], [409, code], JSON.stringify(join.data));
+  }
+  assert.equal(models.Outing.rows.find(row => row.id === id).members.filter(member => member.userId === 'alice').length, 0);
+});
+
+test('a status marks a named record even past the three nearMiss references, so it never turns into a plan candidate', () => {
+  const ended = ['flower-piano-2026', 'newark-days-2026', 'bark-in-the-park-san-jose-2026'].map(row);
+  const catalog = { ...planner, events: [...ended, row(NAPA), ...planner.events.filter(event => ![...ended.map(item => item.id), NAPA].includes(event.id))] };
+  const query = `${[...ended, row(NAPA)].map(event => event.title).join('、')} 哪个还能去`;
+  // The three ended events are the pages being viewed, so the sold-out dinner is the only named item.
+  const site = buildFastEvidence({ query, originalQuery: query, state: { goal: 'discover' }, guideCatalog: guides, catalog, discoveries, today: TODAY, pageKeys: ended.map(event => `event:${event.id}`) });
+  assert.deepEqual(site.nearMiss.map(ref => ref.id), ended.map(event => event.id));
+  const item = modelItems(site.items).find(entry => entry.page.endsWith(`/events/${NAPA}`));
+  assert.equal(item?.status, '已售罄');
+  assert.match(item.note, /^Sold out/);
+  assert.ok(!site.candidates.some(candidate => candidate.id === NAPA));
 });
