@@ -83,6 +83,15 @@ test('H38: a space between the number and 点 (or 时) is the same clock; 小时
   assert.equal(state('带 6 岁孩子 上午 10 点 出发').startTime, '10:00');
   assert.equal(state('下午4点前回家').finishBy, '16:00', 'unspaced, as before');
   assert.equal(state('两个小时就好').finishBy, null);
+  // Review of 3efe2b8: spaced minutes and 半 keep their minutes; a bare finish hour at or before
+  // the start is the afternoon; 周六10点 is 10:00 (六10 is not an hour).
+  assert.equal(state('我们 3 点 15 分出发，周六').startTime, '03:15');
+  assert.equal(state('周六 10 点 半出发').startTime, '10:30');
+  assert.deepEqual([state('周六 10 点出发，5 点前回家').startTime, state('周六 10 点出发，5 点前回家').finishBy], ['10:00', '17:00']);
+  assert.deepEqual([state('周六10点出发，5点前回家').startTime, state('周六10点出发，5点前回家').finishBy], ['10:00', '17:00']);
+  assert.equal(state('周六 10 点出发，11 点前回家').finishBy, '11:00', 'a later bare hour stays as said');
+  assert.equal(state('周六晚上 8 点出发，6 点前回家').finishBy, null, 'a finish that cannot follow the start is dropped');
+  assert.equal(state('我们 9 点出发，下午 4 点前回家').finishBy, '16:00');
 });
 
 test('H39: event cards in a Saturday answer carry that Saturday (date), so a twice-weekly market shows Saturday, not today', async () => {
@@ -133,6 +142,42 @@ test('H17: the v2 turn carries the facet in its state and a Chinese-community ru
   assert.ok(!JSON.stringify(body.system).includes('Chinese-community'));
 });
 
+// Review of 3efe2b8: the facet is for event and activity asks. A doctor, a school, a shop or
+// a restaurant that mentions 中文 / 华人 / Chinese neither sets nor keeps it.
+const NOT_COMMUNITY_EVENT_ASKS = [
+  ['zh-Hans', '有没有会说中文的儿科医生'], ['zh-Hans', '中文学校怎么报名'], ['zh-Hans', '附近有什么华人超市'],
+  ['zh-Hant', '有沒有會說中文的兒科醫生'], ['zh-Hant', '中文學校怎麼報名'], ['zh-Hant', '附近有什麼華人超市'],
+  ['en', 'best Chinese restaurant in Cupertino'], ['en', 'Is there a Mandarin-speaking pediatrician in San Jose?'],
+];
+const CHINESE_EVENT_IDS = new Set(['sjpl-berryessa-mandarin-ell-club-fall-2026', 'smcl-millbrae-chinese-storytime-oct-2026']);
+
+test('H17 review: a doctor, school, supermarket or restaurant ask never sets the Chinese-community facet, in every language', () => {
+  for (const [, message] of NOT_COMMUNITY_EVENT_ASKS) assert.equal(resolveTaskState({ message, today: TODAY, carry: true }).state.community, undefined, message);
+  // Event asks still set it, in every language.
+  for (const message of ['这周六有什么华人活动', '這週六有什麼華人活動', 'Any Chinese story time this Saturday?', 'Are there any Mandarin-speaking community events in the Bay Area this weekend?'])
+    assert.equal(resolveTaskState({ message, today: TODAY, carry: true }).state.community, 'chinese', message);
+  // A later ask about something else ends it; a bare follow-up keeps it.
+  const first = resolveTaskState({ message: '这周六有什么华人活动', today: TODAY, carry: true }).state;
+  for (const message of ['有没有会说中文的儿科医生', 'Cupertino 有什么好的儿科医生', '中文学校怎么报名', '附近有什么華人超市'])
+    assert.equal(resolveTaskState({ message, previous: first, today: TODAY, carry: true }).state.community, undefined, message);
+  for (const message of ['明天有吗？', '那周日呢', '帮我把前两个排成一天'])
+    assert.equal(resolveTaskState({ message, previous: first, today: TODAY, carry: true }).state.community, 'chinese', message);
+});
+
+test('H17 review: those asks get no Chinese-event preview cards, records or turn rule (the L1 case still leads with Berryessa)', async () => {
+  for (const [locale, message] of NOT_COMMUNITY_EVENT_ASKS) {
+    const { assistant, sent } = assistantWith({ answer: { lead: '可以。' } });
+    const previews = [];
+    const result = await ask(assistant, message, { locale, onQuickCard: cards => { previews.push(...cards); } });
+    assert.ok(!previews.some(card => CHINESE_EVENT_IDS.has(card.id)), `${message}: ${previews.map(card => card.id)}`);
+    assert.ok(!(result.localMatches || []).some(card => CHINESE_EVENT_IDS.has(card.id)), message);
+    assert.ok(!JSON.stringify(sent).includes('Chinese-language or Chinese-community events'), message);
+  }
+  const state = resolveTaskState({ message: '这周六有什么华人活动', today: TODAY, carry: true }).state;
+  const saturday = buildFastEvidence({ query: '这周六有什么华人活动', originalQuery: '这周六有什么华人活动', state, guideCatalog: guides, catalog, today: TODAY, locale: 'zh-Hans', audience: true });
+  assert.equal(saturday.items[0].id, 'sjpl-berryessa-mandarin-ell-club-fall-2026');
+});
+
 // ---------------------------------------------------------------- H10
 
 function governed(governance, fn, path) {
@@ -174,6 +219,27 @@ test('H10: a guide-chat answer returns quota {remaining, limit, resetAt} from it
   assert.equal(first.quota.limit, 5);
   const usage = await (await fetch(`${origin}/api/ai/usage`)).json();
   assert.equal(usage.baybay.remaining, 3);
+});
+
+test('H03 review: a refused run share makes no model call and leaves the visitor\'s BayBay AI share unspent', async t => {
+  const fastText = JSON.stringify({ lead: '金门公园这周末有免费活动。', points: [], candidateIds: [], followups: [], coverage: [], gap: '' });
+  let calls = 0;
+  const app = createApplication({ config: { NODE_ENV: 'test', JWT_SECRET: SECRET, BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture', AI_GUEST_BAYBAY_DAILY_LIMIT: '5', BAYBAY_VISITOR_RUN_LIMIT: '1', BAYBAY_STATE_SECRET: 'api-fix5-http-task-secret-0123456789' },
+    models: createMemoryModels(), plannerNow: () => NOW,
+    ai: { baybay: async () => { calls++; return { status: 'completed', model: 'claude-sonnet-5-5', usage: { input_tokens: 10, output_tokens: 10 }, output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: fastText }] }] }; } } });
+  await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => app.io.close(resolve)));
+  const origin = `http://127.0.0.1:${app.server.address().port}`;
+  const chat = async message => (await fetch(`${origin}/api/ai/guide-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, assistantVersion: 2, searchMode: 'site', locale: 'zh-Hans' }) })).json();
+  const left = async () => (await (await fetch(`${origin}/api/ai/usage`)).json()).baybay.remaining;
+  await chat('旧金山这周末有什么活动');
+  assert.equal(calls, 1);
+  assert.equal(await left(), 4);
+  await chat('金门公园这周末有什么免费活动');
+  assert.equal(calls, 1, 'no model call once the visitor\'s run share is spent');
+  await new Promise(resolve => setTimeout(resolve, 50));
+  assert.equal(await left(), 4, 'the refused run left the AI share where it was');
 });
 
 // ---------------------------------------------------------------- H03
