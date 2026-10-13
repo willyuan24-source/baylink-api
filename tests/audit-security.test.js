@@ -122,7 +122,8 @@ test('persistent global and identity reservations are atomic, survive new instan
   assert.equal(models.AiGovernance.rows[0].count, 3);
   const serialized = JSON.stringify(models.AiGovernance.rows);
   assert.doesNotMatch(serialized, /shared|member|another/);
-  assert.deepEqual(await a.usage({ ip: 'shared' }), { limit: 2, remaining: 0, resetAt: '2026-10-06T07:00:00.000Z', degraded: false });
+  assert.deepEqual(await a.usage({ ip: 'shared' }), { limit: 2, remaining: 0, resetAt: '2026-10-06T07:00:00.000Z', degraded: false,
+    baybay: { limit: 2, remaining: 0, resetAt: '2026-10-06T07:00:00.000Z' } }); // BayBay's own share (H10); the site-wide count is used up
   now += 1000;
   assert.equal(await a.claim({ ip: 'shared' }), true);
   assert.equal(models.AiGovernance.rows.length, 2);

@@ -243,7 +243,8 @@ test('admin-only report has fixed retention and strict output fields; public usa
   assert.doesNotMatch(JSON.stringify(report.data), /private|999|firstToken/);
   assert.equal((await get('/admin/ai-metrics?prompt=private', 'admin')).status, 400);
   const publicUsage = await get('/ai/usage');
-  assert.deepEqual(Object.keys(publicUsage.data).sort(), ['degraded', 'limit', 'remaining', 'resetAt']);
+  assert.deepEqual(Object.keys(publicUsage.data).sort(), ['baybay', 'degraded', 'limit', 'remaining', 'resetAt']);
+  assert.deepEqual(Object.keys(publicUsage.data.baybay).sort(), ['limit', 'remaining', 'resetAt'], "BayBay's own share (H10), no runtime data");
   models.AiRuntimeMetric.find = () => { throw new Error('private storage fault'); };
   const unavailable = await get('/admin/ai-metrics', 'admin');
   assert.equal(unavailable.status, 503); assert.doesNotMatch(JSON.stringify(unavailable.data), /private/);
