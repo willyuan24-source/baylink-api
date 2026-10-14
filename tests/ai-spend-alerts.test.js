@@ -49,7 +49,9 @@ test('credit window: 7 / 3 / 1 days before ANTHROPIC_USE_UNTIL, the most urgent 
   assert.deepEqual(stage(2.9), [`ai-alert:until:2026-10-30T00:00:00.000Z:3`]);
   assert.deepEqual(stage(0.4), [`ai-alert:until:2026-10-30T00:00:00.000Z:1`]);
   assert.deepEqual(stage(-0.1), []);
-  for (const config of [{ ...LIVE, ANTHROPIC_USE_UNTIL: '' }, { ...LIVE, ANTHROPIC_USE_UNTIL: 'soon' }, { ...LIVE, ANTHROPIC_API_KEY: '' }]) assert.deepEqual(ids(dueAlerts({ spend: null, config, now: at(2) })), []);
+  for (const config of [{ ...LIVE, ANTHROPIC_USE_UNTIL: '' }, { ...LIVE, ANTHROPIC_API_KEY: '' }, { ...LIVE, ANTHROPIC_API_KEY: '', ANTHROPIC_USE_UNTIL: 'soon' }]) assert.deepEqual(ids(dueAlerts({ spend: null, config, now: at(2) })), []);
+  // An invalid value has no day count (API-OPS: one "the format is wrong" alert instead, tested below).
+  assert.deepEqual(ids(dueAlerts({ spend: null, config: { ...LIVE, ANTHROPIC_USE_UNTIL: 'soon' }, now: at(2) })).filter(id => id.startsWith('ai-alert:until:')), []);
   const [alert] = dueAlerts({ spend: spend(12), config: LIVE, now: at(2.9) });
   assert.match(alert.subject, /3 天内到期/); assert.match(alert.text, /绑卡或购买额度/); assert.match(alert.text, /BAYBAY_AI_PROVIDER=openai/); assert.match(alert.text, /\$12\.00/);
 });
@@ -141,4 +143,90 @@ test('end to end on the governance ledger: a month crossing $100 produces exactl
   await governance.recordSpend({ priced: true, microUsd: 20_000 });
   await alerts.tick();
   assert.equal(mails.length, 1); assert.match(mails[0].text, /\$100\.01/);
+});
+
+// API-OPS follow-ups from API-OPS-KEY: the cutoff is read with readUseUntil (the reading that
+// switches Claude off), and a set but invalid value sends one "format is wrong" alert.
+test('an invalid ANTHROPIC_USE_UNTIL: one alert naming the problem, never the value; the same reading as anthropicAvailable', () => {
+  const { anthropicAvailable } = require('../lib/anthropicBaybay');
+  const cases = [['2026-10-30 00:00:00Z', 'spaces', /多了空格/], [' 2026-10-30T00:00:00Z', 'spaces', /多了空格/], ['2026-10-30T00:00:00', 'missing_zone', /没有 Z/],
+    ['2026-11-31', 'invalid_date', /不是真实存在的日期/], ['sk-ant-api03-pasted-in-the-wrong-variable', 'format', /不是 YYYY-MM-DD/]];
+  for (const [value, problem, wording] of cases) {
+    const config = { ...LIVE, ANTHROPIC_USE_UNTIL: value };
+    assert.equal(anthropicAvailable(config, NOW), false, 'Claude is already off for this value');
+    const alerts = dueAlerts({ spend: null, config, now: NOW });
+    assert.equal(alerts.length, 1, value);
+    const [alert] = alerts;
+    assert.match(alert.id, new RegExp(`^ai-alert:until-invalid:${problem}:[0-9a-f]{12}$`));
+    assert.equal(alert.keepDays, 400);
+    assert.match(alert.subject, /ANTHROPIC_USE_UNTIL 格式不对/);
+    assert.match(alert.text, wording); assert.match(alert.text, /--check-value/); assert.match(alert.text, /2027-04-19T00:00:00Z/);
+    assert.ok(!alert.id.includes(value.trim()) && !alert.subject.includes(value.trim()) && !alert.text.includes(value.trim()), 'the value is never repeated');
+    // No day counts for a value the API does not accept (the old lenient reading counted " 2026-10-30T00:00:00Z").
+    assert.ok(!alert.text.includes('还剩约'));
+  }
+  // Stable per value; a different wrong value is a new alert; no key, no alert.
+  const id = value => dueAlerts({ spend: null, config: { ...LIVE, ANTHROPIC_USE_UNTIL: value }, now: NOW })[0]?.id;
+  assert.equal(id('2026-11-31'), id('2026-11-31'));
+  assert.notEqual(id('2026-11-31'), id('2026-11-30T00:00:00'));
+  assert.deepEqual(dueAlerts({ spend: null, config: { ...LIVE, ANTHROPIC_API_KEY: ' ', ANTHROPIC_USE_UNTIL: '2026-11-31' }, now: NOW }), []);
+});
+
+test('the invalid-cutoff alert goes out once, through the same gates (never in tests)', async () => {
+  const config = { ...LIVE, ANTHROPIC_USE_UNTIL: '2026-10-30T00:00:00' };
+  const store = memoryStore(), mails = [], lines = [];
+  const alerts = createAiSpendAlerts({ governance: { getSpendState: async () => null }, store, config, now: () => NOW, sendEmail: async mail => { mails.push(mail); }, logger: { info: () => {} } });
+  const [sent] = (await alerts.tick()).sent;
+  assert.match(sent, /^ai-alert:until-invalid:missing_zone:/);
+  await alerts.tick();
+  assert.equal(mails.length, 1); assert.ok(!mails[0].text.includes('2026-10-30T00:00:00'));
+  let count = 0;
+  const testMode = createAiSpendAlerts({ governance: { getSpendState: async () => null }, store: memoryStore(), config: { ...config, NODE_ENV: 'test' }, now: () => NOW, sendEmail: async () => { count++; }, logger: { info: () => {} } });
+  assert.equal((await testMode.tick()).reason, 'test'); assert.equal(count, 0);
+  const off = createAiSpendAlerts({ governance: { getSpendState: async () => null }, store: memoryStore(), config: { ...config, NOTIFICATION_DELIVERY_ENABLED: 'false' }, now: () => NOW, sendEmail: async () => { count++; }, logger: { info: line => lines.push(line) } });
+  assert.equal((await off.tick()).reason, 'delivery-disabled'); assert.equal(count, 0);
+  assert.equal(lines.length, 1); assert.ok(!lines[0].includes('2026-10-30T00:00:00'), 'the log line names the alert id, not the value');
+});
+
+const creditState = (extra = {}) => ({ configured: true, totalUsd: 1000, start: '2026-10-23', spentUsd: 225, remainingUsd: 775,
+  perDay: { last7: { days: 7, usd: 8 }, last30: { days: 30, usd: 7.6 } }, projected: { basis: 'last7', day: '2027-02-25', at: '2027-02-25T17:00:00.000Z', daysLeft: 96.9 },
+  useUntil: { at: '2027-04-19T00:00:00.000Z', daysEarly: 52.3 }, alert: true, ...extra });
+const CREDIT_LIVE = { ...LIVE, ANTHROPIC_USE_UNTIL: '2027-04-19T00:00:00Z', AI_CREDIT_TOTAL_USD: '1000', AI_CREDIT_START: '2026-10-23' };
+
+test('credit burn-down: one alert when the run-out is projected more than 14 days before the cutoff', () => {
+  const now = Date.parse('2026-11-20T20:00:00Z');
+  const [alert, ...rest] = dueAlerts({ spend: null, credit: creditState(), config: CREDIT_LIVE, now });
+  assert.deepEqual(rest, []);
+  assert.equal(alert.id, 'ai-alert:credit:2026-10-23:1000:2027-04-19T00:00:00.000Z'); assert.equal(alert.keepDays, 400);
+  assert.match(alert.subject, /Claude 额度预计 2月25日 用完，比 ANTHROPIC_USE_UNTIL 早约 52 天/);
+  for (const part of [/\$1000\.00/, /已用约 \$225\.00/, /剩约 \$775\.00/, /最近 7 天 \$8\.00（7 天）/, /最近 30 天 \$7\.60（30 天）/, /早 14 天以上/, /AI_SPEND_HARD_DAILY_USD/, /AI_CREDIT_TOTAL_USD/, /credit 一栏/]) assert.match(alert.text, part);
+  assert.deepEqual(dueAlerts({ spend: null, credit: creditState({ alert: false }), config: CREDIT_LIVE, now }), []);
+  assert.deepEqual(dueAlerts({ spend: null, credit: creditState({ configured: false }), config: CREDIT_LIVE, now }), []);
+  assert.deepEqual(dueAlerts({ spend: null, credit: creditState(), config: { ...CREDIT_LIVE, ANTHROPIC_API_KEY: '' }, now }), []);
+  assert.deepEqual(dueAlerts({ spend: null, credit: null, config: CREDIT_LIVE, now }), []);
+  // A changed total, start or cutoff is a new alert id.
+  assert.notEqual(dueAlerts({ spend: null, credit: creditState({ totalUsd: 1200 }), config: CREDIT_LIVE, now })[0].id, alert.id);
+});
+
+test('credit burn-down end to end on the governance ledger: one e-mail, and the ledger is read only when it can matter', async () => {
+  const models = createMemoryModels();
+  let now = Date.parse('2026-10-23T17:00:00Z');
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: 'alerts-fixture-secret', ...CREDIT_LIVE }, now: () => now });
+  for (let index = 0; index < 28; index++) { now = Date.parse('2026-10-23T17:00:00Z') + index * 86400000; await governance.recordSpend({ priced: true, microUsd: 8e6 }); }
+  const mails = [], store = memoryStore();
+  const alerts = createAiSpendAlerts({ governance, store, config: CREDIT_LIVE, now: () => now, sendEmail: async mail => { mails.push(mail); }, logger: { info: () => {} } });
+  const { sent } = await alerts.tick();
+  assert.deepEqual(sent.filter(id => id.startsWith('ai-alert:credit:')), ['ai-alert:credit:2026-10-23:1000:2027-04-19T00:00:00.000Z']);
+  await alerts.tick();
+  assert.equal(mails.filter(mail => /额度预计/.test(mail.subject)).length, 1);
+  // Without both credit values or without a valid cutoff the burn-down is never read.
+  let reads = 0;
+  const counting = { getSpendState: async () => null, getCreditState: async () => { reads++; return null; } };
+  for (const config of [LIVE, { ...CREDIT_LIVE, AI_CREDIT_START: '' }, { ...CREDIT_LIVE, ANTHROPIC_USE_UNTIL: '' }, { ...CREDIT_LIVE, ANTHROPIC_USE_UNTIL: '2027-04-19 00:00' }]) {
+    await createAiSpendAlerts({ governance: counting, store: memoryStore(), config, now: () => now, sendEmail: async () => {}, logger: { info: () => {} } }).tick();
+  }
+  assert.equal(reads, 0);
+  // An unreadable burn-down is no alert, not an error.
+  const failing = { getSpendState: async () => null, getCreditState: async () => { throw new Error('private storage fault'); } };
+  assert.equal((await createAiSpendAlerts({ governance: failing, store: memoryStore(), config: CREDIT_LIVE, now: () => now, sendEmail: async () => {}, logger: { info: () => {} } }).tick()).reason, 'nothing-due');
 });

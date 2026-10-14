@@ -62,6 +62,7 @@ const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
 const { revokeAdminSessions } = require('./lib/adminSessions');
+const { adminSecurityStatus } = require('./lib/adminSecurityStatus');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -1844,6 +1845,8 @@ const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: opti
 const aiSpendAlerts = require('./lib/aiSpendAlerts').createAiSpendAlerts({ governance: aiGovernance, store: require('./lib/aiSpendAlerts').governanceAlertStore(AiGovernance), config, now: options.plannerNow || Date.now });
 if (!isTest) aiSpendAlerts.start();
 server.once('close', aiSpendAlerts.stop);
+// API-OPS: ledger day rows written while they were kept 62 days get the 400-day retention once.
+if (!isTest) aiGovernance.extendLedgerRetention().catch(() => {});
 const aiUsageLimiter = createInteractionLimiter();
 app.get('/api/ai/usage', async (req, res) => {
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
@@ -1877,18 +1880,28 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
   if (Object.keys(req.query).length) return res.status(400).json({ error: 'Metrics use a fixed 30-day aggregate window.' });
   if (!aiUsageLimiter.check(`admin:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: 'Please wait before reading metrics again.' });
   try {
-    const [rows, runtime, spend] = await Promise.all([
+    const [rows, runtime, spend, credit] = await Promise.all([
       AiGovernance.find({ id: /^ai:\d{4}-\d{2}-\d{2}$/ }).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
       aiRuntimeMetrics.report(),
       // Today's and this month's $ against the caps (API-BB-CUTOVER).
       aiGovernance.getSpendState().catch(() => null),
+      // The credit burn-down (API-OPS, lib/aiCredit.js): spend since AI_CREDIT_START, averages, run-out.
+      aiGovernance.getCreditState().catch(() => null),
     ]);
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
     const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
       ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
     // useUntil (API-OPS-KEY): whether ANTHROPIC_USE_UNTIL is set, valid, when, and passed; never the raw value.
-    res.json({ days, runtime, spend, eventLoop: eventLoop.report(), useUntil: useUntilStatus(config, options.plannerNow?.() ?? Date.now()) });
+    res.json({ days, runtime, spend, credit, eventLoop: eventLoop.report(), useUntil: useUntilStatus(config, options.plannerNow?.() ?? Date.now()) });
   } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
+});
+// API-OPS: the owner's administrator-account checklist (lib/adminSecurityStatus.js). Admin only.
+app.get('/api/admin/security-status', authenticateToken, requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  if (Object.keys(req.query).length) return res.status(400).json({ ok: false, error: 'This status takes no parameters.' });
+  if (!aiUsageLimiter.check(`admin-status:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 30 })) return res.status(429).json({ ok: false, error: 'Please wait before reading the status again.' });
+  try { res.json({ ok: true, ...await adminSecurityStatus({ User, config, now: options.accountSecurityNow || Date.now }) }); }
+  catch { res.status(503).json({ ok: false, error: 'The status is temporarily unavailable.' }); }
 });
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });

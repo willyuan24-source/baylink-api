@@ -49,7 +49,8 @@ test('concurrent spend lands atomically in one Pacific day and one month documen
     assert.equal(models.AiGovernance.rows.filter(item => item.id === id).length, 1);
     assert.equal(row.count, undefined, 'quota fields are not created on ledger documents');
   }
-  assert.equal(ledger(models, 'ai-usd:2026-10-31').expiresAt, new Date(now + 62 * 86400000).toISOString());
+  // API-OPS: day rows are kept 400 days like month rows (were 62), for the credit burn-down.
+  assert.equal(ledger(models, 'ai-usd:2026-10-31').expiresAt, new Date(now + 400 * 86400000).toISOString());
   assert.equal(ledger(models, 'ai-usd:2026-10').expiresAt, new Date(now + 400 * 86400000).toISOString());
   now = Date.parse('2026-11-01T00:30:00-07:00');
   await a.recordSpend({ priced: true, microUsd: 7 });
