@@ -89,6 +89,7 @@ export function preDispatch({ message, history, locale, nowMs, secret, guideCata
     if (professional) return professional;
     return { ok: true, harnessRoute: 'legacy', answer: '', legacyReason: searchPlan ? 'post_search' : providerRequest ? 'provider_request' : 'private_school' };
   }
-  // v2 assistant: professional topics get a guarded model answer (lib/baybayAgent.js).
+  // v2 assistant: professional topics get a guarded model answer (guard in lib/baybayAgent.js,
+  // route in lib/baybayEngine/research.js).
   return null;
 }
