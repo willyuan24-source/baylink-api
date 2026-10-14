@@ -112,9 +112,10 @@ test('H17: a Chinese-community ask lists the Chinese-language events first and k
   const first = resolveTaskState({ message: '這週末灣區有華人社區的活動嗎？比如重陽節敬老、中文講座之類的', today: TODAY, carry: true }).state;
   assert.equal(first.community, 'chinese');
   const weekend = buildFastEvidence({ query: '這週末灣區有華人社區的活動嗎', originalQuery: '這週末灣區有華人社區的活動嗎？比如重陽節敬老、中文講座之類的', state: first, guideCatalog: guides, catalog, today: TODAY, locale: 'zh-Hant', audience: true });
-  // API-SYNC-3b brought the six SF Chinese-community programmes WEB-HOLDOUT had held back; three are on Saturday 10/17,
-  // so the four community records are Saturday's, SF Chinatown first (date, then id). Millbrae's Sunday storytime no longer
-  // makes the four (communityRecall has no per-day turn as audienceRecall does; follow-up for API-BB-4B in API-SYNC-3B PR.md).
+  // KNOWN GAP until API-BB-4B, not intended behaviour: API-SYNC-3b brought the six SF Chinese-community programmes
+  // WEB-HOLDOUT had held back; three are on Saturday 10/17, so the four community records are all Saturday's (date, then
+  // id) and Millbrae's Sunday storytime drops out. communityRecall needs a per-day turn as audienceRecall has; API-BB-4B
+  // then changes this to require at least one Sunday record (follow-up 1 in API-SYNC-3B PR.md).
   assert.deepEqual(weekend.items.slice(0, 4).map(item => item.id), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-marina-wild-goose-qigong-oct-2026', 'sfpl-richmond-hk-film-the-killer-2026', 'sjpl-berryessa-mandarin-ell-club-fall-2026']);
   const next = resolveTaskState({ message: '明天下午就有空，明天有嗎？', previous: first, today: TODAY, carry: true }).state;
   assert.equal(next.community, 'chinese', 'the follow-up keeps the facet');
@@ -182,6 +183,8 @@ test('H17 review: those asks get no Chinese-event preview cards, records or turn
   const state = resolveTaskState({ message: '这周六有什么华人活动', today: TODAY, carry: true }).state;
   const saturday = buildFastEvidence({ query: '这周六有什么华人活动', originalQuery: '这周六有什么华人活动', state, guideCatalog: guides, catalog, today: TODAY, locale: 'zh-Hans', audience: true });
   // Saturday 10/17 has four: SF Chinatown, Marina qigong, the Richmond Cantonese film (API-SYNC-3b) and Berryessa.
+  // This ask names Saturday only, so a Saturday-only list is intended here; the weekend ask above is the known gap
+  // until API-BB-4B (a weekend ask must keep at least one Sunday community record when one exists).
   assert.deepEqual(saturday.items.slice(0, 4).map(item => item.id), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-marina-wild-goose-qigong-oct-2026', 'sfpl-richmond-hk-film-the-killer-2026', 'sjpl-berryessa-mandarin-ell-club-fall-2026']);
 });
 

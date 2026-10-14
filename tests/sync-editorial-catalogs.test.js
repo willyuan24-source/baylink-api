@@ -12,7 +12,9 @@ const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '..');
 const script = path.join(root, 'scripts', 'sync-editorial-catalogs.js');
 const read = name => fs.readFileSync(path.join(root, 'data', name));
-const HELD = ['chsa-lily-qi-book-talk-nov8-2026', 'sfpl-bernal-dia-de-los-muertos-2026', 'sfpl-chinatown-creative-saturdays-fall-2026'];
+// The fake export holds back the first three SF events of the shipped catalog, whatever later syncs add or prune.
+const HELD = JSON.parse(read('planner-catalog.json').toString('utf8')).events.filter(row => row.region === 'sf').slice(0, 3).map(row => row.id).sort();
+assert.equal(HELD.length, 3, 'the shipped planner catalog has at least three SF events');
 const json = value => `${JSON.stringify(value, null, 2)}\n`;
 
 function webExport(t, change = () => {}) {

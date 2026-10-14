@@ -28,7 +28,7 @@ const firstDay = id => event(id).occurrenceDates.find(day => day >= TODAY);
 test('both API catalogs carry the nine formerly held SF programmes with the same confirmed days', () => {
   const events = loadEventCatalog();
   assert.ok(planner && events);
-  assert.equal(planner.events.length, 502);
+  // No pinned total: later syncs add events. The two complete catalogs cover the same ids.
   assert.deepEqual([...events.keys()].sort(), planner.events.map(row => row.id).sort());
   for (const id of FORMERLY_HELD) {
     const row = event(id);
