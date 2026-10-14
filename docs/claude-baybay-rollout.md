@@ -45,7 +45,7 @@
 - **只接受两种写法，不能有空格**：
   - `YYYY-MM-DD`，例如 `2027-04-19`，表示这天 00:00 UTC（湾区是前一天下午 4 点或 5 点）；
   - 带 `Z` 或时区的完整 ISO 时间，例如 `2027-04-19T00:00:00Z`、`2027-04-18T17:00:00-07:00`。秒不能省，`T` 和 `Z` 要大写。
-- **其他任何值**（多一个空格、`2027-04-19 00:00`、不带时区的 `2027-04-19T00:00:00`、2 月 30 日这种不存在的日期）：API 会当作 Claude 不可用，BayBay 和其他 AI 功能**马上停**，而且**不会先显示**"AI 助手预计…起暂停"的横幅。
+- **其他任何值**（多一个空格、`2027-04-19 00:00`、不带时区的 `2027-04-19T00:00:00`、2 月 30 日这种不存在的日期）：API 会当作 Claude 不可用，所有用 Claude 的功能（BayBay 跑在 Claude 上时也包括它）**马上停**，而且**不会先显示**"AI 助手预计…起暂停"的横幅。
 - 三道检查（API-OPS-KEY 加的）：
   1. 粘贴之前，在本机仓库里跑（不联网，和 API 用同一套判断）：`node scripts/check-ai-readiness.mjs --check-value "2027-04-19T00:00:00Z"`。`RESULT: VALID` 才能用；它还会告诉你湾区几点停、横幅从哪天开始显示。
   2. 部署后，如果值不对，Render 日志里会有**一行** `[ai-config] ANTHROPIC_USE_UNTIL is set but invalid (…)`，括号里是原因（`spaces`、`missing_zone`、`invalid_date`、`format`），不会打印值本身。
@@ -67,7 +67,7 @@ node scripts/check-ai-readiness.mjs --expect-until 2027-04-19T00:00:00Z
 
 （`--expect-until` 填你在 Render 里填的值；可以加 `--expect-commit <commit 前 7 位>` 核对部署的版本；`--json` 输出 JSON。）它只读两个公开接口 `/api/health` 和 `/api/ai/baybay-capabilities`，不带任何登录信息，不调用 AI。期望：
 
-- `RESULT: READY`，退出码 0（1 = 没就绪，2 = 参数错，4 = 读不到 API，过一分钟再跑）；
+- `RESULT: READY`，退出码 0（1 = 没就绪，2 = 参数错，4 = 自动重试一次后仍读不到 API，过一分钟再跑）；
 - `enabled true`、`pause none`、`provider anthropic`、`aiUntil` 是新日期、`scheduled no pause banner`；
 - Render 日志里没有 `[ai-config]` 这一行。
 
@@ -80,6 +80,7 @@ node scripts/check-ai-readiness.mjs --expect-until 2027-04-19T00:00:00Z
 ### 提醒邮件的前提
 
 - `NOTIFICATION_DELIVERY_ENABLED=true` 会**一次打开所有通知类外发邮件**：会员通知（私信、联系请求、小队申请、评论）、登录提醒、来源分诊摘要和 AI 提醒。它需要 `RESEND_API_KEY`、`RESEND_FROM_EMAIL` 和 Resend 里已验证的域名。
+- 它**同时打开通知短信**：Render 里配了 Twilio（和手机验证码是同一套 `TWILIO_PHONE_NUMBER`）时，开了短信通知、验证过手机的会员会收到短信，Twilio 按条收费。上限是 `NOTIFICATION_SMS_DAILY_LIMIT` / `NOTIFICATION_SMS_USER_DAILY_LIMIT`（默认全站每天 100 条、每人每天 5 条；设 `0` = 不发通知短信）。暂时不想发通知短信，就在同一次保存里设 `NOTIFICATION_SMS_DAILY_LIMIT=0`。
 - 先按 [`docs/g5-production-checklist.md`](g5-production-checklist.md) 走一遍，再打开它，并设 `AI_ALERT_EMAIL`（或 `OWNER_DIGEST_EMAIL`）。
 - 不打开：提醒只在 Render 日志里记一行 `[ai-alerts] due, not sent (delivery-disabled): …`，收不到邮件，店主每周自己看一次 Console 用量。
 
@@ -114,15 +115,15 @@ The old key's promotional credit ends at 2026-10-30 00:00 UTC (Oct 29, 5:00 PM i
 | `AI_ALERT_MTD_USD` | `100,140,165` | code default `100,150,180`: one e-mail per threshold per month |
 | `AI_GUEST_BAYBAY_DAILY_LIMIT` / `AI_USER_BAYBAY_DAILY_LIMIT` | R1 suggestion `15` / `40` (the owner decides) | BayBay's own daily share per visitor / member; unset = the shared `AI_GUEST_DAILY_LIMIT` / `AI_USER_DAILY_LIMIT` (code defaults 15 / 40) |
 
-**The `ANTHROPIC_USE_UNTIL` format.** Only `YYYY-MM-DD` (00:00 UTC that day) or a full ISO time with `Z` or an offset (`2027-04-19T00:00:00Z`, `2027-04-18T17:00:00-07:00`): seconds required, upper-case `T` and `Z`, no spaces. Any other nonempty value (a stray space, `2027-04-19 00:00`, `2027-04-19T00:00:00` without a zone, Feb 30) makes the API treat Claude as unavailable: BayBay and the other AI features stop at once, with **no** advance banner. Three checks since API-OPS-KEY: (1) before pasting, `node scripts/check-ai-readiness.mjs --check-value "<value>"` (offline, the API's own reading; only `RESULT: VALID` is safe, and it prints the Pacific stop time and the first banner day); (2) after the deploy, an invalid value logs **one** Render line `[ai-config] ANTHROPIC_USE_UNTIL is set but invalid (<problem>: …)` with the problem (`spaces`, `missing_zone`, `invalid_date`, `format`) and never the value; (3) `/api/admin/ai-metrics` (admins) has `useUntil {set, valid, problem, at, passed}`. From 7 days before a valid cutoff every page shows "AI 助手预计…起暂停"; after it BayBay pauses (site records + banner, 911 card unaffected), and translation, post drafts, web search and source triage stop too.
+**The `ANTHROPIC_USE_UNTIL` format.** Only `YYYY-MM-DD` (00:00 UTC that day) or a full ISO time with `Z` or an offset (`2027-04-19T00:00:00Z`, `2027-04-18T17:00:00-07:00`): seconds required, upper-case `T` and `Z`, no spaces. Any other nonempty value (a stray space, `2027-04-19 00:00`, `2027-04-19T00:00:00` without a zone, Feb 30) makes the API treat Claude as unavailable: every feature that uses Claude stops at once (BayBay too while it runs on Claude), with **no** advance banner. Three checks since API-OPS-KEY: (1) before pasting, `node scripts/check-ai-readiness.mjs --check-value "<value>"` (offline, the API's own reading; only `RESULT: VALID` is safe, and it prints the Pacific stop time and the first banner day); (2) after the deploy, an invalid value logs **one** Render line `[ai-config] ANTHROPIC_USE_UNTIL is set but invalid (<problem>: …)` with the problem (`spaces`, `missing_zone`, `invalid_date`, `format`) and never the value; (3) `/api/admin/ai-metrics` (admins) has `useUntil {set, valid, problem, at, passed}`. From 7 days before a valid cutoff every page shows "AI 助手预计…起暂停"; after it BayBay pauses (site records + banner, 911 card unaffected), and translation, post drafts, web search and source triage stop too.
 
 **3. When.** On the first day the new key works (planned **Oct 23**), change `ANTHROPIC_API_KEY` **and** `ANTHROPIC_USE_UNTIL` together. A new key with the old date still pauses BayBay on Oct 29 at 5 PM; a new date with the old key fails once the old credit is gone. Today's value shows the scheduled-pause banner on every page from **Oct 22, 5:00 PM PT**; switching removes it. Finish **before Oct 29, 5:00 PM PT**.
 
-**4. Verify (read-only, free).** `node scripts/check-ai-readiness.mjs --expect-until <the value set on Render>` (optional `--expect-commit <sha>`, `--json`). It reads only the public `/api/health` and `/api/ai/baybay-capabilities`, without credentials, and calls no model. Expect `RESULT: READY` and exit code 0 (1 not ready, 2 bad arguments, 4 the API could not be read: rerun in a minute), `enabled true`, `pause none`, `provider anthropic`, the new `aiUntil`, `no pause banner`, and no `[ai-config]` line in the Render log. This proves the configuration, not the key (`modelAccessVerified` is always `false`): with the owner's approval, a 5-question smoke (about $0.10: a weekend event, a Chinese-community event, a how-to, an emergency phrasing, an English question) proves the key.
+**4. Verify (read-only, free).** `node scripts/check-ai-readiness.mjs --expect-until <the value set on Render>` (optional `--expect-commit <sha>`, `--json`). It reads only the public `/api/health` and `/api/ai/baybay-capabilities`, without credentials, and calls no model. Expect `RESULT: READY` and exit code 0 (1 not ready, 2 bad arguments, 4 the API could not be read even after one automatic retry: rerun in a minute), `enabled true`, `pause none`, `provider anthropic`, the new `aiUntil`, `no pause banner`, and no `[ai-config]` line in the Render log. This proves the configuration, not the key (`modelAccessVerified` is always `false`): with the owner's approval, a 5-question smoke (about $0.10: a weekend event, a Chinese-community event, a how-to, an emergency phrasing, an English question) proves the key.
 
 **5. After 48 hours.** Once the new key has been stable for 48 hours, the owner revokes the old key in the Console. Until then, a problem can be rolled back by restoring both the old key and the old `ANTHROPIC_USE_UNTIL` (`2026-10-30T00:00:00Z`), or paused at once with `BAYBAY_PAUSED=true` (the 911 card is unaffected); other levers are in the rollback lines of the 2026-10-09 section below.
 
-**Alert e-mail prerequisites.** `NOTIFICATION_DELIVERY_ENABLED=true` turns on **all** notification e-mail at once: member notifications (messages, contact requests, team applications, comments), sign-in alerts, the source-triage digest and the AI alerts. It needs `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and a domain verified in Resend. Run [`docs/g5-production-checklist.md`](g5-production-checklist.md) first, then turn it on and set `AI_ALERT_EMAIL` (or `OWNER_DIGEST_EMAIL`). Without it, due alerts only log `[ai-alerts] due, not sent (delivery-disabled): …` and the owner checks Console usage weekly.
+**Alert e-mail prerequisites.** `NOTIFICATION_DELIVERY_ENABLED=true` turns on **all** notification e-mail at once: member notifications (messages, contact requests, team applications, comments), sign-in alerts, the source-triage digest and the AI alerts. It needs `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and a domain verified in Resend. It **also turns on notification SMS** when Twilio is configured (the same `TWILIO_PHONE_NUMBER` that sends phone verification codes): members who opted in with a verified phone get texts, which Twilio bills per message, capped by `NOTIFICATION_SMS_DAILY_LIMIT` / `NOTIFICATION_SMS_USER_DAILY_LIMIT` (defaults 100 a day site-wide and 5 per member; `0` sends no notification SMS). To keep notification SMS off for now, set `NOTIFICATION_SMS_DAILY_LIMIT=0` in the same save. Run [`docs/g5-production-checklist.md`](g5-production-checklist.md) first, then turn it on and set `AI_ALERT_EMAIL` (or `OWNER_DIGEST_EMAIL`). Without it, due alerts only log `[ai-alerts] due, not sent (delivery-disabled): …` and the owner checks Console usage weekly.
 
 **Budget (about $1,000 over 6 months).** Production (BayBay, plans, translation, triage) about $4/day ≈ $120/month ≈ $720; evals about $10/month ≈ $60 (≤$3 per BayBay-changing lane, $1–2 for the monthly 30 live questions); about $220 of headroom. At about $0.022 per answer (measured 10-13), $4/day ≈ 180 answers/day. With the $7/day hard cap the worst month is about $210; the $165 month-to-date alert e-mails first, and the production workspace's $175 monthly limit in the Console is the last gate.
 
@@ -158,7 +159,7 @@ The old key's promotional credit ends at 2026-10-30 00:00 UTC (Oct 29, 5:00 PM i
 
 - 如果 Render 里已经设了 `BAYBAY_ENGINE=v2`，保留或删掉都可以，效果一样。
 - 如果 Render 里设了 `BAYBAY_DAILY_RUN_LIMIT`（比如 200），它会盖过新的默认 1000。想用 1000 就删掉它。
-- 想收到提醒邮件：需要 `NOTIFICATION_DELIVERY_ENABLED=true`，以及 `OWNER_DIGEST_EMAIL`（或单独的 `AI_ALERT_EMAIL`）。G5 打开通知投递之前，提醒只在 Render 日志里记一行 `[ai-alerts] due, not sent (delivery-disabled): …`。
+- 想收到提醒邮件：需要 `NOTIFICATION_DELIVERY_ENABLED=true`（它同时打开会员通知邮件和通知短信，见上面"提醒邮件的前提"），以及 `OWNER_DIGEST_EMAIL`（或单独的 `AI_ALERT_EMAIL`）。G5 打开通知投递之前，提醒只在 Render 日志里记一行 `[ai-alerts] due, not sent (delivery-disabled): …`。
 
 ### 回滚（Render → Environment，保存后重新部署；不用改代码）
 
