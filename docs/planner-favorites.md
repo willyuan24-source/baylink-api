@@ -32,6 +32,8 @@
 
 The API serves copies of the web's catalogs (`scripts/sync-editorial-catalogs.js`). Between a content merge on the web and the next API sync (API-SYNC), the web can show an offer, opening or event whose id the API does not know yet. Saving it then answers `404 ITEM_NOT_IN_CATALOG`.
 
+`data/planner-catalog.json` is the web's complete `public/planner-catalog.full.json` (since API-SYNC-3b). The web's `public/planner-catalog.json` is `/opus-bay`'s copy, which holds back events still waiting for the 3D world (`WORLD_IMPORT_PENDING` in the web's `src/data/public-catalog-holdout.ts`); the sync only checks it against the full file and never copies it, so every event on the site reaches favorites, plans, participation, outings and BayBay. Every API-SYNC run copies the full file.
+
 The web must treat that code as "not yet", not as an error:
 
 1. Keep the item saved locally (the same local list a guest uses) and show it as saved. Do not show an error toast.
