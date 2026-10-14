@@ -210,6 +210,21 @@ test('re-saving a reminder that is already on needs no re-verified address; turn
   assert.deepEqual(await f.service.enqueueEvent(f.event()), { queued: 0 }, 'nothing is sent to an unverified address');
 });
 
+test('reminder language follows the page that asked for or confirmed the verification; unknown values are ignored', async () => {
+  const f = fixture({ defaults: 'on' });
+  await f.service.startEmailVerification('owner', { locale: 'en' }); await f.service.runOnce();
+  assert.equal(f.sent[0].subject, 'Verify your BAYLINK email'); assert.equal(f.account('owner').locale, 'en');
+  assert.equal((await f.service.verifyEmail(f.rawToken(f.sent[0]), { locale: 'zh-Hant' })).defaultsApplied, true);
+  assert.equal(f.account('owner').locale, 'zh-Hant'); assert.equal(f.account('owner').consentRevision, 0, 'a language is not a consent choice');
+  await f.service.enqueueEvent(f.event()); f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  assert.equal(f.sent.at(-1).subject, 'BAYLINK 站內通知：新的私訊');
+  const g = fixture();
+  await g.service.startEmailVerification('owner', { locale: 'fr' }); await g.service.runOnce();
+  assert.equal(g.sent[0].subject, '验证你的 BAYLINK 邮箱'); assert.equal(g.account('owner').locale, 'zh-Hans');
+  await g.service.verifyEmail(g.rawToken(g.sent[0]), { locale: { $ne: 1 } });
+  assert.equal(g.account('owner').locale, 'zh-Hans');
+});
+
 test('the Resend adapter forwards the one-click headers and idempotency key, and reports rejections', async () => {
   const calls = [];
   const resend = { emails: { send: async (payload, options) => { calls.push([payload, options]); return calls.length === 3 ? { data: null, error: { statusCode: 422 } } : { data: { id: `r${calls.length}` }, error: null }; } } };
@@ -276,4 +291,13 @@ test('HTTP: preferences expose the preset; one-click POST unsubscribes one kind;
   // The same token from the page link is spent.
   const page = await fetch(`${base}/notifications/unsubscribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: raw }) });
   assert.equal(page.status, 400);
+
+  // The verification request carries the page language (optional body field).
+  const start = await fetch(`${base}/notifications/email/start`, { method: 'POST', headers: { ...auth('owner'), 'Content-Type': 'application/json' }, body: JSON.stringify({ locale: 'en' }) });
+  assert.equal(start.status, 200); const started = await start.json();
+  assert.equal(started.queued, true); assert.equal(started.defaultsActive, true); assert.deepEqual(started.defaults, DEFAULTS);
+  await application.notifications.runOnce();
+  assert.equal(mail.at(-1).subject, 'Verify your BAYLINK email');
+  const verified = await fetch(`${base}/notifications/email/verify`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: mail.at(-1).text.match(/#token=([A-Za-z0-9_-]{43})/)[1], locale: 'en' }) });
+  assert.deepEqual(await verified.json(), { ok: true, emailVerified: true, defaultsApplied: true });
 });
