@@ -46,6 +46,7 @@ const { registerOutingDraft } = require('./lib/outingDraft');
 const { outingChatIntent } = require('./lib/outingChatIntent');
 const { createBayBayAssistant } = require('./lib/baybayAgent');
 const { baybayProvider, anthropicAvailable, DEFAULT_ANTHROPIC_MODEL } = require('./lib/anthropicBaybay');
+const { useUntilStatus, useUntilWarning } = require('./lib/anthropicUseUntil');
 const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJson');
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
@@ -122,6 +123,10 @@ const TWILIO_PHONE = config.TWILIO_PHONE_NUMBER;
 const twilioClient = options.twilioClient || (!isTest && TWILIO_SID && TWILIO_TOKEN ? twilio(TWILIO_SID, TWILIO_TOKEN) : null);
 
 if (!twilioClient && !isTest) console.warn('Twilio 未配置；生产短信验证不可用，开发测试码仅在显式开启时返回。');
+// API-OPS-KEY: a malformed ANTHROPIC_USE_UNTIL switches Claude off at once with no banner.
+// Say so once at startup (the line never repeats the value); options.configWarningLog in tests.
+const anthropicUseUntilWarning = useUntilWarning(config);
+if (anthropicUseUntilWarning && (!isTest || options.configWarningLog)) (options.configWarningLog || console.warn)(anthropicUseUntilWarning);
 
 const JWT_SECRET = config.JWT_SECRET;
 const JWT_EXPIRES_IN = '7d';
@@ -1885,7 +1890,8 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
     const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
       ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
-    res.json({ days, runtime, spend, eventLoop: eventLoop.report() });
+    // useUntil (API-OPS-KEY): whether ANTHROPIC_USE_UNTIL is set, valid, when, and passed; never the raw value.
+    res.json({ days, runtime, spend, eventLoop: eventLoop.report(), useUntil: useUntilStatus(config, options.plannerNow?.() ?? Date.now()) });
   } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
 });
 

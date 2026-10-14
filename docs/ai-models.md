@@ -186,7 +186,7 @@ Added 2026-10-09. The full owner guide (Chinese and English, rollback lines, wha
 | Concurrency | `AI_CONCURRENCY_LIMIT` | Default **12** (was 6) concurrent governed AI requests per instance |
 | Capabilities | `GET /api/ai/baybay-capabilities` → `assistant.status({webAccess})` | Adds `engine`, `pause` and `reduced` (below). While paused `enabled` is `false` and `tools` is `['site']`. `capabilities().enabled` (guide-chat's routing switch) is unchanged, so a paused BayBay still answers from site records with the notice. `BAYBAY_AGENT_ENABLED=false` is not a pause: `enabled` is `false` as before (guide-chat answers on its legacy model path) and `pause` is `null`, except past the hard cap (`daily_budget`), which stops that path too; `reduced` still follows the soft cap |
 | Alerts | `lib/aiSpendAlerts.js`, started in `server.js` outside tests | E-mail at $100 / $150 / $180 month-to-date (`AI_ALERT_MTD_USD`), at the daily hard cap, and 7 / 3 / 1 days before `ANTHROPIC_USE_UNTIL`. Sent through Resend only with `NOTIFICATION_DELIVERY_ENABLED=true` and `AI_ALERT_EMAIL` or `OWNER_DIGEST_EMAIL`; each alert once across instances (`ai-alert:…` claim document) |
-| Admin | `GET /api/admin/ai-metrics` | Adds `spend` (`getSpendState()`): day/month micro-USD, priced/unpriced calls, `level`, `caps`, `resetAt` |
+| Admin | `GET /api/admin/ai-metrics` | Adds `spend` (`getSpendState()`): day/month micro-USD, priced/unpriced calls, `level`, `caps`, `resetAt`. Since API-OPS-KEY also `useUntil` `{ set, valid, problem, at, passed }` for `ANTHROPIC_USE_UNTIL` (never the raw value; `lib/anthropicUseUntil.js`) |
 
 **Front-end contract (WEB-BB-UI).** All fields are additive; old clients ignore them.
 
@@ -199,7 +199,7 @@ pause: null | { reason: 'daily_budget' | 'paused' | 'provider_unavailable',   //
                 resumesAt?: ISO,                  // daily_budget only: next Pacific midnight
                 actions: [{ id: 'call-911', label: '911', href: 'tel:911' }, { id: 'call-211', label: '211', href: 'tel:211' }] }
 reduced: null | { reason: 'daily_budget_soft', kind: 'ai_budget_reduced', banner: {…3 locales}, resumesAt?: ISO }
-aiUntil?: ISO                                    // API-BB-QUALITY: ANTHROPIC_USE_UNTIL, when set
+aiUntil?: ISO                                    // API-BB-QUALITY: ANTHROPIC_USE_UNTIL, when set and valid (API-OPS-KEY)
 pauseScheduled?: { kind: 'ai_pause_scheduled', at: ISO, banner: {…3 locales} }   // the last 7 days before aiUntil
 
 // guide-chat result (v1 and v2)
