@@ -44,7 +44,7 @@
 - 默认值：邮件 · `message`、邮件 · `contact_request` 为开；`outing_request`、`comment` 和全部短信仍需主动开启。只发到当前已验证的邮箱；投递仍由 `NOTIFICATION_DELIVERY_ENABLED` 控制。
 - 一次性迁移（读取时）：账号在偏好读取、新事件入队或邮箱验证时检查一次。从未做过选择（`consentRevision` 为 0 且没有任何开启项）且邮箱已验证 → 打开两类默认并记 `defaultsAppliedAt`；做过选择（保存过设置、用过退订链接，或旧数据里已有开启项）→ 只记 `defaultsVersion`，设置不变；邮箱未验证且未做选择 → 不写，等验证时再处理。每个账号只处理一次（`defaultsVersion`），日志一行 `notification_defaults_applied` / `notification_defaults_kept`（`reason`：`read` / `event` / `verify`），不含账号 id 或邮箱。默认值不算用户选择，不改变 `consentRevision`。
 - DTO 新增（只增不改）：`defaults`（与 `preferences` 同形的预设）、`defaultsActive`、`defaultsApplied`、`customized`。
-- 提醒语言：`POST /api/notifications/email/start` 与 `POST /api/notifications/email/verify` 的请求体可选带 `locale`（`zh-Hans` / `zh-Hant` / `en`，其它值忽略），记为该账号的提醒语言（不算同意选择）。默认开启的账号从没保存过设置，没有这一步就会一律收到简体邮件。
+- 提醒语言：`POST /api/notifications/email/start` 与 `POST /api/notifications/email/verify` 的请求体可选带 `locale`（`zh-Hans` / `zh-Hant` / `en`，其它值忽略），验证邮件用这个语言；账号没保存过设置时也记为提醒语言（不算同意选择），保存过设置的账号保留自己选的语言。默认开启的账号从没保存过设置，没有这一步就会一律收到简体邮件。
 - 保存规则放宽：只有"由关变开"的项需要当前已验证的邮箱/手机；重新保存已经开启的项（例如改邮箱后）不再 409，但在新地址验证前不会发送。
 - 邮件正文：查看链接、发送原因（"你的账号开启了「…」邮件提醒"）、只关这一类的一键关闭链接（`/notifications/unsubscribe#token=…&kind=<topic>`）、`/me?view=notifications` 设置链接；标题写明类别。短信两行：查看链接 + 关闭这一类的链接。邮件头 `List-Unsubscribe: <https://baylink-api.onrender.com/api/notifications/unsubscribe/one-click/<token>>`、`List-Unsubscribe-Post: List-Unsubscribe=One-Click`；API 地址可用 `NOTIFICATION_API_URL` 覆盖（仅限本服务地址或 `https://api.baylink.us`）。
 - 测试：`tests/notify-defaults.test.js`（默认、迁移、按类退订、旧 token、投递开关、HTTP 合同、Resend 适配器），全部为内存模型和 mock，不发送任何邮件或短信。

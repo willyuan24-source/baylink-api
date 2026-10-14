@@ -223,6 +223,13 @@ test('reminder language follows the page that asked for or confirmed the verific
   assert.equal(g.sent[0].subject, '验证你的 BAYLINK 邮箱'); assert.equal(g.account('owner').locale, 'zh-Hans');
   await g.service.verifyEmail(g.rawToken(g.sent[0]), { locale: { $ne: 1 } });
   assert.equal(g.account('owner').locale, 'zh-Hans');
+  // A language the member saved with their settings is kept; the verification email still follows the page.
+  const h = fixture({ defaults: 'on' });
+  await h.service.updatePreferences('owner', { preferences: { sms: { message: true } }, locale: 'zh-Hant' });
+  await h.service.startEmailVerification('owner', { locale: 'en' }); await h.service.runOnce();
+  assert.equal(h.sent[0].subject, 'Verify your BAYLINK email'); assert.equal(h.account('owner').locale, 'zh-Hant');
+  await h.service.verifyEmail(h.rawToken(h.sent[0]), { locale: 'en' });
+  assert.equal(h.account('owner').locale, 'zh-Hant');
 });
 
 test('the Resend adapter forwards the one-click headers and idempotency key, and reports rejections', async () => {
