@@ -51,7 +51,7 @@ const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJs
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createClientIp } = require('./lib/clientIp');
-const { createAiGovernanceModel, createAiGovernance, governProviders, aiExecution } = require('./lib/aiGovernance');
+const { createAiGovernanceModel, createAiGovernance, extendLedgerRetentionAtStartup, governProviders, aiExecution } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
@@ -62,6 +62,7 @@ const { createPublicContext } = require('./lib/publicContext');
 const { createBayBayProgressStream } = require('./lib/baybayProgress');
 const { baybayWebAccess, withBaybayAccess } = require('./lib/baybayAccess');
 const { revokeAdminSessions } = require('./lib/adminSessions');
+const { adminSecurityStatus } = require('./lib/adminSecurityStatus');
 
 // Importing this module is side-effect free: no .env loading, network listener or database connection.
 function createApplication(options = {}) {
@@ -1877,18 +1878,28 @@ app.get('/api/admin/ai-metrics', authenticateToken, requireAdmin, async (req, re
   if (Object.keys(req.query).length) return res.status(400).json({ error: 'Metrics use a fixed 30-day aggregate window.' });
   if (!aiUsageLimiter.check(`admin:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 60 })) return res.status(429).json({ error: 'Please wait before reading metrics again.' });
   try {
-    const [rows, runtime, spend] = await Promise.all([
+    const [rows, runtime, spend, credit] = await Promise.all([
       AiGovernance.find({ id: /^ai:\d{4}-\d{2}-\d{2}$/ }).select('id count calls inputTokens outputTokens failures cancellations latencyMs -_id').sort({ id: -1 }).limit(31).lean(),
       aiRuntimeMetrics.report(),
       // Today's and this month's $ against the caps (API-BB-CUTOVER).
       aiGovernance.getSpendState().catch(() => null),
+      // The credit burn-down (API-OPS, lib/aiCredit.js): spend since AI_CREDIT_START, averages, run-out.
+      aiGovernance.getCreditState().catch(() => null),
     ]);
     const fields = ['count', 'calls', 'inputTokens', 'outputTokens', 'failures', 'cancellations', 'latencyMs'];
     const days = rows.filter(row => /^ai:\d{4}-\d{2}-\d{2}$/.test(row.id)).map(row => ({ id: row.id,
       ...Object.fromEntries(fields.filter(key => Number.isSafeInteger(row[key]) && row[key] >= 0).map(key => [key, row[key]])) }));
     // useUntil (API-OPS-KEY): whether ANTHROPIC_USE_UNTIL is set, valid, when, and passed; never the raw value.
-    res.json({ days, runtime, spend, eventLoop: eventLoop.report(), useUntil: useUntilStatus(config, options.plannerNow?.() ?? Date.now()) });
+    res.json({ days, runtime, spend, credit, eventLoop: eventLoop.report(), useUntil: useUntilStatus(config, options.plannerNow?.() ?? Date.now()) });
   } catch { res.status(503).json({ error: 'AI metrics are temporarily unavailable.' }); }
+});
+// API-OPS: the owner's administrator-account checklist (lib/adminSecurityStatus.js). Admin only.
+app.get('/api/admin/security-status', authenticateToken, requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  if (Object.keys(req.query).length) return res.status(400).json({ ok: false, error: 'This status takes no parameters.' });
+  if (!aiUsageLimiter.check(`admin-status:${getClientIp(req)}`, { windowMs: 60000, maxRequests: 30 })) return res.status(429).json({ ok: false, error: 'Please wait before reading the status again.' });
+  try { res.json({ ok: true, ...await adminSecurityStatus({ User, config, now: options.accountSecurityNow || Date.now }) }); }
+  catch { res.status(503).json({ ok: false, error: 'The status is temporarily unavailable.' }); }
 });
 
 registerEventEngagement(app, { EventInterest, User, UserBlock, authenticateToken, checkRateLimit: checkAuthRateLimit, getClientIp, assertAccountCanPost, catalog: options.eventCatalog, now: options.eventNow });
@@ -5165,7 +5176,7 @@ app.use('/api', (req, res) => res.status(404).json({ code: 'NOT_FOUND', error: r
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, aiGovernance, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -5201,6 +5212,9 @@ async function startProduction(config = process.env) {
   application.notifications.start();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
   application.sourceMonitor.start();
+  // API-OPS: ledger day rows written while they were kept 62 days get the 400-day retention,
+  // once, now that the database is connected (in the background, with one log line).
+  extendLedgerRetentionAtStartup(application.aiGovernance);
   return application;
 }
 
