@@ -206,6 +206,20 @@ test('credit burn-down: one alert when the run-out is projected more than 14 day
   assert.deepEqual(dueAlerts({ spend: null, credit: null, config: CREDIT_LIVE, now }), []);
   // A changed total, start or cutoff is a new alert id.
   assert.notEqual(dueAlerts({ spend: null, credit: creditState({ totalUsd: 1200 }), config: CREDIT_LIVE, now })[0].id, alert.id);
+  assert.doesNotMatch(alert.subject + alert.text, /已用完/);
+});
+
+test('credit burn-down: an estimate that is already used up says so instead of a run-out date', () => {
+  const now = Date.parse('2026-11-20T20:00:00Z');
+  const credit = creditState({ spentUsd: 1004.5, remainingUsd: 0, exhausted: true, projected: { basis: 'spent', day: '2026-11-20', at: new Date(now).toISOString(), daysLeft: 0 },
+    useUntil: { at: '2027-04-19T00:00:00.000Z', daysEarly: 149.2 } });
+  const [alert, ...rest] = dueAlerts({ spend: null, credit, config: CREDIT_LIVE, now });
+  assert.deepEqual(rest, []);
+  assert.equal(alert.id, 'ai-alert:credit:2026-10-23:1000:2027-04-19T00:00:00.000Z', 'the same one alert per combination');
+  assert.match(alert.subject, /按站内账本估算，Claude 额度已用完，比 ANTHROPIC_USE_UNTIL 早约 149 天/);
+  assert.doesNotMatch(alert.subject, /预计/);
+  for (const part of [/已用约 \$1004\.50/, /剩约 \$0\.00/, /按站内账本估算，额度已经用完/, /Claude Console 的 Usage \/ Billing 页核对实际余额/, /如果余额确实用完/, /设成今天/]) assert.match(alert.text, part);
+  assert.doesNotMatch(alert.text, /预计太平洋时间|会早约|预计用完的前一天/);
 });
 
 test('credit burn-down end to end on the governance ledger: one e-mail, and the ledger is read only when it can matter', async () => {

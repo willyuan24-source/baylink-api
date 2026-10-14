@@ -51,7 +51,7 @@ const { selectedAiAvailable, requestAnthropicJson } = require('./lib/anthropicJs
 const { guardCommunityAbsence } = require('./lib/baybayCommunityAbsence');
 const { createRateLimiter, proxyTrust, clientIp } = require('./lib/rateLimit');
 const { createClientIp } = require('./lib/clientIp');
-const { createAiGovernanceModel, createAiGovernance, governProviders, aiExecution } = require('./lib/aiGovernance');
+const { createAiGovernanceModel, createAiGovernance, extendLedgerRetentionAtStartup, governProviders, aiExecution } = require('./lib/aiGovernance');
 const { createAiRuntimeMetricModel, createAiRuntimeMetrics, eventLoopMonitor } = require('./lib/aiRuntimeMetrics');
 const { createContactAccessQuotaModel, createContactAccessQuota, verifiedContactPhone } = require('./lib/contactAccessQuota');
 const { MAX_OTHER_VERIFIED_ACCOUNTS, createSmsQuotaModel, createSmsQuota } = require('./lib/smsQuota');
@@ -1845,8 +1845,6 @@ const aiGovernance = createAiGovernance({ Model: AiGovernance, config, now: opti
 const aiSpendAlerts = require('./lib/aiSpendAlerts').createAiSpendAlerts({ governance: aiGovernance, store: require('./lib/aiSpendAlerts').governanceAlertStore(AiGovernance), config, now: options.plannerNow || Date.now });
 if (!isTest) aiSpendAlerts.start();
 server.once('close', aiSpendAlerts.stop);
-// API-OPS: ledger day rows written while they were kept 62 days get the 400-day retention once.
-if (!isTest) aiGovernance.extendLedgerRetention().catch(() => {});
 const aiUsageLimiter = createInteractionLimiter();
 app.get('/api/ai/usage', async (req, res) => {
   res.set('Cache-Control', 'no-store'); res.set('Vary', 'Authorization');
@@ -5178,7 +5176,7 @@ app.use('/api', (req, res) => res.status(404).json({ code: 'NOT_FOUND', error: r
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, aiGovernance, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -5214,6 +5212,9 @@ async function startProduction(config = process.env) {
   application.notifications.start();
   application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
   application.sourceMonitor.start();
+  // API-OPS: ledger day rows written while they were kept 62 days get the 400-day retention,
+  // once, now that the database is connected (in the background, with one log line).
+  extendLedgerRetentionAtStartup(application.aiGovernance);
   return application;
 }
 

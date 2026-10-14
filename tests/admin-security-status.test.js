@@ -17,7 +17,9 @@ const KEY = crypto.randomBytes(32).toString('base64');
 const DONE_AT = Date.parse('2026-10-12T17:00:00Z');
 const person = (id, extra = {}) => ({ id, email: `${id}@example.test`, password: hash, nickname: `Neighbor ${id}`, role: 'user', accountStatus: 'active', isBanned: false, createdAt: 1, ...extra });
 const admin = (id, extra = {}) => person(id, { email: id === 'fixture-admin-id' ? 'admin' : `${id}@example.test`, role: 'admin', nickname: `Admin ${id}`, ...extra });
-const hardened = { passwordChangedAt: DONE_AT, totpEnabledAt: DONE_AT + 60000, sessionsRevokedAt: DONE_AT + 60000 };
+// Steps 1, 3 and 5 in order: enabling the authenticator stamps sessionsRevokedAt at that same
+// instant, and the explicit revoke (step 5) comes a minute later.
+const hardened = { passwordChangedAt: DONE_AT, totpEnabledAt: DONE_AT + 60000, sessionsRevokedAt: DONE_AT + 120000 };
 const FULL = { ACCOUNT_SECURITY_ENCRYPTION_KEY: KEY, ADMIN_MFA_REQUIRED: 'true', ADMIN_LOGIN_ID: 'fixture-private-login-name',
   NOTIFICATION_DELIVERY_ENABLED: 'true', RESEND_API_KEY: 'fixture-resend-value', RESEND_FROM_EMAIL: 'alerts@example.test', SECURITY_ALERT_EMAIL: 'owner-fixture@example.test' };
 const KEYS = ['passwordChanged', 'encryptionKeySet', 'authenticatorOn', 'authenticatorRequired', 'sessionsRevoked', 'privateLoginName', 'alertsOn'];
@@ -71,7 +73,7 @@ test('every step done: all true, with the times; only an authenticator session c
   assert.equal(verified.status, 200);
   assert.deepEqual(verified.data.checks, Object.fromEntries(KEYS.map(key => [key, true])));
   assert.equal(verified.data.done, 7);
-  assert.deepEqual(verified.data.times, { passwordChangedAt: '2026-10-12T17:00:00.000Z', authenticatorOnSince: '2026-10-12T17:01:00.000Z', sessionsRevokedAt: '2026-10-12T17:01:00.000Z' });
+  assert.deepEqual(verified.data.times, { passwordChangedAt: '2026-10-12T17:00:00.000Z', authenticatorOnSince: '2026-10-12T17:01:00.000Z', sessionsRevokedAt: '2026-10-12T17:02:00.000Z' });
   // Nothing identifying or secret: no account id, login name, address, key or stored hash.
   const body = JSON.stringify(verified.data);
   for (const value of ['fixture-admin-id', 'fixture-private-login-name', 'owner-fixture@example.test', 'alerts@example.test', 'fixture-resend-value', KEY, hash, '"admin"']) assert.ok(!body.includes(value), value);
@@ -85,16 +87,51 @@ test('ADMIN_MFA_REQUIRED=true: a password-only admin session is refused like any
 });
 
 test('an account step counts only when every admin account has it; the time is the earliest', async () => {
-  const rows = [admin('fixture-admin-id', hardened), admin('second', { passwordChangedAt: DONE_AT - 86400000, sessionsRevokedAt: DONE_AT - 86400000 })];
-  const User = createMemoryModels({ User: rows }).User;
-  const status = await adminSecurityStatus({ User, config: {}, now: () => NOW });
+  // The second account changed its password a day earlier (set-admin-password.js stamps
+  // sessionsRevokedAt at that same instant) and was later signed out by an explicit revoke.
+  const second = { passwordChangedAt: DONE_AT - 86400000, sessionsRevokedAt: DONE_AT - 86400000 + 3600000 };
+  const rows = [admin('fixture-admin-id', hardened), admin('second', second)];
+  const status = await adminSecurityStatus({ User: createMemoryModels({ User: rows }).User, config: {}, now: () => NOW });
   assert.equal(status.adminAccounts, 2);
   assert.equal(status.checks.passwordChanged, true); assert.equal(status.checks.sessionsRevoked, true);
   assert.equal(status.checks.authenticatorOn, false, 'the second account has no authenticator');
-  assert.deepEqual(status.times, { passwordChangedAt: '2026-10-11T17:00:00.000Z', authenticatorOnSince: null, sessionsRevokedAt: '2026-10-11T17:00:00.000Z' });
+  assert.deepEqual(status.times, { passwordChangedAt: '2026-10-11T17:00:00.000Z', authenticatorOnSince: null, sessionsRevokedAt: '2026-10-11T18:00:00.000Z' });
+  // One account without the explicit revoke: step 5 is open for the whole checklist.
+  const partial = await adminSecurityStatus({ User: createMemoryModels({ User: [admin('fixture-admin-id', hardened), admin('second', { ...second, sessionsRevokedAt: second.passwordChangedAt })] }).User, config: {}, now: () => NOW });
+  assert.equal(partial.checks.sessionsRevoked, false); assert.equal(partial.times.sessionsRevokedAt, null);
   // No admin account at all: no account step is done.
   const none = await adminSecurityStatus({ User: createMemoryModels({ User: [person('member')] }).User, config: {}, now: () => NOW });
   assert.equal(none.adminAccounts, 0); assert.equal(none.checks.passwordChanged, false); assert.equal(none.checks.authenticatorOn, false);
+  assert.equal(none.checks.sessionsRevoked, false); assert.equal(none.checks.privateLoginName, false);
+});
+
+test('step 5 counts only an explicit revoke, not the sign-out that steps 1 and 3 already do', async () => {
+  const status = async extra => adminSecurityStatus({ User: createMemoryModels({ User: [admin('fixture-admin-id', extra)] }).User, config: {}, now: () => NOW });
+  // Step 1 only (the script and the in-app password change stamp both fields at one instant).
+  const stepOne = await status({ passwordChangedAt: DONE_AT, sessionsRevokedAt: DONE_AT });
+  assert.equal(stepOne.checks.passwordChanged, true); assert.equal(stepOne.checks.sessionsRevoked, false);
+  assert.equal(stepOne.done, 1); assert.equal(stepOne.times.sessionsRevokedAt, null);
+  // Steps 1 and 3 (enabling the authenticator stamps both fields at one instant).
+  const stepThree = await status({ passwordChangedAt: DONE_AT, totpEnabledAt: DONE_AT + 60000, sessionsRevokedAt: DONE_AT + 60000 });
+  assert.equal(stepThree.checks.authenticatorOn, true); assert.equal(stepThree.checks.sessionsRevoked, false); assert.equal(stepThree.done, 2);
+  // A revoke before the authenticator was enabled is not step 5 either.
+  assert.equal((await status({ passwordChangedAt: DONE_AT, sessionsRevokedAt: DONE_AT + 30000, totpEnabledAt: DONE_AT + 60000 })).checks.sessionsRevoked, false);
+  // The explicit revoke after both.
+  const stepFive = await status(hardened);
+  assert.equal(stepFive.checks.sessionsRevoked, true); assert.equal(stepFive.times.sessionsRevokedAt, '2026-10-12T17:02:00.000Z');
+  // A revoke alone (no password change, no authenticator) still counts as step 5.
+  assert.equal((await status({ sessionsRevokedAt: DONE_AT })).checks.sessionsRevoked, true);
+});
+
+test('step 6 is also done when no admin account signs in as "admin" any more; the address is never returned', async () => {
+  const realAddress = 'owner-admin@example.test';
+  const status = async (rows, config = {}) => adminSecurityStatus({ User: createMemoryModels({ User: rows }).User, config, now: () => NOW });
+  const moved = await status([admin('moved', { email: realAddress })]);
+  assert.equal(moved.checks.privateLoginName, true);
+  assert.ok(!JSON.stringify(moved).includes(realAddress));
+  assert.equal((await status([admin('moved', { email: realAddress }), admin('fixture-admin-id')])).checks.privateLoginName, false, 'one account still signs in as admin');
+  assert.equal((await status([admin('moved', { email: ' Admin ' })])).checks.privateLoginName, false, 'the public word in any case');
+  assert.equal((await status([admin('fixture-admin-id')], { ADMIN_LOGIN_ID: 'fixture-private-login-name' })).checks.privateLoginName, true);
 });
 
 test('the configuration steps read the same rules the server enforces', async () => {

@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const { readCreditTotal, readCreditStart, creditConfig, creditLedgerFrom, creditBurnDown, CREDIT_ALERT_LEAD_DAYS } = require('../lib/aiCredit');
-const { createAiGovernance } = require('../lib/aiGovernance');
+const { createAiGovernance, extendLedgerRetentionAtStartup } = require('../lib/aiGovernance');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
 
@@ -153,6 +153,21 @@ test('governance: day rows are kept 400 days; rows from the 62-day era are exten
   await governance.recordSpend({ priced: true, microUsd: 5 });
   assert.equal(row('ai-usd:2026-10-14').expiresAt, new Date(at + 400 * DAY).toISOString());
   assert.deepEqual(await governance.extendLedgerRetention(), { rows: 3, extended: 0 });
+});
+
+test('the startup extension logs one neutral line and never throws', async () => {
+  const lines = [], errors = [];
+  const logger = { log: line => lines.push(line), error: (...parts) => errors.push(parts.join(' ')) };
+  const models = createMemoryModels({ AiGovernance: [{ id: 'ai-usd:2026-10-09', microUsd: 1, expiresAt: new Date(Date.parse('2026-10-09T19:00:00Z') + 62 * DAY).toISOString() }] });
+  const governance = createAiGovernance({ Model: models.AiGovernance, config: { JWT_SECRET: SECRET }, now: () => Date.parse('2026-10-14T19:00:00Z') });
+  assert.deepEqual(await extendLedgerRetentionAtStartup(governance, logger), { rows: 1, extended: 1 });
+  assert.deepEqual(lines, ['[ai-ledger] retention checked: 1 day rows, 1 extended to 400 days']); assert.deepEqual(errors, []);
+  // A failed read (e.g. a buffering timeout) is logged by its code only, and resolves.
+  const failing = { extendLedgerRetention: async () => { throw Object.assign(new Error('ai-usd:2026-10-09 secret-detail'), { code: 'ETIMEOUT' }); } };
+  assert.equal(await extendLedgerRetentionAtStartup(failing, logger), null);
+  assert.deepEqual(errors, ['[ai-ledger] retention extension failed: ETIMEOUT']);
+  assert.equal(await extendLedgerRetentionAtStartup({ extendLedgerRetention: () => { throw new TypeError('sync'); } }, logger), null);
+  assert.equal(errors.at(-1), '[ai-ledger] retention extension failed: TypeError');
 });
 
 async function startApp(t, config) {
