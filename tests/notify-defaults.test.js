@@ -5,7 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const {
-  createNotificationService, resendEmailSender, notificationApiOrigin, FIRST_NOTICE_DELAY, HALF_HOUR, EMAIL_DEFAULT_TOPICS, DEFAULTS_VERSION,
+  createNotificationService, resendEmailSender, notificationApiOrigin, emailDefaultsActive, FIRST_NOTICE_DELAY, HALF_HOUR, EMAIL_DEFAULT_TOPICS, DEFAULTS_VERSION, EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT,
 } = require('../lib/notifications');
 const { memory } = require('./support/notification-memory');
 
@@ -43,9 +43,21 @@ function fixture({ defaults, enabled = 'true', config = {}, seed = [] } = {}) {
   return { models, service, restart: build, sent, texts, logs, defaultsLogs, verify, event, account, jobs, rawToken, advance: ms => { at += ms; }, now: () => at };
 }
 
-test('the preset is reported in the preferences DTO and stays dormant unless NOTIFICATION_EMAIL_DEFAULTS is on', async () => {
+test('activation: a code default the captain flips once the web copy is live; NOTIFICATION_EMAIL_DEFAULTS=on/off overrides it', () => {
+  // Until WEB-COMMUNITY-2 ships truthful copy the preset is dormant; the later flip changes this one constant.
+  assert.equal(EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT, false);
+  for (const byDefault of [false, true]) {
+    for (const value of [undefined, '', '  ']) assert.equal(emailDefaultsActive(value === undefined ? {} : { NOTIFICATION_EMAIL_DEFAULTS: value }, byDefault), byDefault, `unset → code default ${byDefault}`);
+    for (const value of ['on', 'ON', ' true ']) assert.equal(emailDefaultsActive({ NOTIFICATION_EMAIL_DEFAULTS: value }, byDefault), true, value);
+    // The kill switch: any other value, including typos, turns the preset off.
+    for (const value of ['off', 'OFF', 'false', '0', '1', 'yes', 'disabled']) assert.equal(emailDefaultsActive({ NOTIFICATION_EMAIL_DEFAULTS: value }, byDefault), false, value);
+  }
+  assert.equal(emailDefaultsActive({}), EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT);
+});
+
+test('the preset is reported in the preferences DTO and stays dormant while switched off', async () => {
   assert.deepEqual(EMAIL_DEFAULT_TOPICS, ['message', 'contact_request']); assert.equal(DEFAULTS_VERSION, 1);
-  for (const value of [undefined, '', 'off', 'false', '1', 'yes']) {
+  for (const value of [...(EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT ? [] : [undefined, '']), 'off', 'false', '1', 'yes']) {
     const f = fixture({ defaults: value });
     const result = await f.verify();
     assert.equal(result.defaultsApplied, false, String(value));
@@ -124,18 +136,50 @@ test('an account that saved its settings before verifying keeps them when the em
   assert.deepEqual(f.defaultsLogs().map(line => line.event), ['notification_defaults_kept']);
 });
 
+test('a first save on an account not yet settled is a choice: it is settled as kept, never defaulted first', async () => {
+  const f = fixture({ defaults: 'on', seed: [legacyAccount('owner')] });
+  const saved = await f.service.updatePreferences('owner', { preferences: { email: { message: false } } });
+  assert.deepEqual(saved.preferences.email, OFF, 'contact requests are not switched on behind the member');
+  assert.equal(saved.defaultsApplied, false); assert.equal(saved.customized, true);
+  assert.equal(f.account('owner').defaultsVersion, 1); assert.equal(f.account('owner').defaultsAppliedAt, undefined);
+  assert.deepEqual(f.defaultsLogs(), [{ level: 'info', event: 'notification_defaults_kept', version: 1, reason: 'choice' }]);
+  await f.service.preferences('owner'); await f.service.enqueueEvent(f.event());
+  assert.equal(f.defaultsLogs().length, 1, 'settled once; the adoption count only counts real defaults');
+  // While dormant a save writes no mark: switching on later settles the account (as kept, it chose).
+  const g = fixture({ defaults: 'off', seed: [legacyAccount('owner')] });
+  await g.service.updatePreferences('owner', { preferences: { email: { message: true } } });
+  assert.equal(g.account('owner').defaultsVersion, undefined); assert.deepEqual(g.defaultsLogs(), []);
+});
+
+test('opening the one-click URL in a browser changes nothing; it names the confirmation page, kind and language', async () => {
+  const f = fixture({ defaults: 'on' }); await f.verify();
+  await f.service.updatePreferences('owner', { preferences: { email: { message: true } }, locale: 'zh-Hant' });
+  await f.service.enqueueEvent(f.event()); f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
+  const raw = f.rawToken(f.sent[0]), page = `https://www.baylink.us/zh-Hant/notifications/unsubscribe#token=${raw}&kind=message`;
+  assert.equal(await f.service.oneClickPage(raw), page);
+  assert.equal((await f.service.preferences('owner')).preferences.email.message, true);
+  assert.deepEqual(await f.service.unsubscribe(raw), { ok: true, channel: 'email', topic: 'message' }, 'the token was not consumed');
+  // A spent or unknown token still opens the page (which reports it); a malformed one opens the page without a token.
+  assert.equal(await f.service.oneClickPage(raw), page);
+  assert.equal(await f.service.oneClickPage('A'.repeat(43)), `https://www.baylink.us/notifications/unsubscribe#token=${'A'.repeat(43)}`);
+  for (const bad of ['short', `${'A'.repeat(42)}!`, undefined, { $ne: 1 }]) assert.equal(await f.service.oneClickPage(bad), 'https://www.baylink.us/notifications/unsubscribe');
+});
+
 test('each notice links to an unsubscribe for its own kind only, with RFC 8058 one-click headers', async () => {
   const f = fixture({ defaults: 'on' }); await f.verify();
   await f.service.enqueueEvent(f.event());
   await f.service.enqueueEvent(f.event({ topic: 'contact_request', sourceId: 'post_1' }));
   f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
   assert.equal(f.sent.length, 2);
-  const dm = f.sent.find(mail => mail.text.includes('新的站内消息')), request = f.sent.find(mail => mail.text.includes('新的联系请求，'));
+  const dm = f.sent.find(mail => mail.text.includes('收到新的私信，')), request = f.sent.find(mail => mail.text.includes('收到新的联系请求，'));
   for (const [mail, kind, setting] of [[dm, 'message', '新的私信'], [request, 'contact_request', '新的联系请求']]) {
     const raw = f.rawToken(mail);
+    // Subject, first line and reason line name the kind with the same words as the settings card.
+    assert.ok(mail.text.startsWith(`你在 BAYLINK 收到${setting}，请登录查看：https://www.baylink.us/messages`));
     assert.ok(mail.text.includes(`https://www.baylink.us/notifications/unsubscribe#token=${raw}&kind=${kind}`));
-    assert.ok(mail.text.includes(`你收到这封邮件，是因为你的账号开启了「${setting}」邮件提醒。`));
-    assert.ok(mail.text.includes('不想再收到这类邮件？一键关闭：'));
+    assert.ok(mail.text.includes(`你收到这封邮件，是因为验证邮箱后，你的账号默认开启了「${setting}」邮件提醒。`), 'a defaulted member is told it was on by default');
+    // The body link opens a confirmation page, so it does not promise one click.
+    assert.ok(mail.text.includes(`关闭这类邮件：https://www.baylink.us/notifications/unsubscribe#token=`)); assert.ok(!mail.text.includes('一键'));
     assert.ok(mail.text.includes('管理全部提醒：https://www.baylink.us/me?view=notifications'));
     assert.equal(mail.subject, `BAYLINK 站内通知：${setting}`);
     assert.deepEqual(mail.headers, { 'List-Unsubscribe': `<${API}/api/notifications/unsubscribe/one-click/${raw}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' });
@@ -153,20 +197,23 @@ test('each notice links to an unsubscribe for its own kind only, with RFC 8058 o
   // The pending DM notice is cancelled; the contact-request notice survives the new consent epoch and is sent.
   f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
   assert.equal(f.sent.length, 3); assert.ok(f.sent[2].text.includes('新的联系请求'));
+  assert.ok(f.sent[2].text.includes('是因为你的账号开启了「新的联系请求」'), 'after a choice the reason no longer says "by default"');
   assert.equal(f.jobs().find(row => row.sourceId === 'dm_two').status, 'cancelled');
   assert.deepEqual(await f.service.enqueueEvent(f.event({ sourceId: 'dm_three' })), { queued: 0 }, 'new DMs stay off');
 });
 
 test('English and zh-Hant notices name the setting; SMS carries a short per-kind link and no headers', async () => {
   for (const [locale, prefix, subject, why, stop] of [
-    ['en', '/en', 'BAYLINK notification: New private messages', 'You get this email because "New private messages" email reminders are on for your account.', 'Stop these emails (one click): '],
-    ['zh-Hant', '/zh-Hant', 'BAYLINK 站內通知：新的私訊', '你收到這封郵件，是因為你的帳號開啟了「新的私訊」郵件提醒。', '不想再收到這類郵件？一鍵關閉：'],
+    ['en', '/en', 'BAYLINK notification: New private messages', 'You get this email because "New private messages" email reminders are on for your account.', 'Turn off these emails: '],
+    ['zh-Hant', '/zh-Hant', 'BAYLINK 站內通知：新的私訊', '你收到這封郵件，是因為你的帳號開啟了「新的私訊」郵件提醒。', '關閉這類郵件：'],
   ]) {
     const f = fixture({ defaults: 'on' }); await f.verify();
     await f.service.updatePreferences('owner', { preferences: { sms: { message: true } }, locale });
     await f.service.enqueueEvent(f.event()); f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
     const [mail] = f.sent, [sms] = f.texts;
     assert.equal(mail.subject, subject); assert.ok(mail.text.includes(why)); assert.ok(mail.text.includes(stop));
+    assert.ok(mail.text.startsWith(locale === 'en' ? 'You have new private messages on BAYLINK. Sign in to view: ' : '你在 BAYLINK 收到新的私訊，請登入查看：'));
+    assert.ok(!/one click|一鍵/.test(mail.text));
     assert.ok(mail.text.includes(`https://www.baylink.us${prefix}/me?view=notifications`));
     assert.ok(sms.body.includes(`https://www.baylink.us${prefix}/notifications/unsubscribe#token=`) && sms.body.includes('&kind=message'));
     assert.equal(sms.headers, undefined); assert.equal(sms.body.split('\n').length, 2, 'SMS stays two lines');
@@ -256,7 +303,7 @@ test('the one-click origin is the API host; a bad override falls back with one w
 });
 
 // HTTP contract, as WEB-COMMUNITY-2 and mail apps see it.
-test('HTTP: preferences expose the preset; one-click POST unsubscribes one kind; GET does nothing', async t => {
+test('HTTP: preferences expose the preset; one-click POST unsubscribes one kind; GET only opens the confirmation page', async t => {
   const jwt = require('jsonwebtoken');
   const { createApplication } = require('../server');
   const { createMemoryModels } = require('./support/memory-models');
@@ -286,8 +333,18 @@ test('HTTP: preferences expose the preset; one-click POST unsubscribes one kind;
   assert.equal(header, `<${API}/api/notifications/unsubscribe/one-click/${raw}>`);
   assert.ok(mail[0].text.includes(`https://www.baylink.us/en/notifications/unsubscribe#token=${raw}&kind=message`));
 
-  // Link scanners GET; only the mail app's POST counts.
-  assert.equal((await fetch(`${base}/notifications/unsubscribe/one-click/${raw}`)).status, 404);
+  // A browser GETs (a mail app that only knows RFC 2369, or a link scanner): 303 to the confirmation
+  // page with the token in the fragment, the kind and the reminder's language. The token stays unused.
+  for (const method of ['GET', 'HEAD']) {
+    const opened = await fetch(`${base}/notifications/unsubscribe/one-click/${raw}`, { method, redirect: 'manual' });
+    assert.equal(opened.status, 303, method);
+    assert.equal(opened.headers.get('location'), `https://www.baylink.us/en/notifications/unsubscribe#token=${raw}&kind=message`);
+    assert.equal(opened.headers.get('cache-control'), 'no-store'); assert.equal(opened.headers.get('referrer-policy'), 'no-referrer');
+  }
+  const unchanged = await (await fetch(`${base}/notifications/preferences`, { headers: auth('other') })).json();
+  assert.deepEqual(unchanged.preferences, DEFAULTS, 'a GET changes nothing'); assert.equal(unchanged.customized, false);
+  const malformed = await fetch(`${base}/notifications/unsubscribe/one-click/not-a-token`, { redirect: 'manual' });
+  assert.equal(malformed.status, 303); assert.equal(malformed.headers.get('location'), 'https://www.baylink.us/notifications/unsubscribe', 'the page explains a missing token');
   const bad = await fetch(`${base}/notifications/unsubscribe/one-click/${'B'.repeat(43)}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'List-Unsubscribe=One-Click' });
   assert.equal(bad.status, 400);
   const oneClick = await fetch(`${base}/notifications/unsubscribe/one-click/${raw}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'List-Unsubscribe=One-Click' });
