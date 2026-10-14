@@ -42,10 +42,10 @@ test('verification queues only; disabled worker never calls either provider or e
   assert.equal(JSON.stringify(response).includes(token.sealed), false); assert.equal(JSON.stringify(account).includes(token.sealed), false);
 });
 
-test('email verification token is expiring, single use, email-bound, and does not opt in', async () => {
+test('email verification token is expiring, single use, email-bound, and does not opt in while email defaults are off', async () => {
   const f = fixture(); await f.service.startEmailVerification('owner'); await f.service.runOnce();
   const raw = f.rawToken(f.sent[0]); assert.equal(f.sent[0].text.includes('/verify-email#token='), true);
-  assert.deepEqual(await f.service.verifyEmail(raw), { ok: true, emailVerified: true });
+  assert.deepEqual(await f.service.verifyEmail(raw), { ok: true, emailVerified: true, defaultsApplied: false });
   await assert.rejects(f.service.verifyEmail(raw), /已使用/);
   const prefs = await f.service.preferences('owner'); assert.equal(prefs.emailVerified, true); assert.equal(prefs.preferences.email.message, false);
   const expired = fixture(); await expired.service.startEmailVerification('owner'); await expired.service.runOnce(); expired.advance(HALF_HOUR);

@@ -12,7 +12,7 @@ const { Resend } = require('resend');
 const { publicPostFilters, postLifecycleChanges, publicPostAvailability } = require('./lib/postLifecycle');
 const { createAccountAuthChallengeModel, createAccountTotp } = require('./lib/accountTotp');
 const { registerAccountPrivacy, erasePostContacts, holdAccountOperation, holdPostOperation, runAccountHandler } = require('./lib/accountPrivacy');
-const { registerNotifications } = require('./lib/notifications');
+const { registerNotifications, resendEmailSender } = require('./lib/notifications');
 const { createServerErrors } = require('./lib/serverErrors');
 const { installProcessHandlers } = require('./lib/processLifecycle');
 const { createConversationResponseMetricModel, createConversationReplyMetric } = require('./lib/conversationReplyMetric');
@@ -1818,11 +1818,7 @@ const notificationStillUnread = async ({ topic, recipientId, sourceId, since }) 
 const notifications = registerNotifications(app, { mongoose, models: injectedModels, User, UserBlock, authenticateToken,
   holdAccount: id => holdAccountOperation(User, id), stillUnread: notificationStillUnread,
   checkRateLimit: checkAuthRateLimit, getClientIp, config, isTest, now: options.notificationNow,
-  sendEmail: isTest ? options.notificationEmail : (resend && config.RESEND_FROM_EMAIL ? async ({ to, subject, text, idempotencyKey }) => {
-    const { data, error } = await resend.emails.send({ from: config.RESEND_FROM_EMAIL, to, subject, text }, { idempotencyKey });
-    if (error) throw Object.assign(new Error('Email rejected'), { status: error.statusCode || error.status });
-    return data;
-  } : undefined),
+  sendEmail: isTest ? options.notificationEmail : (resend && config.RESEND_FROM_EMAIL ? resendEmailSender(resend, config.RESEND_FROM_EMAIL) : undefined),
   sendSms: isTest ? options.notificationSms : (twilioClient && TWILIO_PHONE ? ({ to, body }) => twilioClient.messages.create({ to, from: TWILIO_PHONE, body }) : undefined),
 });
 server.once('close', notifications.stop);
