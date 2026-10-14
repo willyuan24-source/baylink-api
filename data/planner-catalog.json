@@ -9186,9 +9186,7 @@
       "costLabel": "普通After Dark官网参考价$22.95；该场最终票价及附加项目按票页",
       "summary": "成人科学夜游：通过交流与即兴表演探索沟通。",
       "plan": [
-        "时间安排：18:00–22:00。",
-        "费用与参加条件：普通After Dark官网参考价$22.95；该场最终票价及附加项目按票页 需购票；Tactile Dome等附加项目另订另付。",
-        "活动内容按当天场次安排；普通入场不包括所有付费附加体验。"
+        "需购票；Tactile Dome等附加项目另订另付。"
       ],
       "audience": [
         "18岁及以上"
@@ -9197,6 +9195,9 @@
       "sourceLabel": "exploratorium.edu",
       "verifiedAt": "2026-09-29",
       "imageKey": "weekend",
+      "shortTitle": "Exploratorium After Dark",
+      "venueShort": "Exploratorium",
+      "address": "Pier 15, Embarcadero at Green Street, San Francisco, CA 94111",
       "aliases": [
         "Exploratorium After Dark：Speak Easy 沟通实验",
         "Exploratorium After Dark: Speak Easy Communication Experiments",
@@ -9346,8 +9347,8 @@
       "city": "San Francisco",
       "venue": "SF Main Library · Children's Creative Center, 2nd Floor · 100 Larkin Street, San Francisco, CA 94102",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "费用待核：官方活动页未列明收费，也未要求必须先捐一件才能领取。",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不要求先捐一件才能领。",
       "summary": "为孩子寻找新的万圣节造型，或带来洁净、轻度使用的服装交换；道具与配件也欢迎。",
       "plan": [
         "面向儿童及照顾者，活动在 Main Library 二楼儿童创意中心；不是 Marina 分馆或 San Leandro 的交换会。",
@@ -9368,7 +9369,7 @@
         "SF Main Library 兒童萬聖節服裝交換"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "setting": "indoor",
         "reservation": "optional",
         "schedule": {
@@ -9384,7 +9385,7 @@
               }
             ]
           },
-          "note": "Main Library 二楼儿童创意中心 16:00–17:30，儿童及照顾者可直接到场。可带洁净、轻度使用的服装或配件；没有公布必须捐赠、一换一或领取数量规则。官方未列明收费。"
+          "note": "Main Library 二楼儿童创意中心 16:00–17:30，儿童及照顾者可直接到场。可带洁净、轻度使用的服装或配件；没有公布必须捐赠、一换一或领取数量规则。SFPL 活动一律免费。"
         }
       }
     },
@@ -9479,9 +9480,7 @@
       "costLabel": "票价尚未核实，以官方购票页为准",
       "summary": "Young Miko 在 Chase Center 举办个人巡演演出，适合拉丁流行及说唱乐迷。",
       "plan": [
-        "时间安排：20:00。",
-        "费用与参加条件：票价尚未核实，以官方购票页为准 通过场馆官方售票入口购票；票价与余票请以官方售票页为准",
-        "出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
+        "在 Chase Center 官方售票页购票。"
       ],
       "audience": [
         "音乐爱好者"
@@ -9490,6 +9489,9 @@
       "sourceLabel": "chasecenter.com",
       "verifiedAt": "2026-09-28",
       "imageKey": "weekend",
+      "shortTitle": "Young Miko 巡演",
+      "venueShort": "Chase Center",
+      "address": "1 Warriors Way, San Francisco, CA 94158",
       "aliases": [
         "Young Miko：Late Checkout 巡演",
         "Young Miko: Late Checkout tour"
@@ -10066,7 +10068,7 @@
       "occurrenceDates": [
         "2026-10-17"
       ],
-      "dateLabel": "10/17（六）主场 10:00–15:00；社区庆祝 15:30–17:30",
+      "dateLabel": "10/17（六）主场 10:00–15:00；社区庆祝 15:00 或 15:30 起，建议 15:00 前到",
       "region": "east-bay",
       "city": "Berkeley",
       "venue": "James Kenney Community Center · 1720 8th Street, Berkeley；另有两个分场地",
@@ -10077,7 +10079,7 @@
       "plan": [
         "主场 James Kenney Community Center（1720 8th Street）10:00–15:00，各项目时段不同。 骑行与皮划艇在 BORP Adaptive Cycling Center（80 Bolivar Drive）10:00–13:00；攀岩在 Berkeley Ironworks（800 Potter Street）12:00–15:00，转场要留时间。",
         "提前报名强烈建议；交通和攀岩必须登记。无障碍免费接驳连接 North Berkeley BART 与三个场地，名额有限须预留；攀岩另需签免责文件。 其他体验可到场填简表；欢迎无残障社区成员参与或观看。官网未公布统一最低年龄，应按所选运动向主办方确认。",
-        "主场 15:30–17:30 另有免费社区庆祝、食物、音乐和游戏；白天午餐餐车另购。"
+        "主场之后有免费社区庆祝，有食物、音乐和游戏：官网日程写 15:00–16:30，FAQ 写 15:30–17:30，两处不一致，建议 15:00 前到。白天午餐餐车另购。"
       ],
       "audience": [
         "无障碍运动",
@@ -10120,7 +10122,7 @@
               }
             ]
           },
-          "note": "这里只核对 1720 8th Street 主场 10:00–15:00。80 Bolivar Drive 骑行／皮划艇为 10:00–13:00，800 Potter Street 攀岩为 12:00–15:00，须另安排转场。交通及攀岩必须登记；其他项目建议报名，可现场填表。主场 15:30–17:30 免费社区庆祝另计时段；白天餐车午餐另购。"
+          "note": "这里只核对 1720 8th Street 主场 10:00–15:00。80 Bolivar Drive 骑行／皮划艇为 10:00–13:00，800 Potter Street 攀岩为 12:00–15:00，须另安排转场。交通及攀岩必须登记；其他项目建议报名，可现场填表。主场之后的免费社区庆祝另计时段：官网日程写 15:00–16:30，FAQ 写 15:30–17:30，建议 15:00 前到；白天餐车午餐另购。"
         }
       }
     },
@@ -11933,8 +11935,8 @@
       "city": "San Francisco",
       "venue": "SF Main Library · Book Arts & Special Collections · 100 Larkin Street, San Francisco, CA 94102",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "费用待核：官方活动页未列明入场费；纪念印张限前 100 位。",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；纪念印张限前 100 位。",
       "summary": "在印刷工作者协助下体验图书馆的 Albion 手压印刷机，制作万圣节纪念印张。",
       "plan": [
         "American Printing History Association 的 NorCal 分会提供印刷协助；按现场工作人员指导操作设备。",
@@ -11966,7 +11968,7 @@
         "萬聖節活版印刷：體驗 1909 年手壓印刷機"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "setting": "indoor",
         "reservation": "optional",
         "schedule": {
@@ -11982,7 +11984,7 @@
               }
             ]
           },
-          "note": "14:00–16:00 可到场体验；印张限前 100 位，无须预约。活动适合成人，正文也欢迎其他年龄，儿童操作须按工作人员指导；官网未列活动费用。"
+          "note": "14:00–16:00 可到场体验；印张限前 100 位，无须预约。活动适合成人，正文也欢迎其他年龄，儿童操作须按工作人员指导；SFPL 活动一律免费。"
         }
       }
     },
@@ -12000,8 +12002,8 @@
       "city": "San Francisco",
       "venue": "Marina Branch Library · 1890 Chestnut Street, San Francisco, CA 94123",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "费用待核：官方活动页未列明入场费；赠书数量未公布。",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；赠书数量未公布。",
       "summary": "在分馆和院落听音乐、做书签与徽章，还可参加服装交换、宾果及社区资源活动。",
       "plan": [
         "面向家庭与所有年龄；按官网参加规则，可直接到场，无须预约。",
@@ -12033,7 +12035,7 @@
         "Marina 圖書館開放日：音樂、手工與贈書"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "setting": "mixed",
         "reservation": "optional",
         "schedule": {
@@ -12049,7 +12051,7 @@
               }
             ]
           },
-          "note": "分馆及院落活动整体为 11:00–15:00，面向所有年龄，可直接到场。各项目时刻与赠书余量未公布；官方未列明活动入场费，费用待核。"
+          "note": "分馆及院落活动整体为 11:00–15:00，面向所有年龄，可直接到场。各项目时刻与赠书余量未公布；SFPL 活动一律免费。"
         }
       }
     },
@@ -12076,7 +12078,6 @@
       "summary": "20th Street 的 Potrero Hill Festival 将社区音乐、摊位和家庭活动聚在一起。日期和 10:00 开始时间已核对，主办方两个页面对结束时间仍有不同说明。",
       "plan": [
         "20th Street 的 Wisconsin Street 至 Missouri Street；主办方两处写的结束时间不同（16:00 或 17:00）。",
-        "出发前看主办方更新与 FAQ：https://potrerofestival.com/sponsorship-faqq/",
         "未找到官方入场价；餐饮和商品另购。"
       ],
       "audience": [
@@ -12522,8 +12523,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "鬼屋、南瓜园、游戏和手工要买票；活动页没有写入场费",
+      "cost": "mixed",
+      "costLabel": "免费入场；鬼屋、南瓜园、游戏和手工要买票，票价现场公布",
       "sourceLabel": "圣何塞公共图书馆活动页（Almaden 分馆）",
       "title": "Almaden 图书馆 20 周年暨丰收节：乐团、泡泡派对和南瓜园",
       "dateLabel": "10/17（周六）· 11:00–16:00",
@@ -12549,6 +12550,7 @@
         }
       ],
       "price": {
+        "free": true,
         "note": "部分项目需买票"
       },
       "venueShort": "Almaden 分馆与社区中心",
@@ -13249,8 +13251,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "San Mateo County Libraries 活动页（Millbrae）",
       "title": "Millbrae 图书馆国语、粤语故事会",
       "dateLabel": "10/18、10/25 · 周日 10:30–11:00",
@@ -13261,7 +13263,7 @@
         "10/18 和 10/25 两个周日，时间相同。"
       ],
       "audience": [
-        "0–5 岁儿童与家长"
+        "儿童与家长"
       ],
       "officialUrl": "https://smcl.bibliocommons.com/events/6ab6e6d208693b0f7374a99f",
       "shortTitle": "Millbrae 国语粤语故事会",
@@ -13278,7 +13280,7 @@
           "end": "11:00"
         }
       ],
-      "ageChip": "0–5 岁",
+      "ageChip": "儿童（任何年龄）",
       "venueShort": "Millbrae 图书馆",
       "address": "1 Library Avenue, Millbrae, CA 94030",
       "aliases": [
@@ -13294,7 +13296,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -16788,8 +16790,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "需在图书馆网站报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需在图书馆网站报名",
       "sourceLabel": "San Mateo County Libraries 活动页（Portola Valley）",
       "title": "中秋中文书法纸灯笼：学写毛笔字，做一盏扇形灯",
       "dateLabel": "10/25（周日）· 10:30–11:30",
@@ -16828,7 +16830,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "required",
         "setting": "indoor",
@@ -19334,8 +19336,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用；材料用完即止",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；材料用完即止",
       "sourceLabel": "San Mateo County Libraries 活动页（Brisbane）",
       "title": "Brisbane 图书馆亡灵节糖骷髅彩绘",
       "dateLabel": "10/31（周六）· 11:00–12:30",
@@ -19374,7 +19376,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": 8,
         "reservation": "unknown",
         "setting": "indoor",
@@ -19405,8 +19407,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "San Mateo County Libraries 活动页（San Carlos）",
       "title": "San Carlos 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
       "dateLabel": "10/31（周六）· 10:30–11:15",
@@ -19444,7 +19446,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -20222,8 +20224,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "San Mateo County Libraries 活动页（Foster City）",
       "title": "Foster City 图书馆：绘本作家 Nidhi Chanani 讲故事、现场画画",
       "dateLabel": "11/1（周日）· 10:30–11:30",
@@ -20261,7 +20263,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -20292,8 +20294,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "需网上报名，限 15 人；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需网上报名，限 15 人",
       "sourceLabel": "San Mateo County Libraries 活动页（Pacifica Sharp Park）",
       "title": "Pacifica 图书馆机器人入门：高中战队 Team 5940 带孩子编程",
       "dateLabel": "11/1（周日）· 11:00–14:30",
@@ -20331,7 +20333,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "required",
         "setting": "indoor",
@@ -21409,8 +21411,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名，先到先得；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名，先到先得",
       "sourceLabel": "San Mateo County Libraries 活动页（Atherton）",
       "title": "Atherton 图书馆排灯节手绘指甲花",
       "dateLabel": "11/7（周六）· 11:30–13:30",
@@ -21449,7 +21451,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -21480,8 +21482,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "需在图书馆网站报名，限 10 人；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需在图书馆网站报名，限 10 人",
       "sourceLabel": "San Mateo County Libraries 活动页（Portola Valley）",
       "title": "Portola Valley 图书馆版画课：刻一枚阿兹特克历法日符",
       "dateLabel": "11/7（周六）· 11:00–12:00",
@@ -21520,7 +21522,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "required",
         "setting": "indoor",
@@ -22218,8 +22220,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
       "sourceLabel": "San Mateo County Libraries 活动页（Brisbane）",
       "title": "Brisbane 图书馆拼图交换会",
       "dateLabel": "11/8（周日）· 14:00–16:00",
@@ -22258,7 +22260,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -22289,8 +22291,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用；材料限前 25 人",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；材料限前 25 人",
       "sourceLabel": "San Mateo County Libraries 活动页（Brisbane）",
       "title": "Brisbane 图书馆儿童画：祖尼族水罐图案",
       "dateLabel": "11/8（周日）· 11:00–12:00",
@@ -22329,7 +22331,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": 6,
         "maxAge": 11,
         "reservation": "unknown",
@@ -22361,8 +22363,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名，先到先得；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名，先到先得",
       "sourceLabel": "San Mateo County Libraries 活动页（North Fair Oaks）",
       "title": "North Fair Oaks 图书馆排灯节手绘指甲花",
       "dateLabel": "11/8（周日）· 12:00–14:00",
@@ -22401,7 +22403,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -23323,8 +23325,8 @@
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "Marin County Free Library 活动页（Bolinas）",
       "title": "Bolinas 图书馆周六亲子手工与游戏",
       "dateLabel": "11/14（周六）· 10:00–12:00",
@@ -23362,7 +23364,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -23393,8 +23395,8 @@
       "imageKey": "",
       "region": "north-bay",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "不用报名，座位有限；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名，座位有限",
       "sourceLabel": "Marin County Free Library 活动页（Corte Madera）",
       "title": "Corte Madera 图书馆讲座：两位非裔拼布艺术家的创作之路",
       "dateLabel": "11/14（周六）· 15:00–16:00",
@@ -23432,7 +23434,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -23463,8 +23465,8 @@
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
       "sourceLabel": "Marin County Free Library 活动页（Point Reyes）",
       "title": "Point Reyes 图书馆亲子音乐会：Rositas Arribeñas 演奏墨西哥 son huasteco",
       "dateLabel": "11/14（周六）· 11:00–12:00",
@@ -23502,7 +23504,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -23947,8 +23949,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "活动页没有写入场费；书按价购买",
+      "cost": "free",
+      "costLabel": "免费入场；书按价购买",
       "sourceLabel": "Santa Clara County Library District 活动页（Campbell 图书馆）",
       "title": "Campbell 图书馆之友旧书义卖：书、拼图和桌游",
       "dateLabel": "11/14（周六）· 10:00–13:00",
@@ -23987,7 +23989,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -24152,8 +24154,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用；不用报名",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "圣何塞公共图书馆活动页（Almaden 分馆）",
       "title": "Almaden 分馆南亚音乐小演出：西塔琴与萨罗德琴",
       "dateLabel": "11/14（周六）· 12:00–13:00",
@@ -24192,7 +24194,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -24311,8 +24313,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "活动页没有写入场费；书按价购买",
+      "cost": "free",
+      "costLabel": "免费入场；书按价购买",
       "sourceLabel": "San Mateo County Libraries 活动页（Belmont）",
       "title": "Belmont 图书馆之友旧书义卖",
       "dateLabel": "11/14–11/15（周六、周日）",
@@ -24352,7 +24354,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -24376,8 +24378,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
       "sourceLabel": "San Mateo County Libraries 活动页（Pacifica Sanchez）",
       "title": "Pacifica 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
       "dateLabel": "11/14（周六）· 11:15–12:00",
@@ -24415,7 +24417,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -24883,8 +24885,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
       "sourceLabel": "圣何塞公共图书馆活动页（Berryessa 分馆）",
       "title": "Berryessa 分馆排灯节：故事、手工、舞蹈和小点心",
       "dateLabel": "11/15（周日）· 15:00–16:00",
@@ -24923,7 +24925,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -24954,8 +24956,8 @@
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "活动页没有写入场费；书 $0.25–$2",
+      "cost": "free",
+      "costLabel": "免费入场；书 $0.25–$2",
       "sourceLabel": "San Mateo County Libraries 活动页（San Carlos）",
       "title": "San Carlos 图书馆之友旧书义卖：25 美分到 2 美元",
       "dateLabel": "11/15（周日）· 13:00–16:00",
@@ -24980,6 +24982,7 @@
         }
       ],
       "price": {
+        "free": true,
         "note": "$0.25–$2"
       },
       "venueShort": "San Carlos 图书馆",
@@ -24997,7 +25000,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -26235,8 +26238,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "随到随参加；活动页没有写费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；随到随参加",
       "sourceLabel": "圣何塞公共图书馆活动页（Village Square 分馆）",
       "title": "Village Square 分馆感恩节派对：手工、点心和小奖品",
       "dateLabel": "11/20（周五）· 15:30–16:30",
@@ -26274,7 +26277,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -27446,8 +27449,8 @@
       "city": "Healdsburg",
       "venue": "Healdsburg Regional Library 主阅览室，139 Piper Street",
       "category": "culture",
-      "cost": "unknown",
-      "costLabel": "需预约；活动页未列费用",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需预约",
       "summary": "预约馆员的半小时个别指导，处理电子书借阅、电子邮件设置或设备使用疑问。",
       "plan": [
         "这一场在 11/28 16:00，预约当天 15:00 截止。",
@@ -27476,7 +27479,7 @@
         "Healdsburg 一對一數字生活幫助"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "required",
         "setting": "indoor",
@@ -27500,7 +27503,7 @@
               "end": "16:30"
             }
           ],
-          "note": "固定16:00–16:30成人一对一帮助，预约在11/28 15:00截止；名额以实时页面为准。官方标Adult但未给数字年龄，不凭此创造18岁入场门槛。报名需注明问题/设备；活动页未列费用。"
+          "note": "固定16:00–16:30成人一对一帮助，预约在11/28 15:00截止；名额以实时页面为准。官方标Adult但未给数字年龄，不凭此创造18岁入场门槛。报名需注明问题/设备；图书馆活动免费。"
         }
       }
     },
@@ -27593,8 +27596,8 @@
       "city": "Petaluma",
       "venue": "Petaluma Regional Library 会议室，100 Fairgrounds Drive",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页未列费用或预约要求",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；活动页没有写要预约",
       "summary": "Manos Mexicas 以手工制作的乐器介绍中美洲音乐传统；官网面向幼儿园至六年级儿童。",
       "plan": [
         "8岁及以下儿童须有成人陪同。",
@@ -27622,7 +27625,7 @@
         "Petaluma 兒童音樂體驗：中美洲古老樂器"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 0,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -27646,7 +27649,7 @@
               "end": "12:00"
             }
           ],
-          "note": "固定11:00–12:00儿童音乐活动，官方年龄组为K–6年级；不把年级直接换算成数值最低/最高年龄。8岁及以下须成人陪同，这不是8岁最低年龄。地点为100 Fairgrounds Drive现馆；活动页未列费用或强制预约。"
+          "note": "固定11:00–12:00儿童音乐活动，官方年龄组为K–6年级；不把年级直接换算成数值最低/最高年龄。8岁及以下须成人陪同，这不是8岁最低年龄。地点为100 Fairgrounds Drive现馆；图书馆活动免费，活动页没有写要预约。"
         }
       }
     },

@@ -11,12 +11,16 @@ const events = loadEventCatalog();
 const event = id => planner.events.find(row => row.id === id);
 const opening = (english, id) => loadDiscoveryCatalog(undefined, english).items.find(row => row.kind === 'opening' && row.id === id);
 
-test('Old Post Office brunch starts Sunday 10/18 in both languages (audit G03)', () => {
+// Web CNT-HOTFIX-2 (H70, c10a856b): the official site no longer gives a brunch start date, so 10/17 is unconfirmed (call first)
+// instead of "no brunch on 10/17". The 10/18 label stays.
+test('Old Post Office brunch from 10/18, Saturday 10/17 unconfirmed, in both languages (audit G03, H70)', () => {
   const zh = opening(false, 'old-post-office-burlingame');
   const en = opening(true, 'old-post-office-burlingame');
   assert.match(zh.dateLabel, /早午餐 10\/18 起/);
-  assert.match(zh.details[0], /10\/18（周日）才开始，10\/17 周六还没有早午餐/);
+  assert.match(zh.details[0], /10\/17 周六是否供应未能确认，去前先打 650-502-1000/);
+  assert.doesNotMatch(zh.details[0], /10\/17 周六还没有早午餐/);
   assert.match(en.dateLabel, /brunch from Oct 18/);
+  assert.match(en.details[0], /brunch on Saturday, Oct 17 is unconfirmed, so call \(650\) 502-1000/);
 });
 
 test('moved and unconfirmed dates agree across the planner and event catalogs', () => {
