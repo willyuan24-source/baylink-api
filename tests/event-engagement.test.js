@@ -38,7 +38,7 @@ test('public event counts start at zero, optional auth reveals only its own stat
   assert.deepEqual(anonymous.data, { events: [
     { eventId: 'future-festival', interestedCount: 0, buddyCount: 0, me: null },
     { eventId: 'today-event', interestedCount: 0, buddyCount: 0, me: null },
-  ] });
+  ], unknown: [] });
   assert.equal((await put({ interested: true, lookingForBuddy: false }, null)).status, 401);
   assert.equal(models.EventInterest.rows.length, 0);
   assert.deepEqual((await request('/events/engagement?ids=future-festival', { as: 'owner' })).data.events[0].me, { interested: false, lookingForBuddy: false });
@@ -98,9 +98,39 @@ test('unknown events, Mongo-shaped input, forged identity and non-booleans canno
   for (const body of invalid) assert.equal((await put(body)).status, 400);
   assert.equal((await put({ interested: true, lookingForBuddy: false }, 'owner', 'fake-event')).status, 404);
   for (const path of ['/events/engagement', '/events/engagement?ids=', '/events/engagement?ids[$ne]=x', '/events/engagement?ids=a&ids=b', '/events/engagement?ids=future-festival,', `/events/engagement?ids=${Array(MAX_EVENT_IDS_PER_REQUEST + 1).fill('today-event').join(',')}`]) assert.equal((await request(path)).status, 400, path);
-  assert.equal((await request('/events/engagement?ids=fake-event')).status, 404);
+  // Reading an unknown event lists it as unknown (API-SYNC-3b); writing to it or reading its buddies stays a 404.
+  assert.deepEqual(await request('/events/engagement?ids=fake-event').then(({ status, data }) => ({ status, data })), { status: 200, data: { events: [], unknown: ['fake-event'] } });
   assert.equal((await request('/events/fake-event/buddies')).status, 404);
   assert.equal(models.EventInterest.rows.length, 0);
+});
+
+test('engagement batches answer the known ids and list unknown ones instead of failing the whole request (H07)', async t => {
+  const { request, models } = await fixture(t, { interests: [interest('owner', { lookingForBuddy: true }), interest('other')] });
+  const mixed = await request('/events/engagement?ids=not-synced-yet,future-festival,also-new,today-event,not-synced-yet,future-festival', { as: 'owner' });
+  assert.equal(mixed.status, 200);
+  assert.deepEqual(mixed.data, {
+    events: [
+      { eventId: 'future-festival', interestedCount: 2, buddyCount: 1, me: { interested: true, lookingForBuddy: true } },
+      { eventId: 'today-event', interestedCount: 0, buddyCount: 0, me: { interested: false, lookingForBuddy: false } },
+    ],
+    unknown: ['not-synced-yet', 'also-new'],
+  }, 'known ids keep their counts and request order; unknown ids are listed once, in request order');
+  const known = await request('/events/engagement?ids=today-event,future-festival');
+  assert.deepEqual(known.data, { events: [
+    { eventId: 'today-event', interestedCount: 0, buddyCount: 0, me: null },
+    { eventId: 'future-festival', interestedCount: 2, buddyCount: 1, me: null },
+  ], unknown: [] });
+  const aggregate = models.EventInterest.aggregate;
+  models.EventInterest.aggregate = async () => { throw new Error('unknown ids never reach storage'); };
+  const allUnknown = await request('/events/engagement?ids=new-a,new-b,new-a');
+  assert.equal(allUnknown.status, 200);
+  assert.deepEqual(allUnknown.data, { events: [], unknown: ['new-a', 'new-b'] });
+  assert.equal((await request('/events/engagement?ids=new-a,future-festival')).status, 503, 'a storage failure is never answered with invented counts');
+  models.EventInterest.aggregate = aggregate;
+  const broken = await fixture(t, { catalog: [{ id: 'future-festival', title: 'bad date', startDate: '2026-02-30', endDate: '2026-10-31' }] });
+  assert.equal((await broken.request('/events/engagement?ids=not-synced-yet')).status, 503, 'without a catalog nothing can be called unknown');
+  assert.equal((await request('/events/engagement?ids=not-synced-yet,bad$id')).status, 400);
+  assert.equal(models.EventInterest.rows.length, 2, 'batch reads never mutate participation');
 });
 
 test('Pacific end dates include the final local day and allow cancellation after an event ends', async t => {
@@ -273,7 +303,10 @@ test('engagement batches accept the bounded maximum without dropping final rows 
   assert.equal((await fetchIds(Array(MAX_EVENT_IDS_PER_REQUEST + 1).fill(ids[0]))).status, 400, 'duplicate IDs do not bypass the raw request-size bound');
   assert.equal((await fetchIds([...ids.slice(0, -1), 'bad$id'])).status, 400);
   assert.equal((await fetchIds([...ids.slice(0, -1), 'x'.repeat(121)])).status, 400);
-  assert.equal((await fetchIds([...ids.slice(0, -1), 'unknown-event'])).status, 404);
+  const tail = await fetchIds([...ids.slice(0, -1), 'unknown-event']);
+  assert.equal(tail.status, 200);
+  assert.deepEqual(tail.data.events.map(row => row.eventId), ids.slice(0, -1), 'an unknown tail ID does not drop the known rows');
+  assert.deepEqual(tail.data.unknown, ['unknown-event']);
   assert.equal(models.EventInterest.rows.length, 1, 'batch reads never mutate participation');
 });
 
@@ -404,7 +437,7 @@ test('merged-event cleanup failures are explicit, and an alias cannot resurrect 
   assert.equal((await put({ interested: false, lookingForBuddy: false }, 'owner', LEGACY_ID)).status, 200);
   assert.deepEqual((await request(`/events/${LEGACY_ID}/buddies`)).data.buddies, []);
   const missing = await fixture(t);
-  assert.equal((await missing.request(`/events/engagement?ids=${LEGACY_ID}`)).status, 404);
+  assert.deepEqual((await missing.request(`/events/engagement?ids=${LEGACY_ID}`)).data, { events: [], unknown: [LEGACY_ID] });
   assert.equal((await missing.request(`/events/${LEGACY_ID}/buddies`)).status, 404);
   assert.equal((await missing.put({ interested: true, lookingForBuddy: true }, 'owner', LEGACY_ID)).status, 404);
   assert.equal(missing.models.EventInterest.rows.length, 0);

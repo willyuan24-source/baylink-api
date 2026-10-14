@@ -8,7 +8,9 @@ The official event catalog is `data/event-catalog.json`, an array of `{ id, titl
 
 `GET /api/events/engagement?ids=event-a,event-b`
 
-Accepts 1–100 IDs, de-duplicates them and keeps the requested order. Unknown IDs return 404; malformed IDs or lists return 400. An absent Authorization header is allowed. An invalid or expired supplied token is rejected rather than silently treated as anonymous.
+Accepts 1–200 IDs (the web sends batches of 100), de-duplicates them and keeps the requested order. Malformed IDs or lists return 400; 429 and 503 (no catalog, storage error) are unchanged. An absent Authorization header is allowed. An invalid or expired supplied token is rejected rather than silently treated as anonymous.
+
+An ID this copy of the catalog does not know (a web event between its content merge and the next API-SYNC) no longer fails the batch (API-SYNC-3b, H07): the known IDs get their entries in `events` and the others are listed in `unknown`. Every requested ID comes back exactly once, in one of the two lists, each in request order. `unknown` is always an array (empty when every ID is known). A legacy ID that resolves to a catalog event (`lib/eventId.js`) is known, and its entry keeps the requested ID as `eventId`. Web builds before WEB-HOLDOUT ignore `unknown`; they see fewer entries than requested and show the same retry state they showed for the old 404. Interest writes and buddy pages for an unknown ID still answer 404.
 
 ```json
 {
@@ -19,7 +21,8 @@ Accepts 1–100 IDs, de-duplicates them and keeps the requested order. Unknown I
       "buddyCount": 3,
       "me": { "interested": true, "lookingForBuddy": false }
     }
-  ]
+  ],
+  "unknown": ["event-not-synced-yet"]
 }
 ```
 

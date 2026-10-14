@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-12",
+  "checkedAt": "2026-10-13",
   "items": [
     {
       "kind": "offer",
@@ -3656,6 +3656,26 @@
     },
     {
       "kind": "opening",
+      "id": "marufuku-burlingame-announced",
+      "title": "Marufuku Ramen · Burlingame",
+      "path": "/openings/marufuku-burlingame-announced",
+      "summary": "Marufuku Ramen’s Burlingame branch at 225 Lorton Avenue. The store page lists a grand opening on Oct 11 and regular hours from Oct 12; the brand homepage and location list still say Coming Soon.",
+      "details": [
+        "Closed 2–5 pm on weekdays; open straight through 11 am–9 pm on weekends.",
+        "225 Lorton Ave, Burlingame, CA 94010",
+        "Ramen"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "startDate": "2026-10-11",
+      "dateLabel": "Grand opening Oct 11 · from Oct 12: weekdays 11 am–2 pm and 5–9 pm, weekends 11 am–9 pm",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.marufukuramen.com/burlingame",
+      "sourceLabel": "Marufuku Ramen · Burlingame · Official website"
+    },
+    {
+      "kind": "opening",
       "id": "old-post-office-burlingame",
       "title": "The Old Post Office",
       "path": "/openings/old-post-office-burlingame",
@@ -3673,25 +3693,6 @@
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
       "sourceLabel": "The Old Post Office · Official website"
-    },
-    {
-      "kind": "opening",
-      "id": "marufuku-burlingame-announced",
-      "title": "Marufuku Ramen · Burlingame",
-      "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku Ramen’s Burlingame branch at 225 Lorton Avenue. The store page lists a grand opening on Oct 11 and regular hours from Oct 12; the brand homepage and location list still say Coming Soon.",
-      "details": [
-        "Closed 2–5 pm on weekdays; open straight through 11 am–9 pm on weekends.",
-        "225 Lorton Ave, Burlingame, CA 94010",
-        "Upcoming ramen restaurant"
-      ],
-      "region": "peninsula",
-      "city": "Burlingame",
-      "dateLabel": "Grand opening Oct 11 · from Oct 12: weekdays 11 am–2 pm and 5–9 pm, weekends 11 am–9 pm",
-      "status": "open",
-      "verifiedAt": "2026-10-07",
-      "sourceUrl": "https://www.marufukuramen.com/burlingame",
-      "sourceLabel": "Marufuku Ramen · Burlingame · Official website"
     },
     {
       "kind": "opening",
@@ -4219,13 +4220,13 @@
       "path": "/openings/oakland-delage-reopening-2026",
       "summary": "An existing sushi restaurant has reopened under a new team; this is a reopening, not an entirely new brand.",
       "details": [
-        "The report lists an eight-course omakase at $150; à la carte items cost extra, and taxes and gratuities have not been verified. The business provides a reservation link; confirm hours and the menu before the soft opening.",
+        "Phone 341-213-7494, call or text. The website lists no Sunday hours. Press reports an eight-course omakase at $150, with the à la carte menu priced separately; it does not say whether tax and tip are included. The restaurant offers a reservation link.",
         "536 Ninth St, Oakland, CA",
         "New dining spot"
       ],
       "region": "east-bay",
       "city": "Oakland",
-      "dateLabel": "Check the business's latest announcements for regular hours and future plans.",
+      "dateLabel": "Website says Now open · Mon–Sat lunch 11:00–15:00, dinner 17:00–21:00",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.delagesushi.com/",

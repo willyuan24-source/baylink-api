@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-12",
+  "checkedAt": "2026-10-13",
   "items": [
     {
       "kind": "offer",
@@ -3656,6 +3656,26 @@
     },
     {
       "kind": "opening",
+      "id": "marufuku-burlingame-announced",
+      "title": "Marufuku Ramen · Burlingame",
+      "path": "/openings/marufuku-burlingame-announced",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
+      "details": [
+        "平日 14:00–17:00 不营业；周末 11:00–21:00 中午不休息。",
+        "225 Lorton Ave, Burlingame, CA 94010",
+        "拉面"
+      ],
+      "region": "peninsula",
+      "city": "Burlingame",
+      "startDate": "2026-10-11",
+      "dateLabel": "10/11 Grand Opening · 10/12 起平日 11:00–14:00、17:00–21:00，周末 11:00–21:00",
+      "status": "open",
+      "verifiedAt": "2026-10-07",
+      "sourceUrl": "https://www.marufukuramen.com/burlingame",
+      "sourceLabel": "Marufuku Ramen · Burlingame · 官方入口"
+    },
+    {
+      "kind": "opening",
       "id": "old-post-office-burlingame",
       "title": "The Old Post Office",
       "path": "/openings/old-post-office-burlingame",
@@ -3673,25 +3693,6 @@
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
       "sourceLabel": "The Old Post Office · 官方入口"
-    },
-    {
-      "kind": "opening",
-      "id": "marufuku-burlingame-announced",
-      "title": "Marufuku Ramen · Burlingame",
-      "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
-      "details": [
-        "平日 14:00–17:00 不营业；周末 11:00–21:00 中午不休息。",
-        "225 Lorton Ave, Burlingame, CA 94010",
-        "拉面新店预告"
-      ],
-      "region": "peninsula",
-      "city": "Burlingame",
-      "dateLabel": "10/11 Grand Opening · 10/12 起平日 11:00–14:00、17:00–21:00，周末 11:00–21:00",
-      "status": "open",
-      "verifiedAt": "2026-10-07",
-      "sourceUrl": "https://www.marufukuramen.com/burlingame",
-      "sourceLabel": "Marufuku Ramen · Burlingame · 官方入口"
     },
     {
       "kind": "opening",
@@ -4219,13 +4220,13 @@
       "path": "/openings/oakland-delage-reopening-2026",
       "summary": "既有寿司店换团队后重新开业，属于重新开业而非全新品牌。",
       "details": [
-        "报道列八道 omakase $150；点单菜单另计，税费及小费未核。 商家提供预约入口；试营业前核对时间与菜单。",
+        "电话 341-213-7494，可打电话或发短信。官网没有列周日营业时间。报道列八道 omakase $150，点单菜单另计；报道没写是否含税和小费。商家提供预约入口。",
         "536 Ninth St, Oakland, CA",
         "餐饮新店"
       ],
       "region": "east-bay",
       "city": "Oakland",
-      "dateLabel": "日常营业时间及未来安排需查商家最新公告。",
+      "dateLabel": "官网写 Now open · 周一至周六 午餐 11:00–15:00、晚餐 17:00–21:00",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.delagesushi.com/",

@@ -1976,8 +1976,41 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "sfpl-chinatown-creative-saturdays-fall-2026",
+    "title": "华埠分馆周六午后：中文书法、填色与桌游",
+    "startDate": "2026-10-17",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sfpl-marina-wild-goose-qigong-oct-2026",
+    "title": "Marina 分馆大雁功：普通话和英语讲解的户外晨练",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "sfpl-omi-history-day-oct17-2026",
     "title": "OMI History Day：认识旧金山三个社区的历史",
+    "startDate": "2026-10-17",
+    "endDate": "2026-10-17",
+    "occurrenceDates": [
+      "2026-10-17"
+    ]
+  },
+  {
+    "id": "sfpl-richmond-hk-film-the-killer-2026",
+    "title": "香港动作经典《喋血双雄》：粤语原声放映",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17",
     "occurrenceDates": [
@@ -2570,6 +2603,16 @@
     "endDate": "2026-10-25"
   },
   {
+    "id": "sfpl-excelsior-multilingual-tech-help-2026",
+    "title": "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
+    "startDate": "2026-10-25",
+    "endDate": "2026-11-15",
+    "occurrenceDates": [
+      "2026-10-25",
+      "2026-11-15"
+    ]
+  },
+  {
     "id": "smcl-portola-valley-mid-autumn-lantern-2026",
     "title": "中秋中文书法纸灯笼：学写毛笔字，做一盏扇形灯",
     "startDate": "2026-10-25",
@@ -2888,6 +2931,15 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "sfpl-north-beach-open-house-oct31-2026",
+    "title": "North Beach 分馆万圣节开放日：故事会、芭蕾游戏与鬼故事导览",
+    "startDate": "2026-10-31",
+    "endDate": "2026-10-31",
+    "occurrenceDates": [
+      "2026-10-31"
+    ]
+  },
+  {
     "id": "sj-sharks-senators-2026",
     "title": "圣何塞 Sharks 对 Senators：Los Tiburones 主题场",
     "startDate": "2026-10-31",
@@ -3004,6 +3056,15 @@
     "title": "Suisun City 亡灵节文化晚会",
     "startDate": "2026-11-01",
     "endDate": "2026-11-01"
+  },
+  {
+    "id": "sfpl-bernal-dia-de-los-muertos-2026",
+    "title": "Bernal Heights 社区亡灵节：一起搭祭坛、听现场音乐",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "occurrenceDates": [
+      "2026-11-01"
+    ]
   },
   {
     "id": "smcl-foster-city-nidhi-chanani-2026",
@@ -3177,6 +3238,15 @@
   {
     "id": "acl-castro-valley-military-records-2026",
     "title": "退伍军人节前的家谱课：查家人的军队服役记录",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "occurrenceDates": [
+      "2026-11-08"
+    ]
+  },
+  {
+    "id": "chsa-lily-qi-book-talk-nov8-2026",
+    "title": "美国华人历史学会讲座：Lily Qi 谈新书《Elected American》",
     "startDate": "2026-11-08",
     "endDate": "2026-11-08",
     "occurrenceDates": [
@@ -3438,6 +3508,24 @@
   {
     "id": "sccl-campbell-friends-book-sale-nov14-2026",
     "title": "Campbell 图书馆之友旧书义卖：书、拼图和桌游",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sfpl-chinese-book-club-nov14-2026",
+    "title": "旧金山总馆中文读书会：陈年喜《活着就是冲天一喊》",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sfpl-richmond-hk-film-hard-boiled-2026",
+    "title": "香港动作经典《辣手神探》：粤语原声放映",
     "startDate": "2026-11-14",
     "endDate": "2026-11-14",
     "occurrenceDates": [
