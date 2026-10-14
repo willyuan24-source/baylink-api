@@ -87,6 +87,8 @@ API-SEC, 2026-10-12. Everything below is opt-in: with no env change the site beh
    - 或者：`node scripts/revoke-admin-sessions.js --env=<.env 路径>`（空跑显示有几个管理员账号），再加 `--apply`。
 6. **（可选）** `ADMIN_LOGIN_ID=<一个不公开的长登录名>`：之后 `admin` 不能再登录，改用这个名字加原密码登录。登录限制（密码和验证器两步）都按你输入的这个名字计数，别人对 `admin` 的失败次数不会挡住你。
 
+**怎么确认做完了（API-OPS）：** 用管理员登录（开了 `ADMIN_MFA_REQUIRED` 就要验证器会话）后打开 `GET /api/admin/security-status`，每一步一个 true / false：`passwordChanged`（第 1 步）、`encryptionKeySet`（第 2 步）、`authenticatorOn`（第 3 步）、`authenticatorRequired`（第 4 步）、`sessionsRevoked`（第 5 步）、`privateLoginName`（第 6 步）、`alertsOn`（下面的提醒邮件能发出去）；`done` / `total` 是完成数，`times` 是各步最早完成的时间。账号类的步骤要**每个**管理员账号都做了才算 true。只有管理员能看（访客 401、普通会员 403），公开接口里没有这些字段，也不返回账号 id、登录名、邮箱或任何变量的值。
+
 **登录失败提醒：** 管理员账号当天登录失败到 10 / 50 / 200 / 1000 次（`ADMIN_LOGIN_ALERT_STEPS` 可改）时给店主发一封邮件，每档每天一封；"密码对了但验证器代码错"的次数单独写出来（说明密码可能已经泄露）。管理员账号开启或停用验证器、换恢复码、改密码、撤销所有管理员登录时，也各发一封"刚刚发生了什么、如果不是你本人该怎么办"的邮件。需要 `NOTIFICATION_DELIVERY_ENABLED=true`、Resend 配好、收件人 `SECURITY_ALERT_EMAIL`（单独设它就够；没有就用 `AI_ALERT_EMAIL`，再没有就用 `OWNER_DIGEST_EMAIL`）。
 
 **登录限制（重启不清零）：** 同一访客 15 分钟内失败 10 次、同一访客对同一账号失败 8 次、所有访客对同一账号失败 100 次后，暂停到这 15 分钟结束。计数存在 Mongo 的 `authlimits` 集合，只存加密摘要，不存 IP、邮箱或账号 id，过期自动删除。
@@ -103,6 +105,8 @@ API-SEC, 2026-10-12. Everything below is opt-in: with no env change the site beh
 4. **Set `ADMIN_MFA_REQUIRED=true`.** A password-only administrator session then has no admin power anywhere: admin routes, hidden posts, contact values and report counts on public post views, comment moderation, reserved nicknames, the official badge, the unlimited post count.
 5. **Revoke every administrator session:** `POST /api/admin/sessions/revoke` from the authenticator session (the caller gets a fresh session), or `node scripts/revoke-admin-sessions.js --env=<file> --apply`. Both bump `sessionRevision` and `sessionsRevokedAt` on every `role: 'admin'` account; the endpoint also disconnects their sockets and logs `admin_sessions_revoked`.
 6. **Optional:** `ADMIN_LOGIN_ID=<a long private login name>`; `admin` then stops working. Both sign-in steps (password and authenticator) count failures against the name typed, so failures on the retired `admin` never hold the owner.
+
+**Checking the steps (API-OPS):** `GET /api/admin/security-status` (an administrator session; an authenticator session once `ADMIN_MFA_REQUIRED` is on) returns one boolean per step: `passwordChanged` (1), `encryptionKeySet` (2), `authenticatorOn` (3), `authenticatorRequired` (4), `sessionsRevoked` (5), `privateLoginName` (6) and `alertsOn` (the owner alerts below can be delivered), with `done` / `total` and `times` (the earliest time each account step happened). An account step is true only when every `role: 'admin'` account has it. Admin only (guests 401, members 403, `Cache-Control: no-store`); no public endpoint carries these fields, and the response holds no account id, login name, address or variable value (`lib/adminSecurityStatus.js`).
 
 **Sign-in limits** (`lib/loginGuard.js`, survive restarts): failed sign-ins per 15-minute window, 10 per visitor, 8 per visitor on one account, 100 per account across visitors. HMAC-keyed TTL documents in the `authlimits` collection; no IP, login name or account id is stored. An unreadable store fails open (the in-memory limiter still applies). A wrong authenticator code after a correct password counts too.
 

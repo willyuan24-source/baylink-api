@@ -36,6 +36,7 @@
 | `AI_SPEND_SOFT_DAILY_USD` | `4` | 代码默认 6。过了软上限：BayBay 只用站内资料快速回答，全站不联网查询 |
 | `AI_SPEND_HARD_DAILY_USD` | `7` | 代码默认 10。到了硬上限：当天不再调用 AI，显示"今日 AI 名额已满"，911 卡片照常 |
 | `AI_ALERT_MTD_USD` | `100,140,165` | 代码默认 `100,150,180`。本月花费过这几档各发一封提醒 |
+| `AI_CREDIT_TOTAL_USD` / `AI_CREDIT_START` | 新 key 的额度（例如 `1000`）/ 新 key 开始用的那天（湾区日期，例如 `2026-10-23`） | 可选（API-OPS）。管理员 `/api/admin/ai-metrics` 的 `credit` 显示从这天起用了多少、最近 7 / 30 天每天平均多少、按这个速度哪天用完、比 `ANTHROPIC_USE_UNTIL` 早几天；预计早 14 天以上用完时发**一封**提醒。数字来自站内账本（估算），准确账单看 Console |
 | `AI_GUEST_BAYBAY_DAILY_LIMIT` / `AI_USER_BAYBAY_DAILY_LIMIT` | R1 建议 `15` / `40`（店主定） | BayBay 自己的每日次数（每个访客 / 每位会员）。不设时和共用的 `AI_GUEST_DAILY_LIMIT` / `AI_USER_DAILY_LIMIT` 一样（代码默认 15 / 40） |
 
 保存后 Render 会重新部署。
@@ -113,6 +114,7 @@ The old key's promotional credit ends at 2026-10-30 00:00 UTC (Oct 29, 5:00 PM i
 | `AI_SPEND_SOFT_DAILY_USD` | `4` | code default 6: site-only fast answers and no web search past it |
 | `AI_SPEND_HARD_DAILY_USD` | `7` | code default 10: no AI call for the rest of the Pacific day, "今日 AI 名额已满", the 911 card unaffected |
 | `AI_ALERT_MTD_USD` | `100,140,165` | code default `100,150,180`: one e-mail per threshold per month |
+| `AI_CREDIT_TOTAL_USD` / `AI_CREDIT_START` | the new key's credit (e.g. `1000`) / the Pacific day the new key starts (e.g. `2026-10-23`) | optional (API-OPS). Admin `/api/admin/ai-metrics` `credit` shows spend since that day, the 7- and 30-day average per day, the projected run-out date and how many days before `ANTHROPIC_USE_UNTIL` that is; **one** e-mail when it is more than 14 days early. Ledger estimate; the Console is the bill |
 | `AI_GUEST_BAYBAY_DAILY_LIMIT` / `AI_USER_BAYBAY_DAILY_LIMIT` | R1 suggestion `15` / `40` (the owner decides) | BayBay's own daily share per visitor / member; unset = the shared `AI_GUEST_DAILY_LIMIT` / `AI_USER_DAILY_LIMIT` (code defaults 15 / 40) |
 
 **The `ANTHROPIC_USE_UNTIL` format.** Only `YYYY-MM-DD` (00:00 UTC that day) or a full ISO time with `Z` or an offset (`2027-04-19T00:00:00Z`, `2027-04-18T17:00:00-07:00`): seconds required, upper-case `T` and `Z`, no spaces. Any other nonempty value (a stray space, `2027-04-19 00:00`, `2027-04-19T00:00:00` without a zone, Feb 30) makes the API treat Claude as unavailable: every feature that uses Claude stops at once (BayBay too while it runs on Claude), with **no** advance banner. Three checks since API-OPS-KEY: (1) before pasting, `node scripts/check-ai-readiness.mjs --check-value "<value>"` (offline, the API's own reading; only `RESULT: VALID` is safe, and it prints the Pacific stop time and the first banner day); (2) after the deploy, an invalid value logs **one** Render line `[ai-config] ANTHROPIC_USE_UNTIL is set but invalid (<problem>: …)` with the problem (`spaces`, `missing_zone`, `invalid_date`, `format`) and never the value; (3) `/api/admin/ai-metrics` (admins) has `useUntil {set, valid, problem, at, passed}`. From 7 days before a valid cutoff every page shows "AI 助手预计…起暂停"; after it BayBay pauses (site records + banner, 911 card unaffected), and translation, post drafts, web search and source triage stop too.
@@ -142,7 +144,7 @@ The old key's promotional credit ends at 2026-10-30 00:00 UTC (Oct 29, 5:00 PM i
 | BayBay 每日次数 `BAYBAY_DAILY_RUN_LIMIT` | 默认 1000（达到后同样显示"今日 AI 名额已满"）。其中每位会员每天最多 80 次（`BAYBAY_MEMBER_RUN_LIMIT`）、每个访客最多 30 次（`BAYBAY_VISITOR_RUN_LIMIT`），一个人用完只影响他自己 | 200（全站共用，一个访客能用光） |
 | 同时处理的 AI 请求 `AI_CONCURRENCY_LIMIT` | 默认 12 | 6 |
 | 暂停模式 | `/api/ai/baybay-capabilities` 在暂停时返回 `enabled: false` 和 `pause`（三种语言的横幅文字、911/211 按钮）；每条回答带 `notice`。暂停的原因：`BAYBAY_PAUSED=true`、Claude 不可用（没有 key 或 `ANTHROPIC_USE_UNTIL` 已过）、当天到了硬上限。`BAYBAY_AGENT_ENABLED=false` 不算暂停：问答走旧版路径，`enabled` 照旧是 `false`，不显示暂停横幅（只有到硬上限时显示"今日 AI 名额已满"） | 没有 |
-| 提醒邮件 | 本月 Claude 花费过 $100 / $150 / $180、当天到硬上限、`ANTHROPIC_USE_UNTIL` 前 7 / 3 / 1 天，各发一次 | 没有 |
+| 提醒邮件 | 本月 Claude 花费过 $100 / $150 / $180、当天到硬上限、`ANTHROPIC_USE_UNTIL` 前 7 / 3 / 1 天，各发一次；API-OPS 起，`ANTHROPIC_USE_UNTIL` 格式不对时发一封（不写出值本身），设了 `AI_CREDIT_TOTAL_USD` / `AI_CREDIT_START` 且预计比截止早 14 天以上用完时发一封 | 没有 |
 | 管理指标 | `/api/admin/ai-metrics` 新增 `spend`（今天和本月花费、上限状态） | 没有 |
 
 读者看到的提示（不显示任何金额）：
