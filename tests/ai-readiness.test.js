@@ -43,10 +43,13 @@ const VALID = [
 ];
 const INVALID = [
   [' ', 'spaces'], ['2027-04-19 ', 'spaces'], [' 2027-04-19', 'spaces'], ['2027-04-19 00:00:00Z', 'spaces'], ['2027-04-19\t', 'spaces'],
+  ['2027-04-19T00:00:00 Z', 'spaces'], [' 2027-04-19  00:00:00Z ', 'spaces'], ['\t', 'spaces'],
+  // Spaces that are not the whole problem are named by the real one.
+  ['2027-04-19 00:00:00', 'format'], ['2027-04-19 00:00', 'format'], ['2027-04-19 noon', 'format'], ['19 April 2027', 'format'],
   ['2027-04-19T00:00:00', 'missing_zone'], ['2027-04-19T00:00', 'missing_zone'], ['2027-04-18T17:00:00.000', 'missing_zone'],
   ['2027-02-30', 'invalid_date'], ['2027-02-29', 'invalid_date'], ['2027-02-30T00:00:00Z', 'invalid_date'], ['2027-04-19T25:00:00Z', 'invalid_date'], ['0050-01-01', 'invalid_date'],
   ['2027/04/19', 'format'], ['not-a-date', 'format'], ['1', 'format'], ['2027-04-19T00:00:00z', 'format'], ['2027-04-19T00:00Z', 'format'],
-  ['2027-04-19T00:00:00+0700', 'format'], ['2027-04-19T00:00:00.1234Z', 'format'], ['April 19, 2027', 'spaces'], ['20270419', 'format'],
+  ['2027-04-19T00:00:00+0700', 'format'], ['2027-04-19T00:00:00.1234Z', 'format'], ['April 19, 2027', 'format'], ['20270419', 'format'],
   [1808092800000, 'format'], [true, 'format'], [{}, 'format'],
 ];
 
@@ -317,6 +320,23 @@ test('readiness main: two credential-free GETs; READY, NOT READY and ERROR exit 
   lines.length = 0;
   assert.equal(await main(['--base', down.base], { now: () => NOW, out }), EXIT.ERROR);
   assert.match(lines[0], /^ERROR: GET \/(health|ai\/baybay-capabilities) answered HTTP (503|404)/);
+
+  // No answer at all (a cold start, a dropped connection) is tried once more; an HTTP status is not.
+  const tried = new Set();
+  const flaky = (url, init) => { if (tried.has(url)) return fetch(url, init); tried.add(url); return Promise.reject(new TypeError('fetch failed')); };
+  lines.length = 0;
+  assert.equal(await main(['--base', ready.base], { fetchImpl: flaky, now: () => NOW, out }), EXIT.READY);
+  assert.equal(tried.size, 2);
+  const dead = [];
+  lines.length = 0;
+  assert.equal(await main(['--base', ready.base], { fetchImpl: url => { dead.push(url); return Promise.reject(new TypeError('fetch failed')); }, now: () => NOW, out }), EXIT.ERROR);
+  assert.equal(dead.length, 4, 'each GET is tried twice');
+  assert.match(lines[0], /^ERROR: GET \/(health|ai\/baybay-capabilities) failed after 2 tries: fetch failed$/);
+  const statusCalls = [];
+  lines.length = 0;
+  assert.equal(await main(['--base', ready.base], { fetchImpl: url => { statusCalls.push(url); return Promise.resolve(new Response('{}', { status: 503 })); }, now: () => NOW, out }), EXIT.ERROR);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(statusCalls.length, 2, 'an HTTP error status is not retried');
 
   lines.length = 0;
   assert.equal(await main(['--base', 'nope'], { out }), EXIT.USAGE);

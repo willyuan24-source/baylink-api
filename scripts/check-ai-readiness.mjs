@@ -17,7 +17,8 @@ import useUntil from '../lib/anthropicUseUntil.js';
 
 const { readUseUntil, USE_UNTIL_PROBLEMS, USE_UNTIL_EXAMPLES } = useUntil;
 export const DEFAULT_BASE = 'https://baylink-api.onrender.com/api';
-const TIMEOUT_MS = 30000;
+const TIMEOUT_MS = 60000; // per try: a Render cold start can take most of a minute
+const TRIES = 2; // a GET with no answer (timeout or network error) is tried once more
 const DAY_MS = 86400000;
 const SCHEDULED_PAUSE_DAYS = 7; // lib/aiBudget.js scheduledPause
 export const EXIT = Object.freeze({ READY: 0, NOT_READY: 1, USAGE: 2, ERROR: 4 });
@@ -25,7 +26,7 @@ export const USAGE = `Usage: node scripts/check-ai-readiness.mjs [--base ${DEFAU
          [--expect-until <the ANTHROPIC_USE_UNTIL value set on Render> | none] [--expect-commit <sha>] [--json]
        node scripts/check-ai-readiness.mjs --check-value <candidate ANTHROPIC_USE_UNTIL value>
 Exit code: 0 READY (or the value is valid), 1 NOT READY (or the value is invalid or already passed),
-           2 bad arguments, 4 ERROR (the API could not be read; rerun: a cold start can take a minute).`;
+           2 bad arguments, 4 ERROR (the API could not be read, after a second try; rerun in a minute).`;
 
 const PAUSE_HINTS = {
   provider_unavailable: 'Claude is not usable: ANTHROPIC_API_KEY is missing, ANTHROPIC_USE_UNTIL has passed, or ANTHROPIC_USE_UNTIL is not a valid value (Render log line "[ai-config]"; /api/admin/ai-metrics -> useUntil)',
@@ -126,7 +127,7 @@ export function checkValue(value, now = Date.now()) {
   if (!until.set) return { code: EXIT.READY, text: [...lines, '  empty: no cutoff. Claude stays on until the key or its credit runs out; no pause banner and no 7/3/1-day alerts.', 'RESULT: VALID'].join('\n') };
   if (!until.valid) return { code: EXIT.NOT_READY, text: [...lines,
     `  invalid (${until.problem}: ${USE_UNTIL_PROBLEMS[until.problem]}).`,
-    '  With this value the API treats Claude as unavailable at once: BayBay and the other Claude features stop, with no advance banner.',
+    '  With this value the API treats Claude as unavailable at once: every feature that uses Claude stops (BayBay too while BAYBAY_AI_PROVIDER=anthropic), with no advance banner.',
     `  Use ${USE_UNTIL_EXAMPLES}.`, 'RESULT: INVALID'].join('\n') };
   const when = `${new Date(until.at).toISOString()} = ${pacific(until.at)}`;
   if (!(now < until.at)) return { code: EXIT.NOT_READY, text: [...lines, `  valid, but ${when} has already passed: Claude would pause at once.`, 'RESULT: PASSED'].join('\n') };
@@ -138,9 +139,15 @@ export function checkValue(value, now = Date.now()) {
 
 async function read(fetchImpl, base, path) {
   let response;
-  try {
-    response = await fetchImpl(`${base}${path}`, { method: 'GET', headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(TIMEOUT_MS) });
-  } catch (error) { throw new Error(`GET ${path} failed: ${error?.name === 'TimeoutError' ? `no answer in ${TIMEOUT_MS / 1000} s` : error?.message || 'network error'}`); }
+  for (let attempt = 1; !response; attempt++) {
+    try {
+      response = await fetchImpl(`${base}${path}`, { method: 'GET', headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(TIMEOUT_MS) });
+    } catch (error) {
+      // No answer at all (a cold start, a dropped connection): one more try. An HTTP error status is not retried.
+      if (attempt < TRIES) continue;
+      throw new Error(`GET ${path} failed after ${TRIES} tries: ${error?.name === 'TimeoutError' ? `no answer in ${TIMEOUT_MS / 1000} s` : error?.message || 'network error'}`);
+    }
+  }
   if (!response.ok) throw new Error(`GET ${path} answered HTTP ${response.status}`);
   try { return await response.json(); } catch { throw new Error(`GET ${path} did not answer JSON`); }
 }
