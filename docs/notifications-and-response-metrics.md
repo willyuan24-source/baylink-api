@@ -2,12 +2,14 @@
 
 本次实现仅新增未来用户主动触发的邮箱验证与通知队列，不向任何真实地址发送测试邮件或短信，不回填历史私信，不为任何既有账号自动开启通知。
 
+> 2026-10 更新（H14，API-NOTIFY-2）：`NOTIFICATION_EMAIL_DEFAULTS=on` 时，已验证邮箱默认开启「新的私信」「新的联系请求」两类邮件提醒（见文末「默认邮件提醒」）。开关缺省关闭，行为与上文相同。
+
 ## 用户合同
 
 - `GET /api/notifications/preferences` / `PATCH /api/notifications/preferences` 需要当前有效登录。八个显式选项：email/sms × message/contact_request/outing_request/comment，默认均为 false（`comment` 为 2026-10 新增；只认识前三项的旧前端照常工作，保存时不会改动 comment）。开启 email 需验证当前邮箱；开启 sms 需当前手机号已验证。返回 preferences、emailVerified、phoneVerified、deliveryEnabled、emailDeliveryAvailable、smsDeliveryAvailable、locale，以及新增的 `topics`（全部主题）与 `allEnabled`（各渠道是否全开）；不返回地址、token 或队列。
 - 一键开启：`PATCH` 体可带 `enableAll: true`（所有**当前已验证**渠道的全部主题）或 `enableAll: 'email' | 'sms'`（仅该渠道，未验证则 409 `NOTIFICATION_VERIFICATION_REQUIRED`）；没有任何已验证渠道时也是 409。只覆盖当前已有主题，以后新增主题仍需用户另行开启。可与 `preferences` 同时提交（先应用 preferences，再全开）。
-- `POST /api/notifications/email/start` 只为登录账户自己的邮箱排队；60秒冷却、每用户每日5次持久限制及HTTP用户/IP限制。`POST /api/notifications/email/verify` 消费30分钟单次token，只验证邮箱，不开通知。绑定当前邮箱摘要，邮箱更改会使旧链接失效。
-- `POST /api/notifications/unsubscribe` 消费单次限时token，关闭链接对应渠道的全部提醒，取消待发队列；重新主动订阅不会恢复旧任务。GET/预览链接不修改偏好。token使用URL fragment，不进入HTTP URL/Referrer/页面访问指标，确认页去掉地址栏片段。
+- `POST /api/notifications/email/start` 只为登录账户自己的邮箱排队；60秒冷却、每用户每日5次持久限制及HTTP用户/IP限制。`POST /api/notifications/email/verify` 消费30分钟单次token，验证邮箱；默认开关关闭时不开通知，打开时对从未做过选择的账号开启两类默认邮件提醒（返回新增的 `defaultsApplied`）。绑定当前邮箱摘要，邮箱更改会使旧链接失效。
+- `POST /api/notifications/unsubscribe` 消费单次限时token，关闭链接对应的**那一类**提醒（H14 起 token 记录 topic；之前签发、没有 topic 的 token 仍关闭整个渠道），取消该类待发队列，其它仍开启类别的待发提醒转入新的同意版本照常发送；返回 `{ ok, channel, topic }`（旧 token 的 `topic` 为 null）。重新主动订阅不会恢复旧任务。`POST /api/notifications/unsubscribe/one-click/:token` 是 RFC 8058 一键退订（邮件头 `List-Unsubscribe` / `List-Unsubscribe-Post`），效果相同；只接受 POST，链接扫描器的 GET 不会退订。GET/预览链接不修改偏好。token使用URL fragment，不进入HTTP URL/Referrer/页面访问指标，确认页去掉地址栏片段。
 
 ## 持久性与隐私
 
@@ -35,3 +37,13 @@
 可选统计失败不影响已成功发送的私信。先标记再计聚合可在数据库不确定失败时少计，不会通过重试重复计；因此此指标用于观察真实响应趋势，不是财务精确账本。前端必须在现有帖子发起开聊调用携带真实postId，服务端核验后才建立关联。
 
 新增隔离mock测试覆盖一次token/改邮箱/到期/持久冷却、默认off、双渠道验证、合并与滚动节流、屏蔽/删除/退订后不发、Resend稳定重试、短信unknown、额度上限、实际首次请求与24小时边界。按照根代理串行资源安排，这一提交尚未自行运行Node；由根代理统一验证。
+
+## 默认邮件提醒（H14，API-NOTIFY-2）
+
+- 开关：`NOTIFICATION_EMAIL_DEFAULTS=on`（或 `true`）。缺省关闭：网页端说明"验证不会自动开启通知"、隐私政策写"通知默认关闭"，这些文案改好之前不打开（见 `docs/g5-production-checklist.md` 第 5 节）。
+- 默认值：邮件 · `message`、邮件 · `contact_request` 为开；`outing_request`、`comment` 和全部短信仍需主动开启。只发到当前已验证的邮箱；投递仍由 `NOTIFICATION_DELIVERY_ENABLED` 控制。
+- 一次性迁移（读取时）：账号在偏好读取、新事件入队或邮箱验证时检查一次。从未做过选择（`consentRevision` 为 0 且没有任何开启项）且邮箱已验证 → 打开两类默认并记 `defaultsAppliedAt`；做过选择（保存过设置、用过退订链接，或旧数据里已有开启项）→ 只记 `defaultsVersion`，设置不变；邮箱未验证且未做选择 → 不写，等验证时再处理。每个账号只处理一次（`defaultsVersion`），日志一行 `notification_defaults_applied` / `notification_defaults_kept`（`reason`：`read` / `event` / `verify`），不含账号 id 或邮箱。默认值不算用户选择，不改变 `consentRevision`。
+- DTO 新增（只增不改）：`defaults`（与 `preferences` 同形的预设）、`defaultsActive`、`defaultsApplied`、`customized`。
+- 保存规则放宽：只有"由关变开"的项需要当前已验证的邮箱/手机；重新保存已经开启的项（例如改邮箱后）不再 409，但在新地址验证前不会发送。
+- 邮件正文：查看链接、发送原因（"你的账号开启了「…」邮件提醒"）、只关这一类的一键关闭链接（`/notifications/unsubscribe#token=…&kind=<topic>`）、`/me?view=notifications` 设置链接；标题写明类别。短信两行：查看链接 + 关闭这一类的链接。邮件头 `List-Unsubscribe: <https://baylink-api.onrender.com/api/notifications/unsubscribe/one-click/<token>>`、`List-Unsubscribe-Post: List-Unsubscribe=One-Click`；API 地址可用 `NOTIFICATION_API_URL` 覆盖（仅限本服务地址或 `https://api.baylink.us`）。
+- 测试：`tests/notify-defaults.test.js`（默认、迁移、按类退订、旧 token、投递开关、HTTP 合同、Resend 适配器），全部为内存模型和 mock，不发送任何邮件或短信。
