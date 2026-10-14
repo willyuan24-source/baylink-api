@@ -42,10 +42,11 @@ test('verification queues only; disabled worker never calls either provider or e
   assert.equal(JSON.stringify(response).includes(token.sealed), false); assert.equal(JSON.stringify(account).includes(token.sealed), false);
 });
 
-test('email verification token is expiring, single use, email-bound, and does not opt in', async () => {
-  const f = fixture(); await f.service.startEmailVerification('owner'); await f.service.runOnce();
+test('email verification token is expiring, single use, email-bound, and does not opt in while email defaults are off', async () => {
+  // Pinned off: the H14 defaults (notify-defaults.test.js) must not change this test when the code default flips.
+  const f = fixture({ config: { NOTIFICATION_EMAIL_DEFAULTS: 'off' } }); await f.service.startEmailVerification('owner'); await f.service.runOnce();
   const raw = f.rawToken(f.sent[0]); assert.equal(f.sent[0].text.includes('/verify-email#token='), true);
-  assert.deepEqual(await f.service.verifyEmail(raw), { ok: true, emailVerified: true });
+  assert.deepEqual(await f.service.verifyEmail(raw), { ok: true, emailVerified: true, defaultsApplied: false });
   await assert.rejects(f.service.verifyEmail(raw), /已使用/);
   const prefs = await f.service.preferences('owner'); assert.equal(prefs.emailVerified, true); assert.equal(prefs.preferences.email.message, false);
   const expired = fixture(); await expired.service.startEmailVerification('owner'); await expired.service.runOnce(); expired.advance(HALF_HOUR);
@@ -234,9 +235,9 @@ test('comment topic is opt-in, uses its own label and links to the post', async 
   assert.deepEqual(await f.service.enqueueEvent(comment()), { queued: 1 });
   f.advance(FIRST_NOTICE_DELAY); await f.service.runOnce();
   assert.equal(f.sent.length, 1);
-  assert.match(f.sent[0].text, /You have new comments on BAYLINK/);
+  assert.match(f.sent[0].text, /Your post on BAYLINK has new comments/);
   assert.ok(f.sent[0].text.includes('https://www.baylink.us/en/posts/post_1'));
-  for (const [locale, label, prefix] of [['zh-Hans', '新的评论', ''], ['zh-Hant', '新的評論', '/zh-Hant']]) {
+  for (const [locale, label, prefix] of [['zh-Hans', '你在 BAYLINK 的帖子有新评论', ''], ['zh-Hant', '你在 BAYLINK 的帖子有新留言', '/zh-Hant']]) {
     const g = fixture(); await g.verify();
     await g.service.updatePreferences('owner', { preferences: { email: { comment: true } }, locale });
     await g.service.enqueueEvent(g.event({ topic: 'comment', sourceId: 'post_2', eventId: 'c_1', createdAt: g.now() }));
