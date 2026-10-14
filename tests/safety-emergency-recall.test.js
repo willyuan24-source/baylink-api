@@ -117,7 +117,9 @@ test('an unanswered text or app message is not an unresponsive person, in Englis
 test('no source file in lib/ or server.js contains a control character (a backspace typed for a word boundary)', () => {
   const fs = require('node:fs'); const path = require('node:path');
   const root = path.join(__dirname, '..');
-  const files = ['server.js', ...fs.readdirSync(path.join(root, 'lib')).filter(file => file.endsWith('.js')).map(file => `lib/${file}`)];
+  // Recursive: the BayBay engine lives in lib/baybayEngine/ (H40), full of \b patterns.
+  const files = ['server.js', ...fs.readdirSync(path.join(root, 'lib'), { recursive: true }).filter(file => file.endsWith('.js')).map(file => `lib/${file.replace(/\\/g, '/')}`)];
+  assert.ok(files.includes('lib/baybayEngine/router.js') && files.includes('lib/baybayAgent.js'), 'the scan covers lib/ and its subfolders');
   const found = files.flatMap(file => fs.readFileSync(path.join(root, file), 'utf8').split('\n')
     .map((line, index) => /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(line) ? `${file}:${index + 1}` : null).filter(Boolean));
   assert.deepEqual(found, []);

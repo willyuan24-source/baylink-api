@@ -223,7 +223,7 @@ test('a non-agent route decides its own model; the agent switch never moves prof
     await agent(agentPayload(model));
     return sent[0].body;
   };
-  // baybayAgent sends baybayModel(config, route) on every run; the professional route
+  // lib/baybayEngine/research.js sends baybayModel(config, route) on every run; the professional route
   // also accepts the agent route's model and replaces it with its own.
   const r0 = { ...base, BAYBAY_MODEL_AGENT: 'claude-haiku-5-5', BAYBAY_EFFORT_AGENT: 'low' };
   let body = await run(r0, baybayModel(r0));
