@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
+const { isDeepStrictEqual } = require('node:util');
 const { loadPlannerCatalog } = require('../lib/planner');
 const { loadEventCatalog } = require('../lib/eventEngagement');
 const root = path.resolve(__dirname, '..');
@@ -53,9 +54,12 @@ const heldIds = new Set(held.data.events.map(row => row?.id));
 assert.equal(heldIds.size, held.data.events.length, `public/${HELD_PLANNER} must not repeat an event`);
 const fullIds = new Set(full.events.map(row => row.id));
 for (const id of heldIds) assert.ok(fullIds.has(id), `public/${HELD_PLANNER} has ${id}, which public/${FULL_PLANNER} lacks: swapped or stale planner files`);
-assert.deepEqual(held.data.events, full.events.filter(row => heldIds.has(row.id)), `public/${HELD_PLANNER} events must equal the same rows of public/${FULL_PLANNER}: regenerate both from one web build`);
+// isDeepStrictEqual + a short message: assert's diff of two 500-row catalogs takes tens of seconds.
+const heldRows = full.events.filter(row => heldIds.has(row.id));
+const stale = held.data.events.findIndex((row, index) => !isDeepStrictEqual(row, heldRows[index]));
+assert.ok(stale < 0, `public/${HELD_PLANNER} events must equal the same rows of public/${FULL_PLANNER} in the same order; row ${stale + 1} (${held.data.events[stale]?.id}) differs from ${heldRows[stale]?.id}: regenerate both from one web build`);
 for (const key of new Set([...Object.keys(full), ...Object.keys(held.data)])) {
-  if (key !== 'events') assert.deepEqual(held.data[key], full[key], `public/${HELD_PLANNER} ${key} must equal public/${FULL_PLANNER} ${key}`);
+  if (key !== 'events') assert.ok(isDeepStrictEqual(held.data[key], full[key]), `public/${HELD_PLANNER} ${key} must equal public/${FULL_PLANNER} ${key}`);
 }
 const heldOutOfOpusBay = full.events.filter(row => !heldIds.has(row.id)).map(row => row.id);
 const identity = (rows, field) => { assert.ok(Array.isArray(rows)); const ids = rows.map(row => row[field]); assert.equal(new Set(ids).size, ids.length); return ids.sort(); };
