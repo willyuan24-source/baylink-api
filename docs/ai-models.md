@@ -199,7 +199,7 @@ pause: null | { reason: 'daily_budget' | 'paused' | 'provider_unavailable',   //
                 resumesAt?: ISO,                  // daily_budget only: next Pacific midnight
                 actions: [{ id: 'call-911', label: '911', href: 'tel:911' }, { id: 'call-211', label: '211', href: 'tel:211' }] }
 reduced: null | { reason: 'daily_budget_soft', kind: 'ai_budget_reduced', banner: {…3 locales}, resumesAt?: ISO }
-aiUntil?: ISO                                    // API-BB-QUALITY: ANTHROPIC_USE_UNTIL, when set
+aiUntil?: ISO                                    // API-BB-QUALITY: ANTHROPIC_USE_UNTIL, when set and valid (API-OPS-KEY)
 pauseScheduled?: { kind: 'ai_pause_scheduled', at: ISO, banner: {…3 locales} }   // the last 7 days before aiUntil
 
 // guide-chat result (v1 and v2)

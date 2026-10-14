@@ -9,6 +9,7 @@ const { pathToFileURL } = require('node:url');
 const jwt = require('jsonwebtoken');
 const { readUseUntil, useUntilStatus, useUntilWarning, USE_UNTIL_PROBLEMS } = require('../lib/anthropicUseUntil');
 const { anthropicAvailable } = require('../lib/anthropicBaybay');
+const { aiUntilOf, scheduledPause } = require('../lib/aiBudget');
 const { createMemoryModels } = require('./support/memory-models');
 const { createApplication } = require('../server');
 
@@ -71,6 +72,28 @@ test('anthropicAvailable is unchanged: identical to the d9bae34 implementation f
   // The default clock too.
   assert.equal(anthropicAvailable({ ANTHROPIC_API_KEY: 'fixture', ANTHROPIC_USE_UNTIL: '9999-12-31' }), true);
   assert.equal(anthropicAvailable({ ANTHROPIC_API_KEY: 'fixture', ANTHROPIC_USE_UNTIL: '2027-04-19 00:00:00Z' }), false, 'a malformed value still fails closed');
+});
+
+test('aiUntilOf (capabilities aiUntil) is unchanged for every value the API accepts; impossible dates no longer report one', () => {
+  // aiUntilOf as it was at d9bae34, verbatim.
+  const legacyAiUntilOf = (config = {}) => {
+    const value = config.ANTHROPIC_USE_UNTIL;
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2}))?$/.test(value)) return null;
+    const at = Date.parse(value);
+    return Number.isFinite(at) ? new Date(at).toISOString() : null;
+  };
+  for (const value of [undefined, null, '', ...VALID.map(([item]) => item), ...INVALID.map(([item]) => item)]) {
+    const config = { ANTHROPIC_USE_UNTIL: value };
+    if (readUseUntil(value).valid) assert.equal(aiUntilOf(config), legacyAiUntilOf(config), String(value));
+    else assert.equal(aiUntilOf(config), null, JSON.stringify(value));
+  }
+  // The only differences: values Claude already treats as invalid (it is off), which used to
+  // advertise a cutoff (and, near it, a scheduled-pause banner) on top of the pause.
+  assert.equal(legacyAiUntilOf({ ANTHROPIC_USE_UNTIL: '2027-02-30' }), '2027-03-02T00:00:00.000Z');
+  assert.equal(aiUntilOf({ ANTHROPIC_USE_UNTIL: '2027-02-30' }), null);
+  // 2026-11-31 used to read as Dec 1 and announce a pause from Nov 24 while Claude was already off.
+  assert.equal(scheduledPause({ ANTHROPIC_USE_UNTIL: '2026-11-31' }, Date.parse('2026-11-28T00:00:00Z')), null);
+  assert.equal(scheduledPause({ ANTHROPIC_USE_UNTIL: '2026-10-20T00:00:00Z' }, NOW).at, '2026-10-20T00:00:00.000Z');
 });
 
 test('useUntilWarning: none for unset or valid values; one line naming the problem, never the value', () => {
@@ -145,6 +168,16 @@ test('server: valid or unset values log nothing; admin metrics show the cutoff a
     assert.deepEqual(logged, [], JSON.stringify(config));
     assert.deepEqual((await get('/admin/ai-metrics', 'admin')).data.useUntil, useUntil);
   }
+});
+
+test('server: an impossible date is one warning, a pause and no advertised cutoff', async t => {
+  const logged = [];
+  const { get } = await startApp(t, { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-not-a-key', ANTHROPIC_USE_UNTIL: '2026-11-31' }, { configWarningLog: line => logged.push(line) });
+  assert.equal(logged.length, 1); assert.match(logged[0], /\(invalid_date: /);
+  const capabilities = (await get('/ai/baybay-capabilities')).data;
+  assert.equal(capabilities.enabled, false); assert.equal(capabilities.pause.reason, 'provider_unavailable');
+  assert.equal(capabilities.aiUntil, undefined, 'used to report 2026-12-01 while Claude was already off');
+  assert.deepEqual((await get('/admin/ai-metrics', 'admin')).data.useUntil, { set: true, valid: false, problem: 'invalid_date', at: null, passed: null });
 });
 
 test('server: tests stay quiet unless a warning log is injected', async t => {
