@@ -3826,7 +3826,7 @@
       "title": "Tiburon Wine Festival：北湾品酒午后",
       "startDate": "2026-10-03",
       "endDate": "2026-10-03",
-      "dateLabel": "10/3 · 10 月 3 日 · 13:00–16:00",
+      "dateLabel": "10/3 · 13:00–16:00",
       "region": "north-bay",
       "city": "Tiburon",
       "venue": "Downtown Tiburon · check ticket for event entrance",
@@ -3836,9 +3836,8 @@
       "costLabel": "参考：需购票 · 仅限 21 岁及以上；最终价格以票页为准",
       "summary": "Tiburon 商会的年度品酒节集合酒庄、本地餐厅与现场音乐，适合成年朋友安排一个三小时的慢节奏午后。参加前先确认门票及渡轮回程。",
       "plan": [
-        "时间安排：10 月 3 日 · 13:00–16:00。",
-        "费用与参加条件：参考：需购票 · 仅限 21 岁及以上；最终价格以票页为准 通过商会官方售票入口购买；当前票价尚未取得。",
-        "仅限21岁及以上，并携带政府签发的照片身份证件。 官方明确婴儿、推车和动物不能进入场内。 出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
+        "通过商会官方售票入口购买；当前票价尚未取得。",
+        "仅限21岁及以上，并携带政府签发的照片身份证件。 官方明确婴儿、推车和动物不能进入场内。"
       ],
       "audience": [
         "21 岁以上",
@@ -3848,6 +3847,7 @@
       "sourceLabel": "tiburonchamber.org",
       "verifiedAt": "2026-09-29",
       "imageKey": "coverage-wine",
+      "venueShort": "Downtown Tiburon（入口见门票）",
       "aliases": [
         "Tiburon Wine Festival：北湾品酒午后",
         "Tiburon Wine Festival: a North Bay tasting afternoon",
@@ -4238,7 +4238,7 @@
       "title": "San Jose Little Italy 十周年街头节",
       "startDate": "2026-10-04",
       "endDate": "2026-10-04",
-      "dateLabel": "10/4 · 10 月 4 日 · 11:00–19:00",
+      "dateLabel": "10/4 · 11:00–19:00",
       "region": "south-bay",
       "city": "San Jose",
       "venue": "Little Italy business district · 323 Sharks Way",
@@ -4248,9 +4248,8 @@
       "costLabel": "参考：现场演出免费 · 餐饮、品酒等另付；最终价格以票页为准",
       "summary": "Little Italy 的十周年节庆把意大利餐饮、汽车展示、手工艺和音乐放在同一片街区。适合先吃午餐，再选一段现场演出慢慢听。",
       "plan": [
-        "时间安排：10 月 4 日 · 11:00–19:00。",
-        "费用与参加条件：参考：现场演出免费 · 餐饮、品酒等另付；最终价格以票页为准 现场娱乐免费；品酒、餐饮与其他收费体验分别核价。",
-        "11:00开始、11:30开幕式，不应将两者混淆。 出发前查看主办方最新公告，按场次确认余票、入场要求及交通安排。"
+        "现场娱乐免费；品酒、餐饮与其他收费体验分别核价。",
+        "11:00开始、11:30开幕式，不应将两者混淆。"
       ],
       "audience": [
         "美食爱好者",
@@ -4260,6 +4259,8 @@
       "sourceLabel": "littleitalysj.com",
       "verifiedAt": "2026-09-29",
       "imageKey": "autumn-neighbors",
+      "venueShort": "Little Italy 街区",
+      "address": "323 Sharks Way",
       "aliases": [
         "San Jose Little Italy 十周年街头节",
         "San Jose Little Italy 10th Anniversary Festival",
@@ -4495,6 +4496,8 @@
       "verifiedAt": "2026-10-02",
       "imageKey": "dvids-blue-angels-sffw-2024",
       "relatedGuideSlug": "sf-fishermans-wharf-pier39-guide",
+      "venueShort": "San Francisco 海滨（多处场地）",
+      "address": "Fisherman's Wharf / Pier 27",
       "aliases": [
         "San Francisco Fleet Week：海湾与城市活动周",
         "San Francisco Fleet Week",
@@ -12169,6 +12172,206 @@
       }
     },
     {
+      "id": "sfpl-chinatown-creative-saturdays-fall-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（华埠分馆）",
+      "title": "华埠分馆周六午后：中文书法、填色与桌游",
+      "dateLabel": "10/17、10/24、10/31、11/7、11/14 · 周六 14:30–16:00",
+      "city": "San Francisco",
+      "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
+      "summary": "旧金山公共图书馆华埠分馆每周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；活动以粤语和普通话进行。",
+      "plan": [
+        "形式是自主练习，不是老师授课。",
+        "五个周六都在同一时段，选一次去就可以。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/17/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+      "shortTitle": "华埠图书馆周六书法桌游",
+      "dek": "自己练毛笔字、填色或玩桌游的安静午后",
+      "sessions": [
+        {
+          "date": "2026-10-17",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-10-24",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "14:30",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "华埠/麦礼谦分馆",
+      "address": "1135 Powell Street, San Francisco, CA 94108",
+      "aliases": [
+        "华埠分馆周六午后：中文书法、填色与桌游",
+        "Chinatown branch Saturday afternoons: Chinese calligraphy, coloring and board games",
+        "華埠分館週六午後：中文書法、填色與桌遊"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-11-14",
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-10-24",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "14:30",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-marina-wild-goose-qigong-oct-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-31",
+      "occurrenceDates": [
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "outdoors",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Marina 分馆）",
+      "title": "Marina 分馆大雁功：普通话和英语讲解的户外晨练",
+      "dateLabel": "10/17、10/24、10/31 · 周六 08:30–09:15",
+      "city": "San Francisco",
+      "venue": "Marina 分馆后院 · 1890 Chestnut Street, San Francisco, CA 94123",
+      "summary": "Chunfu Cai 老师每周六早上带大雁功，用普通话和英语讲解，练习放松姿势和缓慢呼吸。课在图书馆开门前于后院进行。",
+      "plan": [
+        "从游乐场旁边的步道走进后院，图书馆此时还没开门。",
+        "户外上课，下雨当天取消。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/17/activity-wild-goose-qigong-chunfu-cai",
+      "shortTitle": "Marina 大雁功晨练",
+      "dek": "放松姿势、缓慢呼吸的户外气功课",
+      "sessions": [
+        {
+          "date": "2026-10-17",
+          "start": "08:30",
+          "end": "09:15"
+        },
+        {
+          "date": "2026-10-24",
+          "start": "08:30",
+          "end": "09:15"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "08:30",
+          "end": "09:15"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Marina 分馆后院",
+      "address": "1890 Chestnut Street, San Francisco, CA 94123",
+      "aliases": [
+        "Marina 分馆大雁功：普通话和英语讲解的户外晨练",
+        "Wild Goose Qigong at the Marina branch: an outdoor morning class in Mandarin and English",
+        "Marina 分館大雁功：普通話和英語講解的戶外晨練"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/activity-wild-goose-qigong-chunfu-cai",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-31",
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "08:30",
+              "end": "09:15"
+            },
+            {
+              "date": "2026-10-24",
+              "start": "08:30",
+              "end": "09:15"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "08:30",
+              "end": "09:15"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sfpl-omi-history-day-oct17-2026",
       "kind": "event",
       "verifiedAt": "2026-09-30",
@@ -12236,6 +12439,74 @@
             }
           ],
           "note": "按10/17 15:00–17:00安排，官方日历已明确活动起止时间。"
+        }
+      }
+    },
+    {
+      "id": "sfpl-richmond-hk-film-the-killer-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "occurrenceDates": [
+        "2026-10-17"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（列治文分馆）",
+      "title": "香港动作经典《喋血双雄》：粤语原声放映",
+      "dateLabel": "10/17（周六）· 14:00–16:00",
+      "city": "San Francisco",
+      "venue": "列治文分馆会议室 · 351 9th Avenue, San Francisco, CA 94118",
+      "summary": "列治文分馆秋季周六午场放映香港动作经典，10 月是 1989 年的《喋血双雄》：杀手误伤夜总会歌手后寻求救赎。粤语原声，配英文字幕。",
+      "plan": [
+        "R 级影片，片长 111 分钟，面向成人观众。",
+        "11/14 同一系列放映《辣手神探》。"
+      ],
+      "audience": [
+        "成人",
+        "港片影迷"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/17/film-killer",
+      "shortTitle": "港片《喋血双雄》粤语场",
+      "dek": "列治文分馆秋季港片周六午场",
+      "sessions": [
+        {
+          "date": "2026-10-17",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "列治文分馆",
+      "address": "351 9th Avenue, San Francisco, CA 94118",
+      "aliases": [
+        "香港动作经典《喋血双雄》：粤语原声放映",
+        "Hong Kong action classic The Killer, screened in Cantonese",
+        "香港動作經典《喋血雙雄》：粵語原聲放映"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/17/film-killer",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-10-17",
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "14:00",
+              "end": "16:00"
+            }
+          ]
         }
       }
     },
@@ -16428,6 +16699,84 @@
       }
     },
     {
+      "id": "sfpl-excelsior-multilingual-tech-help-2026",
+      "kind": "event",
+      "startDate": "2026-10-25",
+      "endDate": "2026-11-15",
+      "occurrenceDates": [
+        "2026-10-25",
+        "2026-11-15"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Excelsior 分馆）",
+      "title": "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
+      "dateLabel": "10/25、11/15 · 周日 13:00–16:00",
+      "city": "San Francisco",
+      "venue": "Excelsior 分馆会议室 · 4400 Mission Street, San Francisco, CA 94112",
+      "summary": "digitalLIFT 在 Excelsior 分馆开设随到随问的科技答疑，可用英语、西班牙语、菲律宾语、粤语和普通话，一对一帮忙用手机、平板或电脑：给家人发短信、视频看诊、网上买菜都可以问。",
+      "plan": [
+        "带上自己的手机、平板、iPad 或笔记本电脑。",
+        "10/25 和 11/15 两个周日，时间相同。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/25/tutorial-drop-tech-help-english-spanish-filipino-cantonese-mandarin",
+      "shortTitle": "Excelsior 粤语普通话科技答疑",
+      "dek": "带上手机或平板，一对一问怎么用",
+      "sessions": [
+        {
+          "date": "2026-10-25",
+          "start": "13:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-15",
+          "start": "13:00",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Excelsior 分馆",
+      "address": "4400 Mission Street, San Francisco, CA 94112",
+      "aliases": [
+        "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
+        "Drop-in tech help at the Excelsior branch, in Cantonese and Mandarin too",
+        "Excelsior 分館多語科技答疑：粵語、普通話都能問"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/25/tutorial-drop-tech-help-english-spanish-filipino-cantonese-mandarin",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-10-25",
+          "validThrough": "2026-11-15",
+          "sessions": [
+            {
+              "date": "2026-10-25",
+              "start": "13:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "13:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "smcl-portola-valley-mid-autumn-lantern-2026",
       "kind": "event",
       "startDate": "2026-10-25",
@@ -18716,6 +19065,74 @@
       }
     },
     {
+      "id": "sfpl-north-beach-open-house-oct31-2026",
+      "kind": "event",
+      "startDate": "2026-10-31",
+      "endDate": "2026-10-31",
+      "occurrenceDates": [
+        "2026-10-31"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；鬼故事步行导览需报名，其他活动不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（North Beach 分馆）",
+      "title": "North Beach 分馆万圣节开放日：故事会、芭蕾游戏与鬼故事导览",
+      "dateLabel": "10/31（周六）· 10:00–18:00",
+      "city": "San Francisco",
+      "venue": "North Beach 分馆 · 850 Columbus Avenue, San Francisco, CA 94133",
+      "summary": "North Beach 分馆在万圣节办开放日：10:30 有 5 岁以下的不吓人万圣节故事会，中午 Tutu School 芭蕾游戏，下午有北滩鬼故事步行导览；儿童区整天设亡灵节祭坛。",
+      "plan": [
+        "10:30–11:00 故事会适合 5 岁以下；12:00–14:00 户外芭蕾游戏。",
+        "14:00–15:30 户外鬼故事步行导览由馆员 Richard Le 带队，需要报名；报名方式可打分馆电话 415-355-5626 问。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "全年龄"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/10/31/celebration-north-beach-branch-open-house",
+      "shortTitle": "North Beach 分馆万圣节开放日",
+      "dek": "一整天的亲子活动，楼上还能看城市景色",
+      "sessions": [
+        {
+          "date": "2026-10-31",
+          "start": "10:00",
+          "end": "18:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "North Beach 分馆",
+      "address": "850 Columbus Avenue, San Francisco, CA 94133",
+      "aliases": [
+        "North Beach 分馆万圣节开放日：故事会、芭蕾游戏与鬼故事导览",
+        "North Beach branch Halloween open house: storytime, ballet games and a ghost walk",
+        "North Beach 分館萬聖節開放日：故事會、芭蕾遊戲與鬼故事導覽"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "mixed",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/10/31/celebration-north-beach-branch-open-house",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-10-31",
+          "validThrough": "2026-10-31",
+          "sessions": [
+            {
+              "date": "2026-10-31",
+              "start": "10:00",
+              "end": "18:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sj-sharks-senators-2026",
       "title": "圣何塞 Sharks 对 Senators：Los Tiburones 主题场",
       "startDate": "2026-10-31",
@@ -19724,6 +20141,73 @@
       ],
       "planning": {
         "admissionUsd": 0
+      }
+    },
+    {
+      "id": "sfpl-bernal-dia-de-los-muertos-2026",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "occurrenceDates": [
+        "2026-11-01"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Bernal Heights 分馆）",
+      "title": "Bernal Heights 社区亡灵节：一起搭祭坛、听现场音乐",
+      "dateLabel": "11/1（周日）· 13:00–15:00",
+      "city": "San Francisco",
+      "venue": "Bernal Heights 分馆户外（Moultrie St. 一侧）· 500 Cortland Avenue, San Francisco, CA 94110",
+      "summary": "旧金山艺术家 Calixto Robles 带领社区一起搭亡灵节祭坛，René y Familia 现场演奏双语传统与原创音乐。可以带花、香、照片、信件或密封的食物饮料，放上祭坛纪念逝去的亲人。",
+      "plan": [
+        "活动在户外 Moultrie St. 一侧，不在馆内。",
+        "想放上祭坛的照片或小物件，当天带来。"
+      ],
+      "audience": [
+        "全年龄",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/01/social-bernal-community-dia-de-los-muertos",
+      "shortTitle": "Bernal 社区亡灵节祭坛",
+      "dek": "艺术家带大家搭社区祭坛，三代同台的家庭乐队演出",
+      "sessions": [
+        {
+          "date": "2026-11-01",
+          "start": "13:00",
+          "end": "15:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Bernal Heights 分馆",
+      "aliases": [
+        "Bernal Heights 社区亡灵节：一起搭祭坛、听现场音乐",
+        "Bernal Heights community Día de los Muertos: build an altar, hear live music",
+        "Bernal Heights 社區亡靈節：一起搭祭壇、聽現場音樂"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/01/social-bernal-community-dia-de-los-muertos",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-11-01",
+          "sessions": [
+            {
+              "date": "2026-11-01",
+              "start": "13:00",
+              "end": "15:00"
+            }
+          ]
+        }
       }
     },
     {
@@ -21188,6 +21672,75 @@
               "date": "2026-11-08",
               "start": "14:00",
               "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "chsa-lily-qi-book-talk-nov8-2026",
+      "kind": "event",
+      "startDate": "2026-11-08",
+      "endDate": "2026-11-08",
+      "occurrenceDates": [
+        "2026-11-08"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "$15；含书 $40；含午餐自助",
+      "sourceLabel": "美国华人历史学会活动页",
+      "title": "美国华人历史学会讲座：Lily Qi 谈新书《Elected American》",
+      "dateLabel": "11/8（周日）· 11:00–13:00",
+      "city": "San Francisco",
+      "venue": "美国华人历史学会博物馆 · 965 Clay Street, San Francisco, CA 94108",
+      "summary": "美国华人历史学会邀请 Lily Qi 谈她的政治回忆录《Elected American: From Red China to Blue Maryland》：她在上海长大，后来成为马里兰州议员，讲移民为什么要参与投票和政治。",
+      "plan": [
+        "在 Eventbrite 买票；书在现场另售 $35。"
+      ],
+      "audience": [
+        "成人",
+        "关心移民参政的读者"
+      ],
+      "officialUrl": "https://chsa.org/event/book-talk-with-lily-qi-elected-american/",
+      "shortTitle": "华人历史学会 Lily Qi 讲座",
+      "dek": "从上海到马里兰州议会的移民参政故事",
+      "sessions": [
+        {
+          "date": "2026-11-08",
+          "start": "11:00",
+          "end": "13:00"
+        }
+      ],
+      "price": {
+        "min": 15,
+        "max": 40,
+        "note": "$40 含书"
+      },
+      "venueShort": "美国华人历史学会",
+      "address": "965 Clay Street, San Francisco, CA 94108",
+      "aliases": [
+        "美国华人历史学会讲座：Lily Qi 谈新书《Elected American》",
+        "Chinese Historical Society of America book talk: Lily Qi, Elected American",
+        "美國華人歷史學會講座：Lily Qi 談新書《Elected American》"
+      ],
+      "planning": {
+        "admissionUsd": 15,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://chsa.org/event/book-talk-with-lily-qi-elected-american/",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-11-08",
+          "validThrough": "2026-11-08",
+          "sessions": [
+            {
+              "date": "2026-11-08",
+              "start": "11:00",
+              "end": "13:00"
             }
           ]
         }
@@ -23448,6 +24001,140 @@
               "date": "2026-11-14",
               "start": "10:00",
               "end": "13:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-chinese-book-club-nov14-2026",
+      "kind": "event",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-11-14"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（中文中心）",
+      "title": "旧金山总馆中文读书会：陈年喜《活着就是冲天一喊》",
+      "dateLabel": "11/14（周六）· 10:00–11:00",
+      "city": "San Francisco",
+      "venue": "旧金山总馆三楼中文中心展区 · 100 Larkin Street, San Francisco, CA 94102",
+      "summary": "旧金山公共图书馆中文中心的中文读书会，11 月共读陈年喜的《活着就是冲天一喊》，和热爱中文阅读的朋友一起谈文字与阅读。",
+      "plan": [
+        "先读完或读一部分这本书，讨论用中文进行。"
+      ],
+      "audience": [
+        "成人",
+        "中文读者"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/14/dushuhuihuozhejiushichongtianyihan",
+      "shortTitle": "总馆中文读书会",
+      "dek": "和喜欢中文阅读的读者一起聊一本书",
+      "sessions": [
+        {
+          "date": "2026-11-14",
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "旧金山总馆中文中心",
+      "address": "100 Larkin Street, San Francisco, CA 94102",
+      "aliases": [
+        "旧金山总馆中文读书会：陈年喜《活着就是冲天一喊》",
+        "Chinese-language book club at the Main Library: a book by Chen Nianxi",
+        "舊金山總館中文讀書會：陳年喜《活著就是沖天一喊》"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/14/dushuhuihuozhejiushichongtianyihan",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "sessions": [
+            {
+              "date": "2026-11-14",
+              "start": "10:00",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-richmond-hk-film-hard-boiled-2026",
+      "kind": "event",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-11-14"
+      ],
+      "verifiedAt": "2026-10-12",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（列治文分馆）",
+      "title": "香港动作经典《辣手神探》：粤语原声放映",
+      "dateLabel": "11/14（周六）· 14:00–16:30",
+      "city": "San Francisco",
+      "venue": "列治文分馆会议室 · 351 9th Avenue, San Francisco, CA 94118",
+      "summary": "列治文分馆秋季港片午场的 11 月片目是 1992 年的《辣手神探》：一名警探的擅自行动，威胁到卧底警察要扳倒犯罪集团的计划。粤语原声，配英文字幕。",
+      "plan": [
+        "R 级影片，片长 128 分钟，面向成人观众。"
+      ],
+      "audience": [
+        "成人",
+        "港片影迷"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/14/film-hard-boiled",
+      "shortTitle": "港片《辣手神探》粤语场",
+      "dek": "列治文分馆秋季港片周六午场",
+      "sessions": [
+        {
+          "date": "2026-11-14",
+          "start": "14:00",
+          "end": "16:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "列治文分馆",
+      "address": "351 9th Avenue, San Francisco, CA 94118",
+      "aliases": [
+        "香港动作经典《辣手神探》：粤语原声放映",
+        "Hong Kong action classic Hard Boiled, screened in Cantonese",
+        "香港動作經典《辣手神探》：粵語原聲放映"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/14/film-hard-boiled",
+          "verifiedAt": "2026-10-12",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "sessions": [
+            {
+              "date": "2026-11-14",
+              "start": "14:00",
+              "end": "16:30"
             }
           ]
         }
@@ -28112,6 +28799,29 @@
       }
     },
     {
+      "id": "opening-marufuku-burlingame-announced",
+      "title": "Marufuku Ramen · Burlingame",
+      "region": "peninsula",
+      "city": "Burlingame",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
+      "guideSlug": "",
+      "path": "/openings/marufuku-burlingame-announced",
+      "officialUrl": "https://www.marufukuramen.com/burlingame",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "225 Lorton Ave, Burlingame, CA 94010",
+      "imageKey": "opening-marufuku-burlingame",
+      "openingStatus": "open",
+      "openedOn": "2026-10-11",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": [],
+      "aliases": [
+        "Marufuku Ramen · Burlingame"
+      ]
+    },
+    {
       "id": "opening-old-post-office-burlingame",
       "title": "The Old Post Office",
       "region": "peninsula",
@@ -28132,28 +28842,6 @@
       "offerIds": [],
       "aliases": [
         "The Old Post Office"
-      ]
-    },
-    {
-      "id": "opening-marufuku-burlingame-announced",
-      "title": "Marufuku Ramen · Burlingame",
-      "region": "peninsula",
-      "city": "Burlingame",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
-      "guideSlug": "",
-      "path": "/openings/marufuku-burlingame-announced",
-      "officialUrl": "https://www.marufukuramen.com/burlingame",
-      "cost": "unknown",
-      "category": "restaurant",
-      "address": "225 Lorton Ave, Burlingame, CA 94010",
-      "imageKey": "opening-marufuku-burlingame",
-      "openingStatus": "open",
-      "planning": {
-        "admissionUsd": null
-      },
-      "offerIds": [],
-      "aliases": [
-        "Marufuku Ramen · Burlingame"
       ]
     },
     {
