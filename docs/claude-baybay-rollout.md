@@ -41,6 +41,12 @@
 
 保存后 Render 会重新部署。
 
+**怎么看 `credit`（API-OPS）：** 网页管理员页面还没有这个面板，直接在地址栏打开 API 网址会因为没带登录令牌得到 401。做法：电脑浏览器打开 www.baylink.us，用管理员登录（开了 `ADMIN_MFA_REQUIRED` 就用密码加 6 位代码）→ F12 → Console（控制台）→ 粘贴下面这一行回车（Chrome 第一次粘贴要先输入 `allow pasting`）。不要把 `currentUser` 里的 token 发给任何人。
+
+```js
+fetch('https://baylink-api.onrender.com/api/admin/ai-metrics',{headers:{Authorization:'Bearer '+JSON.parse(localStorage.getItem('currentUser')).token}}).then(r=>r.json()).then(d=>console.log(d.credit))
+```
+
 ### `ANTHROPIC_USE_UNTIL` 的格式（一定要对）
 
 - **只接受两种写法，不能有空格**：
@@ -116,6 +122,12 @@ The old key's promotional credit ends at 2026-10-30 00:00 UTC (Oct 29, 5:00 PM i
 | `AI_ALERT_MTD_USD` | `100,140,165` | code default `100,150,180`: one e-mail per threshold per month |
 | `AI_CREDIT_TOTAL_USD` / `AI_CREDIT_START` | the new key's credit (e.g. `1000`) / the Pacific day the new key starts (e.g. `2026-10-23`) | optional (API-OPS). Admin `/api/admin/ai-metrics` `credit` shows spend since that day, the 7- and 30-day average per day, the projected run-out date and how many days before `ANTHROPIC_USE_UNTIL` that is; **one** e-mail when it is more than 14 days early. Ledger estimate; the Console is the bill |
 | `AI_GUEST_BAYBAY_DAILY_LIMIT` / `AI_USER_BAYBAY_DAILY_LIMIT` | R1 suggestion `15` / `40` (the owner decides) | BayBay's own daily share per visitor / member; unset = the shared `AI_GUEST_DAILY_LIMIT` / `AI_USER_DAILY_LIMIT` (code defaults 15 / 40) |
+
+**Reading `credit` (API-OPS).** The web admin area has no panel for it yet, and opening the API URL in the address bar sends no session token (401). On a computer, open www.baylink.us, sign in as the administrator (password + authenticator code once `ADMIN_MFA_REQUIRED` is on), DevTools (F12) → Console, and run (Chrome asks for `allow pasting` before the first paste); never share the `token` inside `currentUser`:
+
+```js
+fetch('https://baylink-api.onrender.com/api/admin/ai-metrics',{headers:{Authorization:'Bearer '+JSON.parse(localStorage.getItem('currentUser')).token}}).then(r=>r.json()).then(d=>console.log(d.credit))
+```
 
 **The `ANTHROPIC_USE_UNTIL` format.** Only `YYYY-MM-DD` (00:00 UTC that day) or a full ISO time with `Z` or an offset (`2027-04-19T00:00:00Z`, `2027-04-18T17:00:00-07:00`): seconds required, upper-case `T` and `Z`, no spaces. Any other nonempty value (a stray space, `2027-04-19 00:00`, `2027-04-19T00:00:00` without a zone, Feb 30) makes the API treat Claude as unavailable: every feature that uses Claude stops at once (BayBay too while it runs on Claude), with **no** advance banner. Three checks since API-OPS-KEY: (1) before pasting, `node scripts/check-ai-readiness.mjs --check-value "<value>"` (offline, the API's own reading; only `RESULT: VALID` is safe, and it prints the Pacific stop time and the first banner day); (2) after the deploy, an invalid value logs **one** Render line `[ai-config] ANTHROPIC_USE_UNTIL is set but invalid (<problem>: …)` with the problem (`spaces`, `missing_zone`, `invalid_date`, `format`) and never the value; (3) `/api/admin/ai-metrics` (admins) has `useUntil {set, valid, problem, at, passed}`. From 7 days before a valid cutoff every page shows "AI 助手预计…起暂停"; after it BayBay pauses (site records + banner, 911 card unaffected), and translation, post drafts, web search and source triage stop too.
 

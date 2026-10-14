@@ -87,7 +87,15 @@ API-SEC, 2026-10-12. Everything below is opt-in: with no env change the site beh
    - 或者：`node scripts/revoke-admin-sessions.js --env=<.env 路径>`（空跑显示有几个管理员账号），再加 `--apply`。
 6. **（可选）** `ADMIN_LOGIN_ID=<一个不公开的长登录名>`：之后 `admin` 不能再登录，改用这个名字加原密码登录。登录限制（密码和验证器两步）都按你输入的这个名字计数，别人对 `admin` 的失败次数不会挡住你。
 
-**怎么确认做完了（API-OPS）：** 用管理员登录（开了 `ADMIN_MFA_REQUIRED` 就要验证器会话）后打开 `GET /api/admin/security-status`，每一步一个 true / false：`passwordChanged`（第 1 步）、`encryptionKeySet`（第 2 步）、`authenticatorOn`（第 3 步）、`authenticatorRequired`（第 4 步）、`sessionsRevoked`（第 5 步）、`privateLoginName`（第 6 步）、`alertsOn`（下面的提醒邮件能发出去）；`done` / `total` 是完成数，`times` 是各步最早完成的时间。账号类的步骤要**每个**管理员账号都做了才算 true。只有管理员能看（访客 401、普通会员 403），公开接口里没有这些字段，也不返回账号 id、登录名、邮箱或任何变量的值。
+**怎么确认做完了（API-OPS）：** `GET /api/admin/security-status` 每一步给一个 true / false：`passwordChanged`（第 1 步）、`encryptionKeySet`（第 2 步）、`authenticatorOn`（第 3 步）、`authenticatorRequired`（第 4 步）、`sessionsRevoked`（第 5 步：最近一次撤销登录晚于换密码和开验证器的时间；第 1、3 步自带的那次退出登录不算，所以要真的做第 5 步）、`privateLoginName`（第 6 步：设了 `ADMIN_LOGIN_ID`，或者管理员账号已经换成真实邮箱、不再用 `admin` 登录）、`alertsOn`（下面的提醒邮件能发出去）；`done` / `total` 是完成数，`times` 是各步最早完成的时间。账号类的步骤要**每个**管理员账号都做了才算 true。只有管理员能看（访客 401、普通会员 403），公开接口里没有这些字段，也不返回账号 id、登录名、邮箱或任何变量的值。
+
+**怎么打开它：** 网页的管理员页面还没有这个面板（已列为店主待定事项），直接在浏览器地址栏打开这个网址会因为没带登录令牌得到 401。做法：在电脑浏览器打开 www.baylink.us，用管理员登录（开了 `ADMIN_MFA_REQUIRED` 就用密码加 6 位代码登录）→ 按 F12 打开开发者工具 → Console（控制台）→ 粘贴下面这一行回车（Chrome 第一次粘贴会要求先输入 `allow pasting`）：
+
+```js
+fetch('https://baylink-api.onrender.com/api/admin/security-status',{headers:{Authorization:'Bearer '+JSON.parse(localStorage.getItem('currentUser')).token}}).then(r=>r.json()).then(console.log)
+```
+
+把网址里的 `security-status` 换成 `ai-metrics`、最后换成 `.then(d=>console.log(d.credit))`，就是 AI 额度燃尽（见 `docs/claude-baybay-rollout.md`）。这一行只在你自己的浏览器里用你自己的登录；不要把 `currentUser` 里的 token 发给任何人。
 
 **登录失败提醒：** 管理员账号当天登录失败到 10 / 50 / 200 / 1000 次（`ADMIN_LOGIN_ALERT_STEPS` 可改）时给店主发一封邮件，每档每天一封；"密码对了但验证器代码错"的次数单独写出来（说明密码可能已经泄露）。管理员账号开启或停用验证器、换恢复码、改密码、撤销所有管理员登录时，也各发一封"刚刚发生了什么、如果不是你本人该怎么办"的邮件。需要 `NOTIFICATION_DELIVERY_ENABLED=true`、Resend 配好、收件人 `SECURITY_ALERT_EMAIL`（单独设它就够；没有就用 `AI_ALERT_EMAIL`，再没有就用 `OWNER_DIGEST_EMAIL`）。
 
@@ -106,7 +114,15 @@ API-SEC, 2026-10-12. Everything below is opt-in: with no env change the site beh
 5. **Revoke every administrator session:** `POST /api/admin/sessions/revoke` from the authenticator session (the caller gets a fresh session), or `node scripts/revoke-admin-sessions.js --env=<file> --apply`. Both bump `sessionRevision` and `sessionsRevokedAt` on every `role: 'admin'` account; the endpoint also disconnects their sockets and logs `admin_sessions_revoked`.
 6. **Optional:** `ADMIN_LOGIN_ID=<a long private login name>`; `admin` then stops working. Both sign-in steps (password and authenticator) count failures against the name typed, so failures on the retired `admin` never hold the owner.
 
-**Checking the steps (API-OPS):** `GET /api/admin/security-status` (an administrator session; an authenticator session once `ADMIN_MFA_REQUIRED` is on) returns one boolean per step: `passwordChanged` (1), `encryptionKeySet` (2), `authenticatorOn` (3), `authenticatorRequired` (4), `sessionsRevoked` (5), `privateLoginName` (6) and `alertsOn` (the owner alerts below can be delivered), with `done` / `total` and `times` (the earliest time each account step happened). An account step is true only when every `role: 'admin'` account has it. Admin only (guests 401, members 403, `Cache-Control: no-store`); no public endpoint carries these fields, and the response holds no account id, login name, address or variable value (`lib/adminSecurityStatus.js`).
+**Checking the steps (API-OPS):** `GET /api/admin/security-status` (an administrator session; an authenticator session once `ADMIN_MFA_REQUIRED` is on) returns one boolean per step: `passwordChanged` (1), `encryptionKeySet` (2), `authenticatorOn` (3), `authenticatorRequired` (4), `sessionsRevoked` (5: the latest revoke is later than the password change and the authenticator enrolment; the sign-out that steps 1 and 3 do on their own does not count), `privateLoginName` (6: `ADMIN_LOGIN_ID` is set, or no administrator account signs in as `admin` any more because it has a real e-mail address) and `alertsOn` (the owner alerts below can be delivered), with `done` / `total` and `times` (the earliest time each account step happened). An account step is true only when every `role: 'admin'` account has it. Admin only (guests 401, members 403, `Cache-Control: no-store`); no public endpoint carries these fields, and the response holds no account id, login name, address or variable value (`lib/adminSecurityStatus.js`).
+
+**Reading it:** the web admin area has no panel for this yet (an owner decision), and opening the API URL in the address bar sends no session token (401). On a computer, open www.baylink.us, sign in as the administrator (password + authenticator code once `ADMIN_MFA_REQUIRED` is on), open DevTools (F12) → Console and run (Chrome asks you to type `allow pasting` before the first paste):
+
+```js
+fetch('https://baylink-api.onrender.com/api/admin/security-status',{headers:{Authorization:'Bearer '+JSON.parse(localStorage.getItem('currentUser')).token}}).then(r=>r.json()).then(console.log)
+```
+
+For the AI credit burn-down, use `ai-metrics` instead of `security-status` and end with `.then(d=>console.log(d.credit))` (see `docs/claude-baybay-rollout.md`). It runs in your own browser with your own session; never share the `token` inside `currentUser`.
 
 **Sign-in limits** (`lib/loginGuard.js`, survive restarts): failed sign-ins per 15-minute window, 10 per visitor, 8 per visitor on one account, 100 per account across visitors. HMAC-keyed TTL documents in the `authlimits` collection; no IP, login name or account id is stored. An unreadable store fails open (the in-memory limiter still applies). A wrong authenticator code after a correct password counts too.
 
