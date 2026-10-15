@@ -265,3 +265,26 @@ test('multi-turn carry: ages, a per-person budget and a finish time survive foll
   const offers = buildFastEvidence({ query: '那周日呢？带孩子 免费 儿童 活动', originalQuery: '那周日呢？带孩子免费儿童活动', state: sunday, guideCatalog: guides, catalog: planner, discoveries, today: TODAY, locale: 'zh-Hans', audience: true });
   assert.ok(!itemIds(offers).some(id => /ikea-kids-eat-free-wednesdays|keepsakes-dec5/.test(id)), itemIds(offers).join(', '));
 });
+
+test('follow-ups and phrasings found by the unseen block M (API-BB-5)', () => {
+  // A weekday follow-up inside a carried span is that span's weekday.
+  const december = stateOf('12月第一个周末想带爸妈和 7 岁的孩子在东湾逛逛').state;
+  assert.deepEqual(december.dateRange, { start: '2026-12-05', end: '2026-12-06' });
+  const free = resolveTaskState({ message: '只要免费的', previous: december, today: TODAY, carry: true }).state;
+  assert.equal(resolveTaskState({ message: '帮我排成周六半天，坐 BART', previous: free, today: TODAY, carry: true }).state.date, '2026-12-05');
+  assert.equal(resolveTaskState({ message: '那周日呢', previous: free, today: TODAY, carry: true }).state.date, '2026-12-06');
+  assert.equal(resolveTaskState({ message: '这周日呢', previous: free, today: TODAY, carry: true }).state.date, '2026-10-18', 'this week\'s Sunday stays this week');
+  // Outing phrasings: 带娃出门, 带孩子去博物馆, anything for kids; not 出门买菜 or 出去看病.
+  for (const message of ['周末想带娃出门，东湾有什么推荐？', '我住 San Jose，想带孩子去博物馆，有什么推荐？', 'Anything for kids in San Jose the weekend of November 21?']) assert.equal(stateOf(message).state.goal, 'discover', message);
+  for (const message of ['带妈妈出门买菜', '带孩子出去看病']) assert.notEqual(stateOf(message).state.goal, 'discover', message);
+  assert.deepEqual(stateOf('周末想带娃出门，东湾有什么推荐？').state.dateRange, { start: '2026-10-17', end: '2026-10-18' });
+  // A month bounds an events ask; not "我1月要回国".
+  assert.deepEqual(stateOf('12月有什么圣诞点灯或者游行？').state.dateRange, { start: '2026-12-01', end: '2026-12-31' });
+  assert.equal(stateOf('我1月要回国，要带什么').state.dateRange, undefined);
+  const parades = itemIds(evidence('12月有什么圣诞点灯或者游行？'));
+  assert.equal(parades[0], 'event:pleasanton-hometown-holiday-2026', parades.join(', '));
+  assert.ok(!parades.some(id => /halloween|veterans/.test(id)), parades.join(', '));
+  // The San Jose museum ask from home is ordered from San Jose.
+  const museums = evidence('我住 San Jose，想带孩子去博物馆，有什么推荐？').items.filter(item => ['event', 'place'].includes(item.kind));
+  assert.equal(museums[0]?.city, 'San Jose', museums.map(item => `${item.id} ${item.city}`).join(', '));
+});
