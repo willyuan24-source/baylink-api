@@ -23,10 +23,14 @@ const NEW_PHRASINGS = [
   // Dose changes (zh-Hans, zh-Hant, en).
   ['medical', '我爸的降压药能不能减量？'], ['medical', '我媽血壓 160，降壓藥要不要加量？'], ['medical', '胰岛素要不要加量？'], ['medical', '醫生開的藥吃完了，可以自己停藥嗎？'],
   ['medical', 'Should I increase my mom\'s blood pressure medication?'], ['medical', 'Can I double my dose of ibuprofen?'], ['medical', 'How many mg of acetaminophen for a 30 lb toddler?'],
+  ['medical', 'How many ml of the syrup should I give my 2 year old?'], ['medical', 'How much mg can my mom take a day?'],
   ['medical', '孩子 2 歲發燒，可以吃大人的泰諾嗎？'],
   // Visa status.
   ['immigration', '旅遊簽證 B2 可以延期嗎？'], ['immigration', '我爸妈拿 B1/B2 签证来探亲，可以多待几个月吗？'], ['immigration', 'Can my parents extend their stay on a tourist visa?'],
   ['immigration', 'I-485 还在审，可以出国吗？要办回美证吗？'], ['immigration', 'Do I need advance parole to visit China?'], ['immigration', 'How long does an I-765 work permit take?'],
+  // Review round 3: an expiry that is the question (怎么办, 会怎样, already expired) stays immigration.
+  ['immigration', '爸妈的旅游签证快到期了怎么办？'], ['immigration', '旅游签证过期了会怎样？'], ['immigration', '爸妈旅游签证已经过期了，还能带他们去玩吗？'],
+  ['immigration', "My parents' visitor visas expire in March, what should we do?"], ['immigration', "My parents' tourist visa expired last week, what happens now?"], ['immigration', '旅游签证到期前可以申请延期吗？'],
   // Tax amounts and credits.
   ['tax', '我今年 W-2 收入 8 萬，要交多少州稅？'], ['tax', '1099 收入要交多少联邦税？'], ['tax', 'How much state tax will I pay on $80,000 of W-2 income?'], ['tax', '退稅什麼時候到？'],
   ['tax', 'Am I eligible for the CalEITC?'], ['tax', '孩子的 Child Tax Credit 怎么申请？'],
@@ -44,6 +48,9 @@ const TAX_WITH_EVENT_WORDS = [
   ['tax', '参加了报税课程，但我的 1099 收入还是不知道要交多少联邦税'], ['tax', '报税时，孩子上课程的学费能抵税吗？'], ['tax', '我参加了一个活动赢了奖金，要报税吗？'],
   ['tax', 'Do I need to file taxes on my side job teaching classes?'], ['tax', '退税什么时候到？我上了报税讲座还是不懂'], ['tax', '参加了公司活动拿了礼品卡要报税吗'],
   ['tax', "Can I deduct my kids' summer camp and classes on my tax return?"], ['tax', '我做活动策划的 1099 收入要交多少税？'], ['tax', '公司年底活动发的奖金要交多少税'],
+  // Review round 3: the asker's own how-to beside an event search.
+  ['tax', '这周六有报税讲座吗？我第一年来美国，怎么报税？'], ['tax', '有没有免费报税活动？新移民如何报税'], ['tax', '周末有没有报税讲座？我自己开网店的收入怎么报税'],
+  ['tax', '学费能报税吗？周末有讲座吗'], ['tax', '周末有報稅講座嗎？我的海外收入要申報嗎'], ['tax', '课程费可以报税抵扣吗？这周六有课程吗'], ['tax', '這週六有報稅講座嗎？我第一年來美國，怎麼報稅？'],
 ];
 // Asks that only mention the words: events, outings, shops and services are not the guard.
 const NOT_GUARDED = [
@@ -55,6 +62,12 @@ const NOT_GUARDED = [
   '爸妈拿探亲签证来湾区玩一个月，周末带他们去哪？', '我爸妈拿旅游签证来探亲，博物馆有老人优惠吗？', 'My parents are here on tourist visas, any senior discounts at SF museums?',
   'My in-laws are visiting on a B2 visa, what are good day trips from San Jose?', '父母持B2签证来美，可以免费坐 Muni 吗？', 'We want to extend our stay at the hotel in Napa, any deals?',
   'Can we extend our stay at the hotel in Napa one more night?', '哪里可以买白卡纸？',
+  // Review round 3: a visa expiry that is only a deadline for an outing; a talk that teaches filing;
+  // quantities that are not doses.
+  '爸妈拿旅游签证来，签证到期前想带他们去优胜美地玩', '我父母探亲签证还有两个月过期，这两个月周末带他们去哪玩？', '爸妈旅游签证快到期了，最后一个周末带他们去哪玩？',
+  '父母持旅游签证，过期之前还想去一次大峡谷，从湾区怎么去？', "My parents' visitor visas expire in March, what should we do with them before they leave?",
+  'Our visitor visa expires soon so we want one last weekend trip — ideas?', "Before my parents' tourist visa expires, where should we take them?",
+  '有没有教新移民怎么报税的讲座？', '报税季有哪些免费活动？', 'How many ml in a cup?', 'how much mg of caffeine in a latte at Philz?', 'How many tablets come in the dishwasher pod box?',
 ];
 
 const locale = message => /[㐀-鿿]/.test(message) ? (/[這週醫藥稅綠歲]/.test(message) ? 'zh-Hant' : 'zh-Hans') : 'en';

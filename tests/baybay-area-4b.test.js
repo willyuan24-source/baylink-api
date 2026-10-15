@@ -51,9 +51,12 @@ test('area rules: a home city asks for nearest first; an outing ask with no area
 // and a yes/no question about one place are not discover asks.
 const NOT_DISCOVER = ['What to do when the power goes out?', 'What to do if my car gets towed in San Francisco?', 'What to do after a car accident in San Jose?',
   'What to do if I lose my green card?', 'Exploratorium 好玩吗？', 'Exploratorium 好不好玩？', 'What to do with my old couch in San Jose?',
-  'Where to go for a flu shot in Oakland this weekend?', '周六去哪里办驾照？'];
+  'Where to go for a flu shot in Oakland this weekend?', '周六去哪里办驾照？',
+  // Review round 3: taking a thing somewhere is an errand.
+  'Where should I take my car for repairs in Oakland this Saturday?', 'Where can I take my old laptop for recycling this weekend?'];
 const DISCOVER = ['我们住在 San Jose，这周六带孩子去哪儿玩好？', '我家在 Fremont，周日带 3 岁孩子去哪儿？', 'We live in San Jose. What can we do with kids this Saturday?',
-  'What to do in San Jose this weekend?', 'Where should we take my parents this weekend?', 'What to do with kids in Oakland?', '这周末湾区有什么好玩的？', 'Anything fun this Sunday?'];
+  'What to do in San Jose this weekend?', 'Where should we take my parents this weekend?', 'What to do with kids in Oakland?', '这周末湾区有什么好玩的？', 'Anything fun this Sunday?',
+  'Where should we take the kids this Saturday?', 'Where can we take our dog this Sunday?'];
 
 test('outing goal: how-to and yes/no phrasings are not discover; outing phrasings are', () => {
   for (const message of NOT_DISCOVER) assert.notEqual(stateOf(message).goal, 'discover', message);
@@ -90,13 +93,17 @@ test('only a self-exclusion of the record drops its card (review 10-14 negatives
   for (const text of ["You can't go wrong with Coyote Hills on a Sunday", "Strollers won't work on the upper trail, so bring a carrier", 'Parking is not an option on Sundays, take BART',
     '周六人多，所以不适合推婴儿车，建议周日上午去', 'Closed Sundays in winter only; open this Sunday', "Children under 3 can't go on the rides, but the petting zoo at Ardenwood is free",
     'Street parking does not work well on Sundays; take BART from Fremont', 'Free admission does not work with online tickets, so walk up',
-    'Skip this one if you want something quieter; otherwise it is the best fit', '如果下雨，户外部分这天不适合，可以改去室内展区', '这天去不了的话，下周六还有一场', '周日游船不开放，湖边步道照常']) {
+    'Skip this one if you want something quieter; otherwise it is the best fit', '如果下雨，户外部分这天不适合，可以改去室内展区', '这天去不了的话，下周六还有一场', '周日游船不开放，湖边步道照常',
+    // Review round 3: a qualified clause or a following "but" is about one part of the visit.
+    "So it won't be open late, but it's perfect for a morning visit", "The trail is short, so it won't fit a full day; pair it with the farm next door",
+    'It is not an option for strollers on the upper loop, but the lower loop is flat']) {
     assert.equal(dropped(text, SUNDAY, { e1: 'Ardenwood Historic Farm' }), false, text);
   }
   assert.equal(dropped('Lake Elizabeth is free to walk around; the boat rental is closed Mondays', MONDAY, { e1: 'Lake Elizabeth' }), false, 'a part of the visit beside a free statement');
   assert.equal(dropped('The boat rental is closed Mondays', MONDAY, { e1: 'Lake Elizabeth' }), false, 'a part of the visit');
   for (const [text, titles] of [["Randall Museum is closed Sundays, so it won't work", {}], ['Randall Museum is closed Sundays.', { e1: 'Randall Museum' }], ['The museum is closed on Sundays.', {}],
-    ['Closed Sundays.', {}], ['它周日不开放。', {}], ['Randall 周日闭馆，所以这天去不了。', {}], ['Sunday hours were cut, so this one is not an option.', {}], ['周日闭馆。', {}]]) {
+    ['Closed Sundays.', {}], ['它周日不开放。', {}], ['Randall 周日闭馆，所以这天去不了。', {}], ['Sunday hours were cut, so this one is not an option.', {}], ['周日闭馆。', {}],
+    ["It's closed this Sunday, so skip it", {}], ["The museum is being renovated, so it won't work this Sunday.", {}]]) {
     assert.equal(dropped(text, SUNDAY, titles), true, text);
   }
 });
