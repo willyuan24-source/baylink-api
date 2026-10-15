@@ -117,6 +117,12 @@ ANTHROPIC_WORKSPACE_ID=<eval workspace> node --env-file=<private env file> scrip
 
 The budget must exceed the expected spend by the judge's per-call reserve ($0.50 for Opus), or the judge stops early.
 
+**API-BB-5 book (set `bb5`, block M, pinned Wed 2026-10-14 12:00 PT).** 25 turns written for API-BB-5 and used nowhere else (blocks A-L, the audits, the live checks and `tests/baybay-5.test.js` use other wording): four conversations that carry child ages, a per-person or total budget, a finish time, indoor, free and the travel mode over two to four turns; two-day, weekend-of, Nth-weekend and month asks; English asks against the Chinese catalog; a home city, and BART and Caltrain day plans; DMV and Medi-Cal guide facts. Extra gold fields, all checked without a model: `evidenceIncludes` (a retrieved record's title or URL must match; arrays are any-of), `evidenceMustNotInclude`, `planRail` (`bart` / `caltrain`: every plan stop is in a city that system serves, `lib/baybayTransit.js`), and `state` objects such as `dateRange` compared field by field. A dry run passes 18 of 25 on API-BB-5 (6 on its base); the other 7 check answer text and need the live model.
+
+```
+node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --set bb5 --now 2026-10-14T12:00:00-07:00 --budget-usd 0.9 --concurrency 2 --out <folder outside the repo> --run-id bb5-M
+```
+
 ## Metrics
 
 | Metric | Definition |

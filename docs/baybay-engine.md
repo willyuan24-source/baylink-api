@@ -91,6 +91,45 @@ instance it decides how soon the first sentence can start. Keep it small:
   (live 10-13: about 1–2 s per kind on Render, a few hundred ms locally) in slices of one stage,
   during roughly the first 10–20 s after the first health check. A request in that window waits
   for at most one stage; without the warm-up the first reader of each kind paid the whole cost.
+- API-BB-5 (live check 10-15: lead p50 2.07 s, p90 5.66 s): what still waited before the model call.
+  - The run-share claims (`claim()` in `baybayAgent.js`): a row this process has not claimed yet costs one
+    `findOneAndUpdate` upsert, not an upsert and a claim; a row at its limit meets the unique `id` (E11000)
+    and the plain claim decides. Test doubles (`tests/support/memory-models.js`, the eval and capture quota
+    stubs) follow MongoDB for both.
+  - The spend level (`readBudget`): today's last known level answers after 120 ms while the 30 s cached read
+    finishes; the model call still waits for the fresh level in `reserveAiCall`.
+  - The database keep-alive: while idle, one indexed read of today's quota row every 25 s
+    (`BAYBAY_DB_KEEPALIVE_MS`, at least 5 s; `BAYBAY_DB_KEEPALIVE=off` or `0` turns it off), started with the
+    warm-up, so production only. It never writes; `warmStatus().keepAlive` counts runs and failures.
+  - A new site day plan is one streamed call: the plan engine builds the plan from the site's candidates and
+    the final round writes the answer (`day_plan_single_call`). Edits, plan follow-ups, member web research
+    and `BAYBAY_DAY_PLAN_FAST=off` keep the agent rounds. A failed single call gets one recovery call.
+  - A provider call on a pooled connection the far end had closed fails with "fetch failed" and no HTTP
+    status; `failureReason` calls it `connection` (with the socket code from a fixed set) and the adapter
+    sends it once more when no response or text arrived and 4 s remain (`transport.connectionRetries`).
 - Measure with `node scripts/baybay-latency-bench.js --settle 3000` (with `--settle` the bench starts
   the warm-up as the server does; stateMs and siteMs are the CPU part; preModelMs adds the bench's
   fixed Mongo and monitor delays), before and after.
+
+## What a question means (API-BB-5)
+
+- **Date spans** (`askedDateRange` in `lib/entityAliases.js`, engine v2 only through `carry`): 11月21日、22日 /
+  11月21日到22日 / November 21-22 / 11/21-22, the weekend of December 5 / 12月5日那个周末, 12月第一个周末 /
+  first weekend of December, and a month (12月, 12月初, in December, 下个月) become `state.dateRange`. A month
+  bounds an outing ask or an ask about events, never "我1月要回国". A day plan still asks which day of a two-day
+  span. A bare 周末 in an outing ask is the coming weekend (not 周末一般 / usually / every weekend), and a
+  weekday follow-up inside a carried span ("那周日呢" after 12月第一个周末) is that span's weekday.
+  `dateRangeFor` is unchanged, so v1 and the planner read dates as before.
+- **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
+  from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
+  感恩节周末 no longer leads a weekend ask.
+- **English asks**: a candidate is matched against its English aliases with plurals; one subject word of the
+  question in its English name is enough ("there / any", a month or a day number never counts). An English
+  reader's model sees events, places and plan stops under their English names.
+- **Area and rail fit**: the four San Francisco museum names in the museums alias group name those museums
+  only when the ask names San Francisco or no city. `lib/baybayTransit.js` holds the cities BART and Caltrain
+  serve, from the operators' station lists (read 2026-10-15); "坐 BART 去" keeps `rail:bart` in the task state
+  and, with no destination city, places the system reaches rank first. It is a city table only: it never
+  states a station, a walk or a travel time.
+- **The lead never states a count** of 2-6 options: the draft writer strips it while the lead streams
+  (`leadDraftText`) and `leadConsistency` strips it from the result, so the reader never sees the lead change.
