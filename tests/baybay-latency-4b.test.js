@@ -13,12 +13,13 @@ const NOW = Date.parse('2026-10-14T19:00:00Z'); // Wed 2026-10-14 12:00 PDT
 const TODAY = '2026-10-14';
 const catalog = loadPlannerCatalog();
 const publicContext = createPublicContext({ guideCatalog: guides });
-const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_STATE_SECRET: 'api-bb-4b-task-secret-0123456789abcd', BAYBAY_ENGINE: 'v2' };
+// isTest false so the quota claims run (fixtures) and the model is called; BAYBAY_WARM off so only the explicit warmUp() warms.
+const config = { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_STATE_SECRET: 'api-bb-4b-task-secret-0123456789abcd', BAYBAY_ENGINE: 'v2', BAYBAY_WARM: 'off' };
 const reply = { type: 'message', id: 'msg-fixture', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', usage: { input_tokens: 10, output_tokens: 10 },
   content: [{ type: 'text', text: JSON.stringify({ lead: 'L', points: [{ text: 'P [[e1]]', cardIds: ['e1'] }], candidateIds: [], followups: [], coverage: [], gap: '' }) }] };
 function assistantWith() {
   const sent = [], providerCalls = [];
-  const assistant = createBayBayAssistant({ config, guideCatalog: guides, englishGuideCatalog: englishGuides, catalog, now: () => NOW, isTest: true,
+  const assistant = createBayBayAssistant({ config, guideCatalog: guides, englishGuideCatalog: englishGuides, catalog, now: () => NOW, isTest: false,
     Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
     fetchImpl: async (url, init) => {
       providerCalls.push(url); sent.push(init.body);
@@ -47,4 +48,5 @@ test('a warmed assistant answers exactly as a fresh one (the caches the warm-up 
     assert.deepEqual(warmed.sent.slice(after), fresh.sent.slice(before), `${message}: the provider request bodies match byte for byte`);
     assert.deepEqual(withoutTimes(b), withoutTimes(a), message);
   }
+  assert.ok(fresh.sent.length >= 4 && warmed.sent.length === fresh.sent.length, 'every question reached the (fixture) model');
 });
