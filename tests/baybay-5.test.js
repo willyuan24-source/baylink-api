@@ -151,6 +151,20 @@ test('review: holiday weekends, background months, ages beside a date and Englis
   assert.equal(resolveTaskState({ message: 'What about this Saturday?', previous: december, today: TODAY, carry: true }).state.date, '2026-10-17');
 });
 
+test('review: "有没有室内的" carries indoor through a San Mateo conversation into the plan', () => {
+  let state = stateOf('这周六带 3 岁和 7 岁的孩子在 San Mateo 玩，总预算 60 刀，下午 4 点前要回家').state;
+  assert.deepEqual([state.city, state.date, state.childAges, state.budget, state.budgetScope, state.finishBy], ['San Mateo', '2026-10-17', [3, 7], 60, 'total', '16:00']);
+  for (const message of ['那周日呢', '有没有室内的', '帮我排个周日半天的行程']) {
+    state = resolveTaskState({ message, previous: state, today: TODAY, carry: true }).state;
+    assert.deepEqual([state.city, state.date, state.childAges, state.budget, state.budgetScope, state.finishBy], ['San Mateo', '2026-10-18', [3, 7], 60, 'total', '16:00'], message);
+    if (message !== '那周日呢') assert.equal(state.setting, 'indoor', message);
+  }
+  assert.equal(state.goal, 'day-plan');
+  for (const message of ['有沒有室內的活動', '周日带孩子去哪，有没有室内的？']) assert.equal(stateOf(message).state.setting, 'indoor', message);
+  assert.equal(stateOf('有没有户外的').state.setting, 'outdoor');
+  assert.equal(stateOf('不要室内的').state.setting, 'outdoor');
+});
+
 test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
   const { railServes, railSystemsIn } = require('../lib/baybayTransit');
   const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
