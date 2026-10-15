@@ -243,3 +243,25 @@ test('live L07: a connection that closed under the request ("fetch failed") is r
   // The recovery sends the final turn once, not twice.
   assert.equal(busy.sent[1].messages.filter(row => (row.content || []).some(part => /researchComplete/.test(part.text || ''))).length, 1);
 });
+
+test('live D2: the 12月5日 East Bay family ask sees the day\'s parade, book sale and storytimes', () => {
+  for (const message of ['12月5日东湾有什么适合孩子的活动', 'Family things to do in the East Bay on December 5?']) {
+    const found = itemIds(evidence(message));
+    for (const id of ['event:pleasanton-hometown-holiday-2026', 'event:ccclib-danville-friends-book-sale-dec5-2026', 'event:opl-main-family-storytime-2026']) assert.ok(found.includes(id), `${message}: ${found.join(', ')}`);
+  }
+});
+
+test('multi-turn carry: ages, a per-person budget and a finish time survive follow-ups; dated offers keep to the asked day', async () => {
+  const first = stateOf('这周六带 4 岁和 8 岁的孩子在 Fremont 玩，每人预算 20 刀以内，下午 5 点前要回家').state;
+  assert.equal(first.goal, 'discover', 'an outing with the companions, a place and 玩');
+  assert.deepEqual([first.city, first.date, first.childAges, first.budget, first.budgetScope, first.finishBy], ['Fremont', '2026-10-17', [4, 8], 20, 'person', '17:00']);
+  assert.ok(!first.preferences.some(value => value.startsWith('time-of-day:')), '下午 5 点前 is a finish time, not an afternoon wish');
+  const sunday = resolveTaskState({ message: '那周日呢？', previous: first, today: TODAY, carry: true }).state;
+  const indoor = resolveTaskState({ message: '有室内的吗', previous: sunday, today: TODAY, carry: true }).state;
+  const plan = resolveTaskState({ message: '帮我排个周日的行程，我们坐 BART 去', previous: indoor, today: TODAY, carry: true }).state;
+  for (const state of [sunday, indoor, plan]) assert.deepEqual([state.city, state.date, state.childAges, state.budget, state.budgetScope, state.finishBy], ['Fremont', '2026-10-18', [4, 8], 20, 'person', '17:00']);
+  assert.equal(indoor.setting, 'indoor'); assert.equal(plan.goal, 'day-plan'); assert.equal(plan.travelMode, 'transit'); assert.ok(plan.preferences.includes('rail:bart'));
+  // Offers: IKEA's Wednesday-only kids' meals and a 12/5 workshop are not options on Sunday 10/18.
+  const offers = buildFastEvidence({ query: '那周日呢？带孩子 免费 儿童 活动', originalQuery: '那周日呢？带孩子免费儿童活动', state: sunday, guideCatalog: guides, catalog: planner, discoveries, today: TODAY, locale: 'zh-Hans', audience: true });
+  assert.ok(!itemIds(offers).some(id => /ikea-kids-eat-free-wednesdays|keepsakes-dec5/.test(id)), itemIds(offers).join(', '));
+});
