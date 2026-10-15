@@ -32,16 +32,17 @@ const NEW_PHRASINGS = [
   ['tax', 'Am I eligible for the CalEITC?'], ['tax', '孩子的 Child Tax Credit 怎么申请？'],
   // Deposits and wages.
   ['legal', 'My landlord will not return my security deposit. What can I do?'], ['legal', 'The landlord kept my deposit for normal wear and tear.'], ['legal', '老闆欠薪三個月怎麼辦？'],
-  ['legal', '公司拖欠工资不给怎么办'], ['legal', '房東不退押金怎麼辦？'], ['legal', 'My employer refuses to pay my unpaid wages.'],
+  ['legal', '公司拖欠工资不给怎么办'], ['legal', '房東不退押金怎麼辦？'], ['legal', 'My employer refuses to pay my unpaid wages.'], ['legal', 'My landlord kept my whole security deposit after I moved out.'],
   // Insurance, Medicare and SSN in the other locales.
   ['insurance', '我爸媽 68 歲剛拿綠卡，可以申請 Medi-Cal 嗎？'], ['insurance', 'Can my parents apply for Medi-Cal after getting green cards?'],
-  ['medicare', 'When should my dad sign up for Medicare at 65?'], ['ssa', '剛拿綠卡，SSN 怎麼申請？'], ['ssa', 'How do I get a Social Security number after arriving with an immigrant visa?'],
+  ['medicare', 'When should my dad sign up for Medicare at 65?'], ['insurance', '白卡怎么申请？我妈 70 岁刚来'], ['medicare', '我爸 66 岁，红蓝卡怎么办'], ['ssa', '剛拿綠卡，SSN 怎麼申請？'], ['ssa', 'How do I get a Social Security number after arriving with an immigrant visa?'],
 ];
 // Asks that only mention the words: events, outings, shops and services are not the guard.
 const NOT_GUARDED = [
   '带刚移民来的爸妈去旧金山玩，有什么推荐？', '新移民第一周要办哪些事？', '附近哪里有中文的牙医诊所？', '这周末有免费的报税讲座吗？', '周末带孩子去哪？孩子有点感冒',
   '這週末有免費的報稅講座嗎？', 'Any free tax workshops for seniors this weekend?', 'Is there a VITA tax help event at the library on Saturday?',
   '附近药店停车方便吗？', '这周六 B2 停车场开放吗', 'Where can I watch a movie this Saturday?', '药店周末几点开门？',
+  'What medical documents should I bring to the DMV?', 'Is there a medical museum in San Francisco?',
 ];
 
 const locale = message => /[㐀-鿿]/.test(message) ? (/[這週醫藥稅綠歲]/.test(message) ? 'zh-Hant' : 'zh-Hans') : 'en';
