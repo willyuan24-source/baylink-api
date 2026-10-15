@@ -44,6 +44,29 @@ test('a Medi-Cal question starts with how to apply for Medi-Cal (DHCS), not with
   assert.match((await ask('我妈 65 岁了，Medicare 怎么申请？')).answer, /^Medicare 问题可从加州老龄部/);
 });
 
+test('the Medi-Cal first step is the pillar guide\'s own sentence, read from the catalog (review 10-14)', () => {
+  const { professionalResponse, MEDI_CAL_WAYS_HANT } = require('../lib/safetyRouting');
+  const paragraphOf = catalog => catalog.find(row => row.slug === 'bay-area-medicare-hicap-medi-cal-guide').content.split(/\n\s*\n/).map(part => part.trim()).find(part => /^DHCS[^\n。.]{0,30}(?:四种|four ways)/.test(part));
+  const zhLine = paragraphOf(guides), enLine = paragraphOf(englishGuides);
+  assert.ok(zhLine && enLine, 'the guide paragraph on DHCS\'s four ways exists in zh-Hans and en');
+  // The zh-Hant rendering is made from the current zh-Hans sentence: a guide edit must update it.
+  assert.equal(MEDI_CAL_WAYS_HANT[0], zhLine, 'update MEDI_CAL_WAYS_HANT in lib/safetyRouting.js from the edited guide');
+  const context = { guideCatalog: guides, englishGuideCatalog: englishGuides };
+  const message = '我爸妈 68 岁刚拿绿卡，可以申请 Medi-Cal 吗？';
+  assert.ok(professionalResponse(message, 'zh-Hans', context).answer.startsWith(zhLine));
+  assert.ok(professionalResponse(message, 'zh-Hant', context).answer.startsWith(MEDI_CAL_WAYS_HANT[1]));
+  assert.ok(professionalResponse('Can my parents apply for Medi-Cal?', 'en', context).answer.startsWith(enLine));
+  // The production English search catalog (English text first, then the Chinese) gives the English line.
+  const merged = guides.map(guide => { const english = englishGuides.find(row => row.slug === guide.slug); return english ? { ...guide, content: `${english.content}\n${guide.content}` } : guide; });
+  assert.ok(professionalResponse('Can my parents apply for Medi-Cal?', 'en', { guideCatalog: guides, englishGuideCatalog: merged }).answer.startsWith(enLine));
+  // A guide edit is followed: the sentence comes from the catalog, not a copy in the code.
+  const edited = guides.map(row => row.slug === 'bay-area-medicare-hicap-medi-cal-guide' ? { ...row, content: row.content.replace(zhLine, 'DHCS 列出四种申请方式（测试改写）。') } : row);
+  assert.ok(professionalResponse(message, 'zh-Hans', { guideCatalog: edited }).answer.startsWith('DHCS 列出四种申请方式（测试改写）。'));
+  assert.ok(professionalResponse(message, 'zh-Hant', { guideCatalog: edited }).answer.startsWith('DHCS 列出四种申请方式（测试改写）。'), 'a stale zh-Hant rendering is not used');
+  // Without the guide catalog there is no sentence to cite.
+  assert.doesNotMatch(professionalResponse(message, 'zh-Hans', {}).answer, /四种申请/);
+});
+
 test('a child fever without a model: 911 first, then the site doctor guide\'s advice-line step, cited; never an event card', async () => {
   const zh = await ask('孩子发烧 39 度要去急诊吗？');
   assert.ok(zh.answer.startsWith('如果有人正处于危险或突然身体不适，请立即拨打 911'), zh.answer.slice(0, 60));
