@@ -44,8 +44,8 @@ function fixture({ defaults, enabled = 'true', config = {}, seed = [] } = {}) {
 }
 
 test('activation: a code default the captain flips once the web copy is live; NOTIFICATION_EMAIL_DEFAULTS=on/off overrides it', () => {
-  // Until WEB-COMMUNITY-2 ships truthful copy the preset is dormant; the later flip changes this one constant.
-  assert.equal(EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT, false);
+  // WEB-COMMUNITY-2 (web #43) shipped copy that is true in both states, so the preset is on by default.
+  assert.equal(EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT, true);
   for (const byDefault of [false, true]) {
     for (const value of [undefined, '', '  ']) assert.equal(emailDefaultsActive(value === undefined ? {} : { NOTIFICATION_EMAIL_DEFAULTS: value }, byDefault), byDefault, `unset → code default ${byDefault}`);
     for (const value of ['on', 'ON', ' true ']) assert.equal(emailDefaultsActive({ NOTIFICATION_EMAIL_DEFAULTS: value }, byDefault), true, value);
