@@ -133,8 +133,9 @@ instance it decides how soon the first sentence can start. Keep it small:
   either; 长 is a long weekend only directly before 周末 (学长这个周末 is this weekend). An English month in a move,
   birth or trip-away clause, or a past arrival or start ("We arrived in March"), is no span; a coming one ("We
   arrive in December", "Winter break starts in December") is. After a span is narrowed to one day after this
-  week, a bare weekday is the nearest such day within three days of it (12/05 → "What about Sunday?" is 12/06);
-  "this Sunday" is still this week's.
+  week, a bare weekday is that day of its Monday-to-Sunday week (12/05 → "What about Sunday?" is 12/06, 12/07 →
+  周日呢 is 12/13); "this Sunday" is still this week's. Review round 5: a weekend asked in the message that does not
+  hold the carried day replaces it (12月5号 → 这周末呢 / "What about this weekend?" is 10/17-18).
 - **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
   from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
   感恩节周末 no longer leads a weekend ask.
@@ -157,7 +158,8 @@ instance it decides how soon the first sentence can start. Keep it small:
   去两个地方 reads 去这些地方. While the lead streams, a count whose reading the next characters could still
   change ("周六带两个…") is held back, never stripped and then restored, so the draft is always a prefix.
   The 二-六 of 周六 / 星期六 / 礼拜六 / 初二 and of 十二 are a day or a larger number, never a count; 两 / 兩 always can be
-  one ("这周两场" / "這週兩場" is held and stripped while streaming, as in the result).
+  one ("这周两场" / "這週兩場" is held and stripped while streaming, as in the result). An approximate count
+  (两三个, 两到三个, 两、三个, 2-3个, 三五个) is left whole, as English "two or three" is.
 - **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
   negation); (有没有)不是室内的 / 非室内的 asks for outdoor, but the question 是不是室内的 and 除非室内 stay indoor. "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
   "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
