@@ -68,3 +68,19 @@ Every other field is set once, by one step. A stage may destructure it only when
 - A refactor proves "no behaviour change" in two ways, both $0 and offline:
   - The dry-run eval (`node scripts/baybay-eval-local.mjs --set engine --concurrency 1`) compared row by row against the base commit, ignoring wall-clock fields.
   - The stricter byte-level capture, `scripts/baybay-capture.js`. It runs every casebook turn under 8 engine/access arms with scripted providers and records the SHA-256 of every provider request body, the full payload, and every progress, quick-card and draft event. Run it on the base (extracted with `git archive`) and on the branch, then `cmp` the two files. A v1-removal lane compares only the v2 arms (`--only`).
+
+## Speed before the model call (API-BB-4B)
+
+Everything before the provider request is synchronous CPU work (steps 1–9), so on a small hosted
+instance it decides how soon the first sentence can start. Keep it small:
+
+- Retrieval and task state may cache only pure functions of catalog text (token indexes, the guide
+  term index in `scoreCorpusSubset`, normalised headings, `validDate`, known city spellings). Never
+  cache a question, a filter result or an answer. A record searched with more than one text keeps
+  one token index per text (`documentEntry`), so earlier questions never change later scores.
+- The boot warm-up (`warmUp()` in `baybayAgent.js`, fixed questions in `WARM_QUESTIONS`) runs steps
+  2–9 once after boot and again after `BAYBAY_WARM_INTERVAL_MS` (default 15 min) without a real
+  question; `BAYBAY_WARM=off` turns it off. It makes no model, quota or network call. If a change
+  to the `turn` object breaks it, `tests/baybay-latency-4b.test.js` fails (`failed` must stay 0).
+- Measure with `node scripts/baybay-latency-bench.js --settle 3000` (stateMs and siteMs are the CPU
+  part; preModelMs adds the bench's fixed Mongo and monitor delays), before and after.
