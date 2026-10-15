@@ -95,6 +95,11 @@ test('lead consistency: a count that differs from the listed options loses the n
   assert.equal(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).draft.lead, '周六有免费活动。');
   assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
+  // API-BB-5 review round 5: an approximate count is left whole, as "two or three" is in English (never "两免费活动").
+  for (const [lead, locale] of [['这周末有两三场免费活动。', 'zh-Hans'], ['這週末有兩三場免費活動。', 'zh-Hant'], ['两三个地方都适合带孩子。', 'zh-Hans'], ['推荐两到三个地方。', 'zh-Hans'],
+    ['有2到3个活动适合孩子。', 'zh-Hans'], ['这周末有2-3个活动。', 'zh-Hans'], ['奥克兰有三五个好去处。', 'zh-Hans'], ['有两、三个地方可以去。', 'zh-Hans']]) {
+    for (const count of [2, 3, 4]) assert.deepEqual(leadConsistency({ lead, points: points(count) }, { locale }).draft.lead, lead, `${lead} / ${count}`);
+  }
   // API-BB-5 review: the never-stated rule strips only a count of options; dates, ages, stops, people and durations stay,
   // and what is left reads as a sentence.
   const en = lead => leadConsistency({ lead, points: points(2) }, { locale: 'en' }).draft.lead;
