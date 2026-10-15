@@ -133,6 +133,14 @@ test('review: holiday weekends, background months, ages beside a date and Englis
     assert.notEqual(state.date, '2026-10-17', message);
   }
   for (const message of ['感恩节周末带孩子去哪玩', 'Thanksgiving weekend things to do with kids']) assert.ok(itemIds(evidence(message)).includes('event:sfpl-bernal-family-game-night-nov28-2026'), message);
+  // The weekend before or after a holiday is that weekend (Christmas 2026 is a Friday, Thanksgiving 11/26).
+  for (const [message, start, end] of [['the weekend before Christmas', '2026-12-19', '2026-12-20'], ['感恩节后的周末去哪玩', '2026-11-28', '2026-11-29'],
+    ['聖誕節前的週末有什麼活動', '2026-12-19', '2026-12-20'], ['weekend after Thanksgiving, anything for the kids?', '2026-11-28', '2026-11-29']]) {
+    assert.deepEqual(stateOf(message).state.dateRange, { start, end }, message);
+  }
+  // "anything free for kids" is an outing ask with a free filter.
+  const free = stateOf('Anything free for kids in Fremont this Saturday?').state;
+  assert.deepEqual([free.goal, free.freeOnly, free.date], ['discover', true, '2026-10-17']);
   // A month that dates something else in the ask is not the outing's span.
   for (const message of ['我们3月搬来湾区，有什么适合孩子的活动', '宝宝3月出生的，现在有什么适合的活动', '我1月要回国，回国前想带孩子出去玩', '我12月去日本，这之前周末带孩子去哪玩', '五月天演唱会有什么活动', '12月天气怎么样']) {
     assert.equal(askedDateRange(message, TODAY), null, message);
