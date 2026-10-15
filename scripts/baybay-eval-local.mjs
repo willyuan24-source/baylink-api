@@ -86,7 +86,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 function loadCasebook(probe) {
-  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-L]-.+\.json$/.test(file)).sort();
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-M]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);

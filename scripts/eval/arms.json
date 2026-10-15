@@ -9,6 +9,7 @@
     "API-BB-ENGINE: v2-* arms set BAYBAY_ENGINE=v2 (router, single-call fast path, v2 retrieval, frozen cached system block). The fast route defaults to Sonnet 5.5 low; v2-haiku-low moves only the fast route to Haiku 5.5 low (plans and professional topics stay on Sonnet low). code-defaults was engine v1 when the engine set ran (now the v1-code-defaults arm).",
     "API-BB-STREAM: set stream = block A on v2-code-defaults; the harness is a capable client (streamVersion 3) unless --no-drafts, so v2 fast-path turns stream their lead as draft events and the report shows lead TTFT for drafted turns.",
     "API-BB-CUTOVER: the engine default is now v2, so code-defaults (no config) runs v2, the same as v2-code-defaults. v1-code-defaults pins BAYBAY_ENGINE=v1 (the rollback, production before the cut-over). The pre-ENGINE model arms (opus-asis, haiku-*, sonnet-*) pin BAYBAY_ENGINE=v1 so they keep measuring the v1 research loop they were built for. The engine set compares against v1-code-defaults.",
+    "API-BB-5: set bb5 = block M (24 unseen questions: multi-turn constraint carry, dated spans, English asks, area and rail fit, guide facts) on v2-code-defaults, pinned Wed 2026-10-14 12:00 PT: run it with --now 2026-10-14T12:00:00-07:00. gold.evidenceIncludes / evidenceMustNotInclude check the turn's retrieved records and gold.planRail the plan's stops without a model.",
     "API-BB-QUALITY: set quality = blocks I (multi-turn convergence: the BB-LIVE 10-11 conversations W1, W2, M1, W3, L2 plus new follow-ups; gold.state checks the carried task state, gold.needsPlan the plan card) and J (professional-topic routing, false negatives, thin evidence, English cards) on code-defaults. Both books are pinned at Mon 2026-10-12 09:00 PT: run them with --now 2026-10-12T09:00:00-07:00, separately from the 10-08 books."
   ],
   "arms": {
@@ -30,6 +31,7 @@
     "r0": { "blocks": ["A", "C", "E"], "arms": ["code-defaults"], "baselineArm": "code-defaults" },
     "engine": { "blocks": ["A", "B", "C", "D", "E", "G", "H"], "arms": ["v2-haiku-low", "v2-code-defaults", "v1-code-defaults"], "baselineArm": "v1-code-defaults" },
     "stream": { "blocks": ["A"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" },
-    "quality": { "blocks": ["I", "J"], "arms": ["code-defaults"], "baselineArm": "code-defaults" }
+    "quality": { "blocks": ["I", "J"], "arms": ["code-defaults"], "baselineArm": "code-defaults" },
+    "bb5": { "blocks": ["M"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" }
   }
 }

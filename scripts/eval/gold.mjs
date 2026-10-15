@@ -23,6 +23,13 @@
 //   safetyTopic       text | null             the professional guard's topic; null = no professional guard
 //   noDrafts          true                    no streamed draft reached the reader (RC-21)
 //   cardsLocale       'en'                    no CJK characters in the entity cards' titles and summaries
+//   evidenceIncludes  [regex | [regex, ...]]  a retrieved record's title or URL must match (API-BB-5; no model needed)
+//   evidenceMustNotInclude [regex]            no retrieved record's title or URL may match
+//   planRail          'bart' | 'caltrain' | [..] every plan stop is in a city that system serves (lib/baybayTransit.js)
+//   state.<object>    {…}                     an object field (dateRange) compares by its fields
+
+import { createRequire } from 'node:module';
+const { railServes } = createRequire(import.meta.url)('../../lib/baybayTransit.js');
 
 export const FALSE_NEGATIVE = /站[内內](?:的)?(?:记录|記錄|资料|資料|目录|目錄)?(?:里|裡|中)?(?:目前|现在|現在)?(?:还|還)?(?:没有|沒有|未|暂无|暫無|没|沒)(?:显示|顯示|提到)?.{0,30}?(?:收录|收錄|记录|記錄|找到|条目|條目|活动|活動|地点|地點|餐厅|餐廳|资料|資料|展|电话|電話|号码|號碼)|(?:没有|沒有|未能?)(?:找到|收录|收錄|查到).{0,12}(?:记录|記錄|条目|條目|活动|活動)|\bno (?:site|published|matching) (?:record|event|listing)s?\b|\bnot (?:listed|recorded) on (?:the )?site\b|\b(?:does not|doesn't) have (?:a |any )?(?:record|listing)s?\b/i;
 
@@ -148,11 +155,30 @@ export function scoreTurn(gold = {}, payload, { corpus } = {}) {
     const state = payload?.taskState || {};
     for (const [field, want] of Object.entries(gold.state)) {
       const got = state[field] ?? null;
-      const ok = Array.isArray(want) ? Array.isArray(got) && got.length === want.length && want.every(value => got.includes(value)) : got === want;
+      // Arrays compare as sets; an object (dateRange, API-BB-5) by its fields.
+      const ok = Array.isArray(want) ? Array.isArray(got) && got.length === want.length && want.every(value => got.includes(value))
+        : want && typeof want === 'object' ? !!got && typeof got === 'object' && Object.keys(want).length === Object.keys(got).length && Object.entries(want).every(([key, value]) => got[key] === value) : got === want;
       check(`state_${field}`, ok, `got ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
     }
   }
   if (gold.needsPlan) check('plan', (payload?.assistantPlan?.stops || []).length >= 1, payload?.assistantPlan ? `${payload.assistantPlan.stops?.length || 0} stops` : 'no plan');
+  // API-BB-5: what the turn retrieved (payload.evidence: each record's title and URL), checked without a model.
+  const evidenceLines = (payload?.evidence || []).map(row => `${row?.title || ''} ${row?.url || ''}`);
+  for (const [index, rule] of (gold.evidenceIncludes || []).entries()) {
+    const options = [].concat(rule);
+    const hit = options.find(source => evidenceLines.some(line => toRegex(source, 'evidenceIncludes').test(line)));
+    check(`evidence_includes_${index + 1}`, hit !== undefined, hit !== undefined ? `matched ${hit}` : `none of ${options.join(' | ')} in ${evidenceLines.length} records`);
+  }
+  for (const [index, source] of (gold.evidenceMustNotInclude || []).entries()) {
+    const line = evidenceLines.find(value => toRegex(source, 'evidenceMustNotInclude').test(value));
+    check(`evidence_must_not_include_${index + 1}`, !line, line ? `found ${line.slice(0, 120)}` : undefined);
+  }
+  // Every plan stop is in a city the named rail system reaches (lib/baybayTransit.js).
+  if (gold.planRail) {
+    const stops = payload?.assistantPlan?.stops || [];
+    const off = stops.filter(stop => !railServes(stop.city, [].concat(gold.planRail), payload?.assistantPlan?.date)).map(stop => `${stop.title} (${stop.city || 'no city'})`);
+    check('plan_rail', stops.length > 0 && !off.length, stops.length ? off.length ? `not on ${[].concat(gold.planRail).join('/')}: ${off.join(', ')}` : undefined : 'no plan');
+  }
   if (gold.routeReason) check('route_reason', [].concat(gold.routeReason).includes(payload?.route?.reason), `got ${payload?.route?.reason}`);
   if (gold.safetyTopic !== undefined) check('safety_topic', (payload?.safetyTopic ?? null) === gold.safetyTopic, `got ${payload?.safetyTopic ?? null}, want ${gold.safetyTopic}`);
   if (gold.noDrafts) check('no_drafts', !payload?.research?.drafts?.events, `${payload?.research?.drafts?.events || 0} draft events`);
@@ -191,9 +217,9 @@ export const CASE_CONFIG_KEYS = new Set(['BAYBAY_MAX_MODEL_ROUNDS']);
 export function validateCases(cases) {
   const ids = new Set();
   for (const item of cases) {
-    // A-L is the scored casebook (H: thin evidence, API-BB-ENGINE; I: multi-turn, J: routing and
+    // A-M is the scored casebook (M: unseen questions for API-BB-5; H: thin evidence, API-BB-ENGINE; I: multi-turn, J: routing and
     // false negatives, API-BB-QUALITY; K: the 10-13 audit, API-FIX5; L: API-BB-4B); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
-    if (!/^[A-LT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-L (or T for the probe)`);
+    if (!/^[A-MT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-M (or T for the probe)`);
     // A case may only cap the agent's model rounds; models and effort come from the arm.
     if (item.config !== undefined && (!item.config || typeof item.config !== 'object' || Object.keys(item.config).some(key => !CASE_CONFIG_KEYS.has(key)))) throw new Error(`${item.id}: config may only set ${[...CASE_CONFIG_KEYS].join(', ')}`);
     if (item.webStub !== undefined && typeof item.webStub !== 'boolean') throw new Error(`${item.id}: webStub must be true or false`);
@@ -211,6 +237,9 @@ export function validateCases(cases) {
       if (turn.gold.state !== undefined && (!turn.gold.state || typeof turn.gold.state !== 'object' || Array.isArray(turn.gold.state))) throw new Error(`${turn.id}: gold.state must be an object`);
       if (turn.gold.safetyTopic !== undefined && turn.gold.safetyTopic !== null && typeof turn.gold.safetyTopic !== 'string') throw new Error(`${turn.id}: gold.safetyTopic must be a topic or null`);
       if (turn.gold.cardsLocale !== undefined && turn.gold.cardsLocale !== 'en') throw new Error(`${turn.id}: gold.cardsLocale must be 'en'`);
+      for (const rule of turn.gold.evidenceIncludes || []) for (const source of [].concat(rule)) toRegex(source, `${turn.id} evidenceIncludes`);
+      for (const source of turn.gold.evidenceMustNotInclude || []) toRegex(source, `${turn.id} evidenceMustNotInclude`);
+      if (turn.gold.planRail !== undefined && ![].concat(turn.gold.planRail).every(system => ['bart', 'caltrain'].includes(system))) throw new Error(`${turn.id}: gold.planRail must name bart or caltrain`);
     }
   }
   return ids.size;

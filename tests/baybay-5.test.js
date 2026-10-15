@@ -288,3 +288,18 @@ test('follow-ups and phrasings found by the unseen block M (API-BB-5)', () => {
   const museums = evidence('我住 San Jose，想带孩子去博物馆，有什么推荐？').items.filter(item => ['event', 'place'].includes(item.kind));
   assert.equal(museums[0]?.city, 'San Jose', museums.map(item => `${item.id} ${item.city}`).join(', '));
 });
+
+test('block M dry run: 每人最多 15 刀, 3 点前要结束, 排周日半天 / 帮我排一下, English plan stops', async () => {
+  const oakland = stateOf('这周六想带 5 岁和 10 岁的孩子在 Oakland 玩，每人最多 15 刀，3 点前要结束').state;
+  assert.deepEqual([oakland.budget, oakland.budgetScope, oakland.finishBy], [15, 'person', '15:00']);
+  assert.equal(resolveTaskState({ message: '3 点前要结束', today: TODAY }).state.finishBy, '03:00', 'v1 keeps its reading');
+  assert.equal(stateOf('9 点前回家').state.finishBy, '09:00', '8-12 stay as written');
+  assert.equal(stateOf('周六坐 Caltrain 带爸妈出去玩半天，帮我排一下').state.goal, 'day-plan');
+  assert.equal(stateOf('帮我排周日半天，我们开车').state.goal, 'day-plan');
+  assert.notEqual(stateOf('帮我安排一下预约').state.goal, 'day-plan');
+  // An English plan names its stops in English.
+  const english = anthropicFixture({ respond: body => planAnswer(body) });
+  const result = await english.run('We are taking BART on Sunday with two kids, can you plan a half day?', { locale: 'en', currentPath: '/en' });
+  assert.ok(result.assistantPlan?.stops?.length, JSON.stringify(result.research.warnings));
+  for (const stop of result.assistantPlan.stops) assert.doesNotMatch(stop.title, /[㐀-鿿]{2}/, stop.title);
+});
