@@ -115,8 +115,9 @@ test('system block 1 is byte-identical across modes, locales, routes and paths, 
 });
 
 test('an agent run: call 2 replays call 1 unchanged and adds only the new turn; evidence is never sent twice', async () => {
-  // Two model rounds: the research call, then the final synthesis (tool_choice none).
-  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '2' }, respond: (body, count) => reply(count === 1
+  // Two model rounds: the research call, then the final synthesis (tool_choice none). API-BB-5: a new site day plan
+  // is one call by default; BAYBAY_DAY_PLAN_FAST=off keeps the agent rounds this test is about (edits and members use them).
+  const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '2', BAYBAY_DAY_PLAN_FAST: 'off' }, respond: (body, count) => reply(count === 1
     ? message([{ type: 'tool_use', id: 'tool-1', name: 'search_site', input: { query: 'Berkeley 植物园' } }], 'tool_use', { cache_creation_input_tokens: 3000 })
     // The final answer cites the plan stop's own record (its evidence ref), as the plan guard requires.
     : fast({ lead: '可以安排半天。', points: [{ text: `先去校园和植物园 [[${JSON.parse(sent[0].messages[0].content[0].text).evidence.find(item => item.title.startsWith('Berkeley 校园')).ref}]]`, cardIds: [] }], candidateIds: ['berkeley'] }, { cache_read_input_tokens: 3000 })) });

@@ -55,13 +55,13 @@ if (process.env.BAYBAY_4B_FRESH_CHILD === '1') {
   test('an assistant never warms on its own: only startWarmUp() (the production server) schedules it', async () => {
     const { assistant } = assistantWith();
     await new Promise(resolve => setTimeout(resolve, 1200));
-    assert.deepEqual(assistant.warmStatus(), { started: false, runs: 0, warmed: 0, failed: 0 });
+    assert.deepEqual(assistant.warmStatus(), { started: false, runs: 0, warmed: 0, failed: 0, keepAlive: { runs: 0, failed: 0 } });
     assert.equal(assistantWith({ BAYBAY_WARM: 'off' }).assistant.startWarmUp(), false, 'BAYBAY_WARM=off');
     const logs = [];
     assert.equal(assistant.startWarmUp({ log: line => logs.push(line) }), true);
     assert.equal(assistant.startWarmUp(), false, 'started once per assistant');
     for (let i = 0; i < 200 && !assistant.warmStatus().runs; i++) await new Promise(resolve => setTimeout(resolve, 50));
-    assert.deepEqual(assistant.warmStatus(), { started: true, runs: 1, warmed: 11, failed: 0 });
+    assert.deepEqual(assistant.warmStatus(), { started: true, runs: 1, warmed: 11, failed: 0, keepAlive: { runs: 0, failed: 0 } });
     assert.deepEqual(logs, [], 'no warning when every question warmed');
   });
 

@@ -274,10 +274,16 @@ test('H03: the run-share claim starts beside retrieval and an existing quota row
   const rows = new Map();
   const Quota = {
     updateOne: async ({ id }) => { calls.push(`upsert ${id.split(':')[0]}`); if (!rows.has(id)) rows.set(id, { count: 0 }); return {}; },
-    findOneAndUpdate: async ({ id, count }) => { calls.push(`claim ${id.split(':')[0]}`); const row = rows.get(id); if (!row || !(row.count < count.$lt)) return null; row.count++; return { ...row }; },
+    findOneAndUpdate: async ({ id, count }, update, options = {}) => {
+      calls.push(`${options.upsert ? 'upsert-claim' : 'claim'} ${id.split(':')[0]}`);
+      if (!rows.has(id) && options.upsert) rows.set(id, { count: 0 });
+      const row = rows.get(id); if (!row || !(row.count < count.$lt)) return null; row.count++; return { ...row };
+    },
   };
   const { assistant } = assistantWith({ answer: { lead: '可以。' }, Quota });
   await ask(assistant, '旧金山这周末有什么活动');
+  // API-BB-5: a row this process has not claimed yet costs one round trip too (an upsert claim, not upsert + claim).
+  assert.deepEqual(calls, ['upsert-claim baybay-run', 'upsert-claim baybay-agent']);
   calls.length = 0;
   await ask(assistant, '金门公园这周末有什么免费活动');
   assert.deepEqual(calls, ['claim baybay-run', 'claim baybay-agent'], 'no upsert once today\'s rows exist');

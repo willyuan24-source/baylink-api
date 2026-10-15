@@ -112,8 +112,11 @@ export function createMemoryQuota() {
   const rows = new Map();
   return {
     async updateOne(filter, update, options) { if (!rows.has(filter.id) && options?.upsert) rows.set(filter.id, { ...update.$setOnInsert }); return { acknowledged: true }; },
-    async findOneAndUpdate(filter, update) {
-      const row = rows.get(filter.id);
+    async findOneAndUpdate(filter, update, options) {
+      let row = rows.get(filter.id);
+      // An upsert inserts a new row; a row at its limit meets the unique id (E11000), as in MongoDB.
+      if (!row && options?.upsert) { row = { count: 0, ...update.$setOnInsert }; rows.set(filter.id, row); }
+      else if (row && options?.upsert && !(row.count < filter.count.$lt)) throw Object.assign(new Error('E11000 duplicate key error'), { code: 11000 });
       if (!row || !(row.count < filter.count.$lt)) return null;
       row.count += update.$inc.count;
       return { ...row };

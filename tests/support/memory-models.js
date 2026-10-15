@@ -2,6 +2,11 @@
 const bcrypt = require('bcryptjs');
 const { assertNoUpdateConflict } = require('./update-conflicts');
 const copy = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+// API-BB-5: models whose `id` has a unique index in lib/ (an upsert that would add a second row fails), and the
+// equality fields an upsert inserts ({ id, count: { $lt: 5 } } inserts only id).
+const UNIQUE_ID = new Set(['PostTranslationQuota']);
+const equalityFields = query => Object.fromEntries(Object.entries(query || {}).filter(([key, value]) => !key.startsWith('$')
+  && !(value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).some(part => part.startsWith('$')))));
 let nextObjectId = 0;
 const objectId = () => (++nextObjectId).toString(16).padStart(24, '0');
 const getPath = (value, path) => path.split('.').reduce((current, key) => Array.isArray(current) ? current.flatMap(item => item?.[key] ?? []) : current?.[key], value);
@@ -160,7 +165,10 @@ function memoryModel(name, seed = [], registry = {}) {
     findOneAndUpdate: async (query, update, options = {}) => {
       assertNoUpdateConflict(update);
       let row = rows.find(row => matches(row, query));
-      if (!row && options.upsert) { row = { _id: objectId(), ...copy(query), ...copy(update.$setOnInsert || {}) }; rows.push(row); }
+      // An upsert inserts the query's equality fields only (as MongoDB does); a model whose `id` is unique
+      // (UNIQUE_ID) refuses a second row with that id with E11000, as the index does.
+      if (!row && options.upsert && UNIQUE_ID.has(name) && query?.id !== undefined && rows.some(other => other.id === query.id)) throw Object.assign(new Error('E11000 duplicate key error'), { code: 11000 });
+      if (!row && options.upsert) { row = { _id: objectId(), ...copy(equalityFields(query)), ...copy(update.$setOnInsert || {}) }; rows.push(row); }
       if (!row) return null;
       applyUpdate(row, update);
       return new Document(row);

@@ -336,7 +336,7 @@ test('the BayBay daily run limit defaults to 1000 and, when reached, gives the s
   assert.equal(result.notice.kind, 'ai_daily_budget');
   assert.ok(result.research.warnings.includes('baybay_run_limit'));
   // A quota store that cannot answer is not reported as a used-up day.
-  const broken = assistantWith({ Quota: { updateOne: async () => { throw new Error('private storage fault'); }, findOneAndUpdate: async () => null } });
+  const broken = assistantWith({ Quota: { updateOne: async () => { throw new Error('private storage fault'); }, findOneAndUpdate: async (filter, update, options) => { if (options?.upsert) throw new Error('private storage fault'); return null; } } });
   const unknown = await ask(broken.assistant, '蓝天使这周末飞吗');
   assert.equal(unknown.notice, undefined); assert.ok(unknown.research.warnings.includes('quota_unavailable'));
 });
