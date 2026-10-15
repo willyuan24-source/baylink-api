@@ -484,11 +484,12 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   const refOf = (body, pattern) => JSON.parse(body.messages[0].content[0].text).evidence.find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
   let refs = {};
   const { assistant } = assistantWith({ respond: body => {
-    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org\/visit/) };
+    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org\/visit/), sfmoma: refOf(body, /sfmoma\.org\/visit/) };
     return reply(refs.garden
       ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
-      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync; SJMA (sjmusart.org/visit, not its free-night offer page) is still there.
-      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${refs.sjma}]]`, cardIds: [refs.library, refs.sjma].filter(Boolean) }], candidateIds: [refs.sjma] }));
+      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync, and SJMA
+      // (sjmusart.org/visit, not its free-night offer page) after the 10-14 one (API-SYNC-3c); SFMOMA (sfmoma.org/visit) is still there.
+      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${refs.sfmoma}]]`, cardIds: [refs.library, refs.sjma, refs.sfmoma].filter(Boolean) }], candidateIds: [refs.sfmoma] }));
   } });
   const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
   assert.ok(refs.garden && refs.tea, JSON.stringify(refs));
@@ -498,11 +499,12 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
   assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
   // After the 10-13 sync the 41 new library events fill the top evidence for the plain elder question and SJMA drops out;
-  // naming 美术馆 keeps a venue that has only an official site in the evidence.
+  // naming 美术馆 keeps a venue that has only an official site in the evidence. After the 10-14 sync (web CNT-SUPPLY-2) three
+  // new San José library programmes in Chinese (Alum Rock, Berryessa winter, Calabazas tea) take SJMA's place; SFMOMA stays.
   const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
-  assert.ok(refs.sjma, JSON.stringify(refs));
+  assert.ok(refs.sfmoma, JSON.stringify(refs));
   assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
-  assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));
+  assert.ok(!sanJose.localMatches.some(card => /king-library|sjma|sfmoma/.test(card.id)));
   assert.ok(sanJose.research.warnings.includes('answer_lead_long'), 'a lead over 40 characters is recorded');
   assert.equal(leadUnits(sanJose.lead), 47); assert.equal(leadUnits('Yes, the Blue Angels fly Saturday [1]', 'en'), 6); assert.equal(leadUnits('会飞：航空展是10月9日至11日 [1]'), 13);
 });
