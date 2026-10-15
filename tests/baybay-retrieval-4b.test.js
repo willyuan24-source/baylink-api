@@ -50,7 +50,7 @@ test('a Chinese ask keeps Chinese-language programmes among the candidates; a fa
   assert.ok(english.candidates.length > 0);
 });
 
-test('the community lift is scoped (review 10-14): a Halloween or concert ask keeps its most relevant events first, a day plan keeps Ferry Plaza', () => {
+test('the community lift is scoped (review 10-14): a Halloween or concert ask keeps its most relevant events first, a day plan keeps a Saturday farmers\' market', () => {
   const site = message => buildSiteEvidence({ query: message, originalQuery: message, state: stateOf(message), guideCatalog: guides, catalog: planner, today: TODAY });
   const halloween = ids(site('这周六旧金山有什么万圣节活动？').candidates);
   assert.ok(halloween.indexOf('sf-sunnydale-pumpkin-fest-2026') >= 0, halloween.join(', '));
@@ -60,10 +60,13 @@ test('the community lift is scoped (review 10-14): a Halloween or concert ask ke
   const concert = ids(site('这周六旧金山有什么音乐会或者演出？').candidates);
   assert.ok(concert.includes('sf-potrero-hill-festival-oct17-2026'), concert.join(', '));
   assert.ok(!concert.includes('sfpl-marina-wild-goose-qigong-oct-2026') || concert.indexOf('sfpl-marina-wild-goose-qigong-oct-2026') > concert.indexOf('sf-potrero-hill-festival-oct17-2026'), concert.join(', '));
-  // K-TIME-1 (a BART day plan, home by 16:00): the adults-only 14:00-16:00 screening is not lifted over Ferry Plaza.
+  // K-TIME-1 (a BART day plan, home by 16:00): the adults-only 14:00-16:00 screening is not lifted over a Saturday
+  // farmers' market. API-SYNC-3c (web CNT-SUPPLY-2): the new Saturday markets by BART, Downtown Berkeley and Oakland's
+  // Grand Lake, now rank above Ferry Plaza, which leaves this six-candidate list; any of the three keeps the check.
   const plan = ids(site('帮我排个周六的行程，我们坐 BART 去，下午 4 点前回家').candidates);
-  assert.ok(plan.includes('ferry-plaza-farmers-market-2026-autumn'), plan.join(', '));
-  assert.ok(!plan.includes('sfpl-richmond-hk-film-the-killer-2026') || plan.indexOf('sfpl-richmond-hk-film-the-killer-2026') > plan.indexOf('ferry-plaza-farmers-market-2026-autumn'), plan.join(', '));
+  const market = plan.findIndex(id => ['ferry-plaza-farmers-market-2026-autumn', 'berkeley-downtown-saturday-farmers-market-2026', 'oakland-grand-lake-farmers-market-2026'].includes(id));
+  assert.ok(market >= 0, plan.join(', '));
+  assert.ok(!plan.includes('sfpl-richmond-hk-film-the-killer-2026') || plan.indexOf('sfpl-richmond-hk-film-the-killer-2026') > market, plan.join(', '));
 });
 
 test('a planner place that mirrors an opening carries the opening\'s date line and details', () => {

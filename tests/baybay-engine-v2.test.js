@@ -481,14 +481,20 @@ test('v2 answers "帮我订机票" by saying BayBay cannot book (no city questio
 // ---------------------------------------------------------------- review fixes (10-09)
 
 test('points[].cardIds are keys of localMatches: a place with a guide page becomes its guide card, a venue with no BAYLINK page is left out', async () => {
-  const refOf = (body, pattern) => JSON.parse(body.messages[0].content[0].text).evidence.find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
+  const evidenceOf = body => JSON.parse(body.messages[0].content[0].text).evidence;
+  const refOf = (body, pattern) => evidenceOf(body).find(item => pattern.test(`${item.page || ''} ${item.official || ''}`))?.ref;
+  // A venue with only an official site: a catalog place whose page is not a BAYLINK page. Picked by shape, not by name: which
+  // venue this ask's evidence carries changes with catalog syncs (the King library left it after the 10-12 sync, SJMA after
+  // the 10-14 one) and will change with area-fit work (SF museums ranking for a San Jose ask, API-SYNC-3c follow-up 3).
+  const venueOf = body => evidenceOf(body).find(item => item.kind === 'place' && !/^https:\/\/www\.baylink\.us\//.test(item.page || ''));
   let refs = {};
+  let venue = null;
   const { assistant } = assistantWith({ respond: body => {
-    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/), library: refOf(body, /sjpl\.org\/locations\/king/), sjma: refOf(body, /sjmusart\.org\/visit/) };
+    refs = { garden: refOf(body, /\/guides\/berkeley-campus-botanical-garden-half-day/), tea: refOf(body, /\/openings\/berkeley-cere-tea/) };
+    venue = venueOf(body) || null;
     return reply(refs.garden
       ? fast({ lead: '可以去校园和植物园走走。', points: [{ text: `校园和植物园半日游 [[${refs.garden}]]`, cardIds: [refs.garden] }, { text: `附近新开了一家茶馆 [[${refs.tea}]]`, cardIds: [refs.tea, 'e99'] }], candidateIds: [refs.garden, refs.tea] })
-      // Venues with only an official site: the King library left the top evidence after the 10-12 catalog sync; SJMA (sjmusart.org/visit, not its free-night offer page) is still there.
-      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${refs.sjma}]]`, cardIds: [refs.library, refs.sjma].filter(Boolean) }], candidateIds: [refs.sjma] }));
+      : fast({ lead: '可以先看湾区华人长者服务指南里列出的圣荷西中文长者活动和社区中心，再按住址就近选择适合她的那一个。', points: [{ text: `市中心的美术馆也有社区活动 [[${venue?.ref}]]`, cardIds: [venue?.ref].filter(Boolean) }], candidateIds: [venue?.ref].filter(Boolean) }));
   } });
   const berkeley = await run(assistant, '明天下午想去 Berkeley 走走');
   assert.ok(refs.garden && refs.tea, JSON.stringify(refs));
@@ -497,12 +503,12 @@ test('points[].cardIds are keys of localMatches: a place with a guide page becom
   assert.deepEqual(berkeley.points[1].cardIds, ['opening:berkeley-cere-tea-opening-2026'], 'an unknown ref is dropped');
   for (const point of berkeley.points) for (const key of point.cardIds) assert.ok(shown(berkeley).has(key), key);
   assert.ok(!berkeley.research.warnings.includes('answer_lead_long'));
-  // After the 10-13 sync the 41 new library events fill the top evidence for the plain elder question and SJMA drops out;
-  // naming 美术馆 keeps a venue that has only an official site in the evidence.
+  // After the 10-13 sync the 41 new library events fill the top evidence for the plain elder question; naming 美术馆 keeps
+  // a venue that has only an official site in the evidence.
   const sanJose = await run(assistant, '我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
-  assert.ok(refs.sjma, JSON.stringify(refs));
+  assert.ok(venue?.ref, 'the elder ask\'s evidence carries a venue that has only an official site');
   assert.deepEqual(sanJose.points[0].cardIds, [], 'venues without a BAYLINK page have no card, so no cardId');
-  assert.ok(!sanJose.localMatches.some(card => /king-library|sjma/.test(card.id)));
+  assert.ok(!sanJose.localMatches.some(card => card.kind === 'place' || card.url === venue.page), JSON.stringify(sanJose.localMatches.map(card => card.url)));
   assert.ok(sanJose.research.warnings.includes('answer_lead_long'), 'a lead over 40 characters is recorded');
   assert.equal(leadUnits(sanJose.lead), 47); assert.equal(leadUnits('Yes, the Blue Angels fly Saturday [1]', 'en'), 6); assert.equal(leadUnits('会飞：航空展是10月9日至11日 [1]'), 13);
 });

@@ -10127,6 +10127,167 @@
       }
     },
     {
+      "id": "berkeley-downtown-saturday-farmers-market-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "官网没有写入场费；蔬果和熟食在摊位付钱",
+      "sourceLabel": "Ecology Center 官网（Berkeley 农夫市集）",
+      "title": "Berkeley 市中心周六农夫市集：加州农场直卖，12 月加开手作礼物摊",
+      "dateLabel": "10/17–12/12 每周六 10:00–14:30",
+      "city": "Berkeley",
+      "venue": "Berkeley 市中心 · Center St 和 Martin Luther King Jr. Way 路口",
+      "summary": "Ecology Center 办的 Berkeley 农夫市集，周六场在市中心 Center St 和 Martin Luther King Jr. Way 路口，10:00–14:30。市集里的农产品都由种植它的加州农场自己来卖，还有坚果、烘焙、果酱、果汁、橄榄油、肉、奶酪、熟食、苗木和鲜花；12 月的冬季手作市集每周加开快闪摊，卖首饰、陶器、香皂等手工礼物。",
+      "plan": [
+        "可以用 CalFresh EBT 和 WIC 农夫市集券，每个市集都有 Market Match。",
+        "10 月中官网的当季清单里有小白菜、苦瓜、鲜枣和姜。",
+        "周二下午在 South Berkeley、周四下午在 North Berkeley 还有两个市集。"
+      ],
+      "audience": [
+        "全家",
+        "买菜的本地居民"
+      ],
+      "officialUrl": "https://ecologycenter.org/food-farming/berkeley-farmers-markets/",
+      "shortTitle": "Berkeley 周六农夫市集",
+      "dek": "农场自己来卖蔬果，12 月还有手作礼物摊",
+      "sessions": [
+        {
+          "date": "2026-10-17",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-10-24",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "14:30"
+        }
+      ],
+      "venueShort": "Berkeley 市中心",
+      "address": "Center St & Martin Luther King Jr. Way, Berkeley, CA",
+      "aliases": [
+        "Berkeley 市中心周六农夫市集：加州农场直卖，12 月加开手作礼物摊",
+        "Downtown Berkeley Saturday Farmers’ Market: California farms selling direct, with handmade-gift stalls in December",
+        "Berkeley 市中心週六農夫市集：加州農場直賣，12 月加開手作禮物攤"
+      ],
+      "location": {
+        "lat": 37.869692,
+        "lng": -122.272792,
+        "label": "Downtown Berkeley Farmers’ Market · Center St & Martin Luther King Jr. Way, Berkeley",
+        "sourceUrl": "https://ecologycenter.org/food-farming/berkeley-farmers-markets/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://ecologycenter.org/food-farming/berkeley-farmers-markets/",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-10-24",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "14:30"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "berkeley-harvest-festival-2026",
       "title": "Berkeley 免费丰收节与种子交换",
       "startDate": "2026-10-17",
@@ -10982,6 +11143,166 @@
             ]
           },
           "note": "免费预约招待会窗口，不是整个展期免费。未满 13 岁须成人陪同是陪同要求，不是最低入场年龄；当天博物馆 12:00 才开放。"
+        }
+      }
+    },
+    {
+      "id": "oakland-grand-lake-farmers-market-2026",
+      "kind": "event",
+      "startDate": "2026-10-17",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-17",
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "官网没有写入场费；蔬果和熟食在摊位付钱",
+      "sourceLabel": "Agricultural Institute of Marin 官网（Grand Lake 市集）",
+      "title": "Oakland Grand Lake 周六农夫市集：100 多个摊位，风雨无阻",
+      "dateLabel": "10/17–12/12 每周六 9:00–14:00",
+      "city": "Oakland",
+      "venue": "Splash Pad Park, Oakland",
+      "summary": "Agricultural Institute of Marin（AIM）办的 Grand Lake 农夫市集，每周六 9:00–14:00 在 Oakland 的 Splash Pad Park，风雨无阻。100 多个摊位、40 多家农场，有有机蔬果、鲜花、咖啡、糕点和点心等熟食，也有海鲜、肉类和奶制品摊；买完可以在公园草地上野餐。",
+      "plan": [
+        "可以用 CalFresh EBT、Market Match 和 WIC；很多摊位收信用卡，现场有 ATM。",
+        "买得多可以先寄放在 AIM 摊位，逛完再取。",
+        "市集不让带宠物；可以坐 AC Transit 公交来。"
+      ],
+      "audience": [
+        "全家",
+        "买菜的本地居民"
+      ],
+      "officialUrl": "https://www.agriculturalinstitute.org/grand-lake",
+      "shortTitle": "Grand Lake 周六农夫市集",
+      "dek": "40 多家农场，还有点心、海鲜和奶制品摊",
+      "sessions": [
+        {
+          "date": "2026-10-17",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-10-24",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "09:00",
+          "end": "14:00"
+        }
+      ],
+      "venueShort": "Splash Pad Park",
+      "aliases": [
+        "Oakland Grand Lake 周六农夫市集：100 多个摊位，风雨无阻",
+        "Grand Lake Farmers Market in Oakland on Saturdays: 100+ stalls, rain or shine",
+        "Oakland Grand Lake 週六農夫市集：100 多個攤位，風雨無阻"
+      ],
+      "location": {
+        "lat": 37.810544,
+        "lng": -122.247841,
+        "label": "Grand Lake Farmers Market · Splash Pad Park, Oakland",
+        "sourceUrl": "https://www.agriculturalinstitute.org/grand-lake",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://www.agriculturalinstitute.org/grand-lake",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-10-17",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-17",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-10-24",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "09:00",
+              "end": "14:00"
+            }
+          ]
         }
       }
     },
@@ -12990,6 +13311,166 @@
       }
     },
     {
+      "id": "fremont-irvington-farmers-market-2026",
+      "kind": "event",
+      "startDate": "2026-10-18",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-10-18",
+        "2026-10-25",
+        "2026-11-01",
+        "2026-11-08",
+        "2026-11-15",
+        "2026-11-22",
+        "2026-11-29",
+        "2026-12-06",
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "food",
+      "cost": "unknown",
+      "costLabel": "官网没有写入场费；蔬果和熟食在摊位付钱",
+      "sourceLabel": "PCFMA 官网（Irvington 市集）",
+      "title": "Fremont Irvington 周日农夫市集：全年每周日开",
+      "dateLabel": "10/18–12/13 每周日 9:00–14:00",
+      "city": "Fremont",
+      "venue": "Irvington 农夫市集 · 4039 Bay St., Fremont, CA 94538",
+      "summary": "Pacific Coast Farmers’ Market Association（PCFMA）在 Fremont 办的 Irvington 农夫市集，全年每周日 9:00–14:00，地址 4039 Bay St.。摆摊的有 Fresno、Salinas、Hollister 等地的农场，也有面包店和海鲜摊。",
+      "plan": [
+        "市集的农场名单里，Fresno 的 Bright Farm 卖苦瓜、空心菜、丝瓜、节瓜、芥兰、小白菜和芋头。",
+        "停车：Trimboli、Bay St 和 Irvington 路边可以停；不要停在 Monument 购物中心的停车场。"
+      ],
+      "audience": [
+        "全家",
+        "买菜的本地居民"
+      ],
+      "officialUrl": "https://www.pcfma.org/index.php/market/irvington-farmers-market",
+      "shortTitle": "Fremont 周日农夫市集",
+      "dek": "周日买当季蔬果，苦瓜、空心菜也有农场在卖",
+      "sessions": [
+        {
+          "date": "2026-10-18",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-10-25",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-01",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-08",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-15",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-12-06",
+          "start": "09:00",
+          "end": "14:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "09:00",
+          "end": "14:00"
+        }
+      ],
+      "venueShort": "Fremont Irvington",
+      "address": "4039 Bay St., Fremont, CA 94538",
+      "aliases": [
+        "Fremont Irvington 周日农夫市集：全年每周日开",
+        "Irvington Farmers’ Market in Fremont, every Sunday all year",
+        "Fremont Irvington 週日農夫市集：全年每週日開"
+      ],
+      "location": {
+        "lat": 37.532776,
+        "lng": -121.96001,
+        "label": "Irvington Farmers’ Market · 4039 Bay St., Fremont",
+        "sourceUrl": "https://www.pcfma.org/index.php/market/irvington-farmers-market",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://www.pcfma.org/index.php/market/irvington-farmers-market",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-10-18",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-10-18",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-10-25",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-01",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-08",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-22",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-12-06",
+              "start": "09:00",
+              "end": "14:00"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "09:00",
+              "end": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "lafayette-res-run-2026",
       "title": "Lafayette Res Run 秋季社区跑",
       "startDate": "2026-10-18",
@@ -14840,6 +15321,154 @@
       }
     },
     {
+      "id": "ccclib-pleasant-hill-lego-club-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "不用报名；活动页没有写费用",
+      "sourceLabel": "Contra Costa County Library 活动页（Pleasant Hill）",
+      "title": "Pleasant Hill 图书馆周六乐高俱乐部",
+      "dateLabel": "10/24–12/12 每周六 14:00–16:00",
+      "city": "Pleasant Hill",
+      "venue": "Pleasant Hill 图书馆创客空间 · 2 Monticello Avenue, Pleasant Hill, CA 94523",
+      "summary": "Contra Costa County Library Pleasant Hill 分馆每周六下午的乐高俱乐部，在创客空间里自由搭建，不论年龄和能力都欢迎。",
+      "plan": [
+        "两小时内随到随搭，11/28 感恩节周末照常开放。"
+      ],
+      "audience": [
+        "6–9 岁儿童",
+        "各年龄"
+      ],
+      "officialUrl": "https://ccclib.bibliocommons.com/events/69f29713bd9a3c316a5662d2",
+      "shortTitle": "Pleasant Hill 乐高俱乐部",
+      "dek": "周六下午在创客空间搭自己的乐高作品",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "venueShort": "Pleasant Hill 图书馆",
+      "address": "2 Monticello Avenue, Pleasant Hill, CA 94523",
+      "aliases": [
+        "Pleasant Hill 图书馆周六乐高俱乐部",
+        "Saturday LEGO Builders Club at the Pleasant Hill Library",
+        "Pleasant Hill 圖書館週六樂高俱樂部"
+      ],
+      "location": {
+        "lat": 37.934862,
+        "lng": -122.068386,
+        "label": "Pleasant Hill · 2 Monticello Avenue, Pleasant Hill",
+        "sourceUrl": "https://ccclib.org/locations/43",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://ccclib.bibliocommons.com/events/69f29713bd9a3c316a5662d2",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "14:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "clayton-hay-day-trunk-or-treat-2026",
       "title": "Clayton Hay Day 车尾箱讨糖",
       "startDate": "2026-10-24",
@@ -15157,6 +15786,154 @@
       }
     },
     {
+      "id": "marin-south-novato-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
+      "sourceLabel": "马林县免费图书馆活动页（South Novato）",
+      "title": "South Novato 图书馆周六故事时间：Brian 老师讲故事",
+      "dateLabel": "10/24–12/12 每周六 11:00–12:00",
+      "city": "Novato",
+      "venue": "South Novato 图书馆 · 931 C St, Novato, CA 94949",
+      "summary": "马林县免费图书馆 South Novato 分馆每周六上午的故事时间，由 Brian 老师主讲，婴儿、幼儿到小学低年级的孩子和家人都可以来；活动介绍有英文和西班牙文。",
+      "plan": [
+        "11/28 感恩节周末照常有一场。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "0–9 岁儿童"
+      ],
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/696547fa6724c63d00ebb268",
+      "shortTitle": "South Novato 周六故事",
+      "dek": "周六上午 11 点，全家来听故事",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "12:00"
+        }
+      ],
+      "venueShort": "South Novato 图书馆",
+      "address": "931 C St, Novato, CA 94949",
+      "aliases": [
+        "South Novato 图书馆周六故事时间：Brian 老师讲故事",
+        "Saturday Story Time with Mr. Brian at the South Novato Library",
+        "South Novato 圖書館週六故事時間：Brian 老師講故事"
+      ],
+      "location": {
+        "lat": 38.057281,
+        "lng": -122.525389,
+        "label": "South Novato · 931 C St, Novato",
+        "sourceUrl": "https://marinlibrary.org/locations/MH",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/696547fa6724c63d00ebb268",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "menlo-park-halloween-hoopla-2026",
       "title": "Menlo Park 万圣节游行与嘉年华",
       "startDate": "2026-10-24",
@@ -15329,6 +16106,440 @@
             }
           ],
           "note": "非会员$45；NCHS会员$30；最终附加费与余票以售票页为准"
+        }
+      }
+    },
+    {
+      "id": "opl-asian-branch-family-time-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用",
+      "sourceLabel": "奥克兰公共图书馆活动页（亚裔分馆）",
+      "title": "奥克兰亚裔分馆周六合家欢：亲子游戏、玩具，有时讲故事",
+      "dateLabel": "10/24–12/12 每周六 10:30–11:30",
+      "city": "Oakland",
+      "venue": "奥克兰公共图书馆亚裔分馆 · 388 9th Street, Suite 190, Oakland, CA 94607",
+      "summary": "奥克兰公共图书馆亚裔分馆每周六上午的亲子时段：和家人一起玩游戏和玩具，有时会有故事时间或表演；活动介绍有中英文。这个分馆有中文、日文、韩文和越南文藏书。",
+      "plan": [
+        "分馆在 Pacific Renaissance Plaza 里。附近停车位少，馆方建议坐公交；最近的收费停车场在 Pacific Renaissance Plaza 地下，入口在 Franklin St（9th 到 11th 之间）。",
+        "11/28 感恩节周末照常有一场。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "儿童"
+      ],
+      "officialUrl": "https://oaklandlibrary.bibliocommons.com/events/676ee5ccc4569f936cc737b5",
+      "shortTitle": "亚裔分馆周六合家欢",
+      "dek": "带孩子来玩游戏和玩具，有时加讲故事或表演",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:30"
+        }
+      ],
+      "venueShort": "奥克兰亚裔分馆",
+      "address": "388 9th Street, Suite 190, Oakland, CA 94607",
+      "aliases": [
+        "奥克兰亚裔分馆周六合家欢：亲子游戏、玩具，有时讲故事",
+        "Family Time at Oakland’s Asian Branch on Saturdays: games and toys, sometimes a story or a show",
+        "奧克蘭亞裔分館週六閤家歡：親子游戲、玩具，有時講故事"
+      ],
+      "location": {
+        "lat": 37.800738,
+        "lng": -122.271158,
+        "label": "Asian Branch · 388 Ninth Street, Suite 190, Oakland",
+        "sourceUrl": "https://oaklandlibrary.org/locations/ASA",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://oaklandlibrary.bibliocommons.com/events/676ee5ccc4569f936cc737b5",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "opl-main-family-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用",
+      "sourceLabel": "奥克兰公共图书馆活动页（总馆）",
+      "title": "奥克兰总馆周六亲子故事时间：读书、唱歌，之后自由玩",
+      "dateLabel": "10/24–12/12 周六 10:30–11:00（11/7 没有）",
+      "city": "Oakland",
+      "venue": "奥克兰公共图书馆总馆儿童室 · 125 14th Street, Oakland, CA 94612",
+      "summary": "奥克兰公共图书馆总馆儿童室每周六上午的亲子故事时间，读书、唱歌、做动作，结束后可以留下来玩；各年龄都欢迎。",
+      "plan": [
+        "11/28 感恩节周末照常有一场。"
+      ],
+      "audience": [
+        "0–5 岁儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://oaklandlibrary.bibliocommons.com/events/694b336a4be11d3d00d9a53a",
+      "shortTitle": "奥克兰总馆周六故事时间",
+      "dek": "半小时读书唱歌，之后留下来玩",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:00"
+        }
+      ],
+      "venueShort": "奥克兰总馆儿童室",
+      "address": "125 14th Street, Oakland, CA 94612",
+      "aliases": [
+        "奥克兰总馆周六亲子故事时间：读书、唱歌，之后自由玩",
+        "Saturday family storytime at Oakland’s Main Library: books, songs and playtime after",
+        "奧克蘭總館週六親子故事時間：讀書、唱歌，之後自由玩"
+      ],
+      "location": {
+        "lat": 37.800944,
+        "lng": -122.263675,
+        "label": "Main Library · 125 14th Street, Oakland",
+        "sourceUrl": "https://oaklandlibrary.org/locations/XXA",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://oaklandlibrary.bibliocommons.com/events/694b336a4be11d3d00d9a53a",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pacl-mitchell-park-family-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用",
+      "sourceLabel": "Palo Alto 市立图书馆活动页（Mitchell Park）",
+      "title": "Palo Alto Mitchell Park 图书馆周六亲子故事时间",
+      "dateLabel": "10/24–12/12 每周六 10:30–11:00",
+      "city": "Palo Alto",
+      "venue": "Mitchell Park 图书馆 Midtown Room · 3700 Middlefield Rd, Palo Alto, CA 94303",
+      "summary": "Palo Alto 市立图书馆 Mitchell Park 分馆每周六上午的亲子故事时间，馆员 Juliana 带大家唱歌、念童谣、读故事；10/31 是万圣节主题，12/12 是冬季故事特别场。",
+      "plan": [
+        "面向 0–5 岁的孩子和家长，每场半小时。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://paloalto.bibliocommons.com/events/698e125a2a787a47a5e73be7",
+      "shortTitle": "Mitchell Park 周六故事",
+      "dek": "馆员 Juliana 带孩子唱歌、念童谣、读故事",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:00"
+        }
+      ],
+      "venueShort": "Mitchell Park 图书馆",
+      "address": "3700 Middlefield Rd, Palo Alto, CA 94303",
+      "aliases": [
+        "Palo Alto Mitchell Park 图书馆周六亲子故事时间",
+        "Saturday family storytime at Palo Alto’s Mitchell Park Library",
+        "Palo Alto Mitchell Park 圖書館週六親子故事時間"
+      ],
+      "location": {
+        "lat": 37.422314,
+        "lng": -122.112652,
+        "label": "Mitchell Park Library · 3700 Middlefield Rd, Palo Alto",
+        "sourceUrl": "https://library.cityofpaloalto.org/locations/M",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://paloalto.bibliocommons.com/events/698e125a2a787a47a5e73be7",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:00"
+            }
+          ]
         }
       }
     },
@@ -15841,6 +17052,265 @@
       }
     },
     {
+      "id": "sccl-cupertino-family-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费",
+      "sourceLabel": "Santa Clara County Library District 活动页（Cupertino 图书馆）",
+      "title": "Cupertino 图书馆周六亲子故事时间",
+      "dateLabel": "10/24–12/12 每周六 10:30–11:00",
+      "city": "Cupertino",
+      "venue": "Cupertino 图书馆 101 室 · 10800 Torre Avenue, Cupertino, CA 95014",
+      "summary": "Cupertino 图书馆每周六上午的亲子故事时间，有故事、儿歌、童谣和舞蹈，帮孩子打好早期读写基础；家长和孩子一起听、一起学、一起唱，各年龄都适合。",
+      "plan": [
+        "每场半小时，11/28 感恩节周末照常有。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "各年龄"
+      ],
+      "officialUrl": "https://sccl.bibliocommons.com/events/6a08e108e13d3b4603b486ed",
+      "shortTitle": "Cupertino 周六故事时间",
+      "dek": "故事、儿歌、童谣和舞蹈，适合各年龄",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Cupertino 图书馆",
+      "address": "10800 Torre Avenue, Cupertino, CA 95014",
+      "aliases": [
+        "Cupertino 图书馆周六亲子故事时间",
+        "Saturday family storytime at the Cupertino Library",
+        "Cupertino 圖書館週六親子故事時間"
+      ],
+      "location": {
+        "lat": 37.31779,
+        "lng": -122.028961,
+        "label": "Cupertino Library · 10800 Torre Avenue, Cupertino",
+        "sourceUrl": "https://sccld.org/locations/cupertino",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sccl.bibliocommons.com/events/6a08e108e13d3b4603b486ed",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-forestville-saturday-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-14",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
+      "sourceLabel": "索诺马县图书馆活动页（Forestville）",
+      "title": "Forestville 社区图书馆周六故事时间",
+      "dateLabel": "10/24、10/31、11/14、12/5、12/12 · 周六 11:00–12:00",
+      "city": "Forestville",
+      "venue": "Forestville 社区图书馆 · 7050 Covey Road, Forestville, CA 95436",
+      "summary": "索诺马县图书馆 Forestville 分馆周六上午的故事时间，儿童馆员带社区家庭在馆里听故事、念童谣、唱儿歌、做简单手工，活动用英语进行。",
+      "plan": [
+        "11/7、11/21、11/28 没有场次。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/copy-saturday-storytime-119413",
+      "shortTitle": "Forestville 周六故事",
+      "dek": "故事、童谣、儿歌和简单手工，适合 0–5 岁",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "12:00"
+        }
+      ],
+      "venueShort": "Forestville 图书馆",
+      "address": "7050 Covey Road, Forestville, CA 95436",
+      "aliases": [
+        "Forestville 社区图书馆周六故事时间",
+        "Saturday storytime at the Forestville Community Library",
+        "Forestville 社區圖書館週六故事時間"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/copy-saturday-storytime-119413",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "11:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sf-bay-beats-bandshell-oct24-2026",
       "title": "Bay Beats 金门公园免费音乐会",
       "kind": "performance",
@@ -16274,6 +17744,446 @@
       ],
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "smcl-atherton-maker-families-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
+      "sourceLabel": "圣马刁县图书馆活动页（Atherton）",
+      "title": "Atherton 图书馆周六亲子创客时间：认识 3D 打印和激光切割",
+      "dateLabel": "10/24–12/12 每周六 11:00–13:00",
+      "city": "Atherton",
+      "venue": "Atherton 图书馆创客空间 · 2 Dinkelspiel Station Lane, Atherton, CA 94027",
+      "summary": "圣马刁县图书馆 Atherton 分馆周六中午开放创客空间给家庭，了解 3D 打印和激光切割；各年龄都可以来，平时周二、周四 17:30–19:30 也开放。",
+      "plan": [
+        "同一个上午 10:30 起分馆儿童室另有亲子故事时间，可以连着去。",
+        "11/28 感恩节周末照常开放。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "各年龄"
+      ],
+      "officialUrl": "https://smcl.bibliocommons.com/events/6a67c5bccca66c2f00a66751",
+      "shortTitle": "Atherton 亲子创客时间",
+      "dek": "全家一起看 3D 打印机和激光切割机怎么用",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "13:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "13:00"
+        }
+      ],
+      "venueShort": "Atherton 图书馆",
+      "address": "2 Dinkelspiel Station Lane, Atherton, CA 94027",
+      "aliases": [
+        "Atherton 图书馆周六亲子创客时间：认识 3D 打印和激光切割",
+        "Saturday Maker Exploration for families at the Atherton Library: 3D printing and laser cutting",
+        "Atherton 圖書館週六親子創客時間：認識 3D 列印和激光切割"
+      ],
+      "location": {
+        "lat": 37.463224,
+        "lng": -122.196894,
+        "label": "Atherton · 2 Dinkelspiel Station Lane, Atherton",
+        "sourceUrl": "https://smcl.org/locations/1A",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://smcl.bibliocommons.com/events/6a67c5bccca66c2f00a66751",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "11:00",
+              "end": "13:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "13:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "smcl-half-moon-bay-saturday-storytime-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
+      "sourceLabel": "圣马刁县图书馆活动页（Half Moon Bay）",
+      "title": "Half Moon Bay 图书馆周六亲子故事时间",
+      "dateLabel": "10/24–12/12 每周六 10:30–11:00",
+      "city": "Half Moon Bay",
+      "venue": "Half Moon Bay 图书馆 · 620 Correas Street, Half Moon Bay, CA 94019",
+      "summary": "圣马刁县图书馆 Half Moon Bay 分馆每周六上午的亲子故事时间，听新故事、唱儿歌、学全家都能一起做的律动，从学步儿到大人都适合。",
+      "plan": [
+        "海边周末出游可以顺路，每场半小时。"
+      ],
+      "audience": [
+        "学龄前儿童",
+        "小学生"
+      ],
+      "officialUrl": "https://smcl.bibliocommons.com/events/69542b19c967cb41207f2396",
+      "shortTitle": "Half Moon Bay 周六故事",
+      "dek": "一场想象中的冒险：新故事、儿歌和律动",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:00"
+        }
+      ],
+      "venueShort": "Half Moon Bay 图书馆",
+      "address": "620 Correas Street, Half Moon Bay, CA 94019",
+      "aliases": [
+        "Half Moon Bay 图书馆周六亲子故事时间",
+        "Saturday storytime at the Half Moon Bay Library",
+        "Half Moon Bay 圖書館週六親子故事時間"
+      ],
+      "location": {
+        "lat": 37.464788,
+        "lng": -122.432787,
+        "label": "Half Moon Bay · 620 Correas Street, Half Moon Bay",
+        "sourceUrl": "https://smcl.org/locations/1H",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://smcl.bibliocommons.com/events/69542b19c967cb41207f2396",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "smcl-millbrae-digital-help-hub-2026",
+      "kind": "event",
+      "startDate": "2026-10-24",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-10-24",
+        "2026-10-31",
+        "2026-11-07",
+        "2026-11-14",
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；随到随参加",
+      "sourceLabel": "圣马刁县图书馆活动页（Millbrae 分馆）",
+      "title": "Millbrae 数字帮助学习小组：一起学手机、微信和 AI",
+      "dateLabel": "10/24–12/12 每周六 12:30–15:30",
+      "city": "Millbrae",
+      "venue": "Millbrae Recreation Center · 477 Lincoln Cir, Millbrae, CA 94030",
+      "summary": "圣马刁县图书馆 Millbrae 分馆办的互助学习小组，大家一起解决手机、电脑、微信、存储清理和 AI 等日常技术问题，讲清楚背后的原因；题目由到场的人每次自己选，问题再基础也可以问。活动介绍有中英文。",
+      "plan": [
+        "地点在 Millbrae 康乐中心，不在图书馆。",
+        "活动页标注的活动语言是英语。",
+        "图书馆另有周三下午场次，日期看活动页。"
+      ],
+      "audience": [
+        "成人",
+        "长者"
+      ],
+      "officialUrl": "https://smcl.bibliocommons.com/events/6a9741b2392e9c02993d4d23",
+      "shortTitle": "Millbrae 数字帮助学习小组",
+      "dek": "手机、电脑、微信的日常问题，大家一起解决",
+      "sessions": [
+        {
+          "date": "2026-10-24",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-10-31",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-11-07",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-11-14",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "12:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "12:30",
+          "end": "15:30"
+        }
+      ],
+      "venueShort": "Millbrae 康乐中心",
+      "address": "477 Lincoln Cir, Millbrae, CA 94030",
+      "aliases": [
+        "Millbrae 数字帮助学习小组：一起学手机、微信和 AI",
+        "Digital Help Hub study group in Millbrae: phones, WeChat and AI, solved together",
+        "Millbrae 數字幫助學習小組：一起學手機、微信和 AI"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://smcl.bibliocommons.com/events/6a9741b2392e9c02993d4d23",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-24",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-10-24",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-10-31",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-11-07",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-11-14",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-11-21",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "12:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "12:30",
+              "end": "15:30"
+            }
+          ]
+        }
       }
     },
     {
@@ -16773,6 +18683,158 @@
               "date": "2026-11-15",
               "start": "13:00",
               "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sjpl-alum-rock-basic-english-2026",
+      "kind": "event",
+      "startDate": "2026-10-25",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-10-25",
+        "2026-11-01",
+        "2026-11-08",
+        "2026-11-15",
+        "2026-11-22",
+        "2026-11-29",
+        "2026-12-06",
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；图书馆希望先在网站报名，没报名也可以来",
+      "sourceLabel": "圣何塞公共图书馆活动页（Alum Rock 分馆）",
+      "title": "Alum Rock 分馆零基础英语课：老师英语中文都流利",
+      "dateLabel": "10/25–12/13 每周日 14:00–15:00",
+      "city": "San Jose",
+      "venue": "Alum Rock 分馆 · 3090 Alum Rock Ave, San Jose, CA 95127",
+      "summary": "圣何塞公共图书馆 Alum Rock 分馆的零基础英语课，在轻松友善的课堂里学基本词汇和简单语法，读简单的短文、写基本的句子；授课老师英语和中文都很流利。",
+      "plan": [
+        "八个周日同一时间上课，每次限 20 人报名，满了可以排候补。"
+      ],
+      "audience": [
+        "18 岁以上成人",
+        "想学英语的中文使用者"
+      ],
+      "officialUrl": "https://sjpl.bibliocommons.com/events/6a88a8afb20478002994849f",
+      "shortTitle": "Alum Rock 零基础英语课",
+      "dek": "老师会说中文，从最基本的单词和句子学起",
+      "sessions": [
+        {
+          "date": "2026-10-25",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-11-01",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-11-08",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-11-15",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-12-06",
+          "start": "14:00",
+          "end": "15:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "14:00",
+          "end": "15:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "ageChip": "18 岁以上",
+      "venueShort": "Alum Rock 分馆",
+      "address": "3090 Alum Rock Ave, San Jose, CA 95127",
+      "aliases": [
+        "Alum Rock 分馆零基础英语课：老师英语中文都流利",
+        "Basic English Level 0 at the Alum Rock branch, with a teacher fluent in English and Chinese",
+        "Alum Rock 分館零基礎英語課：老師英語中文都流利"
+      ],
+      "location": {
+        "lat": 37.365386,
+        "lng": -121.828059,
+        "label": "Alum Rock · 3090 Alum Rock Ave, San Jose",
+        "sourceUrl": "https://www.sjpl.org/locations/alum-rock/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 18,
+        "reservation": "optional",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sjpl.bibliocommons.com/events/6a88a8afb20478002994849f",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-10-25",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-10-25",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-01",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-08",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-22",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-12-06",
+              "start": "14:00",
+              "end": "15:00"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "14:00",
+              "end": "15:00"
             }
           ]
         }
@@ -20099,6 +22161,147 @@
       }
     },
     {
+      "id": "pacl-rinconada-tai-chi-2026",
+      "kind": "event",
+      "startDate": "2026-11-01",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-11-01",
+        "2026-11-08",
+        "2026-11-15",
+        "2026-11-22",
+        "2026-11-29",
+        "2026-12-06",
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；到场签到",
+      "sourceLabel": "Palo Alto 市立图书馆活动页（Rinconada）",
+      "title": "Palo Alto Rinconada 图书馆周日太极课：陈式太极老师带初学者",
+      "dateLabel": "11/1–12/13 每周日 10:00–12:00",
+      "city": "Palo Alto",
+      "venue": "Rinconada 图书馆 Embarcadero Room · 1213 Newell Rd., Palo Alto, CA 94303",
+      "summary": "Palo Alto 市立图书馆 Rinconada 分馆每周日上午的太极课，Nelson Ng 讲太极的基本原理和理念，用缓慢柔和的动作练柔韧和平衡；他 1989 年起随 Gene Chen 学陈式太极，2014 年开始教学。初学者和有基础的人都欢迎，各年龄都可以来。",
+      "plan": [
+        "到场先签到；10/25 那次取消，11/1 起每周日照常。"
+      ],
+      "audience": [
+        "成人",
+        "长者",
+        "青少年和儿童"
+      ],
+      "officialUrl": "https://paloalto.bibliocommons.com/events/6948560c1e64afd01e50328f",
+      "shortTitle": "Rinconada 周日太极课",
+      "dek": "慢而柔和的动作，练柔韧和平衡",
+      "sessions": [
+        {
+          "date": "2026-11-01",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-08",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-15",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-06",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "10:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Rinconada 图书馆",
+      "address": "1213 Newell Rd., Palo Alto, CA 94303",
+      "aliases": [
+        "Palo Alto Rinconada 图书馆周日太极课：陈式太极老师带初学者",
+        "Sunday Tai Chi with Nelson Ng at Palo Alto’s Rinconada Library",
+        "Palo Alto Rinconada 圖書館週日太極課：陳式太極老師帶初學者"
+      ],
+      "location": {
+        "lat": 37.44497,
+        "lng": -122.13916,
+        "label": "Rinconada Library · 1213 Newell Rd., Palo Alto",
+        "sourceUrl": "https://library.cityofpaloalto.org/locations/R",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://paloalto.bibliocommons.com/events/6948560c1e64afd01e50328f",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-01",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-11-01",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-08",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-15",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-22",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-06",
+              "start": "10:00",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "10:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "roundup-suisun-dia-muertos-2026",
       "title": "Suisun City 亡灵节文化晚会",
       "kind": "event",
@@ -21355,6 +23558,80 @@
       }
     },
     {
+      "id": "sccl-campbell-scam-calls-workshop-2026",
+      "kind": "event",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "occurrenceDates": [
+        "2026-11-07"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费讲座",
+      "sourceLabel": "Santa Clara County Library District 活动页（Campbell 图书馆）",
+      "title": "Campbell 图书馆防骚扰电话与诈骗讲座：现场有中文资料和华语协助",
+      "dateLabel": "11/7（周六）· 13:00–14:00",
+      "city": "Campbell",
+      "venue": "Campbell 图书馆 · 77 Harrison Ave., Campbell, CA 95008",
+      "summary": "Consumer Action 在 Campbell 图书馆开的免费讲座：联邦法律怎样保护你不受营销电话和短信骚扰，怎样减少推销电话，怎样识破诈骗的典型迹象，遇到诈骗去哪里举报、求助。现场提供中文资料和华语协助人员。",
+      "plan": [
+        "讲座一小时，面向成人和长者；资料有英文、西班牙文和中文。"
+      ],
+      "audience": [
+        "成人",
+        "长者"
+      ],
+      "officialUrl": "https://sccl.bibliocommons.com/events/6a932b974995480655ecdbdd",
+      "shortTitle": "Campbell 防诈骗讲座",
+      "dek": "认识骚扰电话和诈骗的套路，知道去哪里举报",
+      "sessions": [
+        {
+          "date": "2026-11-07",
+          "start": "13:00",
+          "end": "14:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Campbell 图书馆",
+      "address": "77 Harrison Ave., Campbell, CA 95008",
+      "aliases": [
+        "Campbell 图书馆防骚扰电话与诈骗讲座：现场有中文资料和华语协助",
+        "Hang up on unwanted calls and scams at the Campbell Library, with Chinese materials and Chinese-speaking helpers",
+        "Campbell 圖書館防騷擾電話與詐騙講座：現場有中文資料和華語協助"
+      ],
+      "location": {
+        "lat": 37.288227,
+        "lng": -121.943248,
+        "label": "Campbell Library · 77 Harrison Ave., Campbell",
+        "sourceUrl": "https://sccld.org/locations/campbell",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sccl.bibliocommons.com/events/6a932b974995480655ecdbdd",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-07",
+          "validThrough": "2026-11-07",
+          "sessions": [
+            {
+              "date": "2026-11-07",
+              "start": "13:00",
+              "end": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sjsu-northern-illinois-nov-2026",
       "title": "SJSU 对 Northern Illinois：家庭周末主场",
       "kind": "sports",
@@ -21465,6 +23742,77 @@
               "date": "2026-11-07",
               "start": "11:30",
               "end": "13:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "smcl-millbrae-chinese-culture-club-ai-nov7-2026",
+      "kind": "event",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "occurrenceDates": [
+        "2026-11-07"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费",
+      "sourceLabel": "圣马刁县图书馆活动页（Millbrae 分馆）",
+      "title": "Millbrae 图书馆中华文化社讲座：用 AI 工具让生活更好",
+      "dateLabel": "11/7（周六）· 14:00–16:00",
+      "city": "Millbrae",
+      "venue": "Millbrae 图书馆 A、B 社区活动室 · 1 Library Avenue, Millbrae, CA 94030",
+      "summary": "中华文化社在 Millbrae 图书馆办的讲座：加州州立大学东湾分校终身教授陈丽玲博士从日常需求出发，讲怎样用 ChatGPT、AI 图像工具整理信息、规划生活、设提醒，并现场示范健康饮食、运动、睡眠和服药提醒的用法，参加者会练习写提示词。",
+      "plan": [
+        "讲座用普通话；介绍以中文为主，附英文说明。"
+      ],
+      "audience": [
+        "成人",
+        "长者"
+      ],
+      "officialUrl": "https://smcl.bibliocommons.com/events/6ace735329c3d600332fa195",
+      "shortTitle": "Millbrae 中华文化社 AI 讲座",
+      "dek": "陈丽玲博士示范用 ChatGPT 管理健康和日常",
+      "sessions": [
+        {
+          "date": "2026-11-07",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "venueShort": "Millbrae 图书馆",
+      "address": "1 Library Avenue, Millbrae, CA 94030",
+      "aliases": [
+        "Millbrae 图书馆中华文化社讲座：用 AI 工具让生活更好",
+        "Chinese Culture Club talk at the Millbrae Library: use AI tools to enhance your life",
+        "Millbrae 圖書館中華文化社講座：用 AI 工具讓生活更好"
+      ],
+      "location": {
+        "lat": 37.602306,
+        "lng": -122.396952,
+        "label": "Millbrae · 1 Library Avenue, Millbrae",
+        "sourceUrl": "https://smcl.org/locations/1M",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://smcl.bibliocommons.com/events/6ace735329c3d600332fa195",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-07",
+          "validThrough": "2026-11-07",
+          "sessions": [
+            {
+              "date": "2026-11-07",
+              "start": "14:00",
+              "end": "16:00"
             }
           ]
         }
@@ -26297,6 +28645,188 @@
       }
     },
     {
+      "id": "dickens-christmas-fair-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-12-20",
+      "occurrenceDates": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-27",
+        "2026-11-28",
+        "2026-11-29",
+        "2026-12-05",
+        "2026-12-06",
+        "2026-12-12",
+        "2026-12-13",
+        "2026-12-19",
+        "2026-12-20"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "成人 $50、5–12 岁 $30，5 岁以下免费；只在官网卖限定日期票",
+      "sourceLabel": "Great Dickens Christmas Fair 官网票务页",
+      "title": "Great Dickens Christmas Fair：Cow Palace 里的维多利亚时代伦敦圣诞市集",
+      "dateLabel": "11/21–12/20 每个周末和 11/27 · 10:00–18:00",
+      "city": "Daly City",
+      "venue": "Cow Palace 展览馆 · 2600 Geneva Avenue, Daly City, CA 94014",
+      "summary": "湾区每年的狄更斯圣诞市集，Cow Palace 四英亩多的展厅布置成维多利亚时代的伦敦，有剧场、酒馆、舞会和小店，还有几百位狄更斯笔下和维多利亚舞台上的人物；2026 年办五个周末，加上感恩节后的周五。",
+      "plan": [
+        "票只在官网卖，按日期限量，现场不卖票；10/16–31 卖前两个周末的早鸟票（成人 $40、5–12 岁 $25）。",
+        "15:00 后入场的黄昏票成人 $35、儿童 $20；Cow Palace 停车每辆 $20。",
+        "票价另加平台和信用卡手续费（成人票合计约 $55.92）。"
+      ],
+      "audience": [
+        "全家",
+        "节日市集爱好者"
+      ],
+      "officialUrl": "https://dickensfair.com/tickets/",
+      "shortTitle": "狄更斯圣诞市集",
+      "dek": "四英亩展厅变成狄更斯笔下的伦敦街巷",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-11-27",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-06",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-19",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2026-12-20",
+          "start": "10:00",
+          "end": "18:00"
+        }
+      ],
+      "price": {
+        "min": 20,
+        "max": 50,
+        "note": "5 岁以下免费；另加手续费"
+      },
+      "ageChip": "5 岁以下免费",
+      "venueShort": "Daly City Cow Palace",
+      "address": "2600 Geneva Avenue, Daly City, CA 94014",
+      "aliases": [
+        "Great Dickens Christmas Fair：Cow Palace 里的维多利亚时代伦敦圣诞市集",
+        "The Great Dickens Christmas Fair: Victorian London’s Christmas inside the Cow Palace",
+        "Great Dickens Christmas Fair：Cow Palace 裡的維多利亞時代倫敦聖誕市集"
+      ],
+      "planning": {
+        "admissionUsd": 50,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://dickensfair.com/tickets/",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-12-20",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-11-22",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-11-27",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-06",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-19",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2026-12-20",
+              "start": "10:00",
+              "end": "18:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "kind": "event",
       "verifiedAt": "2026-10-07",
       "id": "nov2026-coyote-hills-tule-work-play",
@@ -26662,6 +29192,605 @@
             }
           ],
           "note": "固定12:00在Portola Road下方停车场集合，2英里轻松亲子路线。保护区禁止采摘、禁止路边停车。官方未列数字年龄门槛或强制预约；不能由家庭标签推断所有幼童或婴儿车适用。"
+        }
+      }
+    },
+    {
+      "id": "scl-guerneville-mock-caldecott-nov21-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "occurrenceDates": [
+        "2026-11-21"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；材料由图书馆提供",
+      "sourceLabel": "索诺马县图书馆活动页（Guerneville）",
+      "title": "Guerneville 图书馆模仿绘本画家：学获奖童书的画法",
+      "dateLabel": "11/21（周六）· 13:00–14:00",
+      "city": "Guerneville",
+      "venue": "Guerneville 区域图书馆活动室 · 14107 Armstrong Woods Road, Guerneville, CA 95446",
+      "summary": "索诺马县图书馆 Guerneville 分馆的绘本美术活动：认识获奖童书和它们的绘画技法，选一位插画家，照他的风格创作自己的作品；这是图书馆年度“模拟凯迪克奖”活动的一部分。",
+      "plan": [
+        "适合 4 岁以上；8 岁及以下的孩子要有家长陪同。"
+      ],
+      "audience": [
+        "4 岁以上儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/imitate-illustrator-mock-caldecott-event-116703",
+      "shortTitle": "Guerneville 绘本画家手工",
+      "dek": "选一位获奖绘本画家，照他的风格创作一幅",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "13:00",
+          "end": "14:00"
+        }
+      ],
+      "ageChip": "4 岁以上",
+      "venueShort": "Guerneville 图书馆",
+      "address": "14107 Armstrong Woods Road, Guerneville, CA 95446",
+      "aliases": [
+        "Guerneville 图书馆模仿绘本画家：学获奖童书的画法",
+        "Imitate an Illustrator at the Guerneville library: draw in the style of award-winning picture books",
+        "Guerneville 圖書館模仿繪本畫家：學獲獎童書的畫法"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 4,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/imitate-illustrator-mock-caldecott-event-116703",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-21",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "13:00",
+              "end": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-healdsburg-muffin-man-puppets-nov21-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "occurrenceDates": [
+        "2026-11-21"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；先到先进，满座为止",
+      "sourceLabel": "索诺马县图书馆活动页（Healdsburg）",
+      "title": "Healdsburg 图书馆木偶剧《The Muffin Man》：孩子跟着唱跳",
+      "dateLabel": "11/21（周六）· 11:00–11:45",
+      "city": "Healdsburg",
+      "venue": "Healdsburg 区域图书馆活动室 · 139 Piper Street, Healdsburg, CA 95448",
+      "summary": "索诺马县图书馆 Healdsburg 分馆请当代木偶剧团 Possibly Puppets 演《The Muffin Man》，孩子和家长一起假扮、唱歌、跳舞参与演出，适合学前班到三年级的孩子。",
+      "plan": [
+        "8 岁及以下的孩子要有家长陪同；房间坐满就不能再进。"
+      ],
+      "audience": [
+        "学前班到三年级",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/muffin-man-117153",
+      "shortTitle": "Healdsburg 木偶剧",
+      "dek": "Possibly Puppets 演出，孩子一起假扮、唱歌、跳舞",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "11:00",
+          "end": "11:45"
+        }
+      ],
+      "venueShort": "Healdsburg 图书馆",
+      "address": "139 Piper Street, Healdsburg, CA 95448",
+      "aliases": [
+        "Healdsburg 图书馆木偶剧《The Muffin Man》：孩子跟着唱跳",
+        "The Muffin Man puppet show at the Healdsburg library, with singing and dancing",
+        "Healdsburg 圖書館木偶劇《The Muffin Man》：孩子跟著唱跳"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/muffin-man-117153",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-21",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "11:00",
+              "end": "11:45"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-roseland-global-goodies-nov21-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "occurrenceDates": [
+        "2026-11-21"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需在图书馆网站报名",
+      "sourceLabel": "索诺马县图书馆活动页（Roseland）",
+      "title": "Santa Rosa Roseland 图书馆“环球零食”：每月认识一个国家",
+      "dateLabel": "11/21（周六）· 14:00–15:30",
+      "city": "Santa Rosa",
+      "venue": "Roseland 区域图书馆活动室 · 470 Sebastopol Rd., Santa Rosa, CA 95407",
+      "summary": "索诺马县图书馆 Roseland 分馆每月一次的“环球零食”，通过音乐和问答认识一个国家，再尝尝那里最好吃的零食和糖果，零食由图书馆准备；活动介绍有英文和西班牙文，各年龄都可以来。",
+      "plan": [
+        "名额有限，报名截止到当天 13:00。"
+      ],
+      "audience": [
+        "各年龄",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/global-goodies-117006",
+      "shortTitle": "Roseland 环球零食",
+      "dek": "音乐、问答，再尝尝那个国家的零食和糖果",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "14:00",
+          "end": "15:30"
+        }
+      ],
+      "venueShort": "Roseland 图书馆",
+      "address": "470 Sebastopol Rd., Santa Rosa, CA 95407",
+      "aliases": [
+        "Santa Rosa Roseland 图书馆“环球零食”：每月认识一个国家",
+        "Global Goodies at Santa Rosa’s Roseland library: a new country every month",
+        "Santa Rosa Roseland 圖書館“環球零食”：每月認識一個國家"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/global-goodies-117006",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-21",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "14:00",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-sonoma-valley-native-beat-nov21-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "occurrenceDates": [
+        "2026-11-21"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需在图书馆网站报名",
+      "sourceLabel": "索诺马县图书馆活动页（Sonoma Valley）",
+      "title": "Sonoma Valley 图书馆讲座：索诺马县原住民音乐",
+      "dateLabel": "11/21（周六）· 14:00–15:30",
+      "city": "Sonoma",
+      "venue": "Sonoma Valley 区域图书馆活动室 · 755 West Napa Street, Sonoma, CA 95476",
+      "summary": "讲座加现场演奏：旧金山州立大学美洲原住民研究讲师、Elem 波莫印第安部落成员 Paul Steward 介绍索诺马县本地部落和美国各地部落的音乐，并现场演奏。",
+      "plan": [
+        "面向成人，报名截止到当天 13:00。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/native-beat-native-american-music-sonoma-county",
+      "shortTitle": "Sonoma 原住民音乐讲座",
+      "dek": "波莫族音乐家讲解并演奏本地部落音乐",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "14:00",
+          "end": "15:30"
+        }
+      ],
+      "venueShort": "Sonoma Valley 图书馆",
+      "address": "755 West Napa Street, Sonoma, CA 95476",
+      "aliases": [
+        "Sonoma Valley 图书馆讲座：索诺马县原住民音乐",
+        "Native Beat at the Sonoma Valley library: Native American music of Sonoma County",
+        "Sonoma Valley 圖書館講座：索諾馬縣原住民音樂"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/native-beat-native-american-music-sonoma-county",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-21",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "14:00",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-chinatown-creative-saturdays-late-nov-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-28",
+      "occurrenceDates": [
+        "2026-11-21",
+        "2026-11-28"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（华埠分馆）",
+      "title": "华埠分馆周六午后（11 月下旬）：中文书法、填色与桌游",
+      "dateLabel": "11/21、11/28 · 周六 14:30–16:00",
+      "city": "San Francisco",
+      "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
+      "summary": "旧金山公共图书馆华埠分馆周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；活动以粤语和普通话进行。10 月到 11/14 的场次另列一条。",
+      "plan": [
+        "形式是自主练习，不是老师授课；11/28 感恩节周末照常有。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/21/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+      "shortTitle": "华埠周六书法桌游（11 月下旬）",
+      "dek": "自己练毛笔字、填色或玩桌游的安静午后",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "14:30",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "华埠/麦礼谦分馆",
+      "address": "1135 Powell Street, San Francisco, CA 94108",
+      "aliases": [
+        "华埠分馆周六午后（11 月下旬）：中文书法、填色与桌游",
+        "Chinatown branch Saturday afternoons in late November: Chinese calligraphy, coloring and board games",
+        "華埠分館週六午後（11 月下旬）：中文書法、填色與桌遊"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/21/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-28",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "14:30",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sjpl-berryessa-mandarin-ell-club-winter-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-11-21",
+        "2026-11-28",
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "圣何塞公共图书馆活动页（Berryessa 分馆）",
+      "title": "Berryessa 分馆英语会话俱乐部（11 月下旬到 12 月）：普通话老师带练",
+      "dateLabel": "11/21、11/28、12/5、12/12 · 周六 10:30–11:30",
+      "city": "San Jose",
+      "venue": "Berryessa 分馆 · 3355 Noble Avenue, San Jose, CA 95132",
+      "summary": "圣何塞公共图书馆 Berryessa 分馆为成人英语学习者开的线下会话俱乐部，在轻松、友好的环境里练日常英语口语；主讲人英语和普通话都流利，任何英语程度都可以来。10 月到 11 月中的场次另列一条。",
+      "plan": [
+        "11/28 感恩节周末照常有一场。",
+        "其他母语的英语学习者也欢迎参加。"
+      ],
+      "audience": [
+        "成人",
+        "长者",
+        "说普通话的英语学习者"
+      ],
+      "officialUrl": "https://sjpl.bibliocommons.com/events/6a67cc6b7b79214226abb924",
+      "shortTitle": "Berryessa 普通话英语会话",
+      "dek": "周六上午用普通话辅助，练日常英语口语",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Berryessa 分馆",
+      "address": "3355 Noble Avenue, San Jose, CA 95132",
+      "aliases": [
+        "Berryessa 分馆英语会话俱乐部（11 月下旬到 12 月）：普通话老师带练",
+        "Berryessa branch English conversation club, late November to December, led in Mandarin and English",
+        "Berryessa 分館英語會話俱樂部（11 月下旬到 12 月）：普通話老師帶練"
+      ],
+      "location": {
+        "lat": 37.393943,
+        "lng": -121.840738,
+        "label": "Berryessa · 3355 Noble Avenue, San Jose",
+        "sourceUrl": "https://www.sjpl.org/locations/berryessa/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sjpl.bibliocommons.com/events/6a67cc6b7b79214226abb924",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sjpl-calabazas-chinese-tea-hour-nov21-2026",
+      "kind": "event",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "occurrenceDates": [
+        "2026-11-21"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "圣何塞公共图书馆活动页（Calabazas 分馆）",
+      "title": "Calabazas 分馆中国茶文化沙龙：认识茶区、茶类和冲泡",
+      "dateLabel": "11/21（周六）· 15:30–17:30",
+      "city": "San Jose",
+      "venue": "Calabazas 分馆社区活动室 · 1230 S Blaney Ave, San Jose, CA 95129",
+      "summary": "圣何塞公共图书馆 Calabazas 分馆的茶文化沙龙，由 Lisa 老师带大家认识中国不同的茶产区、茶类和冲泡方法，体验中国茶的风味；活动介绍有中英文。",
+      "plan": [
+        "这是今年秋天的第二场，第一场在 9/19。"
+      ],
+      "audience": [
+        "成人",
+        "长者",
+        "青少年"
+      ],
+      "officialUrl": "https://sjpl.bibliocommons.com/events/6a7380b9f213992f00c9ce35",
+      "shortTitle": "Calabazas 中国茶沙龙",
+      "dek": "跟 Lisa 老师品中国茶，学冲泡",
+      "sessions": [
+        {
+          "date": "2026-11-21",
+          "start": "15:30",
+          "end": "17:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Calabazas 分馆",
+      "address": "1230 S Blaney Ave, San Jose, CA 95129",
+      "aliases": [
+        "Calabazas 分馆中国茶文化沙龙：认识茶区、茶类和冲泡",
+        "Chinese tea salon at the Calabazas branch: tea regions, types and brewing",
+        "Calabazas 分館中國茶文化沙龍：認識茶區、茶類和沖泡"
+      ],
+      "location": {
+        "lat": 37.302622,
+        "lng": -122.023454,
+        "label": "Calabazas · 1230 S Blaney Ave, San Jose",
+        "sourceUrl": "https://www.sjpl.org/locations/calabazas/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sjpl.bibliocommons.com/events/6a7380b9f213992f00c9ce35",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-21",
+          "validThrough": "2026-11-21",
+          "sessions": [
+            {
+              "date": "2026-11-21",
+              "start": "15:30",
+              "end": "17:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "acl-dublin-family-movies-thanksgiving-2026",
+      "kind": "event",
+      "startDate": "2026-11-22",
+      "endDate": "2026-11-29",
+      "occurrenceDates": [
+        "2026-11-22",
+        "2026-11-29"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用",
+      "sourceLabel": "Alameda County Library 活动页（Dublin）",
+      "title": "Dublin 图书馆感恩节前后的周日亲子电影：《精灵旅社》一、二",
+      "dateLabel": "11/22、11/29 · 周日 14:00–15:30",
+      "city": "Dublin",
+      "venue": "Dublin 图书馆 · 200 Civic Plaza, Dublin, CA 94568",
+      "summary": "Alameda County Library Dublin 分馆的周日亲子电影：11/22 放动画喜剧《精灵旅社》（Hotel Transylvania），11/29 放续集《精灵旅社 2》，大人孩子都可以来看。",
+      "plan": [
+        "需要手语翻译或字幕的，至少提前 7 天向图书馆申请。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "各年龄"
+      ],
+      "officialUrl": "https://aclibrary.bibliocommons.com/events/6ace5790fee2d21deb22f1c0",
+      "shortTitle": "Dublin 周日亲子电影",
+      "dek": "两个周日下午放动画喜剧《精灵旅社》",
+      "sessions": [
+        {
+          "date": "2026-11-22",
+          "start": "14:00",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "14:00",
+          "end": "15:30"
+        }
+      ],
+      "venueShort": "Dublin 图书馆",
+      "address": "200 Civic Plaza, Dublin, CA 94568",
+      "aliases": [
+        "Dublin 图书馆感恩节前后的周日亲子电影：《精灵旅社》一、二",
+        "Sunday family movies at the Dublin Library around Thanksgiving: Hotel Transylvania 1 and 2",
+        "Dublin 圖書館感恩節前後的週日親子電影：《精靈旅社》一、二"
+      ],
+      "location": {
+        "lat": 37.702777,
+        "lng": -121.918955,
+        "label": "Dublin · 200 Civic Plaza, Dublin",
+        "sourceUrl": "https://aclibrary.org/locations/DUB",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://aclibrary.bibliocommons.com/events/6ace5790fee2d21deb22f1c0",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-11-22",
+          "validThrough": "2026-11-29",
+          "sessions": [
+            {
+              "date": "2026-11-22",
+              "start": "14:00",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "14:00",
+              "end": "15:30"
+            }
+          ]
         }
       }
     },
@@ -27751,6 +30880,139 @@
       }
     },
     {
+      "id": "sfpl-bernal-family-game-night-nov28-2026",
+      "kind": "event",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "occurrenceDates": [
+        "2026-11-28"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Bernal Heights 分馆）",
+      "title": "Bernal Heights 分馆感恩节周末亲子桌游夜",
+      "dateLabel": "11/28（周六）· 16:00–17:00",
+      "city": "San Francisco",
+      "venue": "Bernal Heights 分馆会议室 · 500 Cortland Avenue, San Francisco, CA 94110",
+      "summary": "旧金山公共图书馆 Bernal Heights 分馆的亲子游戏时间：和社区里的家庭一起玩桌游、巨型叠叠乐和其他游戏，面向孩子和照顾他们的大人。",
+      "plan": [
+        "一小时，孩子要有大人陪同。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/28/social-family-game-night",
+      "shortTitle": "Bernal 亲子桌游夜",
+      "dek": "桌游、巨型叠叠乐，和邻居一起玩",
+      "sessions": [
+        {
+          "date": "2026-11-28",
+          "start": "16:00",
+          "end": "17:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Bernal Heights 分馆",
+      "address": "500 Cortland Avenue, San Francisco, CA 94110",
+      "aliases": [
+        "Bernal Heights 分馆感恩节周末亲子桌游夜",
+        "Family game night at the Bernal Heights branch on Thanksgiving weekend",
+        "Bernal Heights 分館感恩節週末親子桌遊夜"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/28/social-family-game-night",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-11-28",
+          "validThrough": "2026-11-28",
+          "sessions": [
+            {
+              "date": "2026-11-28",
+              "start": "16:00",
+              "end": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-main-california-xiangqi-invitational-nov28-2026",
+      "kind": "event",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "occurrenceDates": [
+        "2026-11-28"
+      ],
+      "verifiedAt": "2026-10-14",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（总馆中文中心）",
+      "title": "旧金山总馆加州象棋邀请赛：看国际大师对弈",
+      "dateLabel": "11/28（周六）· 10:00–17:30",
+      "city": "San Francisco",
+      "venue": "旧金山公共图书馆总馆 Latino/Hispanic 社区活动室 · 100 Larkin Street, San Francisco, CA 94102",
+      "summary": "北加州象棋协会和洛杉矶象棋协会与旧金山公共图书馆合办的七轮邀请赛，采用亚洲象棋规则，开放时段可以观看美国代表队成员、加拿大特邀棋手和南北加州棋手对弈；国际特级大师、前女子世界冠军黄玉莹担任裁判长。",
+      "plan": [
+        "首日 10:00 开幕，第一轮 10:45、第二轮 13:15、第三轮 15:00，16:30 首日总结。"
+      ],
+      "audience": [
+        "成人",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/28/presentation-california-xiangqi-invitational-jiazhouxiangqiyaoqingsai",
+      "shortTitle": "总馆加州象棋邀请赛",
+      "dek": "七轮中国象棋邀请赛，前世界冠军黄玉莹任裁判长",
+      "sessions": [
+        {
+          "date": "2026-11-28",
+          "start": "10:00",
+          "end": "17:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "旧金山总馆",
+      "address": "100 Larkin Street, San Francisco, CA 94102",
+      "aliases": [
+        "旧金山总馆加州象棋邀请赛：看国际大师对弈",
+        "California Xiangqi Invitational at the Main Library: watch masters play Chinese chess",
+        "舊金山總館加州象棋邀請賽：看國際大師對弈"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/28/presentation-california-xiangqi-invitational-jiazhouxiangqiyaoqingsai",
+          "verifiedAt": "2026-10-14",
+          "validFrom": "2026-11-28",
+          "validThrough": "2026-11-28",
+          "sessions": [
+            {
+              "date": "2026-11-28",
+              "start": "10:00",
+              "end": "17:30"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "stanford-smu-football-nov-2026",
       "title": "Stanford 主场迎战 SMU",
       "kind": "sports",
@@ -27885,6 +31147,2002 @@
       ],
       "planning": {
         "admissionUsd": null
+      }
+    },
+    {
+      "id": "calistoga-lighted-tractor-parade-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "沿街观看；主办方页面没有写观众费用",
+      "sourceLabel": "Visit Calistoga（Calistoga 商会）活动页",
+      "title": "Calistoga 灯光拖拉机游行：纳帕谷小镇的节日夜晚",
+      "dateLabel": "12/5（周六）· 19:00–20:00",
+      "city": "Calistoga",
+      "venue": "Calistoga 市中心",
+      "summary": "Calistoga 每年 12 月的灯光拖拉机游行，挂满彩灯、装饰一新的拖拉机、工程车、公用事业车和花车穿过小镇，庆祝当地的农业传统；这个游行从 1990 年代末的小型社区活动办起，现在每年吸引数万人。",
+      "plan": [
+        "游行 19:00–20:00；人很多，早点到占位置，住一晚的要提前订房。",
+        "主办方是 Calistoga 商会，电话 (707) 942-6333。"
+      ],
+      "audience": [
+        "全家"
+      ],
+      "officialUrl": "https://visitcalistoga.com/lighted-tractor-parade/",
+      "shortTitle": "Calistoga 灯光拖拉机游行",
+      "dek": "挂满彩灯的拖拉机、工程车和花车穿过小镇",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "19:00",
+          "end": "20:00"
+        }
+      ],
+      "venueShort": "Calistoga 市中心",
+      "aliases": [
+        "Calistoga 灯光拖拉机游行：纳帕谷小镇的节日夜晚",
+        "Calistoga Lighted Tractor Parade: a holiday night in a Napa Valley town",
+        "Calistoga 燈光拖拉機遊行：納帕谷小鎮的節日夜晚"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://visitcalistoga.com/lighted-tractor-parade/",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "19:00",
+              "end": "20:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ccclib-danville-friends-book-sale-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；书按价购买",
+      "sourceLabel": "Contra Costa County Library 活动页（Danville）",
+      "title": "Danville 图书馆之友旧书义卖：童书、食谱和拼图",
+      "dateLabel": "12/5（周六）· 10:00–14:00",
+      "city": "Danville",
+      "venue": "Danville 图书馆 Mt. Diablo Room · 400 Front Street, Danville, CA 94526",
+      "summary": "Danville 图书馆之友每月的旧书义卖，有食谱、童书、非虚构和各种题材的书，也有拼图；收入支持图书馆给孩子、青少年和成人办的活动。",
+      "plan": [
+        "在图书馆的 Mt. Diablo Room，上午 10 点到下午 2 点。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://ccclib.bibliocommons.com/events/6abc0e840f56a0002cd4d253",
+      "shortTitle": "Danville 旧书义卖",
+      "dek": "童书、食谱、非虚构和拼图，收入支持图书馆活动",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "14:00"
+        }
+      ],
+      "venueShort": "Danville 图书馆",
+      "address": "400 Front Street, Danville, CA 94526",
+      "aliases": [
+        "Danville 图书馆之友旧书义卖：童书、食谱和拼图",
+        "Friends of the Danville Library book sale: children’s books, cookbooks and puzzles",
+        "Danville 圖書館之友舊書義賣：童書、食譜和拼圖"
+      ],
+      "location": {
+        "lat": 37.820863,
+        "lng": -121.995608,
+        "label": "Danville · 400 Front Street, Danville",
+        "sourceUrl": "https://ccclib.org/locations/9",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://ccclib.bibliocommons.com/events/6abc0e840f56a0002cd4d253",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ccclib-martinez-diy-gift-wrap-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "Contra Costa County Library 活动页（Martinez）",
+      "title": "Martinez 图书馆自制节日包装纸：印、画、涂，再抽小礼物",
+      "dateLabel": "12/5（周六）· 14:00–16:00",
+      "city": "Martinez",
+      "venue": "Martinez 图书馆 · 740 Court Street, Martinez, CA 94553",
+      "summary": "Contra Costa County Library Martinez 分馆的节日手工：用图书馆准备的回收材料印、画、涂出自己的节日包装纸，各年龄都可以来，还有机会抽到小礼物。",
+      "plan": [
+        "两小时内随到随做，材料由图书馆提供。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://ccclib.bibliocommons.com/events/6a61518af213992f00c64e93",
+      "shortTitle": "Martinez 自制包装纸",
+      "dek": "用回收材料做节日包装纸，省钱又环保",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Martinez 图书馆",
+      "address": "740 Court Street, Martinez, CA 94553",
+      "aliases": [
+        "Martinez 图书馆自制节日包装纸：印、画、涂，再抽小礼物",
+        "Make your own holiday gift wrap at the Martinez Library, with a prize draw",
+        "Martinez 圖書館自制節日包裝紙：印、畫、塗，再抽小禮物"
+      ],
+      "location": {
+        "lat": 38.01795,
+        "lng": -122.134175,
+        "label": "Martinez · 740 Court Street, Martinez",
+        "sourceUrl": "https://ccclib.org/locations/16",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://ccclib.bibliocommons.com/events/6a61518af213992f00c64e93",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "marin-point-reyes-kids-swap-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不收任何参加费",
+      "sourceLabel": "马林县免费图书馆活动页（Point Reyes）",
+      "title": "Point Reyes 图书馆儿童衣物和玩具免费交换会",
+      "dateLabel": "12/5（周六）· 10:00–12:00",
+      "city": "Point Reyes Station",
+      "venue": "Point Reyes 图书馆 · 11431 State Route One, Point Reyes Station, CA 94956",
+      "summary": "志愿者组织 Marin Community Free Swaps 在 Point Reyes 图书馆办的儿童衣物和玩具交换会，家庭和邻居交换干净、半新的童装、鞋、外套、玩具、书和婴儿用品；带不带东西都可以来。",
+      "plan": [
+        "衣服请洗干净，按年龄分袋；婴儿推车、汽车座椅和寝具不收。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "成人"
+      ],
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/69b1b194db89981d9df95057",
+      "shortTitle": "Point Reyes 童装玩具交换",
+      "dek": "带上闲置的童装、玩具和书，拿走需要的",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Point Reyes 图书馆",
+      "address": "11431 State Route One, Point Reyes Station, CA 94956",
+      "aliases": [
+        "Point Reyes 图书馆儿童衣物和玩具免费交换会",
+        "Kids’ clothing and toy swap at the Point Reyes library",
+        "Point Reyes 圖書館兒童衣物和玩具免費交換會"
+      ],
+      "location": {
+        "lat": 38.069612,
+        "lng": -122.80656,
+        "label": "Point Reyes · 11431 State Route One, Point Reyes Station",
+        "sourceUrl": "https://marinlibrary.org/locations/MP",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/69b1b194db89981d9df95057",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pleasanton-hometown-holiday-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "沿街观看；市政府活动页没有写观众费用",
+      "sourceLabel": "Pleasanton 市政府活动页",
+      "title": "Pleasanton 节日游行和圣诞树点灯：市中心 Main Street",
+      "dateLabel": "12/5（周六）· 17:00 游行，之后点灯",
+      "city": "Pleasanton",
+      "venue": "Pleasanton 市中心 Main Street",
+      "summary": "Pleasanton 市的家乡节日庆典在 12/5（12 月第一个周六）举行：17:00 起花车、乐队和社区团体沿市中心 Main Street 游行，游行之后在 Museum on Main 前举行点灯仪式，有现场音乐，市长和市议会点亮圣诞树，圣诞老人到场。",
+      "plan": [
+        "游行大约一小时，沿 Main Street 走约一英里；点灯在游行之后。",
+        "风雨无阻，冷天带外套。"
+      ],
+      "audience": [
+        "全家"
+      ],
+      "officialUrl": "https://www.cityofpleasantonca.gov/your-community/arts-theaters-events/hometown-holiday-celebration/",
+      "shortTitle": "Pleasanton 节日游行点灯",
+      "dek": "花车、乐队游行之后，市长点亮圣诞树，圣诞老人登场",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "17:00"
+        }
+      ],
+      "venueShort": "Pleasanton 市中心",
+      "aliases": [
+        "Pleasanton 节日游行和圣诞树点灯：市中心 Main Street",
+        "Pleasanton Hometown Holiday Celebration: a parade and tree lighting on Main Street",
+        "Pleasanton 節日遊行和聖誕樹點燈：市中心 Main Street"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://www.cityofpleasantonca.gov/your-community/arts-theaters-events/hometown-holiday-celebration/",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sccl-saratoga-fratello-marionettes-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费",
+      "sourceLabel": "Santa Clara County Library District 活动页（Saratoga 图书馆）",
+      "title": "Saratoga 图书馆提线木偶节日秀：《北极圣诞歌舞》",
+      "dateLabel": "12/5（周六）· 11:00–11:30",
+      "city": "Saratoga",
+      "venue": "Saratoga 图书馆社区活动室 · 13650 Saratoga Avenue, Saratoga, CA 95070",
+      "summary": "Fratello Marionettes 的冬季音乐木偶戏《The North Pole Review》：优雅的滑冰木偶 Crystal Chandelier、踢高腿的俄罗斯特列帕克舞者，还有三只会杂技的企鹅，各年龄都适合。",
+      "plan": [
+        "演出半小时，适合全家。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "各年龄"
+      ],
+      "officialUrl": "https://sccl.bibliocommons.com/events/6a9614c769166f088b9658ed",
+      "shortTitle": "Saratoga 提线木偶节日秀",
+      "dek": "滑冰木偶、俄罗斯舞者和杂技企鹅的音乐木偶戏",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "11:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Saratoga 图书馆",
+      "address": "13650 Saratoga Avenue, Saratoga, CA 95070",
+      "aliases": [
+        "Saratoga 图书馆提线木偶节日秀：《北极圣诞歌舞》",
+        "Fratello Marionettes’ holiday show “The North Pole Review” at the Saratoga Library",
+        "Saratoga 圖書館提線木偶節日秀：《北極聖誕歌舞》"
+      ],
+      "location": {
+        "lat": 37.270116,
+        "lng": -122.015105,
+        "label": "Saratoga Library · 13650 Saratoga Avenue, Saratoga",
+        "sourceUrl": "https://sccld.org/locations/saratoga",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sccl.bibliocommons.com/events/6a9614c769166f088b9658ed",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "11:00",
+              "end": "11:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-guerneville-winter-wreath-sale-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；花环、书和点心按价购买",
+      "sourceLabel": "索诺马县图书馆活动页（Guerneville）",
+      "title": "Guerneville 图书馆冬季花环、旧书和烘焙义卖",
+      "dateLabel": "12/5（周六）· 10:00–17:30",
+      "city": "Guerneville",
+      "venue": "Guerneville 区域图书馆活动室 · 14107 Armstrong Woods Road, Guerneville, CA 95446",
+      "summary": "Guerneville 分馆的图书馆之友（River Friends）办的冬季义卖，卖花环、旧书和烘焙点心，为图书馆筹款。",
+      "plan": [
+        "上午 10 点到下午 5:30，可以和 Armstrong Redwoods 的半日游放在一起。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/river-friends-winter-wreath-book-bake-sale-96191",
+      "shortTitle": "Guerneville 花环义卖",
+      "dek": "图书馆之友卖冬季花环、旧书和自家烘焙",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "17:30"
+        }
+      ],
+      "venueShort": "Guerneville 图书馆",
+      "address": "14107 Armstrong Woods Road, Guerneville, CA 95446",
+      "aliases": [
+        "Guerneville 图书馆冬季花环、旧书和烘焙义卖",
+        "River Friends winter wreath, book and bake sale at the Guerneville library",
+        "Guerneville 圖書館冬季花環、舊書和烘焙義賣"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/river-friends-winter-wreath-book-bake-sale-96191",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "17:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-windsor-gingerbread-houses-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需报名",
+      "sourceLabel": "索诺马县图书馆活动页（Windsor）",
+      "title": "Windsor 图书馆儿童姜饼屋工作坊（12/5）",
+      "dateLabel": "12/5（周六）10:15–11:15 或 14:00–15:00",
+      "city": "Windsor",
+      "venue": "Windsor 区域图书馆活动室 · 9291 Old Redwood Highway, Building 100, Windsor, CA 95492",
+      "summary": "索诺马县图书馆 Windsor 分馆每年的儿童姜饼屋工作坊，孩子挑选节日糖果、全麦饼干和糖霜，做一座自己的姜饼屋带回家；分上午和下午两场。",
+      "plan": [
+        "面向幼儿园到六年级，要在网上报名或打电话给分馆报名；10/13 时上午场还剩 19 个名额、下午场还剩 24 个。",
+        "8 岁及以下的孩子要有家长陪同。"
+      ],
+      "audience": [
+        "幼儿园到六年级",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/gingerbread-house-workshop-kids-118035",
+      "shortTitle": "Windsor 姜饼屋工作坊",
+      "dek": "用糖果、全麦饼干和糖霜做一座姜饼屋带回家",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:15",
+          "end": "11:15"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "15:00"
+        }
+      ],
+      "ageChip": "幼儿园–六年级",
+      "venueShort": "Windsor 图书馆",
+      "address": "9291 Old Redwood Highway, Building 100, Windsor, CA 95492",
+      "aliases": [
+        "Windsor 图书馆儿童姜饼屋工作坊（12/5）",
+        "Gingerbread house workshop for kids at the Windsor library (Dec 5)",
+        "Windsor 圖書館兒童薑餅屋工作坊（12/5）"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/gingerbread-house-workshop-kids-118035",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:15",
+              "end": "11:15"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "15:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-chinatown-family-storytime-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（华埠分馆）",
+      "title": "华埠分馆周六亲子故事时间（英语）",
+      "dateLabel": "12/5、12/12 · 周六 14:00–14:30",
+      "city": "San Francisco",
+      "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
+      "summary": "旧金山公共图书馆华埠/麦礼谦分馆 12 月的两个周六下午有亲子故事时间，讲书、唱儿歌、念童谣，适合各年龄的孩子；活动用英语进行。",
+      "plan": [
+        "每场半小时，两个周六同一时间。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/05/storytime-families-1",
+      "shortTitle": "华埠分馆亲子故事时间",
+      "dek": "书、儿歌和童谣，适合各年龄的孩子",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "14:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "14:00",
+          "end": "14:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "华埠/麦礼谦分馆",
+      "address": "1135 Powell Street, San Francisco, CA 94108",
+      "aliases": [
+        "华埠分馆周六亲子故事时间（英语）",
+        "Saturday family storytime at the Chinatown branch (in English)",
+        "華埠分館週六親子故事時間（英語）"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/05/storytime-families-1",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "14:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "14:00",
+              "end": "14:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-glen-park-saturday-playtimes-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-05",
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Glen Park 分馆）",
+      "title": "Glen Park 分馆周六上午幼儿玩耍时间",
+      "dateLabel": "12/5、12/12 · 周六 10:30–12:30",
+      "city": "San Francisco",
+      "venue": "Glen Park 分馆会议室 · 2825 Diamond Street, San Francisco, CA 94131",
+      "summary": "旧金山公共图书馆 Glen Park 分馆周六上午给 0–5 岁孩子的玩耍时间，和其他家庭一起玩幼儿和学龄前的玩具、游戏。",
+      "plan": [
+        "两小时内随时来，玩够了就走。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/05/early-learning-saturday-morning-playtimes",
+      "shortTitle": "Glen Park 周六幼儿玩耍",
+      "dek": "幼儿和学龄前玩具、游戏，和别的家庭一起玩",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "12:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "12:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "ageChip": "0–5 岁",
+      "venueShort": "Glen Park 分馆",
+      "address": "2825 Diamond Street, San Francisco, CA 94131",
+      "aliases": [
+        "Glen Park 分馆周六上午幼儿玩耍时间",
+        "Saturday Morning Playtimes for little ones at the Glen Park branch",
+        "Glen Park 分館週六上午幼兒玩耍時間"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "maxAge": 5,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/05/early-learning-saturday-morning-playtimes",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "12:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "12:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-main-rosanna-xia-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（总馆）",
+      "title": "旧金山总馆作家对谈：Rosanna Xia 谈加州海岸和海平面上升",
+      "dateLabel": "12/5（周六）· 13:00–14:30",
+      "city": "San Francisco",
+      "venue": "旧金山公共图书馆总馆 Koret 礼堂 · 100 Larkin Street, San Francisco, CA 94102",
+      "summary": "洛杉矶时报环境记者、2020 年普利策奖决选者 Rosanna Xia 和 Marina Psaros 对谈，讲海平面上升对加州社区、基础设施和海岸线的威胁，以及适应气候变化要面对的难题；她的书《California Against the Sea》得过加州图书奖金奖。",
+      "plan": [
+        "对谈一个半小时，面向成人。"
+      ],
+      "audience": [
+        "成人"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/05/author-rosanna-xia-conversation-marina-psaros",
+      "shortTitle": "Rosanna Xia 海岸讲座",
+      "dek": "《California Against the Sea》作者谈加州海岸的未来",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "13:00",
+          "end": "14:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "旧金山总馆 Koret 礼堂",
+      "address": "100 Larkin Street, San Francisco, CA 94102",
+      "aliases": [
+        "旧金山总馆作家对谈：Rosanna Xia 谈加州海岸和海平面上升",
+        "Author talk at the Main Library: Rosanna Xia on California’s coast and rising seas",
+        "舊金山總館作家對談：Rosanna Xia 談加州海岸和海平面上升"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/05/author-rosanna-xia-conversation-marina-psaros",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "13:00",
+              "end": "14:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-mission-bay-mini-makers-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Mission Bay 分馆）",
+      "title": "Mission Bay 分馆小小创客：给幼儿做冬天的帽子装饰",
+      "dateLabel": "12/5（周六）· 10:00–11:00",
+      "city": "San Francisco",
+      "venue": "Mission Bay 分馆活动室 · 960 4th Street, San Francisco, CA 94158",
+      "summary": "旧金山公共图书馆 Mission Bay 分馆给婴幼儿和学龄前孩子的手工时间，家长陪孩子用纸、蜡笔和棉球做一个冬天帽子的装饰，材料由图书馆提供。",
+      "plan": [
+        "适合 0–5 岁，需要家长陪同一起做。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/05/activity-mini-makers",
+      "shortTitle": "Mission Bay 幼儿手工",
+      "dek": "用纸、蜡笔和棉球做一顶冬帽装饰",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "11:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "ageChip": "0–5 岁",
+      "venueShort": "Mission Bay 分馆",
+      "address": "960 4th Street, San Francisco, CA 94158",
+      "aliases": [
+        "Mission Bay 分馆小小创客：给幼儿做冬天的帽子装饰",
+        "Mini-Makers at the Mission Bay branch: a winter-hat craft for little ones",
+        "Mission Bay 分館小小創客：給幼兒做冬天的帽子裝飾"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "maxAge": 5,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/05/activity-mini-makers",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-presidio-plant-stories-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Presidio 分馆）",
+      "title": "Presidio 分馆亲子故事音乐会：玉米、豆子和南瓜三姐妹",
+      "dateLabel": "12/5（周六）· 11:00–12:00",
+      "city": "San Francisco",
+      "venue": "Presidio 分馆会议室 · 3150 Sacramento Street, San Francisco, CA 94115",
+      "summary": "Alicia Retes 根据“三姐妹”（玉米、豆子、南瓜）的传说改编的故事和音乐演出，用玉米皮做的角色讲它们在美洲的起源，再带出番茄、香菜等伴生植物，讲独立、尊重和合作。",
+      "plan": [
+        "演出一小时，适合全家。"
+      ],
+      "audience": [
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/05/presentation-pan-american-companion-plant-stories-alicia-retes",
+      "shortTitle": "Presidio 植物故事音乐会",
+      "dek": "玉米皮做的角色讲美洲伴生植物的故事",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Presidio 分馆",
+      "address": "3150 Sacramento Street, San Francisco, CA 94115",
+      "aliases": [
+        "Presidio 分馆亲子故事音乐会：玉米、豆子和南瓜三姐妹",
+        "Plant stories with music at the Presidio branch: the Three Sisters, corn, bean and squash",
+        "Presidio 分館親子故事音樂會：玉米、豆子和南瓜三姐妹"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/05/presentation-pan-american-companion-plant-stories-alicia-retes",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sjpl-tully-friends-book-sale-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；书按价购买",
+      "sourceLabel": "圣何塞公共图书馆活动页（Tully 分馆）",
+      "title": "Tully 分馆之友旧书义卖",
+      "dateLabel": "12/5（周六）· 10:00–14:00",
+      "city": "San Jose",
+      "venue": "Tully 分馆 · 880 Tully Rd, San Jose, CA 95111",
+      "summary": "Tully 社区分馆之友的旧书义卖，有大量捐赠书和图书馆下架的书；收入用于分馆的活动、图书和用品。",
+      "plan": [
+        "上午 10 点到下午 2 点，大人孩子都可以来挑。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://sjpl.bibliocommons.com/events/6acaac0cf34d34366b3c888c",
+      "shortTitle": "Tully 分馆旧书义卖",
+      "dek": "捐赠书和馆藏下架书，收入支持分馆活动",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:00",
+          "end": "14:00"
+        }
+      ],
+      "venueShort": "Tully 分馆",
+      "address": "880 Tully Rd, San Jose, CA 95111",
+      "aliases": [
+        "Tully 分馆之友旧书义卖",
+        "Friends of the Tully Branch Library book sale",
+        "Tully 分館之友舊書義賣"
+      ],
+      "location": {
+        "lat": 37.311417,
+        "lng": -121.840916,
+        "label": "Tully · 880 Tully Rd, San Jose",
+        "sourceUrl": "https://www.sjpl.org/locations/tully/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sjpl.bibliocommons.com/events/6acaac0cf34d34366b3c888c",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:00",
+              "end": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-santa-rosa-friends-book-sale-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-11",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-12-11",
+        "2026-12-12",
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；书按价购买",
+      "sourceLabel": "索诺马县图书馆活动页（Santa Rosa 中央图书馆）",
+      "title": "Santa Rosa 图书馆之友旧书义卖",
+      "dateLabel": "12/11（周五）12:00–17:30；12/12（周六）10:00–17:30；12/13（周日）13:00–16:30",
+      "city": "Santa Rosa",
+      "venue": "Santa Rosa 中央图书馆活动室 · 211 E Street, Santa Rosa, CA 95404",
+      "summary": "Santa Rosa 图书馆之友在中央图书馆办的旧书义卖，面向儿童、青少年和成人，收入支持图书馆；周五上午是会员预购，中午起对公众开放。",
+      "plan": [
+        "12/11 上午 10:00–12:00 只对会员开放。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/friends-santa-rosa-libraries-book-sale-116936",
+      "shortTitle": "Santa Rosa 旧书义卖",
+      "dek": "市中心总馆连卖三天，大人孩子的书都有",
+      "sessions": [
+        {
+          "date": "2026-12-11",
+          "start": "12:00",
+          "end": "17:30"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "17:30"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "13:00",
+          "end": "16:30"
+        }
+      ],
+      "venueShort": "Santa Rosa 中央图书馆",
+      "address": "211 E Street, Santa Rosa, CA 95404",
+      "aliases": [
+        "Santa Rosa 图书馆之友旧书义卖",
+        "Friends of the Santa Rosa Libraries book sale",
+        "Santa Rosa 圖書館之友舊書義賣"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/friends-santa-rosa-libraries-book-sale-116936",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-11",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-12-11",
+              "start": "12:00",
+              "end": "17:30"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "17:30"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "13:00",
+              "end": "16:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "acl-dublin-winter-around-the-world-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用；材料用完即止",
+      "sourceLabel": "Alameda County Library 活动页（Dublin）",
+      "title": "Dublin 图书馆“世界各地的冬天”：圣诞、宽扎节、光明节手工",
+      "dateLabel": "12/12（周六）· 14:00–16:00",
+      "city": "Dublin",
+      "venue": "Dublin 图书馆 Virginia Bennett Room · 200 Civic Plaza, Dublin, CA 94568",
+      "summary": "Alameda County Library Dublin 分馆带大家认识世界各地的冬季节日：圣诞节、宽扎节、Yule、三王节和光明节，每个节日都有活动，材料由图书馆提供，各年龄都可以参加。",
+      "plan": [
+        "两小时内随时来，材料用完就结束。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://aclibrary.bibliocommons.com/events/6aa5e171101eb7003f2fa035",
+      "shortTitle": "Dublin 世界冬日节庆",
+      "dek": "一个下午认识五个冬季节日，每个都有小活动",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "venueShort": "Dublin 图书馆",
+      "address": "200 Civic Plaza, Dublin, CA 94568",
+      "aliases": [
+        "Dublin 图书馆“世界各地的冬天”：圣诞、宽扎节、光明节手工",
+        "Winter Around the World at the Dublin Library: Christmas, Kwanzaa, Hanukkah and more",
+        "Dublin 圖書館“世界各地的冬天”：聖誕、寬扎節、光明節手工"
+      ],
+      "location": {
+        "lat": 37.702777,
+        "lng": -121.918955,
+        "label": "Dublin · 200 Civic Plaza, Dublin",
+        "sourceUrl": "https://aclibrary.org/locations/DUB",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://aclibrary.bibliocommons.com/events/6aa5e171101eb7003f2fa035",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "14:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ccclib-walnut-creek-friends-book-sale-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；14:00–15:30 一袋 $5",
+      "sourceLabel": "Contra Costa County Library 活动页（Walnut Creek）",
+      "title": "Walnut Creek 图书馆之友旧书义卖：14:00 后一袋 $5",
+      "dateLabel": "12/12（周六）· 10:00–15:30",
+      "city": "Walnut Creek",
+      "venue": "Walnut Creek 图书馆二楼 Oak View Room · 1644 N. Broadway, Walnut Creek, CA 94596",
+      "summary": "Walnut Creek 图书馆之友的旧书义卖，几千本新书和二手书，小说、非虚构、童书和青少年读物、食谱都有，也卖 CD、DVD 和有声书；收入支持图书馆的活动和服务。",
+      "plan": [
+        "14:00–15:30 装满一个购物袋 $5，自己带袋子或箱子。",
+        "前一天 12/11 下午是会员专场，可以在门口入会。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://ccclib.bibliocommons.com/events/6929da9fe80c503000391f40",
+      "shortTitle": "Walnut Creek 旧书义卖",
+      "dek": "几千本新旧书和光碟，下午装满一袋 $5",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "15:30"
+        }
+      ],
+      "price": {
+        "note": "14:00 后一袋 $5"
+      },
+      "venueShort": "Walnut Creek 图书馆",
+      "address": "1644 N. Broadway, Walnut Creek, CA 94596",
+      "aliases": [
+        "Walnut Creek 图书馆之友旧书义卖：14:00 后一袋 $5",
+        "Friends of the Walnut Creek Library book sale: a bag for $5 from 2pm",
+        "Walnut Creek 圖書館之友舊書義賣：14:00 後一袋 $5"
+      ],
+      "location": {
+        "lat": 37.901316,
+        "lng": -122.060263,
+        "label": "Walnut Creek · 1644  N. Broadway, Walnut Creek",
+        "sourceUrl": "https://ccclib.org/locations/26",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://ccclib.bibliocommons.com/events/6929da9fe80c503000391f40",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fopal-book-sale-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-12-12",
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；书按价购买",
+      "sourceLabel": "Palo Alto 市立图书馆活动页（FOPAL 义卖）",
+      "title": "Palo Alto 图书馆之友月度旧书义卖：三个房间七万多本书",
+      "dateLabel": "12/12（周六）9:30–16:00；12/13（周日）13:00–16:00",
+      "city": "Palo Alto",
+      "venue": "Cubberley 社区中心 · 4000 Middlefield Road, Palo Alto, CA 94303",
+      "summary": "Palo Alto 图书馆之友（FOPAL）每月的旧书义卖，三个房间七万多本新旧书，还有 CD、DVD 和拼图，分类摆好、价格实惠；收入支持 Palo Alto 的图书馆。",
+      "plan": [
+        "周六特价室 9:30 开，童书室 10:00 开，主厅 11:00 开，都到 16:00；周日三个房间都是 13:00–16:00。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://paloalto.bibliocommons.com/events/67919b1fb4127941006178b9",
+      "shortTitle": "Palo Alto 旧书义卖",
+      "dek": "书、CD、DVD 和拼图，分类摆好，价格便宜",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "09:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "13:00",
+          "end": "16:00"
+        }
+      ],
+      "venueShort": "Cubberley 社区中心",
+      "address": "4000 Middlefield Road, Palo Alto, CA 94303",
+      "aliases": [
+        "Palo Alto 图书馆之友月度旧书义卖：三个房间七万多本书",
+        "Friends of the Palo Alto Library monthly book sale: three rooms, over 70,000 books",
+        "Palo Alto 圖書館之友月度舊書義賣：三個房間七萬多本書"
+      ],
+      "location": {
+        "lat": 37.418409,
+        "lng": -122.108436,
+        "label": "Cubberley Community Center · 4000 Middlefield Road, Palo Alto",
+        "sourceUrl": "https://library.cityofpaloalto.org/",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://paloalto.bibliocommons.com/events/67919b1fb4127941006178b9",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "09:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "13:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "opl-piedmont-ave-mug-swap-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没有写费用",
+      "sourceLabel": "奥克兰公共图书馆活动页（Piedmont Avenue 分馆）",
+      "title": "奥克兰 Piedmont Avenue 分馆冬日马克杯交换会",
+      "dateLabel": "12/12（周六）· 11:00–12:30",
+      "city": "Oakland",
+      "venue": "奥克兰公共图书馆 Piedmont Avenue 分馆 · 80 Echo Avenue, Oakland, CA 94611",
+      "summary": "奥克兰公共图书馆 Piedmont Avenue 分馆的冬日马克杯交换会：把家里干净的马克杯带来，换一个别人带来的杯子，边喝热茶或咖啡边和邻居聊天。",
+      "plan": [
+        "杯子要洗干净再带来；现场有热茶和咖啡。"
+      ],
+      "audience": [
+        "成人",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://oaklandlibrary.bibliocommons.com/events/69ed68ecc1cf6f9a7587de86",
+      "shortTitle": "Piedmont Ave 马克杯交换",
+      "dek": "带干净的旧杯子来，换一个别人带来的回去",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "12:30"
+        }
+      ],
+      "venueShort": "Piedmont Avenue 分馆",
+      "address": "80 Echo Avenue, Oakland, CA 94611",
+      "aliases": [
+        "奥克兰 Piedmont Avenue 分馆冬日马克杯交换会",
+        "Cozy winter mug swap at Oakland’s Piedmont Avenue branch",
+        "奧克蘭 Piedmont Avenue 分館冬日馬克杯交換會"
+      ],
+      "location": {
+        "lat": 37.827844,
+        "lng": -122.248151,
+        "label": "Piedmont Avenue Branch · 80 Echo Avenue, Oakland",
+        "sourceUrl": "https://oaklandlibrary.org/locations/PMA",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://oaklandlibrary.bibliocommons.com/events/69ed68ecc1cf6f9a7587de86",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "12:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sccl-gilroy-big-book-sale-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；平装书 50 美分起，一袋 $5（会员）或 $8",
+      "sourceLabel": "Santa Clara County Library District 活动页（Gilroy 图书馆）",
+      "title": "Gilroy 图书馆之友每月大型旧书义卖：平装书 50 美分起",
+      "dateLabel": "12/12（周六）· 10:00–13:00",
+      "city": "Gilroy",
+      "venue": "Gilroy 图书馆楼下大厅 · 350 W. Sixth Street, Gilroy, CA 95020",
+      "summary": "Gilroy 图书馆之友每月第二个周六的大型旧书义卖，有精装和平装书、蓝光、DVD、有声书和音乐 CD，语种很多；收入用于图书馆的额外活动和资源。",
+      "plan": [
+        "平装书 50 美分起；装满一袋会员 $5、非会员 $8，超过 $5 可刷卡。"
+      ],
+      "audience": [
+        "各年龄"
+      ],
+      "officialUrl": "https://sccl.bibliocommons.com/events/694b56f47f0b8a3e004e22fa",
+      "shortTitle": "Gilroy 旧书大义卖",
+      "dek": "多语种书和光碟，一袋装满 $5 起",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "13:00"
+        }
+      ],
+      "price": {
+        "free": true,
+        "note": "平装书 50 美分起"
+      },
+      "venueShort": "Gilroy 图书馆",
+      "address": "350 W. Sixth Street, Gilroy, CA 95020",
+      "aliases": [
+        "Gilroy 图书馆之友每月大型旧书义卖：平装书 50 美分起",
+        "Friends of the Gilroy Library big book sale: paperbacks from 50 cents",
+        "Gilroy 圖書館之友每月大型舊書義賣：平裝書 50 美分起"
+      ],
+      "location": {
+        "lat": 37.005049,
+        "lng": -121.572806,
+        "label": "Gilroy Library · 350 W. Sixth Street, Gilroy",
+        "sourceUrl": "https://sccld.org/locations/gilroy",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sccl.bibliocommons.com/events/694b56f47f0b8a3e004e22fa",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "13:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sccl-milpitas-tiny-toots-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费",
+      "sourceLabel": "Santa Clara County Library District 活动页（Milpitas 图书馆）",
+      "title": "Milpitas 图书馆幼儿音乐会：Farmer Arann 带孩子唱跳",
+      "dateLabel": "12/12（周六）· 11:00–11:45",
+      "city": "Milpitas",
+      "venue": "Milpitas 图书馆礼堂 · 160 North Main Street, Milpitas, CA 95035",
+      "summary": "Milpitas 图书馆礼堂的幼儿音乐会：Farmer Arann 带着乐器、大嗓门和原创儿歌来，孩子们跟着唱、跟着跳；面向婴幼儿和学龄前孩子，各年龄都适合。",
+      "plan": [
+        "音乐会 45 分钟，适合 0–5 岁的孩子和家长。"
+      ],
+      "audience": [
+        "婴幼儿和学龄前儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sccl.bibliocommons.com/events/6a68e7d14523092f00332633",
+      "shortTitle": "Milpitas 幼儿音乐会",
+      "dek": "现场乐器和搞笑儿歌，穿上能跳舞的鞋",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "11:45"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Milpitas 图书馆",
+      "address": "160 North Main Street, Milpitas, CA 95035",
+      "aliases": [
+        "Milpitas 图书馆幼儿音乐会：Farmer Arann 带孩子唱跳",
+        "Tiny Toots concert at the Milpitas Library: sing and dance with Farmer Arann",
+        "Milpitas 圖書館幼兒音樂會：Farmer Arann 帶孩子唱跳"
+      ],
+      "location": {
+        "lat": 37.43245,
+        "lng": -121.906508,
+        "label": "Milpitas Library · 160 North Main Street, Milpitas",
+        "sourceUrl": "https://sccld.org/locations/milpitas",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sccl.bibliocommons.com/events/6a68e7d14523092f00332633",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "11:45"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-windsor-rag-dolls-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需报名",
+      "sourceLabel": "索诺马县图书馆活动页（Windsor）",
+      "title": "Windsor 图书馆布娃娃手工：听娃娃的历史，做一个带回家",
+      "dateLabel": "12/12（周六）· 10:30–11:30",
+      "city": "Windsor",
+      "venue": "Windsor 区域图书馆活动室 · 9291 Old Redwood Highway, Building 100, Windsor, CA 95492",
+      "summary": "Windsor 历史学会的讲解员到索诺马县图书馆 Windsor 分馆讲娃娃的历史，再带孩子做一个自己的布娃娃带回家；面向幼儿园到六年级，活动用英语进行。",
+      "plan": [
+        "在图书馆网站报名，10/13 时还有 16 个名额。"
+      ],
+      "audience": [
+        "幼儿园到六年级"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/placeholder-rag-dolls-116510",
+      "shortTitle": "Windsor 布娃娃手工",
+      "dek": "历史学会讲解员讲娃娃的历史，带孩子做布娃娃",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "10:30",
+          "end": "11:30"
+        }
+      ],
+      "ageChip": "幼儿园–六年级",
+      "venueShort": "Windsor 图书馆",
+      "address": "9291 Old Redwood Highway, Building 100, Windsor, CA 95492",
+      "aliases": [
+        "Windsor 图书馆布娃娃手工：听娃娃的历史，做一个带回家",
+        "Rag dolls at the Windsor library: the history of dolls and one to take home",
+        "Windsor 圖書館布娃娃手工：聽娃娃的歷史，做一個帶回家"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/placeholder-rag-dolls-116510",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "10:30",
+              "end": "11:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-main-asl-story-hour-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（总馆）",
+      "title": "旧金山总馆美国手语亲子故事会：跳舞、读书、学手语",
+      "dateLabel": "12/12（周六）· 11:00–12:00",
+      "city": "San Francisco",
+      "venue": "旧金山公共图书馆总馆一楼聋人服务中心 · 100 Larkin Street, San Francisco, CA 94102",
+      "summary": "由 S.T.E.P.S. 主办，黑人聋人教育者、说故事人 Ms. Kei-Che 带全家一起跳舞、读书，学一些美国手语（ASL）。",
+      "plan": [
+        "适合婴幼儿、学龄前孩子和家长一起参加。"
+      ],
+      "audience": [
+        "亲子家庭",
+        "婴幼儿和学龄前儿童"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/12/early-learning-story-hour-families-american-sign-language-asl",
+      "shortTitle": "总馆手语亲子故事会",
+      "dek": "聋人教育者 Ms. Kei-Che 带全家学几句手语",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "旧金山总馆聋人服务中心",
+      "address": "100 Larkin Street, San Francisco, CA 94102",
+      "aliases": [
+        "旧金山总馆美国手语亲子故事会：跳舞、读书、学手语",
+        "Family story hour in American Sign Language at the Main Library: dance, read and learn ASL",
+        "舊金山總館美國手語親子故事會：跳舞、讀書、學手語"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/12/early-learning-story-hour-families-american-sign-language-asl",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-marina-puppet-movie-studio-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；名额有限，需电话预约",
+      "sourceLabel": "旧金山公共图书馆活动页（Marina 分馆）",
+      "title": "Marina 分馆木偶电影工作坊：做海洋生物木偶，用手机拍短片",
+      "dateLabel": "12/12（周六）· 15:00–17:00",
+      "city": "San Francisco",
+      "venue": "Marina 分馆 · 1890 Chestnut Street, San Francisco, CA 94123",
+      "summary": "Ramon Abad 带孩子和家长做海洋生物木偶，灵感来自菲律宾裔美国画家 Pacita Abad 以潜水经历画的海底作品，再用他准备的背景和手机拍一部短片。",
+      "plan": [
+        "名额有限，打 (415) 355-2823 预约。",
+        "面向小学和初中年龄的孩子和家长，带一部手机来拍片。"
+      ],
+      "audience": [
+        "小学和初中年龄的孩子",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/12/workshop-puppet-movie-studio-ramon-abad",
+      "shortTitle": "Marina 木偶电影工作坊",
+      "dek": "照着画家 Pacita Abad 的海底作品做木偶",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "15:00",
+          "end": "17:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Marina 分馆",
+      "address": "1890 Chestnut Street, San Francisco, CA 94123",
+      "aliases": [
+        "Marina 分馆木偶电影工作坊：做海洋生物木偶，用手机拍短片",
+        "Puppet movie studio at the Marina branch: make sea-creature puppets and film a short with a phone",
+        "Marina 分館木偶電影工作坊：做海洋生物木偶，用手機拍短片"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/12/workshop-puppet-movie-studio-ramon-abad",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "15:00",
+              "end": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-potrero-pinecone-owls-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Potrero 分馆）",
+      "title": "Potrero 分馆松果猫头鹰手工：听故事、认识旧金山的猫头鹰",
+      "dateLabel": "12/12（周六）· 11:00–12:00",
+      "city": "San Francisco",
+      "venue": "Potrero 分馆会议室 · 1616 20th Street, San Francisco, CA 94107",
+      "summary": "旧金山公共图书馆 Potrero 分馆的亲子手工：先听故事，了解旧金山本地的猫头鹰，再用松果做一只毛茸茸的小猫头鹰带回家。",
+      "plan": [
+        "适合 2 岁以上的孩子，材料由图书馆提供。"
+      ],
+      "audience": [
+        "学龄前和小学生",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/12/activity-pinecone-owls",
+      "shortTitle": "Potrero 松果猫头鹰",
+      "dek": "听故事、认识本地猫头鹰，做一只带回家",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "ageChip": "2 岁以上",
+      "venueShort": "Potrero 分馆",
+      "address": "1616 20th Street, San Francisco, CA 94107",
+      "aliases": [
+        "Potrero 分馆松果猫头鹰手工：听故事、认识旧金山的猫头鹰",
+        "Pinecone owls at the Potrero branch: a story, San Francisco’s owls and a craft",
+        "Potrero 分館松果貓頭鷹手工：聽故事、認識舊金山的貓頭鷹"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 2,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/12/activity-pinecone-owls",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "11:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "marin-corte-madera-read-to-dog-dec13-2026",
+      "kind": "event",
+      "startDate": "2026-12-13",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；当天在儿童服务台登记",
+      "sourceLabel": "马林县免费图书馆活动页（Corte Madera）",
+      "title": "Corte Madera 图书馆给狗狗读书：陪读犬 Stinson",
+      "dateLabel": "12/13（周日）· 14:30–15:30",
+      "city": "Corte Madera",
+      "venue": "Corte Madera 图书馆 · 707 Meadowsweet Dr, Corte Madera, CA 94925",
+      "summary": "马林县免费图书馆 Corte Madera 分馆的陪读活动：受过专门训练的工作犬 Stinson 和它的主人、Mt Tamalpais School 的图书馆老师 Lisa 一起来，幼儿园以上的孩子可以给 Stinson 读书，练习阅读。",
+      "plan": [
+        "当天到儿童服务台登记时段。"
+      ],
+      "audience": [
+        "5–12 岁儿童"
+      ],
+      "officialUrl": "https://marinlibrary.bibliocommons.com/events/6ab2cdecca248a0029179e5f",
+      "shortTitle": "Corte Madera 给狗读书",
+      "dek": "受过训练的陪读犬安静听孩子练读",
+      "sessions": [
+        {
+          "date": "2026-12-13",
+          "start": "14:30",
+          "end": "15:30"
+        }
+      ],
+      "venueShort": "Corte Madera 图书馆",
+      "address": "707 Meadowsweet Dr, Corte Madera, CA 94925",
+      "aliases": [
+        "Corte Madera 图书馆给狗狗读书：陪读犬 Stinson",
+        "Read to a Dog at the Corte Madera Library with Stinson",
+        "Corte Madera 圖書館給狗狗讀書：陪讀犬 Stinson"
+      ],
+      "location": {
+        "lat": 37.924153,
+        "lng": -122.518136,
+        "label": "Corte Madera · 707 Meadowsweet Dr, Corte Madera",
+        "sourceUrl": "https://marinlibrary.org/locations/MM",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://marinlibrary.bibliocommons.com/events/6ab2cdecca248a0029179e5f",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-13",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-12-13",
+              "start": "14:30",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "scl-sonoma-valley-gingerbread-dec13-2026",
+      "kind": "event",
+      "startDate": "2026-12-13",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "north-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；需报名，每位到场的大人和孩子都要报",
+      "sourceLabel": "索诺马县图书馆活动页（Sonoma Valley）",
+      "title": "Sonoma Valley 图书馆儿童姜饼屋工作坊（12/13）",
+      "dateLabel": "12/13（周日）14:30–15:30 或 15:30–16:30",
+      "city": "Sonoma",
+      "venue": "Sonoma Valley 区域图书馆活动室 · 755 West Napa Street, Sonoma, CA 95476",
+      "summary": "索诺马县图书馆 Sonoma Valley 分馆的年度姜饼屋工作坊，孩子和家人挑选节日糖果、全麦饼干和糖霜，做一座姜饼屋带回家；分两场。",
+      "plan": [
+        "报名对象 3 岁以上，主要面向幼儿园到六年级；每场 10/13 时还有 40 个名额。"
+      ],
+      "audience": [
+        "幼儿园到六年级",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://events.sonomalibrary.org/event/gingerbread-house-workshop-kids-120200",
+      "shortTitle": "Sonoma 姜饼屋工作坊",
+      "dek": "全家一起做姜饼屋，大人孩子都要报名",
+      "sessions": [
+        {
+          "date": "2026-12-13",
+          "start": "14:30",
+          "end": "15:30"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "15:30",
+          "end": "16:30"
+        }
+      ],
+      "ageChip": "3 岁以上报名",
+      "venueShort": "Sonoma Valley 图书馆",
+      "address": "755 West Napa Street, Sonoma, CA 95476",
+      "aliases": [
+        "Sonoma Valley 图书馆儿童姜饼屋工作坊（12/13）",
+        "Gingerbread house workshop for kids at the Sonoma Valley library (Dec 13)",
+        "Sonoma Valley 圖書館兒童薑餅屋工作坊（12/13）"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 3,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://events.sonomalibrary.org/event/gingerbread-house-workshop-kids-120200",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-13",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-12-13",
+              "start": "14:30",
+              "end": "15:30"
+            },
+            {
+              "date": "2026-12-13",
+              "start": "15:30",
+              "end": "16:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sjpl-east-carnegie-fratello-marionettes-dec13-2026",
+      "kind": "event",
+      "startDate": "2026-12-13",
+      "endDate": "2026-12-13",
+      "occurrenceDates": [
+        "2026-12-13"
+      ],
+      "verifiedAt": "2026-10-13",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；设 50 个名额，可候补",
+      "sourceLabel": "圣何塞公共图书馆活动页（East San Jose Carnegie 分馆）",
+      "title": "East San Jose Carnegie 分馆提线木偶节日秀：《北极圣诞歌舞》",
+      "dateLabel": "12/13（周日）· 13:00–14:00",
+      "city": "San Jose",
+      "venue": "East San Jose Carnegie 分馆 · 1102 E Santa Clara St, San Jose, CA 95116",
+      "summary": "Fratello Marionettes 的冬季音乐木偶戏《The North Pole Review》在圣何塞公共图书馆东圣何塞 Carnegie 分馆演出：滑冰木偶、俄罗斯特列帕克舞者和三只杂技企鹅，木偶师在观众面前现场操纵。",
+      "plan": [
+        "面向 5–10 岁的孩子，活动页上可以登记名额。"
+      ],
+      "audience": [
+        "5–10 岁儿童",
+        "亲子家庭"
+      ],
+      "officialUrl": "https://sjpl.bibliocommons.com/events/6aad730665abe8002a7a4d81",
+      "shortTitle": "东圣何塞提线木偶秀",
+      "dek": "木偶师在观众面前现场操纵的冬季音乐木偶戏",
+      "sessions": [
+        {
+          "date": "2026-12-13",
+          "start": "13:00",
+          "end": "14:00"
+        }
+      ],
+      "ageChip": "5–10 岁",
+      "venueShort": "East SJ Carnegie 分馆",
+      "address": "1102 E Santa Clara St, San Jose, CA 95116",
+      "aliases": [
+        "East San Jose Carnegie 分馆提线木偶节日秀：《北极圣诞歌舞》",
+        "Fratello Marionettes’ “The North Pole Review” at the East San Jose Carnegie branch",
+        "East San Jose Carnegie 分館提線木偶節日秀：《北極聖誕歌舞》"
+      ],
+      "location": {
+        "lat": 37.346474,
+        "lng": -121.868224,
+        "label": "East SJ Carnegie · 1102 E Santa Clara St, San Jose",
+        "sourceUrl": "https://www.sjpl.org/locations/east-branch",
+        "precision": "venue"
+      },
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sjpl.bibliocommons.com/events/6aad730665abe8002a7a4d81",
+          "verifiedAt": "2026-10-13",
+          "validFrom": "2026-12-13",
+          "validThrough": "2026-12-13",
+          "sessions": [
+            {
+              "date": "2026-12-13",
+              "start": "13:00",
+              "end": "14:00"
+            }
+          ]
+        }
       }
     }
   ],

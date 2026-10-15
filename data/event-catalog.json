@@ -1718,6 +1718,23 @@
     ]
   },
   {
+    "id": "berkeley-downtown-saturday-farmers-market-2026",
+    "title": "Berkeley 市中心周六农夫市集：加州农场直卖，12 月加开手作礼物摊",
+    "startDate": "2026-10-17",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
     "id": "berkeley-harvest-festival-2026",
     "title": "Berkeley 免费丰收节与种子交换",
     "startDate": "2026-10-17",
@@ -1812,6 +1829,23 @@
     "title": "NUMU Community Ignition 展览开幕招待会",
     "startDate": "2026-10-17",
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "oakland-grand-lake-farmers-market-2026",
+    "title": "Oakland Grand Lake 周六农夫市集：100 多个摊位，风雨无阻",
+    "startDate": "2026-10-17",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-17",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
   },
   {
     "id": "oakland-vintage-fashion-faire-2026",
@@ -2082,6 +2116,23 @@
     ]
   },
   {
+    "id": "fremont-irvington-farmers-market-2026",
+    "title": "Fremont Irvington 周日农夫市集：全年每周日开",
+    "startDate": "2026-10-18",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-10-18",
+      "2026-10-25",
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-15",
+      "2026-11-22",
+      "2026-11-29",
+      "2026-12-06",
+      "2026-12-13"
+    ]
+  },
+  {
     "id": "lafayette-res-run-2026",
     "title": "Lafayette Res Run 秋季社区跑",
     "startDate": "2026-10-18",
@@ -2349,6 +2400,22 @@
     ]
   },
   {
+    "id": "ccclib-pleasant-hill-lego-club-2026",
+    "title": "Pleasant Hill 图书馆周六乐高俱乐部",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
     "id": "clayton-hay-day-trunk-or-treat-2026",
     "title": "Clayton Hay Day 车尾箱讨糖",
     "startDate": "2026-10-24",
@@ -2397,6 +2464,22 @@
     ]
   },
   {
+    "id": "marin-south-novato-storytime-2026",
+    "title": "South Novato 图书馆周六故事时间：Brian 老师讲故事",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
     "id": "menlo-park-halloween-hoopla-2026",
     "title": "Menlo Park 万圣节游行与嘉年华",
     "startDate": "2026-10-24",
@@ -2416,6 +2499,53 @@
     "title": "Napa Tulocay：万圣节历史步行导览",
     "startDate": "2026-10-24",
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "opl-asian-branch-family-time-2026",
+    "title": "奥克兰亚裔分馆周六合家欢：亲子游戏、玩具，有时讲故事",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "opl-main-family-storytime-2026",
+    "title": "奥克兰总馆周六亲子故事时间：读书、唱歌，之后自由玩",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "pacl-mitchell-park-family-storytime-2026",
+    "title": "Palo Alto Mitchell Park 图书馆周六亲子故事时间",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
   },
   {
     "id": "petaluma-coco-matinee-2026",
@@ -2482,6 +2612,35 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "sccl-cupertino-family-storytime-2026",
+    "title": "Cupertino 图书馆周六亲子故事时间",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "scl-forestville-saturday-storytime-2026",
+    "title": "Forestville 社区图书馆周六故事时间",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-14",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
     "id": "sf-bay-beats-bandshell-oct24-2026",
     "title": "Bay Beats 金门公园免费音乐会",
     "startDate": "2026-10-24",
@@ -2540,6 +2699,54 @@
     "occurrenceDates": [
       "2026-10-24",
       "2026-10-25"
+    ]
+  },
+  {
+    "id": "smcl-atherton-maker-families-2026",
+    "title": "Atherton 图书馆周六亲子创客时间：认识 3D 打印和激光切割",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "smcl-half-moon-bay-saturday-storytime-2026",
+    "title": "Half Moon Bay 图书馆周六亲子故事时间",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "smcl-millbrae-digital-help-hub-2026",
+    "title": "Millbrae 数字帮助学习小组：一起学手机、微信和 AI",
+    "startDate": "2026-10-24",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+      "2026-11-14",
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
     ]
   },
   {
@@ -2610,6 +2817,22 @@
     "occurrenceDates": [
       "2026-10-25",
       "2026-11-15"
+    ]
+  },
+  {
+    "id": "sjpl-alum-rock-basic-english-2026",
+    "title": "Alum Rock 分馆零基础英语课：老师英语中文都流利",
+    "startDate": "2026-10-25",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-10-25",
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-15",
+      "2026-11-22",
+      "2026-11-29",
+      "2026-12-06",
+      "2026-12-13"
     ]
   },
   {
@@ -3052,6 +3275,21 @@
     ]
   },
   {
+    "id": "pacl-rinconada-tai-chi-2026",
+    "title": "Palo Alto Rinconada 图书馆周日太极课：陈式太极老师带初学者",
+    "startDate": "2026-11-01",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-11-01",
+      "2026-11-08",
+      "2026-11-15",
+      "2026-11-22",
+      "2026-11-29",
+      "2026-12-06",
+      "2026-12-13"
+    ]
+  },
+  {
     "id": "roundup-suisun-dia-muertos-2026",
     "title": "Suisun City 亡灵节文化晚会",
     "startDate": "2026-11-01",
@@ -3206,6 +3444,15 @@
     "endDate": "2026-11-07"
   },
   {
+    "id": "sccl-campbell-scam-calls-workshop-2026",
+    "title": "Campbell 图书馆防骚扰电话与诈骗讲座：现场有中文资料和华语协助",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
     "id": "sjsu-northern-illinois-nov-2026",
     "title": "SJSU 对 Northern Illinois：家庭周末主场",
     "startDate": "2026-11-07",
@@ -3214,6 +3461,15 @@
   {
     "id": "smcl-atherton-diwali-henna-2026",
     "title": "Atherton 图书馆排灯节手绘指甲花",
+    "startDate": "2026-11-07",
+    "endDate": "2026-11-07",
+    "occurrenceDates": [
+      "2026-11-07"
+    ]
+  },
+  {
+    "id": "smcl-millbrae-chinese-culture-club-ai-nov7-2026",
+    "title": "Millbrae 图书馆中华文化社讲座：用 AI 工具让生活更好",
     "startDate": "2026-11-07",
     "endDate": "2026-11-07",
     "occurrenceDates": [
@@ -3765,6 +4021,25 @@
     ]
   },
   {
+    "id": "dickens-christmas-fair-2026",
+    "title": "Great Dickens Christmas Fair：Cow Palace 里的维多利亚时代伦敦圣诞市集",
+    "startDate": "2026-11-21",
+    "endDate": "2026-12-20",
+    "occurrenceDates": [
+      "2026-11-21",
+      "2026-11-22",
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29",
+      "2026-12-05",
+      "2026-12-06",
+      "2026-12-12",
+      "2026-12-13",
+      "2026-12-19",
+      "2026-12-20"
+    ]
+  },
+  {
     "id": "nov2026-coyote-hills-tule-work-play",
     "title": "Coyote Hills：认识 Tule 湿地植物并做手作",
     "startDate": "2026-11-21",
@@ -3807,6 +4082,83 @@
     "endDate": "2026-11-21",
     "occurrenceDates": [
       "2026-11-21"
+    ]
+  },
+  {
+    "id": "scl-guerneville-mock-caldecott-nov21-2026",
+    "title": "Guerneville 图书馆模仿绘本画家：学获奖童书的画法",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "scl-healdsburg-muffin-man-puppets-nov21-2026",
+    "title": "Healdsburg 图书馆木偶剧《The Muffin Man》：孩子跟着唱跳",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "scl-roseland-global-goodies-nov21-2026",
+    "title": "Santa Rosa Roseland 图书馆“环球零食”：每月认识一个国家",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "scl-sonoma-valley-native-beat-nov21-2026",
+    "title": "Sonoma Valley 图书馆讲座：索诺马县原住民音乐",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "sfpl-chinatown-creative-saturdays-late-nov-2026",
+    "title": "华埠分馆周六午后（11 月下旬）：中文书法、填色与桌游",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-21",
+      "2026-11-28"
+    ]
+  },
+  {
+    "id": "sjpl-berryessa-mandarin-ell-club-winter-2026",
+    "title": "Berryessa 分馆英语会话俱乐部（11 月下旬到 12 月）：普通话老师带练",
+    "startDate": "2026-11-21",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-11-21",
+      "2026-11-28",
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sjpl-calabazas-chinese-tea-hour-nov21-2026",
+    "title": "Calabazas 分馆中国茶文化沙龙：认识茶区、茶类和冲泡",
+    "startDate": "2026-11-21",
+    "endDate": "2026-11-21",
+    "occurrenceDates": [
+      "2026-11-21"
+    ]
+  },
+  {
+    "id": "acl-dublin-family-movies-thanksgiving-2026",
+    "title": "Dublin 图书馆感恩节前后的周日亲子电影：《精灵旅社》一、二",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-22",
+      "2026-11-29"
     ]
   },
   {
@@ -3937,6 +4289,24 @@
     "endDate": "2026-11-28"
   },
   {
+    "id": "sfpl-bernal-family-game-night-nov28-2026",
+    "title": "Bernal Heights 分馆感恩节周末亲子桌游夜",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
+  },
+  {
+    "id": "sfpl-main-california-xiangqi-invitational-nov28-2026",
+    "title": "旧金山总馆加州象棋邀请赛：看国际大师对弈",
+    "startDate": "2026-11-28",
+    "endDate": "2026-11-28",
+    "occurrenceDates": [
+      "2026-11-28"
+    ]
+  },
+  {
     "id": "stanford-smu-football-nov-2026",
     "title": "Stanford 主场迎战 SMU",
     "startDate": "2026-11-28",
@@ -3956,5 +4326,262 @@
     "title": "49ers 主场迎战 Seahawks",
     "startDate": "2026-11-29",
     "endDate": "2026-11-29"
+  },
+  {
+    "id": "calistoga-lighted-tractor-parade-2026",
+    "title": "Calistoga 灯光拖拉机游行：纳帕谷小镇的节日夜晚",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "ccclib-danville-friends-book-sale-dec5-2026",
+    "title": "Danville 图书馆之友旧书义卖：童书、食谱和拼图",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "ccclib-martinez-diy-gift-wrap-dec5-2026",
+    "title": "Martinez 图书馆自制节日包装纸：印、画、涂，再抽小礼物",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "marin-point-reyes-kids-swap-dec5-2026",
+    "title": "Point Reyes 图书馆儿童衣物和玩具免费交换会",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "pleasanton-hometown-holiday-2026",
+    "title": "Pleasanton 节日游行和圣诞树点灯：市中心 Main Street",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "sccl-saratoga-fratello-marionettes-dec5-2026",
+    "title": "Saratoga 图书馆提线木偶节日秀：《北极圣诞歌舞》",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "scl-guerneville-winter-wreath-sale-dec5-2026",
+    "title": "Guerneville 图书馆冬季花环、旧书和烘焙义卖",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "scl-windsor-gingerbread-houses-dec5-2026",
+    "title": "Windsor 图书馆儿童姜饼屋工作坊（12/5）",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "sfpl-chinatown-family-storytime-dec-2026",
+    "title": "华埠分馆周六亲子故事时间（英语）",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-glen-park-saturday-playtimes-dec-2026",
+    "title": "Glen Park 分馆周六上午幼儿玩耍时间",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-05",
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-main-rosanna-xia-dec5-2026",
+    "title": "旧金山总馆作家对谈：Rosanna Xia 谈加州海岸和海平面上升",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "sfpl-mission-bay-mini-makers-dec5-2026",
+    "title": "Mission Bay 分馆小小创客：给幼儿做冬天的帽子装饰",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "sfpl-presidio-plant-stories-dec5-2026",
+    "title": "Presidio 分馆亲子故事音乐会：玉米、豆子和南瓜三姐妹",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "sjpl-tully-friends-book-sale-dec5-2026",
+    "title": "Tully 分馆之友旧书义卖",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
+    "id": "scl-santa-rosa-friends-book-sale-dec-2026",
+    "title": "Santa Rosa 图书馆之友旧书义卖",
+    "startDate": "2026-12-11",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-12-11",
+      "2026-12-12",
+      "2026-12-13"
+    ]
+  },
+  {
+    "id": "acl-dublin-winter-around-the-world-dec12-2026",
+    "title": "Dublin 图书馆“世界各地的冬天”：圣诞、宽扎节、光明节手工",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "ccclib-walnut-creek-friends-book-sale-dec12-2026",
+    "title": "Walnut Creek 图书馆之友旧书义卖：14:00 后一袋 $5",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "fopal-book-sale-dec-2026",
+    "title": "Palo Alto 图书馆之友月度旧书义卖：三个房间七万多本书",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-12-12",
+      "2026-12-13"
+    ]
+  },
+  {
+    "id": "opl-piedmont-ave-mug-swap-dec12-2026",
+    "title": "奥克兰 Piedmont Avenue 分馆冬日马克杯交换会",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sccl-gilroy-big-book-sale-dec12-2026",
+    "title": "Gilroy 图书馆之友每月大型旧书义卖：平装书 50 美分起",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sccl-milpitas-tiny-toots-dec12-2026",
+    "title": "Milpitas 图书馆幼儿音乐会：Farmer Arann 带孩子唱跳",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "scl-windsor-rag-dolls-dec12-2026",
+    "title": "Windsor 图书馆布娃娃手工：听娃娃的历史，做一个带回家",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-main-asl-story-hour-dec12-2026",
+    "title": "旧金山总馆美国手语亲子故事会：跳舞、读书、学手语",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-marina-puppet-movie-studio-dec12-2026",
+    "title": "Marina 分馆木偶电影工作坊：做海洋生物木偶，用手机拍短片",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-potrero-pinecone-owls-dec12-2026",
+    "title": "Potrero 分馆松果猫头鹰手工：听故事、认识旧金山的猫头鹰",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "marin-corte-madera-read-to-dog-dec13-2026",
+    "title": "Corte Madera 图书馆给狗狗读书：陪读犬 Stinson",
+    "startDate": "2026-12-13",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-12-13"
+    ]
+  },
+  {
+    "id": "scl-sonoma-valley-gingerbread-dec13-2026",
+    "title": "Sonoma Valley 图书馆儿童姜饼屋工作坊（12/13）",
+    "startDate": "2026-12-13",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-12-13"
+    ]
+  },
+  {
+    "id": "sjpl-east-carnegie-fratello-marionettes-dec13-2026",
+    "title": "East San Jose Carnegie 分馆提线木偶节日秀：《北极圣诞歌舞》",
+    "startDate": "2026-12-13",
+    "endDate": "2026-12-13",
+    "occurrenceDates": [
+      "2026-12-13"
+    ]
   }
 ]
