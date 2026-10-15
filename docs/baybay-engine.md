@@ -135,7 +135,10 @@ instance it decides how soon the first sentence can start. Keep it small:
   arrive in December", "Winter break starts in December") is. After a span is narrowed to one day after this
   week, a bare weekday is that day of its Monday-to-Sunday week (12/05 → "What about Sunday?" is 12/06, 12/07 →
   周日呢 is 12/13); "this Sunday" is still this week's. Review round 5: a weekend asked in the message that does not
-  hold the carried day replaces it (12月5号 → 这周末呢 / "What about this weekend?" is 10/17-18).
+  hold the carried day replaces it (12月5号 → 这周末呢 / "What about this weekend?" is 10/17-18). Review round 6: in
+  English a weekday (Monday-Friday) is the first one on or after the carried day (Dec 5 → "What about Monday?" is
+  12/07; Chinese 周一呢 keeps the Monday-to-Sunday week, 11/30), and days the user lists ("12月5、6号两天都行", "Dec
+  5 or 6 both work") become the span even when they hold the carried day.
 - **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
   from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
   感恩节周末 no longer leads a weekend ask.
@@ -159,11 +162,16 @@ instance it decides how soon the first sentence can start. Keep it small:
   change ("周六带两个…") is held back, never stripped and then restored, so the draft is always a prefix.
   The 二-六 of 周六 / 星期六 / 礼拜六 / 初二 and of 十二 are a day or a larger number, never a count; 两 / 兩 always can be
   one ("这周两场" / "這週兩場" is held and stripped while streaming, as in the result). An approximate count
-  (两三个, 两到三个, 两、三个, 2-3个, 三五个) is left whole, as English "two or three" is.
+  (两三个, 两到三个, 两、三个, 2-3个, 三五个) is left whole, as English "two or three" is; 两 / 兩 always starts one
+  (这周两三场, 本周两到三个), and so do 两个到三个, 两个或三个, 三个左右, 两个以上, 3、4个, 2－3个 and 十二三个. A count after a
+  qualifier is a part of the options or an estimate, never their number, and is left whole too (其中两个, 前两个,
+  另外两个, 至少两个, 大约三场, 只有两场; "only two", "about three", "the first two").
 - **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
   negation); (有没有)不是室内的 / 非室内的 asks for outdoor, but the question 是不是室内的 and 除非室内 stay indoor. "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
   "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
-  3 点前; "what can kids do", "kids activities" and "anything free for kids" are outing asks.
+  3 点前; "what can kids do", "kids activities" and "anything free for kids" are outing asks. "What is fun / free
+  for kids" is one too, but not about one venue or fare ("at the Oakland Zoo", "on Muni" stay information); a
+  kind of place ("at the beach", "at parks", "at museums") is still an outing.
 - **Offers keep to the asked days**: a dated offer outside the span, one held only on another weekday
   (仅周三, "Wednesdays:"), one whose title or date label lists or ranges other weekdays (周二、周三 / 周一、三、五 /
   周二至周日 / Fridays and Saturdays / Thursday–Monday) and one closed on every asked day (周二、周三闭馆, Closed
