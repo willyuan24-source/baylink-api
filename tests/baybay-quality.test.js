@@ -95,6 +95,19 @@ test('lead consistency: a count that differs from the listed options loses the n
   assert.equal(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).draft.lead, '周六有免费活动。');
   assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
+  // API-BB-5 review: the never-stated rule strips only a count of options; dates, ages, stops, people and durations stay,
+  // and what is left reads as a sentence.
+  const en = lead => leadConsistency({ lead, points: points(2) }, { locale: 'en' }).draft.lead;
+  const zh = lead => leadConsistency({ lead, points: points(2) }).draft.lead;
+  for (const lead of ['December 5 is packed with family events.', 'The weekend of December 5 brings free events in Pleasanton.', 'Kids aged 3 to 5 love these places.',
+    'Kids aged three to five love these places.', 'Saturday, December 5 events include the Pleasanton parade', 'Spend two hours at the events', 'Bring your two-year-old to these events.']) assert.equal(en(lead), lead);
+  assert.equal(en('Saturday, Dec 5 has two free events.'), 'Saturday, Dec 5 has free events.');
+  assert.equal(en('Two free events fit your Saturday'), 'Free events fit your Saturday');
+  for (const lead of ['第 2 站去公园', '第 2 站安排在 Oakland 图书馆', '周六带两个孩子去奥克兰动物园。', '两个周末都有市集活动', '带两个小朋友去公园玩']) assert.equal(zh(lead), lead);
+  assert.equal(zh('一家三口可以去这两个地方'), '一家三口可以去这些地方');
+  assert.equal(zh('周六可以去两个地方'), '周六可以去这些地方');
+  assert.equal(zh('这周末东湾有 3 场适合孩子的活动'), '这周末东湾有适合孩子的活动');
+  assert.equal(zh('周六 Oakland 两场活动都免费。'), '周六 Oakland 活动都免费。');
   const choice = leadConsistency({ lead: '坐渡轮去 Sausalito 更省脚力。', points: [{ text: '现有资料不能判断哪个更省力。', cardIds: [] }, { text: '选平路、能坐下的地方。', cardIds: [] }] });
   assert.deepEqual(choice.repairs, ['lead_choice']); assert.equal(choice.draft.points.length, 1);
 });

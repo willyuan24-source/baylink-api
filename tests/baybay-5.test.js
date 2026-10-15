@@ -99,6 +99,26 @@ test('live L04: the streamed lead never shows a count, so the result does not co
   assert.equal(result.corrected, false);
 });
 
+test('review: a streamed lead with people or a count is always a prefix of the result (zh and en, any chunking)', () => {
+  const { createDraftWriter } = require('../lib/baybayProgress');
+  const { leadConsistency } = require('../lib/baybayQuality');
+  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }];
+  for (const [lead, locale] of [['周六带两个孩子去奥克兰动物园。', 'zh-Hans'], ['周六有两场比赛，适合带两个孩子去看。', 'zh-Hans'], ['这周六可以去两家博物馆，再去公园。', 'zh-Hans'],
+    ['一家三口可以去这两个地方', 'zh-Hans'], ['这周末东湾有 3 场适合孩子的活动', 'zh-Hans'], ['周六东湾有两场免费活动，适合孩子。', 'zh-Hant'],
+    ['December 5 is packed with family events in Pleasanton.', 'en'], ['Two free events fit your Saturday.', 'en'], ['Kids aged three to five love these places.', 'en']]) {
+    const final = leadConsistency({ lead, points }, { locale }).draft.lead;
+    for (const chunk of [1, 2, 3, 5]) for (const batchChars of [1, 8]) {
+      const writer = createDraftWriter({ emit: () => {}, locale, batchChars, setTimer: () => null, clearTimer: () => {} });
+      for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
+      writer.done('lead'); writer.end({ complete: true });
+      assert.equal(writer.sent().lead, final, `${lead} / ${chunk} / ${batchChars}`);
+    }
+  }
+  // People and a non-option count stay as written.
+  assert.equal(leadConsistency({ lead: '周六带两个孩子去奥克兰动物园。', points }).draft.lead, '周六带两个孩子去奥克兰动物园。');
+  assert.equal(leadConsistency({ lead: '周六有两场比赛，适合带两个孩子去看。', points }).draft.lead, '周六有两场比赛，适合带两个孩子去看。');
+});
+
 test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
   const { railServes, railSystemsIn } = require('../lib/baybayTransit');
   const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
