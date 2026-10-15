@@ -181,6 +181,22 @@ test('review: English plan asks, a bare "back by 3", and kids-activities asks', 
   for (const message of ['What can kids do in the East Bay on December 5?', 'kids activities in San Jose this weekend', 'Any activities for toddlers in Palo Alto on Sunday?']) assert.equal(stateOf(message).state.goal, 'discover', message);
 });
 
+test('review: offers held on a list or range of other weekdays, or closed on the asked day, are not options', () => {
+  const { offerOnAskedDays } = require('../lib/baybayEvidence');
+  // Sun 10/18 … Sat 10/24 as S M T W T F S.
+  const week = row => ['2026-10-18', '2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24']
+    .map((date, index) => offerOnAskedDays(row, { date, dateRange: null }) ? 'SMTWTFS'[index] : '.').join('');
+  for (const english of [false, true]) {
+    const items = loadDiscoveryCatalog(undefined, english).items;
+    const row = id => items.find(item => item.id === id);
+    for (const [id, open] of [['amc-stubs-tuesday-wednesday-base-ticket', '..TW...'], ['japanese-tea-garden-free-hour', '.M.W.F.'], ['chabot-free-telescopes', '.....FS'],
+      ['randall-museum-free', '..TWTFS'], ['anderson-stanford-free', 'SM..TFS'], ['cable-car-museum-free', 'S.TWTFS'], ['cantor-stanford-free', 'SM..TFS'],
+      ['union-city-kennedy-youth-free-dropin', '.MTWTF.'], ['mountain-view-pacific-catch-aloha-hour-ongoing', 'SMTWTFS']]) assert.equal(week(row(id)), open, `${english ? 'en' : 'zh'} ${id}`);
+  }
+  // 12月5号 is a Saturday: AMC's Tuesday/Wednesday tickets are not in the evidence.
+  assert.ok(!itemIds(evidence('12月5号东湾带娃去哪')).includes('offer:amc-stubs-tuesday-wednesday-base-ticket'));
+});
+
 test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
   const { railServes, railSystemsIn } = require('../lib/baybayTransit');
   const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
