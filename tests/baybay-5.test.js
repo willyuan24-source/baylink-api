@@ -465,3 +465,44 @@ test('review round 2: a narrowed future day carries; 帮我排一下 after an ou
   for (const message of ['有没有不是室内的', '有没有非室内的', '不是室内的']) assert.equal(stateOf(message).state.setting, 'outdoor', message);
   assert.equal(stateOf('有没有室内的').state.setting, 'indoor');
 });
+
+test('review round 4: 是不是室内 is not outdoor; 这周两场 streams as the result; the other day of a carried weekend', () => {
+  const walk = messages => messages.reduce((state, message) => resolveTaskState({ message, previous: state, today: TODAY, carry: true }).state, undefined);
+  // "Is it indoor?" never sets outdoor, and does not carry outdoor into the next ask (a rainy-day family got outdoor places).
+  for (const messages of [['加州科学院是不是室内的'], ['图书馆是不是室内'], ['这周末带娃去哪', '是不是室内的？'], ['下雨天这周末带娃去哪', '这些地方是不是室内的'],
+    ['加州科学院是不是室内的', '那这周末带娃去哪']]) assert.notEqual(walk(messages).setting, 'outdoor', messages.join(' / '));
+  assert.equal(walk(['下雨天这周末带娃去哪', '这些地方是不是室内的']).setting, 'indoor');
+  for (const messages of [['这周末带娃去哪', '有没有不是室内的'], ['有没有非室内的']]) assert.equal(walk(messages).setting, 'outdoor', messages.join(' / '));
+  // 两 / 兩 right after 周 / 週 is a count, never a weekday: held and stripped while streaming, as the result strips it.
+  const { createDraftWriter } = require('../lib/baybayProgress');
+  const { leadConsistency } = require('../lib/baybayQuality');
+  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }, { text: 'c', cardIds: ['z'] }];
+  for (const [lead, locale, expected] of [['这周两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans', '这周免费活动都在奥克兰，适合带孩子。'],
+    ['本周两个地方都免费，适合下雨天。', 'zh-Hans', '本周这些地方都免费，适合下雨天。'], ['這週兩場免費活動都在奧克蘭。', 'zh-Hant', '這週免費活動都在奧克蘭。'],
+    ['周六两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans', '周六免费活动都在奥克兰，适合带孩子。'], ['这周六三个地方都可以去，都在 BART 沿线。', 'zh-Hans', '这周六这些地方都可以去，都在 BART 沿线。']]) {
+    assert.equal(leadConsistency({ lead, points }, { locale }).draft.lead, expected, lead);
+    for (const chunk of [1, 2]) {
+      const writer = createDraftWriter({ emit: () => {}, locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
+      for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
+      writer.done('lead'); writer.end({ complete: true });
+      assert.equal(writer.sent().lead, expected, `${lead} / ${chunk}`);
+    }
+  }
+  // After a weekend narrowed to one day, the other day of that weekend is that weekend's, not this week's.
+  assert.equal(walk(['first weekend of December, anything for kids in Oakland?', 'What about Saturday?', 'What about Sunday?']).date, '2026-12-06');
+  assert.equal(walk(['12月第一个周末带娃去哪', '周六呢', '那周日呢']).date, '2026-12-06');
+  assert.equal(walk(['12月5号带娃去哪', '周日呢']).date, '2026-12-06');
+  assert.equal(walk(['下周六去哪', '那周日呢']).date, '2026-10-25');
+  assert.equal(walk(['first weekend of December, anything for kids in Oakland?', 'What about Saturday?', 'What about this Sunday?']).date, '2026-10-18');
+  assert.equal(walk(['12月第一个周末带娃去哪', '周六呢', '这周日呢']).date, '2026-10-18');
+  // 长 is a long weekend only right before 周末; the connectives belong to a holiday's name.
+  for (const message of ['学长这个周末带我们去哪玩', '园长这个周末有活动吗', '时间长这个周末去哪', '家长这个周末带孩子去哪']) {
+    assert.deepEqual(stateOf(message).state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, message);
+  }
+  for (const message of ['长周末带娃去哪', '感恩节那个周末带孩子去哪玩', '感恩节这个周末带孩子去哪']) assert.equal(stateOf(message).state.dateRange, undefined, message);
+  // English: a coming arrival or start asks about that month; "What is fun for kids" is an outing ask.
+  for (const message of ['We arrive in December, what can kids do?', 'Our winter break starts in December, what can the kids do?', 'What is fun for kids in December?',
+    'We are visiting SF in December, what is fun for kids?']) assert.deepEqual(stateOf(message).state.dateRange, { start: '2026-12-01', end: '2026-12-31' }, message);
+  assert.equal(stateOf('What is fun for kids in December?').state.goal, 'discover');
+  assert.equal(askedDateRange('We arrived in March, what can kids do?', TODAY), null);
+});
