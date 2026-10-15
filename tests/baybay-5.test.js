@@ -165,6 +165,22 @@ test('review: "有没有室内的" carries indoor through a San Mateo conversati
   assert.equal(stateOf('不要室内的').state.setting, 'outdoor');
 });
 
+test('review: English plan asks, a bare "back by 3", and kids-activities asks', () => {
+  for (const message of ['Plan a Saturday for us by BART with two kids, back by 5pm', "Can you plan our Sunday? We'll take Caltrain.", 'We need a half-day plan for Sunday in Oakland', '周六想去两个地方，帮我排一下']) {
+    assert.equal(stateOf(message).state.goal, 'day-plan', message);
+  }
+  for (const message of ['Plan a trip to Japan', 'Can you plan a visit to the DMV?']) assert.notEqual(stateOf(message).state.goal, 'day-plan', message);
+  const outing = stateOf('Anything for kids in Oakland this Saturday?').state;
+  const planned = resolveTaskState({ message: "ok plan it, we'll take Caltrain", previous: outing, today: TODAY, carry: true }).state;
+  assert.deepEqual([planned.goal, planned.city, planned.date, planned.travelMode], ['day-plan', 'Oakland', '2026-10-17', 'transit']);
+  assert.ok(planned.preferences.includes('rail:caltrain'));
+  for (const [message, finishBy] of [['We are in Fremont on Saturday with our 6 year old, need to be back by 3', '15:00'], ['Saturday in Oakland with kids, done by 4', '16:00'],
+    ['Back by 3:30 please, Saturday in Oakland with kids', '15:30'], ['Leave at 1pm, back by 5', '17:00'], ['Saturday in Oakland, back by 5pm', '17:00'], ['Saturday morning, back by 11', '11:00']]) {
+    assert.equal(stateOf(message).state.finishBy, finishBy, message);
+  }
+  for (const message of ['What can kids do in the East Bay on December 5?', 'kids activities in San Jose this weekend', 'Any activities for toddlers in Palo Alto on Sunday?']) assert.equal(stateOf(message).state.goal, 'discover', message);
+});
+
 test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
   const { railServes, railSystemsIn } = require('../lib/baybayTransit');
   const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
@@ -311,7 +327,7 @@ test('live L07: a connection that closed under the request ("fetch failed") is r
 });
 
 test('live D2: the 12月5日 East Bay family ask sees the day\'s parade, book sale and storytimes', () => {
-  for (const message of ['12月5日东湾有什么适合孩子的活动', 'Family things to do in the East Bay on December 5?']) {
+  for (const message of ['12月5日东湾有什么适合孩子的活动', 'Family things to do in the East Bay on December 5?', 'What can kids do in the East Bay on December 5?']) {
     const found = itemIds(evidence(message));
     for (const id of ['event:pleasanton-hometown-holiday-2026', 'event:ccclib-danville-friends-book-sale-dec5-2026', 'event:opl-main-family-storytime-2026']) assert.ok(found.includes(id), `${message}: ${found.join(', ')}`);
   }
