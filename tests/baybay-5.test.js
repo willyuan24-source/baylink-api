@@ -98,3 +98,27 @@ test('live L04: the streamed lead never shows a count, so the result does not co
   assert.doesNotMatch(result.lead, /\btwo\b/i);
   assert.equal(result.corrected, false);
 });
+
+test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
+  const { railServes, railSystemsIn } = require('../lib/baybayTransit');
+  const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
+  const cityOf = item => item.city || item.row?.city || null;
+  assert.ok(sanJose.items.filter(item => ['event', 'place'].includes(item.kind)).every(item => cityOf(item) === 'San Jose'), sanJose.items.map(item => `${item.id} ${cityOf(item)}`).join(', '));
+  assert.ok(!itemIds(sanJose).some(id => /sfmoma|exploratorium/.test(id)));
+  // San Francisco (or no city) still names its museums.
+  assert.ok(itemIds(evidence('旧金山有什么免费博物馆')).includes('place:venue-sfmoma'));
+  const bart = stateOf('帮我排个周六的行程，我们坐 BART 去，下午 4 点前回家').state;
+  assert.equal(bart.travelMode, 'transit');
+  assert.ok(bart.preferences.includes('rail:bart'));
+  const plan = buildFastEvidence({ query: '帮我排个周六的行程，我们坐 BART 去，下午 4 点前回家', originalQuery: '帮我排个周六的行程，我们坐 BART 去，下午 4 点前回家', state: bart, guideCatalog: guides, catalog: planner, discoveries, today: TODAY, locale: 'zh-Hans', audience: true });
+  const rows = plan.candidates.map(row => ({ id: row.id, city: row.city }));
+  assert.ok(rows.length >= 3, JSON.stringify(rows));
+  for (const row of rows.slice(0, 6)) assert.ok(railServes(row.city, ['bart'], bart.date), JSON.stringify(row));
+  assert.ok(!rows.some(row => /healdsburg|premium-outlets/.test(row.id)), JSON.stringify(rows));
+  // The table: Livermore and Healdsburg have no BART station; Gilroy's Caltrain stop is weekday-only; driving clears the rail.
+  assert.equal(railServes('Livermore', ['bart']), false); assert.equal(railServes('Healdsburg', ['bart', 'caltrain']), false);
+  assert.equal(railServes('Gilroy', ['caltrain'], '2026-10-17'), false); assert.equal(railServes('Gilroy', ['caltrain'], '2026-10-16'), true);
+  assert.deepEqual(railSystemsIn('不坐 BART，我们开车'), []);
+  const drive = resolveTaskState({ message: '改成开车', previous: bart, today: TODAY, carry: true }).state;
+  assert.ok(!drive.preferences.some(value => value.startsWith('rail:')), JSON.stringify(drive.preferences));
+});
