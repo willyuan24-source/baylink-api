@@ -107,6 +107,9 @@ instance it decides how soon the first sentence can start. Keep it small:
   - A provider call on a pooled connection the far end had closed fails with "fetch failed" and no HTTP
     status; `failureReason` calls it `connection` (with the socket code from a fixed set) and the adapter
     sends it once more when no response or text arrived and 4 s remain (`transport.connectionRetries`).
+    The retry re-sends the POST to `/v1/messages`: if the socket closed after Anthropic had already accepted
+    the request, that turn is billed twice. This is rare, and `aiRequest` reserves each attempt separately, so
+    the governance count stays conservative.
 - Measure with `node scripts/baybay-latency-bench.js --settle 3000` (with `--settle` the bench starts
   the warm-up as the server does; stateMs and siteMs are the CPU part; preModelMs adds the bench's
   fixed Mongo and monitor delays), before and after.
@@ -118,18 +121,40 @@ instance it decides how soon the first sentence can start. Keep it small:
   first weekend of December, and a month (12月, 12月初, in December, 下个月) become `state.dateRange`. A month
   bounds an outing ask or an ask about events, never "我1月要回国". A day plan still asks which day of a two-day
   span. A bare 周末 in an outing ask is the coming weekend (not 周末一般 / usually / every weekend), and a
-  weekday follow-up inside a carried span ("那周日呢" after 12月第一个周末) is that span's weekday.
+  weekday follow-up inside a carried span ("那周日呢" after 12月第一个周末, "What about Saturday?" after the
+  first weekend of December; every English spelling) is that span's weekday.
+  Review round 1: a holiday's own weekend (感恩节周末, Thanksgiving / long weekend) sets no date, as before
+  API-BB-5, and its own words find its events; the weekend before or after a holiday (圣诞节前那个周末, the
+  weekend after Thanksgiving) is that weekend. A month that dates something else in the ask is no span: a
+  move, a birth, a trip or a start (我们3月搬来湾区, 宝宝3月出生, 我1月要回国, 我12月去日本), 12月前, 五月天,
+  12月天气. A child's age beside a date ("12/5 and 8 year old", "Dec 6 and 7-year-old") is not a span's end.
   `dateRangeFor` is unchanged, so v1 and the planner read dates as before.
 - **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
   from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
   感恩节周末 no longer leads a weekend ask.
-- **English asks**: a candidate is matched against its English aliases with plurals; one subject word of the
-  question in its English name is enough ("there / any", a month or a day number never counts). An English
-  reader's model sees events, places and plan stops under their English names.
+- **English asks**: a candidate is matched against its English aliases with plurals, on the question's subject
+  words: "there / any", a month, a day number, the asked city's own words and region words (south, east, bay,
+  near) never count. An outing ask takes every fitting row; an information ask needs the usual floor (so "my
+  child has a fever at night in San Jose" does not bring the night market); a dated ask needs one subject word
+  in the row's English name ("Cantonese film screenings … on November 14"). An English reader's model sees
+  events, places and plan stops under their English names.
 - **Area and rail fit**: the four San Francisco museum names in the museums alias group name those museums
   only when the ask names San Francisco or no city. `lib/baybayTransit.js` holds the cities BART and Caltrain
   serve, from the operators' station lists (read 2026-10-15); "坐 BART 去" keeps `rail:bart` in the task state
   and, with no destination city, places the system reaches rank first. It is a city table only: it never
   states a station, a walk or a travel time.
-- **The lead never states a count** of 2-6 options: the draft writer strips it while the lead streams
-  (`leadDraftText`) and `leadConsistency` strips it from the result, so the reader never sees the lead change.
+- **The lead never states a count** of 2-6 options: `leadConsistency` strips it from the result and the draft
+  writer shows the same text while the lead streams (`leadDraftText`), so the reader never sees the lead change.
+  A count is a number word (English) or a numeral with a measure word (zh) before an option noun (活动, 地方,
+  events, places …); never a date ("December 5"), an age range ("aged 3 to 5"), a stop (第 2 站), people
+  (两个孩子, 一家三口), a duration (two hours, 两个半小时) or a period (两个周末). 这两个地方 reads 这些地方 and
+  去两个地方 reads 去这些地方. While the lead streams, a count whose reading the next characters could still
+  change ("周六带两个…") is held back, never stripped and then restored, so the draft is always a prefix.
+- **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
+  negation). "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
+  "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
+  3 点前; "what can kids do", "kids activities" and "anything free for kids" are outing asks.
+- **Offers keep to the asked days**: a dated offer outside the span, one held only on another weekday
+  (仅周三, "Wednesdays:"), one whose title or date label lists or ranges other weekdays (周二、周三 / 周一、三、五 /
+  周二至周日 / Fridays and Saturdays / Thursday–Monday) and one closed on every asked day (周二、周三闭馆, Closed
+  Mondays) is not an option for that ask (`offerOnAskedDays` in `lib/baybayEvidence.js`).
