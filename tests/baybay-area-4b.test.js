@@ -64,7 +64,7 @@ test('end to end: the ruled-out record is not among the final cards', async () =
   const publicContext = createPublicContext({ guideCatalog: guides });
   let refs = null;
   const answer = context => ({ lead: 'Two nearby free options.', points: [{ text: `Option one [[${refs[0]}]].`, cardIds: [refs[0]] }, { text: `The museum is closed Sundays, so it won't work [[${refs[1]}]].`, cardIds: [refs[1]] }], candidateIds: [], followups: [], coverage: [], gap: '' });
-  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-4b-area-secret-0123456789abc', BAYBAY_WARM: 'off' },
+  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-4b-area-secret-0123456789abc' },
     guideCatalog: guides, englishGuideCatalog: englishGuides, now: () => Date.parse('2026-10-14T19:00:00Z'), isTest: false,
     Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
     fetchImpl: async (_url, init) => {

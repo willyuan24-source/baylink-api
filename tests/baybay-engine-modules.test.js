@@ -11,11 +11,11 @@ const requiresOf = name => [...fs.readFileSync(path.join(ENGINE, `${name}.js`), 
 
 test('baybayAgent keeps its public exports', () => {
   const agent = require('../lib/baybayAgent');
-  assert.deepEqual(Object.keys(agent).sort(), ['TOOLS', 'createBayBayAssistant', 'parseDraft', 'renderCitations', 'sourceContextText', 'stripLoginPitch']);
+  assert.deepEqual(Object.keys(agent).sort(), ['TOOLS', 'createBayBayAssistant', 'parseDraft', 'renderCitations', 'sourceContextText', 'stripLoginPitch', 'warmInterval']);
   for (const name of ['createBayBayAssistant', 'parseDraft', 'renderCitations', 'stripLoginPitch', 'sourceContextText']) assert.equal(typeof agent[name], 'function', name);
   assert.deepEqual(agent.TOOLS.map(tool => tool.name), ['search_site', 'search_web', 'read_source', 'verify_candidate', 'get_route', 'get_weather', 'create_plan']);
   const assistant = agent.createBayBayAssistant({ isTest: true });
-  assert.deepEqual(Object.keys(assistant).sort(), ['capabilities', 'run', 'status', 'warmUp']);
+  assert.deepEqual(Object.keys(assistant).sort(), ['capabilities', 'run', 'startWarmUp', 'status', 'warmStatus', 'warmUp']);
 });
 
 test('engine modules form an acyclic graph and each one is used', () => {

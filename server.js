@@ -158,9 +158,13 @@ app.use(express.urlencoded({ limit: '100kb', extended: true }));
 // Read-only process/version probe; no account, database or configuration values.
 // Render documents RENDER_GIT_COMMIT at https://render.com/docs/environment-variables.
 const releaseCommit = /^[a-f0-9]{40}$/i.test(config.RENDER_GIT_COMMIT || '') ? config.RENDER_GIT_COMMIT.toLowerCase() : null;
+// API-BB-4B: set by armBayBayWarmUp() (production, after listen); the first health check
+// answers first, then starts BayBay's boot warm-up.
+let onFirstHealthCheck = null;
 app.get('/api/health', (_req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ status: 'ok', service: 'baylink-api', commit: releaseCommit });
+  if (onFirstHealthCheck) { const start = onFirstHealthCheck; onFirstHealthCheck = null; setImmediate(start); }
 });
 // Time-boxed by CLIENT_IP_DIAGNOSTIC_UNTIL; otherwise falls through to the default 404.
 app.get('/api/_diag/client-ip', clientIpKeys.diagnosticRoute);
@@ -4906,6 +4910,17 @@ const baybayAssistant = createBayBayAssistant({ config, catalog: options.planner
   fetchImpl: options.baybayFetch, routeCompute: options.plannerTravelCompute,
   monitorStatus: () => sourceMonitor.service.list(true), budget: aiGovernance.spendLevel,
 });
+// API-BB-4B: BayBay's boot warm-up is opt-in and production only. startProduction() arms it
+// after listen; it starts after the first /api/health answer (Render's health check), or
+// after `fallbackMs` when no check comes. Never in tests (isTest).
+const armBayBayWarmUp = ({ fallbackMs = 30000 } = {}) => {
+  if (isTest) return false;
+  let started = false;
+  const start = () => { if (started) return; started = true; onFirstHealthCheck = null; baybayAssistant.startWarmUp(); };
+  onFirstHealthCheck = start;
+  const timer = setTimeout(start, fallbackMs); timer.unref?.();
+  return true;
+};
 const publicContext = createPublicContext({ catalog: options.plannerCatalog, guideCatalog: GUIDE_CATALOG, englishGuideCatalog: ENGLISH_GUIDE_CATALOG, discoveryCatalog: options.discoveryCatalog, discoveryCatalogEn: options.discoveryCatalogEn });
 app.get('/api/ai/baybay-capabilities', async (req, res) => {
   const webAccess = baybayWebAccess(await getCurrentUserIdFromRequest(req));
@@ -5176,7 +5191,7 @@ app.use('/api', (req, res) => res.status(404).json({ code: 'NOT_FOUND', error: r
 // passed to string methods (that TypeError used to fall through to Express's HTML 500).
 app.use(serverErrors.handler);
 
-return { app, server, io, sourceMonitor, notifications, aiGovernance, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
+return { app, server, io, sourceMonitor, notifications, aiGovernance, armBayBayWarmUp, models: { User, Post, Ad, Conversation, Message, Content, Report, UserBlock, ContactRequest, ContactAccessQuota, SmsQuota, ModerationLog, RevokedSession, EventInterest, PlannerAccount, ServiceBookingAgenda, Outing, ProductMetric, ProductRouteMetric, PostTranslation, PostTranslationQuota, AiGovernance, AiRuntimeMetric, AccountAuthChallenge, ConversationResponseMetric, ...clientErrors.models, ...feedback.models, ...notifications.models, ...sourceMonitor.models } };
 }
 
 async function startProduction(config = process.env) {
@@ -5210,7 +5225,7 @@ async function startProduction(config = process.env) {
   await application.models.SourceMonitorSnapshot.init();
   await application.models.SourceMonitorLease.init();
   application.notifications.start();
-  application.server.listen(config.PORT || 3000, () => console.log('BAYLINK API is listening'));
+  application.server.listen(config.PORT || 3000, () => { console.log('BAYLINK API is listening'); application.armBayBayWarmUp(); });
   application.sourceMonitor.start();
   // API-OPS: ledger day rows written while they were kept 62 days get the 400-day retention,
   // once, now that the database is connected (in the background, with one log line).

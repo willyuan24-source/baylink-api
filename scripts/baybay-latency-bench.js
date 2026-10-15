@@ -10,7 +10,9 @@
 // --api points at another checkout (for example the base commit's lib/, data/ and
 // tests/support/ extracted to a folder) so before and after use the same harness.
 // --settle <ms> waits that long after the assistant is created before the first question, as a
-// production instance does between boot and its first reader (API-BB-4B: the boot warm-up runs then).
+// production instance does between boot and its first reader. API-BB-4B: with --settle the
+// bench starts the boot warm-up first (startWarmUp, as server.js does after listen) when the
+// checkout has one; without --settle nothing warms.
 'use strict';
 const path = require('node:path');
 const { EventEmitter } = require('node:events');
@@ -79,7 +81,7 @@ async function main() {
       } catch (error) { res.json({ ok: false }); reject(error); }
     });
   });
-  if (SETTLE_MS > 0) await sleep(SETTLE_MS);
+  if (SETTLE_MS > 0) { assistant.startWarmUp?.(); await sleep(SETTLE_MS); }
   const rows = [];
   for (let round = 0; round < ROUNDS; round++) {
     for (const [index, [locale, message]] of QUESTIONS.entries()) {
