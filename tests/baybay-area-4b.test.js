@@ -47,6 +47,31 @@ test('area rules: a home city asks for nearest first; an outing ask with no area
   assert.equal(marin.goal, 'discover'); assert.equal(marin.region, 'north-bay');
 });
 
+// Review 10-14: "what to do / where to go" is an outing only in an outing frame; how-to questions
+// and a yes/no question about one place are not discover asks.
+const NOT_DISCOVER = ['What to do when the power goes out?', 'What to do if my car gets towed in San Francisco?', 'What to do after a car accident in San Jose?',
+  'What to do if I lose my green card?', 'Exploratorium 好玩吗？', 'Exploratorium 好不好玩？', 'What to do with my old couch in San Jose?',
+  'Where to go for a flu shot in Oakland this weekend?', '周六去哪里办驾照？'];
+const DISCOVER = ['我们住在 San Jose，这周六带孩子去哪儿玩好？', '我家在 Fremont，周日带 3 岁孩子去哪儿？', 'We live in San Jose. What can we do with kids this Saturday?',
+  'What to do in San Jose this weekend?', 'Where should we take my parents this weekend?', 'What to do with kids in Oakland?', '这周末湾区有什么好玩的？', 'Anything fun this Sunday?'];
+
+test('outing goal: how-to and yes/no phrasings are not discover; outing phrasings are', () => {
+  for (const message of NOT_DISCOVER) assert.notEqual(stateOf(message).goal, 'discover', message);
+  for (const message of DISCOVER) assert.equal(stateOf(message).goal, 'discover', message);
+});
+
+test('L-AREA-2 and a Fremont 去哪儿 ask: the first candidates are in the home county or region', () => {
+  const COUNTY_OF = { 'San Jose': 'south-bay', Fremont: 'east-bay' };
+  for (const [message, locale] of [['我们住在 San Jose，这周六带孩子去哪儿玩好？', 'zh-Hans'], ['我家在 Fremont，周日带 3 岁孩子去哪儿？', 'zh-Hans'], ['We live in San Jose. What can we do with kids this Saturday?', 'en']]) {
+    const state = stateOf(message);
+    assert.equal(state.goal, 'discover', message);
+    const result = buildFastEvidence({ query: message, originalQuery: message, state, guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today: TODAY, locale, audience: true });
+    const regions = result.candidates.slice(0, 3).map(row => regionOf(row.id));
+    assert.ok(regions.length >= 2 && regions.every(region => region === COUNTY_OF[state.origin]), `${message}: ${JSON.stringify(result.candidates.map(row => [row.id, regionOf(row.id)]))}`);
+    assert.match(turnRules({ message, state }).join('\n'), new RegExp(`starts from "${state.origin}"`), message);
+  }
+});
+
 test('a point that rules its own record out keeps its words but loses its card', () => {
   const draft = { lead: 'L', points: [{ text: 'Coyote Hills is free [[e2]].', cardIds: ['e2'] }, { text: "Randall Museum is closed Sundays, so it won't work [[e8]].", cardIds: ['e8'] }], candidateIds: ['e2', 'e8'] };
   const sunday = dropExcludedCards(draft, { date: '2026-10-18' });
@@ -57,6 +82,23 @@ test('a point that rules its own record out keeps its words but loses its card',
   // "Closed Mondays" on a Sunday ask is a note, not an exclusion; nor is a plain "周一闭馆，周日开放".
   assert.deepEqual(dropExcludedCards({ lead: 'L', points: [{ text: 'Open Sunday; closed Mondays [[e3]].', cardIds: ['e3'] }, { text: '周一闭馆，周日开放 [[e4]]', cardIds: ['e4'] }], candidateIds: [] }, { date: '2026-10-18' }).refs, []);
   assert.deepEqual(dropExcludedCards({ lead: 'L', points: [{ text: 'Randall 周日闭馆，所以这天去不了 [[e8]]。', cardIds: ['e8'] }], candidateIds: ['e8'] }, { date: '2026-10-18' }).refs, ['e8']);
+});
+
+test('only a self-exclusion of the record drops its card (review 10-14 negatives and positives)', () => {
+  const dropped = (text, date, titles = {}) => dropExcludedCards({ lead: 'L', points: [{ text: `${text} [[e1]]`, cardIds: ['e1'] }], candidateIds: ['e1'] }, { date, titleOf: ref => titles[ref] || null }).refs.length > 0;
+  const SUNDAY = '2026-10-18', MONDAY = '2026-10-19';
+  for (const text of ["You can't go wrong with Coyote Hills on a Sunday", "Strollers won't work on the upper trail, so bring a carrier", 'Parking is not an option on Sundays, take BART',
+    '周六人多，所以不适合推婴儿车，建议周日上午去', 'Closed Sundays in winter only; open this Sunday', "Children under 3 can't go on the rides, but the petting zoo at Ardenwood is free",
+    'Street parking does not work well on Sundays; take BART from Fremont', 'Free admission does not work with online tickets, so walk up',
+    'Skip this one if you want something quieter; otherwise it is the best fit', '如果下雨，户外部分这天不适合，可以改去室内展区', '这天去不了的话，下周六还有一场', '周日游船不开放，湖边步道照常']) {
+    assert.equal(dropped(text, SUNDAY, { e1: 'Ardenwood Historic Farm' }), false, text);
+  }
+  assert.equal(dropped('Lake Elizabeth is free to walk around; the boat rental is closed Mondays', MONDAY, { e1: 'Lake Elizabeth' }), false, 'a part of the visit beside a free statement');
+  assert.equal(dropped('The boat rental is closed Mondays', MONDAY, { e1: 'Lake Elizabeth' }), false, 'a part of the visit');
+  for (const [text, titles] of [["Randall Museum is closed Sundays, so it won't work", {}], ['Randall Museum is closed Sundays.', { e1: 'Randall Museum' }], ['The museum is closed on Sundays.', {}],
+    ['Closed Sundays.', {}], ['它周日不开放。', {}], ['Randall 周日闭馆，所以这天去不了。', {}], ['Sunday hours were cut, so this one is not an option.', {}], ['周日闭馆。', {}]]) {
+    assert.equal(dropped(text, SUNDAY, titles), true, text);
+  }
 });
 
 test('end to end: the ruled-out record is not among the final cards', async () => {
