@@ -72,6 +72,12 @@ test('English asks reach the Chinese catalog rows: L08 East Bay markets, a Pleas
   // "Are there any" is not a subject: no renter's checklist or doctor guide beside the parade.
   assert.ok(!parade.items.some(item => /move-in|doctor|uss-hornet/.test(item.id)), itemIds(parade).join(', '));
   assert.ok(itemIds(evidence('Any Cantonese film screenings in San Francisco on November 14?')).includes('event:sfpl-richmond-hk-film-hard-boiled-2026'));
+  // Review: an English information ask is not matched by one incidental word, the asked city or a region word.
+  for (const [message, stray] of [['What should I do if my child has a fever at night in San Jose?', /night-market|turkey-trot|thanksgiving/],
+    ['How much is parking at the San Francisco Zoo?', /fort-mason|artspan/], ['Where can I buy a Christmas tree in the South Bay?', /spooktacular|sounds-of-south-asia|opera-sj|matilda/]]) {
+    const ids = itemIds(evidence(message));
+    assert.ok(!ids.some(id => id.startsWith('event:') && stray.test(id)), `${message}: ${ids.join(', ')}`);
+  }
   // A Chinese ask keeps the Chinese title.
   const zh = evidence('这周六东湾有什么农夫市集？');
   assert.match(zh.items.find(item => item.id === 'oakland-grand-lake-farmers-market-2026').title, /[㐀-鿿]/);
