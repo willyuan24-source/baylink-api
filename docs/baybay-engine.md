@@ -129,6 +129,12 @@ instance it decides how soon the first sentence can start. Keep it small:
   move, a birth, a trip or a start (我们3月搬来湾区, 宝宝3月出生, 我1月要回国, 我12月去日本), 12月前, 五月天,
   12月天气. A child's age beside a date ("12/5 and 8 year old", "Dec 6 and 7-year-old") is not a span's end.
   `dateRangeFor` is unchanged, so v1 and the planner read dates as before.
+  Review rounds 2-4: the connective forms of a holiday's weekend (感恩节那个周末 / 这个周末 / 放假的周末) set no date
+  either; 长 is a long weekend only directly before 周末 (学长这个周末 is this weekend). An English month in a move,
+  birth or trip-away clause, or a past arrival or start ("We arrived in March"), is no span; a coming one ("We
+  arrive in December", "Winter break starts in December") is. After a span is narrowed to one day after this
+  week, a bare weekday is the nearest such day within three days of it (12/05 → "What about Sunday?" is 12/06);
+  "this Sunday" is still this week's.
 - **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
   from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
   感恩节周末 no longer leads a weekend ask.
@@ -150,8 +156,10 @@ instance it decides how soon the first sentence can start. Keep it small:
   (两个孩子, 一家三口), a duration (two hours, 两个半小时) or a period (两个周末). 这两个地方 reads 这些地方 and
   去两个地方 reads 去这些地方. While the lead streams, a count whose reading the next characters could still
   change ("周六带两个…") is held back, never stripped and then restored, so the draft is always a prefix.
+  The 二-六 of 周六 / 星期六 / 礼拜六 / 初二 and of 十二 are a day or a larger number, never a count; 两 / 兩 always can be
+  one ("这周两场" / "這週兩場" is held and stripped while streaming, as in the result).
 - **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
-  negation). "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
+  negation); (有没有)不是室内的 / 非室内的 asks for outdoor, but the question 是不是室内的 and 除非室内 stay indoor. "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
   "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
   3 点前; "what can kids do", "kids activities" and "anything free for kids" are outing asks.
 - **Offers keep to the asked days**: a dated offer outside the span, one held only on another weekday
