@@ -90,7 +90,10 @@ test('lead consistency: a count that differs from the listed options loses the n
   const points = n => Array.from({ length: n }, (_, index) => ({ text: `点 ${index}`, cardIds: [`e${index + 1}`] }));
   assert.equal(leadConsistency({ lead: '周六东湾有两场免费活动，适合孩子。', points: points(3) }).draft.lead, '周六东湾有免费活动，适合孩子。');
   assert.equal(leadConsistency({ lead: 'Yes, two free South Bay family events are listed for Sat, Oct 17.', points: points(3) }, { locale: 'en' }).draft.lead, 'Yes, free South Bay family events are listed for Sat, Oct 17.');
-  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, []);
+  // API-BB-5 (live L04): a matching count goes too; the streamed lead never showed it.
+  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, ['lead_count']);
+  assert.equal(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).draft.lead, '周六有免费活动。');
+  assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
   const choice = leadConsistency({ lead: '坐渡轮去 Sausalito 更省脚力。', points: [{ text: '现有资料不能判断哪个更省力。', cardIds: [] }, { text: '选平路、能坐下的地方。', cardIds: [] }] });
   assert.deepEqual(choice.repairs, ['lead_choice']); assert.equal(choice.draft.points.length, 1);

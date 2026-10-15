@@ -76,3 +76,25 @@ test('English asks reach the Chinese catalog rows: L08 East Bay markets, a Pleas
   const zh = evidence('这周六东湾有什么农夫市集？');
   assert.match(zh.items.find(item => item.id === 'oakland-grand-lake-farmers-market-2026').title, /[㐀-鿿]/);
 });
+
+test('live L04: the streamed lead never shows a count, so the result does not correct it', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const { createPublicContext } = require('../lib/publicContext');
+  const lead = 'No free museum days are listed for this weekend, but two free options are open that weekend [[e1]].';
+  const answer = { lead, points: [{ text: 'SFMOMA public spaces are free [[e1]].', cardIds: [] }, { text: 'The Exploratorium has a free day later [[e2]].', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' };
+  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-5-isolated-secret-0123456789' },
+    catalog: planner, guideCatalog: guides, englishGuideCatalog: guidesEn, isTest: true, now: () => Date.parse('2026-10-14T19:00:00Z'),
+    ai: async (payload, options) => {
+      const text = JSON.stringify(answer);
+      if (options?.onText) for (let index = 0; index < text.length; index += 3) options.onText(text.slice(index, index + 3));
+      return { model: 'claude-sonnet-5-5', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text }] }] };
+    } });
+  const events = [];
+  const result = await assistant.run({ message: 'Are there any free museum days in San Francisco this weekend?', locale: 'en', currentPath: '/en', history: [], searchMode: 'site', webAccess: { allowed: false },
+    pageContext: createPublicContext({ guideCatalog: guides }).resolve({ context: { currentPath: '/en' }, currentPath: '/en', today: TODAY, locale: 'en' }), onDraft: event => events.push(event) });
+  const drafted = events.filter(event => event.field === 'lead').map(event => event.text).join('');
+  assert.ok(drafted.length > 20, drafted);
+  assert.doesNotMatch(drafted, /\btwo\b/i);
+  assert.doesNotMatch(result.lead, /\btwo\b/i);
+  assert.equal(result.corrected, false);
+});
