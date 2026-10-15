@@ -91,3 +91,23 @@ test('a record without its own read date carries none: no catalog export date as
   assert.ok(places.length, 'a place candidate');
   for (const place of places) assert.equal(place.recordedAt, undefined, place.id);
 });
+
+test('preview cards on a city ask lead with that city\'s records, not an offer with no stated place (live check L01)', async () => {
+  const { createBayBayAssistant } = require('../lib/baybayAgent');
+  const englishGuides = require('../data/guide-catalog.en.json');
+  const reply = { type: 'message', id: 'm', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', usage: { input_tokens: 1, output_tokens: 1 },
+    content: [{ type: 'text', text: JSON.stringify({ lead: 'L', points: [], candidateIds: [], followups: [], coverage: [], gap: '' }) }] };
+  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-4b-cards-secret-0123456789ab' },
+    guideCatalog: guides, englishGuideCatalog: englishGuides, now: () => Date.parse('2026-10-14T19:00:00Z'), isTest: true,
+    Quota: { updateOne: async () => ({}), findOneAndUpdate: async () => ({ count: 1 }) },
+    fetchImpl: async () => ({ ok: true, status: 200, json: async () => reply, clone() { return this; }, text: async () => JSON.stringify(reply) }) });
+  const context = createPublicContext({ guideCatalog: guides });
+  const cards = [];
+  await assistant.run({ message: '这周六带 6 岁和 9 岁的孩子在 San Mateo 玩，有什么推荐？', locale: 'zh-Hans', currentPath: '/', history: [], searchMode: 'site', webAccess: { allowed: false },
+    onQuickCard: list => cards.push(...list), pageContext: context.resolve({ context: { currentPath: '/' }, currentPath: '/', today: TODAY, locale: 'zh-Hans' }) });
+  assert.ok(cards.length, 'preview cards');
+  assert.notEqual(cards[0].id, 'randall-museum-free', cards.map(card => card.id).join(', '));
+  const records = new Map([...planner.events, ...planner.places].map(row => [row.id, row]));
+  const first = cards.find(card => card.kind !== 'guide');
+  assert.equal(records.get(first.id)?.city ?? discoveries.items.find(row => row.id === first.id)?.city, 'San Mateo', first.id);
+});
