@@ -37,12 +37,24 @@ const NEW_PHRASINGS = [
   ['insurance', '我爸媽 68 歲剛拿綠卡，可以申請 Medi-Cal 嗎？'], ['insurance', 'Can my parents apply for Medi-Cal after getting green cards?'],
   ['medicare', 'When should my dad sign up for Medicare at 65?'], ['insurance', '白卡怎么申请？我妈 70 岁刚来'], ['medicare', '我爸 66 岁，红蓝卡怎么办'], ['ssa', '剛拿綠卡，SSN 怎麼申請？'], ['ssa', 'How do I get a Social Security number after arriving with an immigrant visa?'],
 ];
+// Review of 10-14 (H74): real tax questions that mention a talk, a class or an event keep the tax
+// guard; only a search for a tax event is an event ask.
+const TAX_WITH_EVENT_WORDS = [
+  ['tax', 'Who can I talk to about my tax return?'], ['tax', 'Can I talk to someone about my tax return for free?'],
+  ['tax', '参加了报税课程，但我的 1099 收入还是不知道要交多少联邦税'], ['tax', '报税时，孩子上课程的学费能抵税吗？'], ['tax', '我参加了一个活动赢了奖金，要报税吗？'],
+  ['tax', 'Do I need to file taxes on my side job teaching classes?'], ['tax', '退税什么时候到？我上了报税讲座还是不懂'], ['tax', '参加了公司活动拿了礼品卡要报税吗'],
+  ['tax', "Can I deduct my kids' summer camp and classes on my tax return?"], ['tax', '我做活动策划的 1099 收入要交多少税？'], ['tax', '公司年底活动发的奖金要交多少税'],
+];
 // Asks that only mention the words: events, outings, shops and services are not the guard.
 const NOT_GUARDED = [
   '带刚移民来的爸妈去旧金山玩，有什么推荐？', '新移民第一周要办哪些事？', '附近哪里有中文的牙医诊所？', '这周末有免费的报税讲座吗？', '周末带孩子去哪？孩子有点感冒',
   '這週末有免費的報稅講座嗎？', 'Any free tax workshops for seniors this weekend?', 'Is there a VITA tax help event at the library on Saturday?',
   '附近药店停车方便吗？', '这周六 B2 停车场开放吗', 'Where can I watch a movie this Saturday?', '药店周末几点开门？',
   'What medical documents should I bring to the DMV?', 'Is there a medical museum in San Francisco?',
+  // Review of 10-14: a visitor visa is context (parents visiting), a hotel stay is not a visa, 白卡纸 is paper.
+  '爸妈拿探亲签证来湾区玩一个月，周末带他们去哪？', '我爸妈拿旅游签证来探亲，博物馆有老人优惠吗？', 'My parents are here on tourist visas, any senior discounts at SF museums?',
+  'My in-laws are visiting on a B2 visa, what are good day trips from San Jose?', '父母持B2签证来美，可以免费坐 Muni 吗？', 'We want to extend our stay at the hotel in Napa, any deals?',
+  'Can we extend our stay at the hotel in Napa one more night?', '哪里可以买白卡纸？',
 ];
 
 const locale = message => /[㐀-鿿]/.test(message) ? (/[這週醫藥稅綠歲]/.test(message) ? 'zh-Hant' : 'zh-Hans') : 'en';
@@ -60,6 +72,10 @@ test('30+ new dose, visa, tax, deposit and wage phrasings in zh-Hans, zh-Hant an
   const caught = [...AUDIT_26, ...NEW_PHRASINGS].length - misses.length;
   assert.ok(caught / [...AUDIT_26, ...NEW_PHRASINGS].length >= 0.95, `${caught}/${AUDIT_26.length + NEW_PHRASINGS.length}: ${JSON.stringify(misses)}`);
   assert.deepEqual(misses, []);
+});
+
+test('a tax question that mentions a talk, class or event keeps the tax guard', () => {
+  assert.deepEqual(TAX_WITH_EVENT_WORDS.filter(([want, message]) => routed(message) !== want), []);
 });
 
 test('event, outing and everyday asks that mention the words are not guarded (a tax talk is an event)', () => {
