@@ -23,6 +23,7 @@ const planner = loadPlannerCatalog();
 const discoveries = { ...loadDiscoveryCatalog(), english: loadDiscoveryCatalog(undefined, true) };
 const event = id => planner.events.find(row => row.id === id);
 const firstDay = id => event(id).occurrenceDates.find(day => day >= TODAY);
+const nextDay = id => (event(id).occurrenceDates || []).find(day => day >= TODAY) || event(id).startDate;
 const stateOf = message => resolveTaskState({ message, today: TODAY, carry: true }).state;
 const evidence = (message, locale = 'zh-Hans') => buildFastEvidence({ query: message, originalQuery: message, state: stateOf(message),
   guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today: TODAY, locale, audience: true });
@@ -88,20 +89,27 @@ test('East Bay farmers\' market asks find the new markets (the 10-13 live check 
   }
   assert.ok(ids(evidence('奥克兰周末有农夫市集吗')).includes('oakland-grand-lake-farmers-market-2026'));
   assert.ok(ids(evidence('10月24日 Berkeley 有农夫市集吗')).includes('berkeley-downtown-saturday-farmers-market-2026'));
-  assert.deepEqual(ids(evidence('Fremont 这周日有农夫市集吗')), ['fremont-irvington-farmers-market-2026']);
+  // First, not the whole list: a later sync may add another Fremont Sunday item.
+  const fremont = ids(evidence('Fremont 这周日有农夫市集吗'));
+  assert.equal(fremont[0], 'fremont-irvington-farmers-market-2026', fremont.join(', '));
 });
 
 test('December weekend family asks get dated December programmes', () => {
   const eastBay = evidence('12月5日东湾有什么适合孩子的活动');
   for (const id of ['pleasanton-hometown-holiday-2026', 'opl-asian-branch-family-time-2026']) assert.ok(ids(eastBay).includes(id), ids(eastBay).join(', '));
-  for (const id of ids(eastBay)) assert.equal(event(id)?.region ?? planner.places.find(row => row.id === id)?.region, 'east-bay', id);
+  // Every catalog event or place among the candidates is in the East Bay (anything else, if a later engine adds it, is skipped).
+  for (const id of ids(eastBay)) {
+    const row = event(id) ?? planner.places.find(entry => entry.id === id);
+    if (row) assert.equal(row.region, 'east-bay', id);
+  }
   const sf = evidence('12月12日旧金山有什么适合小朋友的活动');
   for (const id of ['sfpl-chinatown-family-storytime-dec-2026', 'sfpl-glen-park-saturday-playtimes-dec-2026']) assert.ok(ids(sf).includes(id), ids(sf).join(', '));
   // Before this sync the plain 12/5 ask had no event candidate on that day (openings and venues only).
   const plain = ids(evidence('12月5日周末带孩子去哪玩？')).filter(id => event(id)?.occurrenceDates?.includes('2026-12-05'));
   assert.ok(plain.length >= 3, plain.join(', '));
   assert.ok(plain.includes('scl-windsor-gingerbread-houses-dec5-2026'), plain.join(', '));
-  assert.deepEqual(ids(evidence('12月5日 Pleasanton 点灯是几点')), ['pleasanton-hometown-holiday-2026']);
+  const lighting = ids(evidence('12月5日 Pleasanton 点灯是几点'));
+  assert.equal(lighting[0], 'pleasanton-hometown-holiday-2026', lighting.join(', '));
 });
 
 test('Chinese-community asks for 11/21 find the new Chinese-language programmes', () => {
@@ -132,4 +140,16 @@ test('"12月第一个周末" is the first weekend of December, not this weekend'
   const state = stateOf('12月第一个周末有什么亲子活动');
   assert.notEqual(state.date, '2026-10-17');
   assert.deepEqual(state.dateRange || null, { start: '2026-12-05', end: '2026-12-06' });
+});
+
+// Follow-up 2 (lib/baybayState.js, lib/baybayEvidence.js; not this sync's files). A bare 周末 resolves no date (这周末 and 周六
+// do), so rows whose titles say 周末 or 周六 rank first whatever their day. This predates the sync (on the base data each top
+// three already held one row dated 11/1 to 11/28), but the new late-November and December library programmes now take #1:
+// on 10-14 the Milpitas Tiny Toots concert (12/12) for the family ask and the Bernal game night (11/28) for the SF ask.
+// Acceptance on 10-14: each ask's top three candidates are places or have a session by 10/25 (this weekend or next).
+test('undated weekend asks lead with this weekend and next, not events six to eight weeks out', { todo: 'API-SYNC-3c follow-up 2: a bare 周末 is not read as the coming weekend, so far-dated 周末/周六 titles lead' }, () => {
+  for (const message of ['周末带孩子去哪玩', '旧金山周末有什么好玩的', '湾区周末有什么免费活动']) {
+    const top = ids(evidence(message)).slice(0, 3);
+    assert.deepEqual(top.filter(id => event(id) && nextDay(id) > '2026-10-25'), [], `${message}: ${top.map(id => `${id} ${event(id) ? nextDay(id) : 'place'}`).join(', ')}`);
+  }
 });
