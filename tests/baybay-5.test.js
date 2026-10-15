@@ -409,3 +409,51 @@ test('block M dry run: 每人最多 15 刀, 3 点前要结束, 排周日半天 /
   assert.ok(result.assistantPlan?.stops?.length, JSON.stringify(result.research.warnings));
   for (const stop of result.assistantPlan.stops) assert.doesNotMatch(stop.title, /[㐀-鿿]{2}/, stop.title);
 });
+
+test('review round 2: holiday weekends with 那个/放假的, English background months, weekday counts while streaming', () => {
+  for (const message of ['感恩节那个周末带孩子去哪玩', '感恩节那个周末有什么亲子活动', '感恩节那周末去哪玩', '圣诞节那个周末去哪玩', '感恩节放假的周末带孩子去哪', '万圣节那个周末有什么活动']) {
+    const { state } = stateOf(message);
+    assert.notDeepEqual(state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, message);
+    assert.notEqual(state.date, '2026-10-17', message);
+  }
+  assert.ok(itemIds(evidence('感恩节那个周末带孩子去哪玩')).includes('event:sfpl-bernal-family-game-night-nov28-2026'));
+  assert.deepEqual(stateOf('家长这个周末带孩子去哪').state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, '家长 is not a long weekend');
+  // An English month that dates a move, a birth or a trip away is not the outing's span.
+  for (const message of ['We moved here in March, what can kids do?', 'We go back to China in January, what can kids do before that?']) {
+    assert.equal(askedDateRange(message, TODAY), null, message);
+    assert.equal(stateOf(message).state.dateRange, undefined, message);
+  }
+  assert.notEqual(stateOf('In December we fly to Japan; anything fun for kids this month?').state.dateRange?.start, '2026-12-01');
+  for (const message of ['What is fun for kids in December?', 'We are visiting SF in December, what is fun for kids?']) assert.equal(askedDateRange(message, TODAY)?.start, '2026-12-01', message);
+  // The 六 of 周六 is not a count: the streamed lead keeps growing to the result (it froze at 周 / 星期六 before).
+  const { createDraftWriter } = require('../lib/baybayProgress');
+  const { leadConsistency } = require('../lib/baybayQuality');
+  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }];
+  for (const [lead, locale] of [['周六两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans'], ['这周六三个地方都可以去，都在 BART 沿线。', 'zh-Hans'],
+    ['星期六两场活动都适合 5 岁孩子。', 'zh-Hans'], ['週六兩場免費活動都在奧克蘭。', 'zh-Hant']]) {
+    const final = leadConsistency({ lead, points }, { locale }).draft.lead;
+    for (const chunk of [1, 2]) {
+      const events = [];
+      const writer = createDraftWriter({ emit: event => events.push(event), locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
+      for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
+      writer.done('lead');
+      assert.equal(events.filter(event => event.field === 'lead').map(event => event.text).join(''), final, `${lead} / ${chunk}`);
+    }
+  }
+  assert.equal(leadConsistency({ lead: '十二个活动都在奥克兰', points }).draft.lead, '十二个活动都在奥克兰', '十二 is not 二');
+});
+
+test('review round 2: a narrowed future day carries; 帮我排一下 after an outing is a plan; 不是室内 is outdoor', () => {
+  const walk = messages => messages.reduce((state, message) => resolveTaskState({ message, previous: state, today: TODAY, carry: true }).state, undefined);
+  let state = walk(['first weekend of December, anything for kids in Oakland?', 'What about Saturday?', 'Can you plan Saturday for us?']);
+  assert.deepEqual([state.goal, state.date], ['day-plan', '2026-12-05']);
+  assert.equal(walk(['first weekend of December, anything for kids in Oakland?', 'What about Saturday?', 'What about this Saturday?']).date, '2026-10-17');
+  state = walk(['12月第一个周末带娃去哪', '周六呢', '帮我排一下周六']);
+  assert.deepEqual([state.goal, state.date], ['day-plan', '2026-12-05']);
+  state = walk(['12月第一个周末带娃去哪', '帮我排一下']);
+  assert.deepEqual([state.goal, state.dateRange], ['day-plan', { start: '2026-12-05', end: '2026-12-06' }]);
+  assert.notEqual(walk(['12月第一个周末带娃去哪', '帮我安排一下预约']).goal, 'day-plan');
+  assert.notEqual(walk(['DMV 驾照怎么考', '帮我排一下']).goal, 'day-plan');
+  for (const message of ['有没有不是室内的', '有没有非室内的', '不是室内的']) assert.equal(stateOf(message).state.setting, 'outdoor', message);
+  assert.equal(stateOf('有没有室内的').state.setting, 'indoor');
+});
