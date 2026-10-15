@@ -40,7 +40,7 @@
 
 ## 默认邮件提醒（H14，API-NOTIFY-2）
 
-- 开关：代码常量 `EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT`（`lib/notifications.js`），合并时为 `false`：网页端说明"验证不会自动开启通知"、隐私政策写"通知默认关闭"，这些文案改好（WEB-COMMUNITY-2）之后，captain 用一行 PR 改成 `true`（同时改 `tests/notify-defaults.test.js` 里守护它的那一条断言）。环境变量 `NOTIFICATION_EMAIL_DEFAULTS` 覆盖代码默认值：`on` / `true` = 提前开启（实测用）；其它任何非空值（`off`）= 紧急关闭；不设 = 代码默认值。见 `docs/g5-production-checklist.md` 第 5 节。
+- 开关：代码常量 `EMAIL_DEFAULTS_ACTIVE_BY_DEFAULT`（`lib/notifications.js`），API-NOTIFY-2 合并时为 `false`；WEB-COMMUNITY-2（web #43，2026-10-15 上线）把验证页、设置卡、开启提示和隐私政策改成两种状态都如实之后，一行 PR 改成了 `true`（`tests/notify-defaults.test.js` 里守护它的断言同时改）。环境变量 `NOTIFICATION_EMAIL_DEFAULTS` 覆盖代码默认值：`on` / `true` = 提前开启（实测用）；其它任何非空值（`off`）= 紧急关闭；不设 = 代码默认值。见 `docs/g5-production-checklist.md` 第 5 节。
 - 默认值：邮件 · `message`、邮件 · `contact_request` 为开；`outing_request`、`comment` 和全部短信仍需主动开启。只发到当前已验证的邮箱；投递仍由 `NOTIFICATION_DELIVERY_ENABLED` 控制。
 - 一次性迁移（读取时）：账号在偏好读取、新事件入队或邮箱验证时检查一次。从未做过选择（`consentRevision` 为 0 且没有任何开启项）且邮箱已验证 → 打开两类默认并记 `defaultsAppliedAt`；做过选择（保存过设置、用过退订链接，或旧数据里已有开启项）→ 只记 `defaultsVersion`，设置不变；邮箱未验证且未做选择 → 不写，等验证时再处理。每个账号只处理一次（`defaultsVersion`），日志一行 `notification_defaults_applied` / `notification_defaults_kept`（`reason`：`read` / `event` / `verify`；`choice` = 尚未处理的账号第一次就是自己保存设置，记为保持选择，不会先开默认再改），不含账号 id 或邮箱。默认值不算用户选择，不改变 `consentRevision`。
 - DTO 新增（只增不改）：`defaults`（与 `preferences` 同形的预设）、`defaultsActive`、`defaultsApplied`、`customized`。
