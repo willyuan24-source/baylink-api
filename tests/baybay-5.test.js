@@ -418,6 +418,14 @@ test('review round 2: holiday weekends with 那个/放假的, English background
   }
   assert.ok(itemIds(evidence('感恩节那个周末带孩子去哪玩')).includes('event:sfpl-bernal-family-game-night-nov28-2026'));
   assert.deepEqual(stateOf('家长这个周末带孩子去哪').state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, '家长 is not a long weekend');
+  // The 这个周末 of a holiday is the holiday's weekend too; a separate 这周末 in the same ask still is this weekend.
+  for (const message of ['感恩节这个周末带孩子去哪', '圣诞节这个周末去哪玩', '感恩节这周末去哪玩', '感恩節這個週末帶孩子去哪']) {
+    assert.equal(stateOf(message).state.dateRange, undefined, message);
+  }
+  assert.ok(itemIds(evidence('感恩节这个周末带孩子去哪')).includes('event:sfpl-bernal-family-game-night-nov28-2026'));
+  for (const message of ['感恩节周末不在，这周末去哪', '这个周末带孩子去哪']) {
+    assert.deepEqual(stateOf(message).state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, message);
+  }
   // An English month that dates a move, a birth or a trip away is not the outing's span.
   for (const message of ['We moved here in March, what can kids do?', 'We go back to China in January, what can kids do before that?']) {
     assert.equal(askedDateRange(message, TODAY), null, message);
