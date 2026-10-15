@@ -127,7 +127,7 @@ test('Chinese-community asks for 11/21 find the new Chinese-language programmes'
 // Follow-ups for the next BayBay lane (lib/baybayState.js, lib/entityAliases.js; not this sync's files). The new December
 // and 11/21-22 events reach these asks only through their words today: the asked days are not read, so off-date events
 // (10/17, 11/8) stay among the candidates.
-test('two-day and weekend-of asks become a date range', { todo: 'API-SYNC-3c follow-up: 11月21日、22日 / 11月21日到22日 / November 21-22 / the weekend of December 5 are not parsed' }, () => {
+test('two-day and weekend-of asks become a date range', () => {
   for (const [message, start, end] of [['11月21日、22日周末湾区有什么华人社区活动？', '2026-11-21', '2026-11-22'], ['11月21日到22日有适合华人长辈的活动吗', '2026-11-21', '2026-11-22'],
     ['12月12日、13日湾区有什么亲子活动', '2026-12-12', '2026-12-13'], ['Chinese-community events in the Bay Area on November 21-22?', '2026-11-21', '2026-11-22'],
     ['Family-friendly things to do in the Bay Area on the weekend of December 5?', '2026-12-05', '2026-12-06']]) {
@@ -136,7 +136,7 @@ test('two-day and weekend-of asks become a date range', { todo: 'API-SYNC-3c fol
   }
 });
 
-test('"12月第一个周末" is the first weekend of December, not this weekend', { todo: 'API-SYNC-3c follow-up: it resolves to 2026-10-17 today' }, () => {
+test('"12月第一个周末" is the first weekend of December, not this weekend', () => {
   const state = stateOf('12月第一个周末有什么亲子活动');
   assert.notEqual(state.date, '2026-10-17');
   assert.deepEqual(state.dateRange || null, { start: '2026-12-05', end: '2026-12-06' });
@@ -147,7 +147,7 @@ test('"12月第一个周末" is the first weekend of December, not this weekend'
 // three already held one row dated 11/1 to 11/28), but the new late-November and December library programmes now take #1:
 // on 10-14 the Milpitas Tiny Toots concert (12/12) for the family ask and the Bernal game night (11/28) for the SF ask.
 // Acceptance on 10-14: each ask's top three candidates are places or have a session by 10/25 (this weekend or next).
-test('undated weekend asks lead with this weekend and next, not events six to eight weeks out', { todo: 'API-SYNC-3c follow-up 2: a bare 周末 is not read as the coming weekend, so far-dated 周末/周六 titles lead' }, () => {
+test('undated weekend asks lead with this weekend and next, not events six to eight weeks out', () => {
   for (const message of ['周末带孩子去哪玩', '旧金山周末有什么好玩的', '湾区周末有什么免费活动']) {
     const top = ids(evidence(message)).slice(0, 3);
     assert.deepEqual(top.filter(id => event(id) && nextDay(id) > '2026-10-25'), [], `${message}: ${top.map(id => `${id} ${event(id) ? nextDay(id) : 'place'}`).join(', ')}`);
