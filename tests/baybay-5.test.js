@@ -119,6 +119,32 @@ test('review: a streamed lead with people or a count is always a prefix of the r
   assert.equal(leadConsistency({ lead: '周六有两场比赛，适合带两个孩子去看。', points }).draft.lead, '周六有两场比赛，适合带两个孩子去看。');
 });
 
+test('review: holiday weekends, background months, ages beside a date and English weekday follow-ups', () => {
+  // A weekend named after a holiday is not this weekend (10/17-18); its own words still find its events.
+  for (const message of ['感恩节周末带孩子去哪玩', '感恩节周末湾区有什么免费活动', 'Thanksgiving weekend things to do with kids', '圣诞节周末去哪玩', '万圣节周末有什么活动', '国庆长周末带孩子去哪', '退伍军人节周末活动', 'long weekend ideas for families']) {
+    const { state } = stateOf(message);
+    assert.notDeepEqual(state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, message);
+    assert.notEqual(state.date, '2026-10-17', message);
+  }
+  for (const message of ['感恩节周末带孩子去哪玩', 'Thanksgiving weekend things to do with kids']) assert.ok(itemIds(evidence(message)).includes('event:sfpl-bernal-family-game-night-nov28-2026'), message);
+  // A month that dates something else in the ask is not the outing's span.
+  for (const message of ['我们3月搬来湾区，有什么适合孩子的活动', '宝宝3月出生的，现在有什么适合的活动', '我1月要回国，回国前想带孩子出去玩', '我12月去日本，这之前周末带孩子去哪玩', '五月天演唱会有什么活动', '12月天气怎么样']) {
+    assert.equal(askedDateRange(message, TODAY), null, message);
+    assert.equal(stateOf(message).state.dateRange, undefined, message);
+  }
+  const trip = askedDateRange('12月去旧金山玩什么', TODAY);
+  assert.deepEqual([trip.start, trip.end], ['2026-12-01', '2026-12-31'], 'a Bay Area outing in December keeps its month');
+  // A child's age beside a date is not the end of a span.
+  for (const message of ['12/5 and 8 year old twins, what to do', 'Dec 6 and 7-year-old twins', 'Dec 6 and 7 yo twins']) assert.equal(askedDateRange(message, TODAY), null, message);
+  // English weekday follow-ups inside a carried span: every spelling.
+  const december = stateOf('first weekend of December, anything for kids in Oakland?').state;
+  assert.deepEqual(december.dateRange, { start: '2026-12-05', end: '2026-12-06' });
+  for (const [message, date] of [['What about Saturday?', '2026-12-05'], ['Can you plan Saturday for us?', '2026-12-05'], ['How about Sunday?', '2026-12-06'], ['What about Sat?', '2026-12-05'], ['And Sun?', '2026-12-06']]) {
+    assert.equal(resolveTaskState({ message, previous: december, today: TODAY, carry: true }).state.date, date, message);
+  }
+  assert.equal(resolveTaskState({ message: 'What about this Saturday?', previous: december, today: TODAY, carry: true }).state.date, '2026-10-17');
+});
+
 test('area fit: a San Jose ask is not led by San Francisco museums; a BART day plan keeps places BART cannot reach behind', () => {
   const { railServes, railSystemsIn } = require('../lib/baybayTransit');
   const sanJose = evidence('我妈七十岁不会英文，住 San Jose，想找中文的老人活动和美术馆');
