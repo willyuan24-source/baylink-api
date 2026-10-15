@@ -15,7 +15,7 @@ test('baybayAgent keeps its public exports', () => {
   for (const name of ['createBayBayAssistant', 'parseDraft', 'renderCitations', 'stripLoginPitch', 'sourceContextText']) assert.equal(typeof agent[name], 'function', name);
   assert.deepEqual(agent.TOOLS.map(tool => tool.name), ['search_site', 'search_web', 'read_source', 'verify_candidate', 'get_route', 'get_weather', 'create_plan']);
   const assistant = agent.createBayBayAssistant({ isTest: true });
-  assert.deepEqual(Object.keys(assistant).sort(), ['capabilities', 'run', 'status']);
+  assert.deepEqual(Object.keys(assistant).sort(), ['capabilities', 'run', 'status', 'warmUp']);
 });
 
 test('engine modules form an acyclic graph and each one is used', () => {

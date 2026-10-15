@@ -5,10 +5,12 @@
 // fixed delay, and the provider answers at once. "preModelMs" is the wall time from run() to
 // the provider request: what a reader waits before the model can start writing.
 //
-//   node scripts/baybay-latency-bench.js [--api <checkout>] [--rtt 80] [--monitor-ms 400] [--rounds 3] [--json out.json]
+//   node scripts/baybay-latency-bench.js [--api <checkout>] [--rtt 80] [--monitor-ms 400] [--rounds 3] [--settle 0] [--json out.json]
 //
 // --api points at another checkout (for example the base commit's lib/, data/ and
 // tests/support/ extracted to a folder) so before and after use the same harness.
+// --settle <ms> waits that long after the assistant is created before the first question, as a
+// production instance does between boot and its first reader (API-BB-4B: the boot warm-up runs then).
 'use strict';
 const path = require('node:path');
 const { EventEmitter } = require('node:events');
@@ -16,7 +18,7 @@ const { EventEmitter } = require('node:events');
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const index = args.indexOf(`--${name}`); return index >= 0 ? args[index + 1] : fallback; };
 const API = path.resolve(option('api', path.join(__dirname, '..')));
-const RTT = Number(option('rtt', 80)), MONITOR_MS = Number(option('monitor-ms', 400)), ROUNDS = Number(option('rounds', 3));
+const RTT = Number(option('rtt', 80)), MONITOR_MS = Number(option('monitor-ms', 400)), ROUNDS = Number(option('rounds', 3)), SETTLE_MS = Number(option('settle', 0));
 const out = option('json', '');
 
 const { createBayBayAssistant } = require(path.join(API, 'lib/baybayAgent'));
@@ -77,6 +79,7 @@ async function main() {
       } catch (error) { res.json({ ok: false }); reject(error); }
     });
   });
+  if (SETTLE_MS > 0) await sleep(SETTLE_MS);
   const rows = [];
   for (let round = 0; round < ROUNDS; round++) {
     for (const [index, [locale, message]] of QUESTIONS.entries()) {
@@ -88,7 +91,7 @@ async function main() {
   const pct = (values, p) => values.length ? values[Math.min(values.length - 1, Math.floor(p * (values.length - 1) + 0.5))] : null;
   const summary = Object.fromEntries(['preModelMs', 'stateMs', 'siteMs', 'monitorMs', 'quotaMs'].map(key => [key, { p50: pct(pick(key), 0.5), p90: pct(pick(key), 0.9), max: pct(pick(key), 1) }]));
   const firstQuestion = rows[0];
-  const report = { api: API, rttMs: RTT, monitorListMs: MONITOR_MS, rounds: ROUNDS, questions: QUESTIONS.length, firstQuestion: { preModelMs: firstQuestion.preModelMs, timings: firstQuestion.timings }, summary };
+  const report = { api: API, rttMs: RTT, monitorListMs: MONITOR_MS, rounds: ROUNDS, settleMs: SETTLE_MS, questions: QUESTIONS.length, firstQuestion: { preModelMs: firstQuestion.preModelMs, timings: firstQuestion.timings }, summary };
   console.log(JSON.stringify(report, null, 1));
   if (out) require('node:fs').writeFileSync(out, JSON.stringify({ ...report, rows }, null, 1));
 }
