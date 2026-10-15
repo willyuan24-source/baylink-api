@@ -64,14 +64,14 @@ test('SSA: "ten years of residence is not 40 work credits" reaches the evidence 
   }
 });
 
-// Known ranking gaps the 26 newly free programmes expose (not caused by the sync; H73 and community priority belong to API-BB-4B).
-// They report as TODO and do not fail the suite.
-test('a Chinese-community SF film stays a candidate for a free SF library ask on Saturday', { todo: 'API-BB-4B: generic free events displace it (API-SYNC-3a follow-up)' }, () => {
+// Ranking gaps the 26 newly free programmes exposed (not caused by the sync), closed by API-BB-4B: a Chinese-language
+// programme is not displaced by generic free events on a Chinese ask, and a county-scoped outing ask is that county's region.
+test('a Chinese-community SF film stays a candidate for a free SF library ask on Saturday', () => {
   const result = evidence('这周六旧金山图书馆有什么免费活动');
   assert.ok(candidate(result, 'sfpl-richmond-hk-film-the-killer-2026'), listed(result));
 });
 
-test('a San Mateo County library ask ranks that county first', { todo: 'API-BB-4B: region is not ranked (H73, API-SYNC-3a follow-up)' }, () => {
+test('a San Mateo County library ask ranks that county first', () => {
   const result = evidence('这周末圣马刁县图书馆有什么免费活动');
   const regions = (result.candidates || []).map(row => planner.events.find(event => event.id === row.id)?.region);
   assert.ok(candidate(result, 'san-bruno-dia-de-los-muertos-2026'), listed(result));

@@ -360,14 +360,10 @@ test('the real supplied DMV question starts a 28-second site final with exceptio
     // The driver guide was rewritten from Vehicle Code 12505(c) and the DMV new-resident pages read 2026-10-12 (web CNT-GUIDES).
     // Web CNT-HOTFIX-2 (c10a856b, DMV pages read 2026-10-13) restored to the new-resident section: applying or booking does not
     // extend the 10 days, the address-proof count (one document for a standard licence, two for REAL ID), the 20-day registration
-    // fee, and the 12505(c) link, which reaches the model as its own official entry. KNOWN GAP until API-BB-4B, not intended: the
-    // longer new-resident section (which also states 12505(c) twice, as a paragraph and as the 法条原文 link card) now fills this
-    // question's guide excerpt, so the 按原有驾照分流 section and its out-of-state route line no longer reach the model. The TODO
-    // subtest below keeps that visible in every run; API-BB-4B makes it pass and folds it back into this fact list.
-    for (const fact of ['最多再用外州驾照开 10 天', '成为居民后受雇开车的，要先拿到加州驾照', '法条没有因递交申请或预约 DMV 而延长', '不是到达当天自动起算', '普通驾照至少一份 DMV 认可的住址文件，REAL ID 要两份不同的住址文件', '不用等加州驾照寄到', '登记费要在应缴之日起 20 天内交给 DMV', '已有加州 DMV 记录', 'REG 343', 'REG 31', '加州车辆法 12505(c)']) assert.ok(text.includes(fact), fact);
-    await t.test(`${searchMode}: the out-of-state route line reaches the model`, { todo: 'API-BB-4B: the new-resident section fills the driver guide excerpt (API-SYNC-3a follow-up 1)' }, () => {
-      for (const fact of ['交申请和身份、住址材料', '考视力和笔试']) assert.ok(text.includes(fact), fact);
-    });
+    // fee, and the 12505(c) link, which reaches the model as its own official entry. API-BB-4B: that longer section no longer
+    // fills the excerpt by itself (in a multi-part question a link card counts half and gives its URL through its section's
+    // paragraph), so the 按原有驾照分流 section's out-of-state route line reaches the model too.
+    for (const fact of ['最多再用外州驾照开 10 天', '成为居民后受雇开车的，要先拿到加州驾照', '法条没有因递交申请或预约 DMV 而延长', '不是到达当天自动起算', '普通驾照至少一份 DMV 认可的住址文件，REAL ID 要两份不同的住址文件', '不用等加州驾照寄到', '登记费要在应缴之日起 20 天内交给 DMV', '已有加州 DMV 记录', 'REG 343', 'REG 31', '加州车辆法 12505(c)', '交申请和身份、住址材料', '考视力和笔试']) assert.ok(text.includes(fact), `${searchMode}: ${fact}`);
     for (const list of ['residency-documents-list', 'real-id-checklist', 'sectionNum=12505']) assert.ok(context.evidence.some(source => source.url.includes(list)), list);
     assert.match(payload.instructions, /triggering event, qualifying status, action required and exceptions/);
     assert.match(payload.instructions, /distinct document categories, required counts/);

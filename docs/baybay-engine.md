@@ -68,3 +68,29 @@ Every other field is set once, by one step. A stage may destructure it only when
 - A refactor proves "no behaviour change" in two ways, both $0 and offline:
   - The dry-run eval (`node scripts/baybay-eval-local.mjs --set engine --concurrency 1`) compared row by row against the base commit, ignoring wall-clock fields.
   - The stricter byte-level capture, `scripts/baybay-capture.js`. It runs every casebook turn under 8 engine/access arms with scripted providers and records the SHA-256 of every provider request body, the full payload, and every progress, quick-card and draft event. Run it on the base (extracted with `git archive`) and on the branch, then `cmp` the two files. A v1-removal lane compares only the v2 arms (`--only`).
+
+## Speed before the model call (API-BB-4B)
+
+Everything before the provider request is synchronous CPU work (steps 1–9), so on a small hosted
+instance it decides how soon the first sentence can start. Keep it small:
+
+- Retrieval and task state may cache only pure functions of catalog text (token indexes, the guide
+  term index in `scoreCorpusSubset`, normalised headings, `validDate`, known city spellings). Never
+  cache a question, a filter result or an answer. A record searched with more than one text keeps
+  one token index per text (`documentEntry`), so earlier questions never change later scores.
+- The boot warm-up (`warmUp()` in `baybayAgent.js`, fixed questions in `WARM_QUESTIONS`) runs steps
+  2–9 on 11 fixed questions, one stage per event-loop turn. It is opt-in: only `startWarmUp()`
+  schedules it, and only `startProduction()` in `server.js` calls that (`armBayBayWarmUp()`, after
+  `listen`, on the first `/api/health` answer or 30 s later). Tests, `baybay-eval-local.mjs` and
+  `baybay-capture.js` never warm, so their timings and other tests' timings are not skewed. It runs
+  again after `BAYBAY_WARM_INTERVAL_MS` (default 15 min, at least 60 s, 0 = never) without a real
+  question; `BAYBAY_WARM=off` turns it off. It makes no model, quota or network call. If a warm-up
+  question fails, the process logs one warning with the count (no question text);
+  `tests/baybay-latency-4b.test.js` fails too (`failed` must stay 0).
+- Boot cost: on a fresh instance the first warm-up pays the cold cost of each kind of question
+  (live 10-13: about 1–2 s per kind on Render, a few hundred ms locally) in slices of one stage,
+  during roughly the first 10–20 s after the first health check. A request in that window waits
+  for at most one stage; without the warm-up the first reader of each kind paid the whole cost.
+- Measure with `node scripts/baybay-latency-bench.js --settle 3000` (with `--settle` the bench starts
+  the warm-up as the server does; stateMs and siteMs are the CPU part; preModelMs adds the bench's
+  fixed Mongo and monitor delays), before and after.

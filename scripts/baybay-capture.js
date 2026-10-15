@@ -44,7 +44,7 @@ const englishSearchCatalog = guideCatalog.map(guide => {
 });
 // The casebook always comes from this checkout so both roots answer the same turns.
 const EVAL_DIR = path.join(__dirname, 'eval');
-const books = fs.readdirSync(EVAL_DIR).filter(file => /^cases-[A-K]-.+\.json$/.test(file)).sort().map(file => JSON.parse(fs.readFileSync(path.join(EVAL_DIR, file), 'utf8')));
+const books = fs.readdirSync(EVAL_DIR).filter(file => /^cases-[A-L]-.+\.json$/.test(file)).sort().map(file => JSON.parse(fs.readFileSync(path.join(EVAL_DIR, file), 'utf8')));
 const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
 
 function createMemoryQuota() {

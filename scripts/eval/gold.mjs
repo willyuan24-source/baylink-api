@@ -191,9 +191,9 @@ export const CASE_CONFIG_KEYS = new Set(['BAYBAY_MAX_MODEL_ROUNDS']);
 export function validateCases(cases) {
   const ids = new Set();
   for (const item of cases) {
-    // A-K is the scored casebook (H: thin evidence, API-BB-ENGINE; I: multi-turn, J: routing and
-    // false negatives, API-BB-QUALITY; K: the 10-13 audit, API-FIX5); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
-    if (!/^[A-KT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-K (or T for the probe)`);
+    // A-L is the scored casebook (H: thin evidence, API-BB-ENGINE; I: multi-turn, J: routing and
+    // false negatives, API-BB-QUALITY; K: the 10-13 audit, API-FIX5; L: API-BB-4B); T is the tool-round probe (scripts/eval/probe-tool-rounds.json).
+    if (!/^[A-LT]$/.test(item.block)) throw new Error(`${item.id}: block must be A-L (or T for the probe)`);
     // A case may only cap the agent's model rounds; models and effort come from the arm.
     if (item.config !== undefined && (!item.config || typeof item.config !== 'object' || Object.keys(item.config).some(key => !CASE_CONFIG_KEYS.has(key)))) throw new Error(`${item.id}: config may only set ${[...CASE_CONFIG_KEYS].join(', ')}`);
     if (item.webStub !== undefined && typeof item.webStub !== 'boolean') throw new Error(`${item.id}: webStub must be true or false`);
