@@ -36,10 +36,10 @@ test('the real walk question drops initial concert/festival cards after citing t
   assert.equal(calls, 2); assert.equal(result.degraded, false, JSON.stringify(result.research.warnings));
   // API-SYNC-3c (web CNT-SUPPLY-2) put two new SF library programmes, the 12/5 Chinatown storytime and the 11/28 Bernal
   // game night (感恩节周末), in the preview on their 周末 / 周六 titles. API-BB-5: a day word is a date constraint, not a
-  // subject, so Presidio ArtSpan and Ferry Plaza are back in the preview (the Journey concert is now fourth). The preview
-  // still has a card the answer does not use, and the final answer drops every preview card.
-  assert.ok(initialCards.length >= 2, initialCards.map(card => card.id).join(', '));
-  assert.ok(initialCards.some(card => !/presidio|ferry-plaza/.test(card.id)), initialCards.map(card => card.id).join(', '));
+  // subject, so Presidio ArtSpan and Ferry Plaza are back in the preview beside the 12/5 Chinatown storytime (on the walk's
+  // Chinatown); the Journey concert is no longer previewed. The exact preview is pinned so drift stays visible, and the
+  // final answer drops every preview card.
+  assert.deepEqual(initialCards.map(card => card.id), ['sfpl-chinatown-family-storytime-dec-2026', 'sf-presidio-artspan-oct24-2026', 'ferry-plaza-farmers-market-2026-autumn']);
   assert.deepEqual(result.localMatches, []);
   assert.deepEqual(result.sources.map(source => source.url), ['/guides/presidio-picnic-day-guide', '/guides/sf-chinatown-north-beach-walk-guide']);
   await t.test('a walk ask previews a walk-relevant SF item (Presidio ArtSpan or Ferry Plaza)', () => {
