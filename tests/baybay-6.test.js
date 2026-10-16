@@ -206,3 +206,25 @@ test('an indoor family ask in a thin city widens to nearby cities in the same ar
   const { model } = indoorItems('这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans');
   assert.ok(!model.some(item => /few indoor family records/.test(item.note || '')), 'San Jose has enough of its own');
 });
+
+// ---- Line 4: two-turn date carry and the 12/5 East Bay family ask (live 10-15, X1 / X2) ----
+test('12月5号带娃去哪 then 那周日呢 resolves to Sunday 12/6 (and its English and zh-Hant forms)', async () => {
+  for (const [first, second, locale] of [['12月5号带娃去哪', '那周日呢', 'zh-Hans'], ['12月5號帶娃去哪', '那週日呢', 'zh-Hant'], ['Where can I take the kids on December 5?', 'What about Sunday?', 'en']]) {
+    const { run } = fixture({ respond: () => ({ lead: locale === 'en' ? 'A few ideas.' : '可以去这些地方。', points: [{ text: 'a', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' }) });
+    const one = await run(first, { locale });
+    assert.equal(one.taskState.date, '2026-12-05', first);
+    const two = await run(second, { locale, sessionToken: one.assistantSessionToken, history: [{ role: 'user', content: first }, { role: 'assistant', content: one.answer.slice(0, 1200) }] });
+    assert.equal(two.taskState.date, '2026-12-06', `${first} -> ${second}: ${JSON.stringify(two.taskState.dateRange || two.taskState.date)}`);
+  }
+});
+
+test('12月5日东湾有什么适合孩子的活动: the Oakland library storytimes are in the evidence with their 12/5 session first', () => {
+  for (const [message, locale, day] of [['12月5日东湾有什么适合孩子的活动', 'zh-Hans', /^12月5日（周六） 10:30–11:00（列出的日期：/], ['What can kids do in the East Bay on December 5?', 'en', /^Sat, Dec 5 10:30–11:00 \(dates listed: /]]) {
+    const { model } = indoorItems(message, locale);
+    const story = model.find(item => /奥克兰总馆周六亲子故事时间|family storytime at Oakland/i.test(item.title));
+    assert.ok(story, `${message}: ${model.map(item => item.title).join(' | ')}`);
+    assert.match(story.when, day);
+    // The day's one-off events stay ahead of the weekly series.
+    assert.ok(model.findIndex(item => /Pleasanton/.test(item.title)) < model.indexOf(story), model.map(item => item.title).join(' | '));
+  }
+});
