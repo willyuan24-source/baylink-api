@@ -363,6 +363,16 @@
     ]
   },
   {
+    "id": "source-057a32f2cfc515e8",
+    "title": "十月搭 BART：Mission 电梯延期、West Oakland 停车减少",
+    "url": "https://www.bart.gov/stations/elevators",
+    "kind": "guide",
+    "contentIds": [
+      "bart-october-access-parking-update-2026"
+    ],
+    "endDate": "2026-10-31"
+  },
+  {
     "id": "source-05922888a4c6240a",
     "title": "10/26 午夜新书活动，前 100 名领钥匙扣",
     "url": "https://www.target.com/c/midnight-release-event/-/N-2jgu5",
@@ -383,6 +393,15 @@
       "sf-exploratorium-after-dark-22-oct2026"
     ],
     "endDate": "2026-10-22"
+  },
+  {
+    "id": "source-0634fc8942f0c650",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.sfmta.com/getting-around/accessibility/paratransit",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
   },
   {
     "id": "source-063813a9637ce3d7",
@@ -781,8 +800,10 @@
     "url": "https://oag.ca.gov/news/press-releases/attorney-general-bonta-issues-consumer-alerts-guidance-protect-california",
     "kind": "guide",
     "contentIds": [
+      "bay-area-first-rental-process",
       "bay-area-rental-scam-guide",
-      "california-tenant-deposit-rights-help-guide"
+      "california-tenant-deposit-rights-help-guide",
+      "rental-lease-checklist-before-signing"
     ]
   },
   {
@@ -1703,6 +1724,15 @@
       "sf-filbookfest-2026"
     ],
     "endDate": "2026-10-18"
+  },
+  {
+    "id": "source-1c33a893621ee530",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://www.ssa.gov/scam/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
+    ]
   },
   {
     "id": "source-1c38b4dbbfe4d4cc",
@@ -2773,6 +2803,15 @@
     "endDate": "2026-11-21"
   },
   {
+    "id": "source-2c859eef0dc5a28c",
+    "title": "湾区华人资源地图",
+    "url": "https://www.nems.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-2d4b410cacd4040d",
     "title": "湾区 FasTrak 怎么用：桥费、快速车道与租车分开处理",
     "url": "https://www.bayareafastrak.org/en/ways-to-pay/license-plate-account.shtml",
@@ -3429,6 +3468,7 @@
     "url": "https://aging.ca.gov/Find_Services_in_my_County/",
     "kind": "guide",
     "contentIds": [
+      "bay-area-chinese-language-resource-map",
       "bay-area-chinese-senior-services-referral-guide"
     ]
   },
@@ -3850,6 +3890,15 @@
       "bay-area-coastal-cleanup-2026-guide"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-3f1b33deb5c0281b",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.samtrans.com/fares",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
   },
   {
     "id": "source-3f28ee9ee933c9e1",
@@ -4658,6 +4707,15 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "source-4f8440786da1664c",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://www.ic3.gov/CrimeInfo/ChineseAuthorityImpersonation",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
+    ]
+  },
+  {
     "id": "source-4fbebb236b04809e",
     "title": "Benicia 周四农贸市场季末场",
     "url": "https://www.beniciamainstreet.org/event-details/benicia-certified-farmers-market-2",
@@ -5039,6 +5097,15 @@
     "endDate": "2026-11-28"
   },
   {
+    "id": "source-564f1f3cea42eba0",
+    "title": "湾区华人资源地图",
+    "url": "https://www.asianlawcaucus.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-56669d5f5cb8a5cc",
     "title": "Stanford 的免费艺术下午：Main Quad、Cantor 与一小段校园散步",
     "url": "https://transportation.stanford.edu/parking-stanford",
@@ -5167,6 +5234,24 @@
       "sfpl-writing-gravity-oct8-2026"
     ],
     "endDate": "2026-10-08"
+  },
+  {
+    "id": "source-5a0369427db72e3f",
+    "title": "湾区华人资源地图",
+    "url": "https://asianlawalliance.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
+    "id": "source-5a59669b48e227c8",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://www.ic3.gov/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
+    ]
   },
   {
     "id": "source-5a721034d163",
@@ -5312,6 +5397,15 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-5d19a26b09ea4900",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.vta.org/go/fares",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
+  },
+  {
     "id": "source-5d28642c8388aa53",
     "title": "Cupertino 免费预约梨山乌龙品茶",
     "url": "https://chichasanchennorcal.com/locations",
@@ -5369,6 +5463,15 @@
     "kind": "guide",
     "contentIds": [
       "fremont-coyote-hills-short-walk-guide"
+    ]
+  },
+  {
+    "id": "source-5e4bc9561ace4fc7",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://511.org/travel/transit/clipper-access/eligibility",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
     ]
   },
   {
@@ -8485,6 +8588,15 @@
     ]
   },
   {
+    "id": "source-9494252793e28cd1",
+    "title": "湾区华人资源地图",
+    "url": "https://asianhealthservices.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-94a0058d70e90497",
     "title": "Stanford 的免费艺术下午：Main Quad、Cantor 与一小段校园散步",
     "url": "https://public-art.stanford.edu/",
@@ -8805,6 +8917,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-alerts-outages-first-day-checklist"
+    ]
+  },
+  {
+    "id": "source-991f8b25cef4c8ae",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://ovc.ojp.gov/program/stop-elder-fraud/providing-help-restoring-hope",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
     ]
   },
   {
@@ -9250,6 +9371,15 @@
       "sf-thrive-thrill-o-ween-2026"
     ],
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-a2d075a7c27b0450",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.bart.gov/tickets/discounts",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
   },
   {
     "id": "source-a351e4c0cd8b0d23",
@@ -9945,6 +10075,15 @@
     ]
   },
   {
+    "id": "source-ac7284b73b3aef5b",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://www.medicare.gov/basics/reporting-medicare-fraud-and-abuse",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
+    ]
+  },
+  {
     "id": "source-ac9342577006cc66",
     "title": "刚搬来湾区：前 7 天与 30 天的办事顺序、材料和完成标准",
     "url": "https://media.api.sf.gov/documents/ReadySF_-_Make_a_plan.pdf",
@@ -10191,6 +10330,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-commute-guide"
+    ]
+  },
+  {
+    "id": "source-b038a0ae076063b9",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
     ]
   },
   {
@@ -10533,6 +10681,7 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "bay-area-senior-transit-clipper-discounts-guide",
       "sfmta-free-muni-seniors"
     ]
   },
@@ -11481,6 +11630,15 @@
     "endDate": "2026-09-30"
   },
   {
+    "id": "source-c606439cb54da6d3",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.actransit.org/fares",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
+  },
+  {
     "id": "source-c675a68005bc372c",
     "title": "湾区购物去哪儿：Outlet、Shopping Mall 与热门购物街区全攻略",
     "url": "https://tanforanforsanbruno.com/faq/",
@@ -11545,6 +11703,15 @@
       "sf-exploratorium-after-dark-29-oct2026"
     ],
     "endDate": "2026-10-29"
+  },
+  {
+    "id": "source-c7afec156508cfcc",
+    "title": "湾区华人资源地图",
+    "url": "https://www.sf.gov/departments--311-customer-service-center",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
   },
   {
     "id": "source-c7ce82e5b63499b4",
@@ -11842,6 +12009,15 @@
     ]
   },
   {
+    "id": "source-cc6add913a450bad",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://eastbayparatransit.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
+  },
+  {
     "id": "source-cc7486c36afd8e0f",
     "title": "San José 免费数码帮助：设备外借已停止，电脑课和 Tech Hubs 仍可查",
     "url": "https://www.sjpl.org/news/sj-access-device-circulation-program-has-been-discontinued/",
@@ -11971,6 +12147,15 @@
     ]
   },
   {
+    "id": "source-ce97fbbfd6e24ad0",
+    "title": "湾区华人资源地图",
+    "url": "https://aaci.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-ceaafba97b008cae",
     "title": "免费亲子课：用 iPad 做地球主题漫画",
     "url": "https://www.apple.com/today/area/san-francisco/",
@@ -11997,6 +12182,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-bulky-items-ewaste-hhw-guide"
+    ]
+  },
+  {
+    "id": "source-cf6cf348177191cb",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.sfmta.com/getting-around/muni/fares",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
     ]
   },
   {
@@ -12216,6 +12410,15 @@
       "santa-clara-art-wine-2026"
     ],
     "endDate": "2026-09-20"
+  },
+  {
+    "id": "source-d228edf2b35b5eae",
+    "title": "帮长辈识破冒充官员和亲人急事的诈骗",
+    "url": "https://www.cdss.ca.gov/adult-protective-services/county-aps-offices",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-elder-scam-prevention-guide"
+    ]
   },
   {
     "id": "source-d2d2bcd5a0490c85",
@@ -12653,6 +12856,7 @@
     "url": "https://www.selfhelpelderly.org/our-services/health-and-home-care/senior-care/adult-day-services",
     "kind": "guide",
     "contentIds": [
+      "bay-area-chinese-language-resource-map",
       "bay-area-chinese-senior-services-referral-guide"
     ]
   },
@@ -12675,6 +12879,15 @@
       "bay-area-used-trading-safety-guide",
       "baylink-posting-guide-for-trust",
       "baylink-safety-guide"
+    ]
+  },
+  {
+    "id": "source-db271c4312b43f4e",
+    "title": "湾区华人资源地图",
+    "url": "https://www.onlok.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
     ]
   },
   {
@@ -14076,6 +14289,15 @@
     ]
   },
   {
+    "id": "source-f76066e7b789e204",
+    "title": "湾区华人资源地图",
+    "url": "https://www.selfhelpelderly.org/contact-us",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-f7fc3cf75533ecda",
     "title": "Bonbon Matcha",
     "url": "https://www.instagram.com/bonbon_matcha/",
@@ -14092,6 +14314,15 @@
     "kind": "guide",
     "contentIds": [
       "san-jose-egyptian-museum-rose-garden-guide"
+    ]
+  },
+  {
+    "id": "source-f82e7e7329cb0856",
+    "title": "湾区华人资源地图",
+    "url": "https://www.chinatowncdc.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
     ]
   },
   {
@@ -14519,6 +14750,16 @@
     "endDate": "2026-09-30"
   },
   {
+    "id": "source-ff502b50952528a2",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.clippercard.com/discounts.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide",
+      "bay-area-without-car-guide"
+    ]
+  },
+  {
     "id": "source-ffb6ee1658742e80",
     "title": "11/10 旧金山植物园普通入场免费",
     "url": "https://gggp.org/event/free-day-san-francisco-botanical-garden-17/",
@@ -14536,6 +14777,7 @@
     "url": "https://familybridges.org/visiting-program/",
     "kind": "guide",
     "contentIds": [
+      "bay-area-chinese-language-resource-map",
       "bay-area-chinese-senior-services-referral-guide"
     ]
   }
