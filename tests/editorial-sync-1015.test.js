@@ -39,9 +39,11 @@ test('the three elder guides are in the zh, en and planner catalogs, with Englis
     assert.equal(zh.url, `/guides/${slug}`);
     assert.ok(planner.guides.some(row => row.slug === slug), slug);
     assert.ok(en.title && !/[㐀-鿿]/.test(en.title), `${slug}: ${en.title}`);
-    // Every source the guide cites is a monitored registry row for it.
+    // Every source the guide cites (zh and en) is a monitored registry row for it.
     assert.ok(zh.sources.length >= 5, slug);
-    assert.ok(registry.filter(row => row.contentIds.includes(slug)).length >= 5, slug);
+    for (const source of [...zh.sources, ...en.sources]) {
+      assert.ok(registry.some(row => row.url === source.url && row.contentIds.includes(slug)), `${slug}: ${source.url}`);
+    }
   }
 });
 
@@ -94,12 +96,12 @@ test('BayBay leads with the Chinese-language resource map for 华人资源 asks'
   assert.ok(doctors.includes(`guide:${MAP}`), doctors.join(', '));
 });
 
-// Before and after this sync: 灣區華人資源 has no evidence at all (normalizeGuideQuery does not map 華 or 資), the English
-// ask "Chinese resources" leads with the library guide, and 湾区有哪些中文服务机构 reaches the map only through the elder scam
-// guide's related-guide link paragraph.
+// Before and after this sync: 灣區華人資源 has no evidence at all and 灣區有哪些華人資源？ gets the roommate and household-bills
+// guides (normalizeGuideQuery does not map 華 or 資), the English ask "Chinese resources" leads with the library guide, and
+// 湾区有哪些中文服务机构 reaches the map only through the elder scam guide's related-guide link paragraph. The one assertion
+// lists every ask that still misses the map.
 test('the resource map answers the zh-Hant, English and 中文服务机构 forms of the ask', { todo: 'API-SYNC-3e follow-up for the next BayBay lane: Traditional characters in normalizeGuideQuery, English "Chinese resources", related-guide link paragraphs' }, () => {
-  for (const message of ['灣區華人資源', 'Chinese resources', '湾区有哪些中文服务机构？']) {
-    const result = evidence(message);
-    assert.ok(result.items.some(item => item.kind === 'guide' && item.id === MAP), `${message}: ${itemIds(result).join(', ')}`);
-  }
+  const misses = ['灣區華人資源', '灣區有哪些華人資源？', 'Chinese resources', '湾区有哪些中文服务机构？'].map(message => ({ message, items: itemIds(evidence(message)) }))
+    .filter(row => !row.items.includes(`guide:${MAP}`)).map(row => `${row.message} -> ${row.items.slice(0, 3).join(', ') || 'no items'}`);
+  assert.deepEqual(misses, []);
 });
