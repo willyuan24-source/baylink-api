@@ -145,15 +145,41 @@ test('the English Thanksgiving weekend ask keeps Bernal\'s family game night', {
   assert.ok(itemIds(evidence('Thanksgiving weekend things to do with kids')).includes('event:sfpl-bernal-family-game-night-nov28-2026'));
 });
 
-test('a December Christmas lights or parade ask leads with the parade, not a guide paragraph matched by the month\'s digits', { todo: 'API-SYNC-3f follow-up: the 12 of 12月 matches "建议 5–12 岁" in the Home Depot ornament paragraph (11/21), which comes first as a guide item' }, () => {
-  assert.equal(itemIds(evidence('12月有什么圣诞点灯或者游行？'))[0], 'event:pleasanton-hometown-holiday-2026');
+// The numbers that write the asked date are a date constraint, not subject words (lib/baybayEvidence.js withoutDateNumbers):
+// the 12 of 12月 matched "建议 5–12 岁" in the Home Depot ornament paragraph (11/21), and the 11 and 14 of 11月14日 matched
+// ZooLights (11/6, 14 个主题区) and the Union Square rink (11/4, 晚上 11 点).
+test('a December Christmas lights or parade ask leads with the parade, not a guide paragraph matched by the month\'s digits', () => {
+  const found = itemIds(evidence('12月有什么圣诞点灯或者游行？'));
+  assert.equal(found[0], 'event:pleasanton-hometown-holiday-2026', found.join(', '));
+  assert.ok(!found.includes('guide:bay-area-retail-freebies-family-deals'), found.join(', '));
 });
 
-test('an 11/14 San Francisco ask is not matched by the date\'s digits', { todo: 'API-SYNC-3f follow-up: the 11 and 14 of 11月14日 match ZooLights (11/6, 14 个主题区) and the Union Square rink (11/4, 晚上 11 点), which take candidate slots of a Chinese book club or community ask' }, () => {
-  for (const message of ['11月14日旧金山有什么中文读书会', '11月14日旧金山有什么华人活动']) {
-    const ids = evidence(message).candidates.map(row => row.id);
-    assert.ok(!ids.some(id => ['sfzoo-zoolights-2026', 'union-square-holiday-ice-rink-2026'].includes(id)), `${message}: ${ids.join(', ')}`);
-  }
+test('an 11/14 San Francisco ask is not matched by the date\'s digits', () => {
+  const lights = ['sfzoo-zoolights-2026', 'union-square-holiday-ice-rink-2026'];
+  const book = evidence('11月14日旧金山有什么中文读书会').candidates.map(row => row.id);
+  assert.equal(book[0], 'sfpl-chinese-book-club-nov14-2026', book.join(', '));
+  assert.ok(!book.some(id => lights.includes(id)), book.join(', '));
+  // An outing ask still lists every fitting event, but the Chinese programmes now come first (ZooLights and the rink led).
+  const community = evidence('11月14日旧金山有什么华人活动').candidates.map(row => row.id);
+  assert.deepEqual(community.slice(0, 3).sort(), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026'], community.join(', '));
+  // A number that is not the date still counts: Pier 39 on a dated ask.
+  const pier = itemIds(evidence('10月24日去 Pier 39 有什么好玩的'));
+  assert.ok(pier.includes('guide:sf-fishermans-wharf-pier39-guide'), pier.join(', '));
+});
+
+test('only the calendar date of a dated ask leaves the subject words', () => {
+  const { withoutDateNumbers } = require('../lib/baybayEvidence');
+  const subject = (message, state) => [...withoutDateNumbers({ base: new Set(['12', '26', '24', '7', '3', '5', '游行']), expanded: new Set() }, message, state).base].sort().join(' ');
+  const december = { date: null, dateRange: { start: '2026-12-01', end: '2026-12-31' } };
+  assert.equal(subject('12月有什么游行', december), '24 26 3 5 7 游行');
+  assert.equal(subject('１２月有什么游行', december), '24 26 3 5 7 游行'); // full-width digits, as the tokens fold them
+  assert.equal(subject('12月26带娃去哪', { date: '2026-12-26' }), '24 3 5 7 游行'); // a bare day after 月
+  assert.equal(subject('12月3个活动推荐', december), '24 26 3 5 7 游行'); // a count, not a day
+  assert.equal(subject('12月5岁孩子去哪', december), '24 26 3 5 7 游行'); // an age, not a day
+  assert.equal(subject('12/5 parade', { date: '2026-12-05' }), '24 26 3 7 游行');
+  // 24/7 is not a calendar date, and an ask without a date keeps every number.
+  assert.equal(subject('24/7 urgent care this Saturday', { date: '2026-10-17' }), '12 24 26 3 5 7 游行');
+  assert.equal(subject('12月26日', { date: null }), '12 24 26 3 5 7 游行');
 });
 
 test('a kid\'s birthday freebie ask leads with the birthday guide', { todo: 'API-SYNC-3f follow-up (before this sync too): 孩子过生日有什么免费的东西可以领 leads with the farmers\' market guide (东西, 免费); the birthday guide is 7th' }, () => {

@@ -423,10 +423,9 @@ test('follow-ups and phrasings found by the unseen block M (API-BB-5)', () => {
   assert.deepEqual(stateOf('12月有什么圣诞点灯或者游行？').state.dateRange, { start: '2026-12-01', end: '2026-12-31' });
   assert.equal(stateOf('我1月要回国，要带什么').state.dateRange, undefined);
   const parades = itemIds(evidence('12月有什么圣诞点灯或者游行？'));
-  // API-SYNC-3f: web #47 added a Home Depot paragraph (11/21 圣诞小车挂饰, 建议 5–12 岁) to the retail-freebies guide;
-  // it shares 圣诞 and the 12 of 5–12 岁, so a guide paragraph now comes first. The parade still leads the events
-  // (the guide item is a TODO in editorial-sync-1016).
-  assert.equal(parades.find(id => id.startsWith('event:')), 'event:pleasanton-hometown-holiday-2026', parades.join(', '));
+  // API-SYNC-3f: web #47's Home Depot paragraph (11/21 圣诞小车挂饰, 建议 5–12 岁) shares 圣诞 and a 12 with this ask; the
+  // 12 of 12月 is a date, not a subject word, so the paragraph no longer passes the floor and the parade leads again.
+  assert.equal(parades[0], 'event:pleasanton-hometown-holiday-2026', parades.join(', '));
   assert.ok(!parades.some(id => /halloween|veterans/.test(id)), parades.join(', '));
   // The San Jose museum ask from home is ordered from San Jose.
   const museums = evidence('我住 San Jose，想带孩子去博物馆，有什么推荐？').items.filter(item => ['event', 'place'].includes(item.kind));
