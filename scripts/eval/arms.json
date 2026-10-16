@@ -11,6 +11,7 @@
     "API-BB-CUTOVER: the engine default is now v2, so code-defaults (no config) runs v2, the same as v2-code-defaults. v1-code-defaults pins BAYBAY_ENGINE=v1 (the rollback, production before the cut-over). The pre-ENGINE model arms (opus-asis, haiku-*, sonnet-*) pin BAYBAY_ENGINE=v1 so they keep measuring the v1 research loop they were built for. The engine set compares against v1-code-defaults.",
     "API-BB-5: v2-plan-agent runs a new site day plan on the agent rounds again (BAYBAY_DAY_PLAN_FAST=off), to compare plan quality with the one-call default on the same turns.",
     "API-BB-5: set bb5 = block M (36 turns in 25 conversations: 25 turns / 17 conversations written for the lane, 6 review-round-1 turns, 5 held-out single turns written after the round-1 code freeze; see the casebook notes: multi-turn constraint carry, dated spans, English asks, area and rail fit, guide facts) on v2-code-defaults, pinned Wed 2026-10-14 12:00 PT: run it with --now 2026-10-14T12:00:00-07:00. gold.evidenceIncludes / evidenceMustNotInclude check the turn's retrieved records and gold.planRail the plan's stops without a model.",
+    "API-BB-6: set bb6 = block N (GPT's 40 unseen questions, 46 turns: 20 dev + 20 held-out cases split before any code change; family and Chinese-community event facts, DMV, Medi-Cal, Medicare, Social Security, tax help, renting, senior transit, scams, four 911 emergencies, six two-turn changes of age, budget, language, back-by time, residence and application channel) on v2-code-defaults, pinned Fri 2026-10-16 10:00 PT: run it with --now 2026-10-16T10:00:00-07:00.",
     "API-BB-QUALITY: set quality = blocks I (multi-turn convergence: the BB-LIVE 10-11 conversations W1, W2, M1, W3, L2 plus new follow-ups; gold.state checks the carried task state, gold.needsPlan the plan card) and J (professional-topic routing, false negatives, thin evidence, English cards) on code-defaults. Both books are pinned at Mon 2026-10-12 09:00 PT: run them with --now 2026-10-12T09:00:00-07:00, separately from the 10-08 books."
   ],
   "arms": {
@@ -34,6 +35,7 @@
     "engine": { "blocks": ["A", "B", "C", "D", "E", "G", "H"], "arms": ["v2-haiku-low", "v2-code-defaults", "v1-code-defaults"], "baselineArm": "v1-code-defaults" },
     "stream": { "blocks": ["A"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" },
     "quality": { "blocks": ["I", "J"], "arms": ["code-defaults"], "baselineArm": "code-defaults" },
-    "bb5": { "blocks": ["M"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" }
+    "bb5": { "blocks": ["M"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" },
+    "bb6": { "blocks": ["N"], "arms": ["v2-code-defaults"], "baselineArm": "v2-code-defaults" }
   }
 }
