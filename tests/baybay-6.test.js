@@ -228,3 +228,28 @@ test('12月5日东湾有什么适合孩子的活动: the Oakland library storyti
     assert.ok(model.findIndex(item => /Pleasanton/.test(item.title)) < model.indexOf(story), model.map(item => item.title).join(' | '));
   }
 });
+
+// ---- Block N dev findings ----
+test('block N dev: sudden vision loss with stumbling is a 911 stroke emergency; a landlord lockout is a legal question', () => {
+  const { currentEmergencyTopic, professionalTopics, emergencyResponse } = require('../lib/safetyRouting');
+  for (const message of ['My partner in Oakland suddenly cannot see properly and is stumbling badly. They say there is no pain. Should we drive to a clinic later?',
+    'My dad suddenly can\'t see and keeps falling over', 'Mom suddenly lost her vision and is staggering', '外婆突然看不清东西，走路摇摇晃晃', '爺爺忽然看不見，站不住']) {
+    assert.equal(currentEmergencyTopic(message), 'stroke', message);
+  }
+  // Stumbling alone (a toddler on skates, after a cold) is not the BE-FAST pair.
+  for (const message of ['The kids keep stumbling when they learn to skate, any rink tips?', 'My toddler is stumbling a lot after a cold, should I worry?', '孩子学走路摇摇晃晃正常吗']) {
+    assert.equal(currentEmergencyTopic(message), null, message);
+  }
+  const reply = emergencyResponse('My partner suddenly cannot see properly and is stumbling badly.', 'en');
+  assert.match(reply?.answer || '', /^.{0,40}911/, 'the 911 template leads');
+  for (const message of ['我在Berkeley租房，房東傳訊息說明天換鎖，沒看過法院文件', '房东趁我上班把门锁换了，把我锁在门外', 'My landlord changed the locks while I was at work', 'The property manager shut off our water to make us leave']) {
+    assert.ok(professionalTopics(message).includes('legal'), message);
+  }
+  for (const message of ['我想给新家换锁，推荐锁匠', 'How much does it cost to change the locks after moving in?']) assert.ok(!professionalTopics(message).includes('legal'), message);
+});
+
+test('帮我排行程 and 排个一天的行程 are day plans; a ranking (排行榜) is not', () => {
+  for (const message of ['下周六带孩子去 San Mateo 玩一天，帮我排行程，下午 4 点前回家', '帮我排个一天的行程', '周六帮我排一下行程', '幫我排個週六的行程'])
+    assert.equal(resolveTaskState({ message, today: '2026-10-15', carry: true }).state.goal, 'day-plan', message);
+  assert.notEqual(resolveTaskState({ message: '湾区餐厅排行榜', today: '2026-10-15', carry: true }).state.goal, 'day-plan');
+});
