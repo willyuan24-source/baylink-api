@@ -136,7 +136,7 @@ test('BayBay: the sold-out SJMA symposium is never a bookable option', () => {
 });
 
 // Follow-ups for the next BayBay lane (API-BB-6), measured on this sync's data. Each is a TODO until fixed.
-test('the English SJMA ask carries the symposium with its sold-out note', { todo: 'API-SYNC-3f follow-up: English named recall misses "San Jose Art and Climate Symposium" (the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José), so the model is not told it is sold out' }, () => {
+test('the English SJMA ask carries the symposium with its sold-out note', { todo: 'API-SYNC-3f follow-up: one case of the general English named-recall rule at the end of this file (the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José), so the model is not told it is sold out; this case matters until the 10/17 meeting' }, () => {
   const found = evidence('Can I still sign up for the San Jose Art and Climate Symposium on October 17?').items.find(row => row.id === SJMA);
   assert.equal(found?.mismatch, 'sold_out');
 });
@@ -184,4 +184,13 @@ test('only the calendar date of a dated ask leaves the subject words', () => {
 
 test('a kid\'s birthday freebie ask leads with the birthday guide', { todo: 'API-SYNC-3f follow-up (before this sync too): 孩子过生日有什么免费的东西可以领 leads with the farmers\' market guide (东西, 免费); the birthday guide is 7th' }, () => {
   assert.equal(itemIds(evidence('孩子过生日有什么免费的东西可以领？'))[0], 'guide:bay-area-birthday-perks');
+});
+
+// The general rule behind the English SJMA case, on a made-up row so it does not depend on one event's dates.
+test('an English ask names an event without its alias\'s ": subtitle" tail or accents', { todo: 'API-SYNC-3f follow-up for API-BB-6: aliasesFor splits the title at "：" or ":" but keeps each English alias whole, and normalize keeps é, so "Cafe Lumiere Festival" never names "Café Lumière Festival: A Night by the Bay"' }, () => {
+  const { namedEntitiesV2 } = require('../lib/entityAliases');
+  const catalog = { events: [{ id: 'lumiere-festival', title: '光影咖啡节：湾边夜晚', aliases: ['Café Lumière Festival: A Night by the Bay'] }], places: [] };
+  for (const message of ['Is the Cafe Lumiere Festival on this weekend?', 'Is the Café Lumière Festival on this weekend?']) {
+    assert.deepEqual(namedEntitiesV2(message, catalog).map(item => item.row.id), ['lumiere-festival'], message);
+  }
 });
