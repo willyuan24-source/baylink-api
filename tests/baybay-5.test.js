@@ -334,6 +334,22 @@ test('live L07: a new site day plan is one streamed call around the plan engine\
   assert.ok(result.assistantPlan?.stops?.length >= 2, JSON.stringify(result.assistantPlan?.stops));
   assert.ok(drafts.some(event => event.field === 'lead'), 'a streamed lead before the result');
   assert.equal(result.degraded, false);
+  // Review of c92d087: research.js ends this call's draft with the answer's points, so a day-plan lead held at a
+  // plain count ends exactly as the result: the count goes with three points and stays with two.
+  for (const [n, lead] of [[2, '周六半天去这两个地方：先逛唐人街，再去华埠分馆。'], [3, '周六半天去这些地方：先逛唐人街，再去华埠分馆。']]) {
+    const counted = anthropicFixture({ respond: body => {
+      const answer = planAnswer(body), ref = answer.points[0].text.match(/\[\[([^\]]+)\]\]/)[1];
+      if (n === 3) answer.points.push({ text: `走累了可以在附近公园休息 [[${ref}]]`, cardIds: [] });
+      return { ...answer, lead: '周六半天去这两个地方：先逛唐人街，再去华埠分馆。' };
+    } });
+    const events = [];
+    const plan = await counted.run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程', { onDraft: event => events.push(event) });
+    assert.ok(plan.research.warnings.includes('day_plan_single_call'), JSON.stringify(plan.research.warnings));
+    assert.equal(plan.points.length, n, JSON.stringify(plan.points));
+    assert.equal(plan.lead.replace(/\s*\[\d+\]/g, ''), lead, `${n} points`);
+    assert.equal(events.filter(event => event.field === 'lead').map(event => event.text).join(''), plan.lead.replace(/\s*\[\d+\]/g, ''), `${n} points: the streamed lead`);
+    assert.equal(plan.corrected, false, `${n} points`);
+  }
   const agent = anthropicFixture({ config: { BAYBAY_DAY_PLAN_FAST: 'off' }, respond: (body, count) => count === 1 && body.tool_choice?.type === 'auto'
     ? { type: 'message', id: 'm', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 't1', name: 'search_site', input: { query: '唐人街' } }], usage: { input_tokens: 1, output_tokens: 1 } }
     : planAnswer(body) });
