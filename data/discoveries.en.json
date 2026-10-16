@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-07",
+  "checkedAt": "2026-10-15",
   "items": [
     {
       "kind": "offer",
@@ -1662,7 +1662,7 @@
       "path": "/offers/nothing-bundt-cakes-birthday-bundtlet",
       "summary": "The official FAQ says the email usually arrives about a week before your birthday and is valid through 7 days after it. Add your details ahead of time and check the reward’s actual expiry. Find Bay Area bakeries including San Jose; flavors depend on stock and reward terms. Online orders may incur a service fee.",
       "details": [
-        "Age 18 or older. Join Bundtastic Rewards for free with a phone number, valid email and birthday. Show the birthday email or app barcode in a bakery for an individual Bundtlet without an additional purchase."
+        "Join Bundtastic Rewards for free with a phone number, an active email and your birthday. The age rule differs between pages: the terms updated Sept 1, 2026 say 16 and older, the FAQ says 18 and older, so 16- and 17-year-olds should ask the bakery first. Pick up an individual Bundtlet in the bakery with the birthday email or app barcode; no purchase needed."
       ],
       "region": "south-bay",
       "dateLabel": "From birthday reward arrival · Through 7 days after your birthday",
@@ -1981,7 +1981,7 @@
       "path": "/offers/roundup-ulta-birthday-gift-2026",
       "summary": "Find official stores in San Jose, Sunnyvale, San Mateo and elsewhere. Online and pickup orders require a qualifying non-Marketplace merchandise purchase with a subtotal above $0. Gift options depend on the current coupon and local stock.",
       "details": [
-        "Before your birthday month, join Ulta Beauty Rewards, add your birthday and opt into marketing communications. Redeem a valid birthday coupon in store with no purchase, once per year, while supplies last."
+        "Before your birthday month, join Ulta Beauty Rewards (U.S. residents 13 and older; under 18 needs a parent’s or guardian’s consent), add your birthday and turn on marketing notifications. Redeem a valid birthday coupon in store with no purchase needed, once a year, while supplies last."
       ],
       "dateLabel": "Birthday month · In-store coupon required",
       "costLabel": "No purchase required",
@@ -2791,11 +2791,11 @@
       "id": "lego-free-kids-magazine",
       "title": "Free LEGO Magazine by mail for ages 5–9, including postage",
       "path": "/offers/lego-free-kids-magazine",
-      "summary": "Choose Sign up on the official magazine page and enter child and address details. Printing and postage are free. The next issue is listed for November 2026; new subscribers should use their confirmation email for first-delivery timing.",
+      "summary": "Choose Sign up on the LEGO magazine page and enter your child’s details and address. The magazine and delivery are free. The same page gives the next issue as March 2027 at the top and November 2026 in the FAQ, so new subscribers should go by the confirmation email.",
       "details": [
         "A parent or guardian subscribes for a child ages 5–9 using a free LEGO account and valid mailing address. No credit card or purchase is required."
       ],
-      "dateLabel": "Ongoing subscription · Four issues a year; first issue per confirmation email",
+      "dateLabel": "Ongoing subscription · 5 issues a year; first issue date in the confirmation email",
       "costLabel": "No purchase required",
       "status": "ongoing",
       "verifiedAt": "2026-10-04",
@@ -2839,7 +2839,7 @@
       "id": "homedepot-monthly-kids-workshops",
       "title": "Free kids’ building workshop: Check the next local booking",
       "path": "/offers/homedepot-monthly-kids-workshops",
-      "summary": "Kids build a wood project announced on the day. The Oct 3 session is over; check your store’s booking page for the next project and supplies.",
+      "summary": "Kids build a wood project announced for each session. Home Depot has posted a Dump Truck on Nov 7, a special Christmas Car Ornament session on Nov 21 and a Holiday Train on Dec 5; search Home Depot under Free & deals for each session’s date.",
       "details": [
         "The official Kids Workshops program is free in store, while supplies last. Select a Bay Area store and use Register Now to confirm the session and register."
       ],
@@ -2976,12 +2976,12 @@
       "id": "chipotle-welcome-chips-guac-2026",
       "title": "New members: chips and guacamole with a $5+ purchase",
       "path": "/offers/chipotle-welcome-chips-guac-2026",
-      "summary": "This welcome offer requires a minimum purchase. The current public page does not give a universal expiry; check the reward's expiry and order restrictions before going. No promotion stacking. An official store is listed on Monterey Highway, San Jose.",
+      "summary": "This welcome reward needs a purchase of $5 or more, before tax and tip. It expires 7 days after it is added to your account, is good once, and cannot be combined with other promotions; catering and third-party delivery are excluded. There is a Chipotle on Monterey Highway in San Jose.",
       "details": [
         "Join Chipotle Rewards as a new member and make a purchase of at least $5 to redeem the Chips & Guac welcome reward through your account at participating stores or official ordering channels."
       ],
       "region": "south-bay",
-      "dateLabel": "New Rewards members · check account expiry",
+      "dateLabel": "New Rewards members · Use within 7 days of arrival",
       "costLabel": "Purchase required",
       "status": "ongoing",
       "verifiedAt": "2026-10-04",
@@ -3653,6 +3653,615 @@
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://gggp.org/tickets/",
       "sourceLabel": "Gardens of Golden Gate Park official free-admission rules"
+    },
+    {
+      "kind": "offer",
+      "id": "homedepot-dump-truck-nov7-2026",
+      "title": "Nov 7: free kids workshop, build a dump truck",
+      "path": "/offers/homedepot-dump-truck-nov7-2026",
+      "summary": "Kids build a Dump Truck in the store and take it home, with an apron, pin and certificate while supplies last. In the Bay Area you can pick Emeryville or another store; check the sign-up page for each store’s spots.",
+      "details": [
+        "Free, no purchase needed. Home Depot recommends registering for a store on its Kids Workshops page and arriving early; kits are available while supplies last. Suggested for ages 5–12 with an adult."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-07",
+      "endDate": "2026-11-07",
+      "dateLabel": "Sat Nov 7 · 9 AM–noon · Store local time",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.homedepot.com/c/kids-workshop",
+      "sourceLabel": "Home Depot Kids Workshops schedule and sign-up"
+    },
+    {
+      "kind": "offer",
+      "id": "homedepot-christmas-car-ornament-nov21-2026",
+      "title": "Nov 21: free special workshop, build a Christmas car ornament",
+      "path": "/offers/homedepot-christmas-car-ornament-nov21-2026",
+      "summary": "The Christmas Car Ornament is an extra special workshop in November, separate from the regular Nov 7 session. Kids take the ornament home for the tree.",
+      "details": [
+        "Free, no purchase needed. Home Depot says sign-up opens Nov 7; register for a store and arrive early, as kits are available while supplies last. Suggested for ages 5–12 with an adult."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "dateLabel": "Sat Nov 21 · 9 AM–noon · Sign-up opens Nov 7",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.homedepot.com/c/kids-workshop",
+      "sourceLabel": "Home Depot Kids Workshops schedule and sign-up"
+    },
+    {
+      "kind": "offer",
+      "id": "homedepot-holiday-train-dec5-2026",
+      "title": "Dec 5: free kids workshop, build a holiday train",
+      "path": "/offers/homedepot-holiday-train-dec5-2026",
+      "summary": "On the first Saturday of December kids build a Holiday Train and take it home. In the Bay Area you can pick Emeryville or another store; check the sign-up page for each store’s spots.",
+      "details": [
+        "Free, no purchase needed. Once sign-up opens, register for a store on the Kids Workshops page; kits are available while supplies last. Suggested for ages 5–12 with an adult."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "dateLabel": "Sat Dec 5 · 9 AM–noon · Store local time",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.homedepot.com/c/kids-workshop",
+      "sourceLabel": "Home Depot Kids Workshops schedule and sign-up"
+    },
+    {
+      "kind": "offer",
+      "id": "lego-ghost-street-stoneridge-oct25-2026",
+      "title": "Oct 25: build LEGO Ghost Street free and take it home",
+      "path": "/offers/lego-ghost-street-stoneridge-oct25-2026",
+      "summary": "At the LEGO Store in Stoneridge Mall, Pleasanton (1444 Stoneridge Mall, Space D117A). You keep the Ghost Street model you build; it is not sold in stores.",
+      "details": [
+        "For LEGO Insiders members only (free to join), ages 6+. One build per person, limited quantity, first come, first served; the event page has no reservations."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-10-25",
+      "endDate": "2026-10-25",
+      "dateLabel": "Sun Oct 25 · Noon–2 PM · First come, first served",
+      "costLabel": "No purchase required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.lego.com/en-us/stores/events/lbr-26mt-ghost-street",
+      "sourceLabel": "LEGO Ghost Street build event and terms"
+    },
+    {
+      "kind": "offer",
+      "id": "rei-berkeley-hella-bae-run-oct21-2026",
+      "title": "Oct 21: free community run at Berkeley REI",
+      "path": "/offers/rei-berkeley-hella-bae-run-oct21-2026",
+      "summary": "Meet at Berkeley REI, 1338 San Pablo Ave. The REI event page says the run happens on the first and third Wednesday of each month; there are five runs from October to December: Oct 21, Nov 4, Nov 18, Dec 2 and Dec 16. See the sign-up page for the route.",
+      "details": [
+        "A free community run; bring your own running gear. Use the Register link on the event page to sign up with the organizer. Led by Hella Bae Running, a Bay Area women’s running crew that welcomes runners of all levels."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-10-21",
+      "endDate": "2026-10-21",
+      "dateLabel": "Wed, Oct 21 · 6–7:30 PM",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+      "sourceLabel": "REI Berkeley event page · Hella Bae community run"
+    },
+    {
+      "kind": "offer",
+      "id": "rei-berkeley-hella-bae-run-nov4-2026",
+      "title": "Nov 4: free community run at Berkeley REI",
+      "path": "/offers/rei-berkeley-hella-bae-run-nov4-2026",
+      "summary": "Meet at Berkeley REI, 1338 San Pablo Ave. The REI event page says the run happens on the first and third Wednesday of each month; there are five runs from October to December: Oct 21, Nov 4, Nov 18, Dec 2 and Dec 16. See the sign-up page for the route.",
+      "details": [
+        "A free community run; bring your own running gear. Use the Register link on the event page to sign up with the organizer. Led by Hella Bae Running, a Bay Area women’s running crew that welcomes runners of all levels."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-04",
+      "endDate": "2026-11-04",
+      "dateLabel": "Wed, Nov 4 · 6–7:30 PM",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+      "sourceLabel": "REI Berkeley event page · Hella Bae community run"
+    },
+    {
+      "kind": "offer",
+      "id": "rei-berkeley-hella-bae-run-nov18-2026",
+      "title": "Nov 18: free community run at Berkeley REI",
+      "path": "/offers/rei-berkeley-hella-bae-run-nov18-2026",
+      "summary": "Meet at Berkeley REI, 1338 San Pablo Ave. The REI event page says the run happens on the first and third Wednesday of each month; there are five runs from October to December: Oct 21, Nov 4, Nov 18, Dec 2 and Dec 16. See the sign-up page for the route.",
+      "details": [
+        "A free community run; bring your own running gear. Use the Register link on the event page to sign up with the organizer. Led by Hella Bae Running, a Bay Area women’s running crew that welcomes runners of all levels."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-11-18",
+      "endDate": "2026-11-18",
+      "dateLabel": "Wed, Nov 18 · 6–7:30 PM",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+      "sourceLabel": "REI Berkeley event page · Hella Bae community run"
+    },
+    {
+      "kind": "offer",
+      "id": "rei-berkeley-hella-bae-run-dec2-2026",
+      "title": "Dec 2: free community run at Berkeley REI",
+      "path": "/offers/rei-berkeley-hella-bae-run-dec2-2026",
+      "summary": "Meet at Berkeley REI, 1338 San Pablo Ave. The REI event page says the run happens on the first and third Wednesday of each month; there are five runs from October to December: Oct 21, Nov 4, Nov 18, Dec 2 and Dec 16. See the sign-up page for the route.",
+      "details": [
+        "A free community run; bring your own running gear. Use the Register link on the event page to sign up with the organizer. Led by Hella Bae Running, a Bay Area women’s running crew that welcomes runners of all levels."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-12-02",
+      "endDate": "2026-12-02",
+      "dateLabel": "Wed, Dec 2 · 6–7:30 PM",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+      "sourceLabel": "REI Berkeley event page · Hella Bae community run"
+    },
+    {
+      "kind": "offer",
+      "id": "rei-berkeley-hella-bae-run-dec16-2026",
+      "title": "Dec 16: free community run at Berkeley REI",
+      "path": "/offers/rei-berkeley-hella-bae-run-dec16-2026",
+      "summary": "Meet at Berkeley REI, 1338 San Pablo Ave. The REI event page says the run happens on the first and third Wednesday of each month; there are five runs from October to December: Oct 21, Nov 4, Nov 18, Dec 2 and Dec 16. See the sign-up page for the route.",
+      "details": [
+        "A free community run; bring your own running gear. Use the Register link on the event page to sign up with the organizer. Led by Hella Bae Running, a Bay Area women’s running crew that welcomes runners of all levels."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-12-16",
+      "endDate": "2026-12-16",
+      "dateLabel": "Wed, Dec 16 · 6–7:30 PM",
+      "costLabel": "Reservation required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+      "sourceLabel": "REI Berkeley event page · Hella Bae community run"
+    },
+    {
+      "kind": "offer",
+      "id": "apple-union-square-free-sessions",
+      "title": "Free Today at Apple sessions at Apple Union Square",
+      "path": "/offers/apple-union-square-free-sessions",
+      "summary": "Apple Union Square is at 300 Post Street, SF. Upcoming sessions include iPhone photography, drawing with Apple Pencil and device basics, and the Kids & Families section has family sessions.",
+      "details": [
+        "Free sessions, no purchase needed. Pick a session on the store’s Today at Apple calendar and sign up; each session lists its ages and the devices you need."
+      ],
+      "region": "sf",
+      "dateLabel": "Ongoing · Sessions and spots on the store calendar",
+      "costLabel": "Reservation required",
+      "status": "check-local",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.apple.com/retail/unionsquare/",
+      "sourceLabel": "Apple Union Square store page · Free sessions"
+    },
+    {
+      "kind": "offer",
+      "id": "sephora-berkeley-free-sampling",
+      "title": "Free product samples at Sephora Berkeley",
+      "path": "/offers/sephora-berkeley-free-sampling",
+      "summary": "1785 Fourth St, Berkeley. Handy for trying a shade or scent before you buy; whether you can take a sample home, and how much, is up to the store that day. The birthday gift is a separate offer: search Sephora under Free & deals.",
+      "details": [
+        "The store’s services list includes Free Product Sampling, no purchase needed. The store decides which products and how much you can sample."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Ongoing · Ask staff in the store",
+      "costLabel": "No purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.sephora.com/happening/stores/berkeley",
+      "sourceLabel": "Sephora Berkeley store services"
+    },
+    {
+      "kind": "offer",
+      "id": "staples-ca-recycling-fee-waiver",
+      "title": "Free recycling of printers, monitors and batteries at California Staples",
+      "path": "/offers/staples-ca-recycling-fee-waiver",
+      "summary": "The list also covers ink and toner cartridges, chargers, cables, cameras and other small electronics, recycled for free. Check store hours for Fremont or another Bay Area store first.",
+      "details": [
+        "At California stores there is no recycling fee for listed printers and all-in-ones, monitors up to 49 inches, and rechargeable or single-use batteries; some other states charge $9.99 per printer, $29.99 per monitor and $2.99 per battery visit. Only items on Staples’ list are accepted."
+      ],
+      "dateLabel": "Ongoing · Store hours",
+      "costLabel": "No purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.staples.com/stores/recycling",
+      "sourceLabel": "Staples in-store recycling list and California fee exemption"
+    },
+    {
+      "kind": "offer",
+      "id": "michaels-free-online-tutorials",
+      "title": "Free online craft videos from Michaels",
+      "path": "/offers/michaels-free-online-tutorials",
+      "summary": "Craft along at home on a weekend with the kids, with a parent joining children’s classes. Buy supplies at a Bay Area store if you need them; watching is free either way.",
+      "details": [
+        "Video tutorials are free to watch. Most Live Learning classes are free, and paid ones show a price on the class page. Sign up for live classes with your name and email; bring your own supplies."
+      ],
+      "dateLabel": "Ongoing · Videos any time; live classes on the class page",
+      "costLabel": "No purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.michaels.com/customer-care/classes-events-and-parties/online-classes-faq",
+      "sourceLabel": "Michaels online classes FAQ"
+    },
+    {
+      "kind": "offer",
+      "id": "85c-new-member-sea-salt-coffee",
+      "title": "85°C app: Sea Salt Coffee for new members",
+      "path": "/offers/85c-new-member-sea-salt-coffee",
+      "summary": "Bay Area bakeries include Fremont, Newark and Pleasanton (85°C store finder). Check that the welcome coupon is in the app before you go.",
+      "details": [
+        "85°C’s homepage offers a free Sea Salt Coffee for new member sign-up. It does not give the size, whether a purchase is needed, when the coupon arrives or when it expires, so go by the welcome coupon in the app."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Once per new member · Size and expiry on the app coupon",
+      "costLabel": "Check participation terms",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.85cbakerycafe.com/",
+      "sourceLabel": "85°C homepage · New member offer"
+    },
+    {
+      "kind": "offer",
+      "id": "bjs-new-member-pizookie",
+      "title": "BJ’s: a Pizookie dessert for new members",
+      "path": "/offers/bjs-new-member-pizookie",
+      "summary": "Use it at Newark or another Bay Area restaurant. Members also earn points on purchases other than alcohol.",
+      "details": [
+        "Join Premier Rewards PLUS for free. BJ’s offers a free Pizookie on your next visit, available the day after sign-up; seasonal Pizookies and the Pizookie Trio are excluded. The public page gives no expiry date, so go by the reward in your account."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Once per new member · From the day after sign-up",
+      "costLabel": "Check participation terms",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.bjsrestaurants.com/rewards?category=ALL",
+      "sourceLabel": "BJ’s Premier Rewards PLUS welcome reward"
+    },
+    {
+      "kind": "offer",
+      "id": "benjerry-flavor-fanatics-birthday",
+      "title": "Ben & Jerry’s member birthday offer, different each month",
+      "path": "/offers/benjerry-flavor-fanatics-birthday",
+      "summary": "Members also get 10% off in-store purchases at participating shops. Takeout, third-party delivery, gift cards, online cake orders and catering are excluded. In the Bay Area, look up the Jack London Square shop in Oakland.",
+      "details": [
+        "Join Flavor Fanatics for free (ages 16+) and stay subscribed to its emails. Sign up at least 24 hours before the 1st of your birthday month to get that year’s birthday offer. The offer changes from month to month, so go by the email; redeem it at a participating shop with the phone number you signed up with."
+      ],
+      "region": "east-bay",
+      "dateLabel": "During your birthday month · Join 24 hours before the 1st",
+      "costLabel": "Check participation terms",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.benjerry.com/scoop-shops/flavor-fanatics/terms-and-conditions",
+      "sourceLabel": "Ben & Jerry’s Flavor Fanatics terms"
+    },
+    {
+      "kind": "offer",
+      "id": "benihana-fwb-welcome-starter",
+      "title": "Benihana: a starter on your next dine-in visit for new members",
+      "path": "/offers/benihana-fwb-welcome-starter",
+      "summary": "The terms allow use Friday–Sunday only until 4:30 PM, and blackout dates apply; a reward expires 30 days after you activate it. The Burlingame restaurant is at 1496 Old Bayshore Highway; check in your account that it takes part.",
+      "details": [
+        "Join Friends with Benefits (U.S. or D.C. residents 18+) for one starter worth up to $35 on your next visit. Dine-in only at participating company-owned restaurants, one offer per table, not combinable with other offers."
+      ],
+      "region": "peninsula",
+      "dateLabel": "Once per new member · Use within 30 days of activating",
+      "costLabel": "Check participation terms",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://togrp.com/friends-with-benefits-rewards-terms-of-use/",
+      "sourceLabel": "The ONE Group Friends with Benefits terms"
+    },
+    {
+      "kind": "offer",
+      "id": "elpolloloco-loco-rewards-birthday",
+      "title": "El Pollo Loco member birthday reward of $5 or $10",
+      "path": "/offers/elpolloloco-loco-rewards-birthday",
+      "summary": "Look up Hayward or another Bay Area restaurant. Tiers count status points earned in a calendar year, and new members start at Pollito.",
+      "details": [
+        "Join Loco Rewards for free and add your birthday. The Pollito and Pollo tiers get a $5 birthday reward and the Pollo Loco tier (40,000 status points in a year) gets $10. The site does not say whether the birthday reward needs a minimum purchase or when it expires, so go by the reward in your account."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Around your birthday · Expiry on your reward",
+      "costLabel": "Check participation terms",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.elpolloloco.com/rewards/",
+      "sourceLabel": "El Pollo Loco Loco Rewards tiers and birthday reward"
+    },
+    {
+      "kind": "offer",
+      "id": "jamba-birthday-small-smoothie",
+      "title": "Jamba birthday small smoothie: $10 spent in the past year",
+      "path": "/offers/jamba-birthday-small-smoothie",
+      "summary": "A new member does not get a birthday reward right after joining. Look up Fremont or another Bay Area store; the welcome coupons are a separate offer: search Jamba under Free & deals.",
+      "details": [
+        "Jamba Rewards members get a birthday Small Smoothie reward only if they added their birthday in advance and spent at least $10 on qualifying purchases in the past 12 months (gift cards, tax and fees do not count). Add-ins and substitutions are excluded; it cannot be combined with other offers or used on third-party delivery."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Birthday · Expiry in your account",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.jamba.com/about/faq",
+      "sourceLabel": "Jamba Rewards FAQ · Birthday reward terms"
+    },
+    {
+      "kind": "offer",
+      "id": "parisbaguette-birthday-cake-slice",
+      "title": "Paris Baguette birthday-week cake slice: a past purchase needed",
+      "path": "/offers/parisbaguette-birthday-cake-slice",
+      "summary": "Look up Fremont (5009 Mowry Avenue) or another Bay Area bakery. The flavor and redemption deadline are on the app reward.",
+      "details": [
+        "PB Rewards members get a free cake slice reward in their birthday week only after at least one earlier purchase; Paris Baguette states that a prior purchase is required."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Birthday week · Expiry in the app",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://parisbaguette.com/rewards/",
+      "sourceLabel": "Paris Baguette PB Rewards"
+    },
+    {
+      "kind": "offer",
+      "id": "safeway-for-u-monthly-item",
+      "title": "Safeway monthly item coupon: recent shopping needed after the first",
+      "path": "/offers/safeway-for-u-monthly-item",
+      "summary": "The coupon is for a selected item, not $10 in cash. Clip it in your account and redeem it before the date on the coupon.",
+      "details": [
+        "Join Safeway for U for free. From the start of the month after you sign up, you get a coupon for one selected item (up to $10 value) each month. After the first one, you keep getting it only if you bought something in store or online with your account in the last 12 weeks."
+      ],
+      "dateLabel": "From the month after sign-up · Once a month",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.safeway.com/faq/foru.3132.html",
+      "sourceLabel": "Safeway for U FAQ · Monthly item and birthday treat"
+    },
+    {
+      "kind": "offer",
+      "id": "safeway-for-u-birthday-treat",
+      "title": "Safeway birthday treat coupon: shopping in the past year needed",
+      "path": "/offers/safeway-for-u-birthday-treat",
+      "summary": "The coupon is for a selected item, not cash. Clip it once it arrives and redeem it before the date on the coupon.",
+      "details": [
+        "Add your birthday to your for U account and buy something in store or online with it within the past 12 months. Qualifying members get a birthday treat coupon (up to $10 value) at the start of their birthday month."
+      ],
+      "dateLabel": "Sent at the start of your birthday month · Expiry in your account",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.safeway.com/faq/foru.3132.html",
+      "sourceLabel": "Safeway for U FAQ · Monthly item and birthday treat"
+    },
+    {
+      "kind": "offer",
+      "id": "target-circle-360-paid-monthly-gifts",
+      "title": "Target Circle 360 monthly gifts: paid membership only",
+      "path": "/offers/target-circle-360-paid-monthly-gifts",
+      "summary": "The free Target Circle membership does not include these monthly gifts. The gifts change every month, so weigh them against the fee before subscribing, and cancel in the Membership section of your account to stop the automatic renewal.",
+      "details": [
+        "Circle 360 is a paid membership that renews automatically: $10.99 a month or $99 a year plus tax, or $4.99 a month or $49 a year for verified teachers, military, college students and government assistance recipients, or members with a Target Circle Card saved to their account. From the 1st of each month, members choose one item from a set of gifts or exclusive discounts."
+      ],
+      "dateLabel": "Paid membership · New gift choices on the 1st of each month",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.target.com/l/target-circle-360/-/N-2rguk",
+      "sourceLabel": "Target Circle 360 membership and pricing"
+    },
+    {
+      "kind": "offer",
+      "id": "ikea-family-new-member-20-off",
+      "title": "IKEA Family new members: from $20 off a first in-store purchase",
+      "path": "/offers/ikea-family-new-member-20-off",
+      "summary": "One coupon per new member account, not combinable with other coupons. Bay Area stores are in Emeryville (4400 Shellmound St) and East Palo Alto.",
+      "details": [
+        "When signing up, opt in to IKEA marketing emails and verify your email address. The coupon arrives as a QR code by email and is good in store for 90 days. A minimum purchase applies (shown on the coupon); it is not valid online and excludes food, gift cards, delivery, installation, assembly and tax."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Once per new member · Within 90 days of the code",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.ikea.com/us/en/ikea-family/",
+      "sourceLabel": "IKEA Family benefits and terms"
+    },
+    {
+      "kind": "offer",
+      "id": "michaels-makebreak-buy-base",
+      "title": "Michaels MakeBreak in-store crafts: buy the featured base first",
+      "path": "/offers/michaels-makebreak-buy-base",
+      "summary": "When a session’s own page says it is free, that page applies. Check your Bay Area store’s events page for sessions and base prices.",
+      "details": [
+        "Michaels’ FAQ: to join a MakeBreak you buy the featured base product, and the decorating supplies are free. MakeBreaks are for ages 14 and up; Kids Club, for ages 4 and up, is a different event."
+      ],
+      "dateLabel": "Regular in-store events · Sessions on your store’s events page",
+      "costLabel": "Purchase required",
+      "status": "check-local",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.michaels.com/customer-care/classes-events-and-parties/in-store-events-faq",
+      "sourceLabel": "Michaels in-store events FAQ"
+    },
+    {
+      "kind": "offer",
+      "id": "ulta-alameda-million-fragrance-oct17-2026",
+      "title": "Oct 17: fragrance event at Ulta Alameda, gifts with purchase",
+      "path": "/offers/ulta-alameda-million-fragrance-oct17-2026",
+      "summary": "At 2245 South Shore Center, Alameda. Book a slot just to try the scents; to get a gift, buy under the terms in the store.",
+      "details": [
+        "A Carolina Herrera 1 Million fragrance event; book a 15-minute slot on the event page. Ulta says the free gifts, samples and special offers come with a purchase, while quantities last, and vary by event; no minimum purchase or gift details are published."
+      ],
+      "region": "east-bay",
+      "startDate": "2026-10-17",
+      "endDate": "2026-10-17",
+      "dateLabel": "Sat Oct 17 · Noon–6 PM · 15-minute slots",
+      "costLabel": "Purchase required",
+      "status": "dated",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.ulta.com/beautyservices/store-events/carolina-herrerra/alameda/694608?eventStyle=TimeSlot",
+      "sourceLabel": "Ulta Alameda store event page"
+    },
+    {
+      "kind": "offer",
+      "id": "redrobin-royalty-welcome-appetizer",
+      "title": "Red Robin new member appetizer: $10 minimum purchase",
+      "path": "/offers/redrobin-royalty-welcome-appetizer",
+      "summary": "Red Robin calls it a limited-time offer and gives no end date. Use it at San Bruno or another Bay Area restaurant; the $7 kids’ birthday discount is a separate offer: search Red Robin under Free & deals.",
+      "details": [
+        "After joining Red Robin Royalty, get a free appetizer with a $10 minimum purchase; alcohol, merchandise, gift cards, catering and tax do not count toward it. Bone-In Wings, Boneless Chicken Bites, the Triple YUMMM Platter and add-ons are excluded, and it cannot be combined with other offers."
+      ],
+      "region": "peninsula",
+      "dateLabel": "Once per new member · Dine-in or to-go",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.redrobin.com/rewards",
+      "sourceLabel": "Red Robin Royalty new member reward"
+    },
+    {
+      "kind": "offer",
+      "id": "noahs-welcome-bagel-with-purchase",
+      "title": "Noah’s new member Bagel & Shmear: with a purchase",
+      "path": "/offers/noahs-welcome-bagel-with-purchase",
+      "summary": "Use it in Berkeley or another Bay Area location. Noah’s FAQ says “with purchase,” so you need to buy something else to use it.",
+      "details": [
+        "Signing up for Noah’s Rewards gets you a Bagel & Shmear reward that you use with a purchase. Participating locations only, one offer per order."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Once per new member · Expiry in your account",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.noahs.com/contact/faq",
+      "sourceLabel": "Noah’s Rewards FAQ"
+    },
+    {
+      "kind": "offer",
+      "id": "noahs-birthday-egg-sandwich-with-purchase",
+      "title": "Noah’s birthday egg sandwich: with a purchase",
+      "path": "/offers/noahs-birthday-egg-sandwich-with-purchase",
+      "summary": "One offer per order at participating locations. The free coffee with online orders is a separate offer: search Noah’s under Free & deals.",
+      "details": [
+        "Noah’s Rewards members who add their birthday get an egg sandwich reward for their birthday, used with a purchase and valid for 14 days."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Birthday · Use within 14 days",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.noahs.com/contact/faq",
+      "sourceLabel": "Noah’s Rewards FAQ"
+    },
+    {
+      "kind": "offer",
+      "id": "parisbaguette-welcome-pastry-with-purchase",
+      "title": "Paris Baguette new member pastry with your next purchase",
+      "path": "/offers/parisbaguette-welcome-pastry-with-purchase",
+      "summary": "The FAQ says “just for signing up,” while the rewards page says it comes with your next purchase. Look up Fremont (5009 Mowry Avenue) or another Bay Area bakery.",
+      "details": [
+        "Sign up for PB Rewards in the app to get a free pastry with your next purchase; new members only."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Once per new member · Expiry in the app",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://parisbaguette.com/rewards/",
+      "sourceLabel": "Paris Baguette PB Rewards"
+    },
+    {
+      "kind": "offer",
+      "id": "85c-vip-birthday-cake-slice-half",
+      "title": "85°C birthday cake slice half price: VIP only, one slice a year",
+      "path": "/offers/85c-vip-birthday-cake-slice-half",
+      "summary": "The membership status page says all cake slices are half off in your birthday month, which differs from the one slice in the terms; plan on one slice. Regular members do not get this birthday perk.",
+      "details": [
+        "You must reach VIP first: 385 Degrees within 365 days (one Degree per whole dollar spent). The terms give VIP members one cake slice at 50% off each year, and VIP status must be reached at least 72 hours before the 1st of the birthday month."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Birthday month · Reach VIP 72 hours ahead",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.85cbakerycafe.com/85app/",
+      "sourceLabel": "85°C app membership and VIP terms"
+    },
+    {
+      "kind": "offer",
+      "id": "ihop-pancakes-after-first-purchase",
+      "title": "IHOP new members: five pancakes after a first purchase",
+      "path": "/offers/ihop-pancakes-after-first-purchase",
+      "summary": "Separately, code IHOP20 takes 20% off a first order on the IHOP website or app through Dec 31, 2026; tax and gratuity are excluded and it cannot be combined with other coupons. The birthday pancakes are a separate offer: search IHOP under Free & deals.",
+      "details": [
+        "After joining the International Bank of Pancakes, your first member purchase earns 5 PanCoins, which you exchange for a coupon for a stack of 5 pancakes; nothing is issued at sign-up."
+      ],
+      "region": "east-bay",
+      "dateLabel": "New members · After the first member purchase",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.ihop.com/en",
+      "sourceLabel": "IHOP homepage · New member and first-order offers"
+    },
+    {
+      "kind": "offer",
+      "id": "benihana-fwb-birthday-50",
+      "title": "Benihana member birthday $50 and half-birthday $25 dine-in rewards",
+      "path": "/offers/benihana-fwb-birthday-50",
+      "summary": "You pay for anything beyond the reward. Check in your account whether the Burlingame restaurant (1496 Old Bayshore Highway) takes part.",
+      "details": [
+        "Join Friends with Benefits at least a week before your birthday. You get a $50 reward around your birthday and a $25 half-birthday reward about six months later. Dine-in only at participating company-owned restaurants, one offer per table, not after 4:30 PM Friday–Sunday or on blackout dates."
+      ],
+      "region": "peninsula",
+      "dateLabel": "Sent around your birthday · Use within 30 days of activating",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://togrp.com/friends-with-benefits-rewards-terms-of-use/",
+      "sourceLabel": "The ONE Group Friends with Benefits terms"
+    },
+    {
+      "kind": "offer",
+      "id": "benihana-kabuki-kids-birthday",
+      "title": "Benihana birthday gift for kids 12 and under: with a meal purchase",
+      "path": "/offers/benihana-kabuki-kids-birthday",
+      "summary": "Benihana’s pages differ: the loyalty page offers a souvenir mug with a Kabuki Kids meal, while the birthdays page offers a Lucky Cat mini plush key chain with a kids or adult meal; go by the email. Available at the Burlingame restaurant.",
+      "details": [
+        "Sign children 12 and under up for Kabuki Kids for free; they get a birthday email, and the small gift comes with a meal purchase."
+      ],
+      "region": "peninsula",
+      "dateLabel": "Child’s birthday · With the birthday email",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.benihana.com/loyalty/",
+      "sourceLabel": "Benihana loyalty and Kabuki Kids"
+    },
+    {
+      "kind": "offer",
+      "id": "dunkin-birthday-triple-points",
+      "title": "Dunkin’ birthday perk is triple points on purchases",
+      "path": "/offers/dunkin-birthday-triple-points",
+      "summary": "Points expire 12 months after the last day of the month they were earned. The free donut from the receipt survey is a separate offer: search Dunkin’ under Free & deals.",
+      "details": [
+        "Add your birthday to your Dunkin’ Rewards account and pick the day before, the day of or the day after your birthday to earn 3X points on purchases all day; points come only with a purchase."
+      ],
+      "region": "east-bay",
+      "dateLabel": "Pick the day before, the day of or the day after your birthday",
+      "costLabel": "Purchase required",
+      "status": "ongoing",
+      "verifiedAt": "2026-10-15",
+      "sourceUrl": "https://www.dunkindonuts.com/contact-us/",
+      "sourceLabel": "Dunkin’ Rewards FAQ"
     },
     {
       "kind": "opening",

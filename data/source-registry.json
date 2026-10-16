@@ -12,6 +12,16 @@
     ]
   },
   {
+    "id": "source-0027a955e1cd8ee5",
+    "title": "Belmont 图书馆中英双语故事时间，之后留下来玩",
+    "url": "https://smcl.bibliocommons.com/events/6a3b0dc596ee38a44a92a8fe",
+    "kind": "event",
+    "contentIds": [
+      "smcl-belmont-mandarin-bilingual-storytime-2026"
+    ],
+    "endDate": "2026-12-16"
+  },
+  {
     "id": "source-003779205ce65490",
     "title": "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
     "url": "https://www.ssa.gov/retirement/plan-for-retirement",
@@ -127,6 +137,16 @@
     ]
   },
   {
+    "id": "source-01e68a1148a547ac",
+    "title": "San Jose Holiday Lights：市中心的灯光艺术夜游",
+    "url": "https://www.sanjoseholidaylights.com/tickets",
+    "kind": "event",
+    "contentIds": [
+      "san-jose-holiday-lights-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-02079eed4d340d58",
     "title": "Santana Row 玻璃南瓜艺术节",
     "url": "https://www.sanjose.org/events/glass-pumpkin-festival",
@@ -234,6 +254,16 @@
       "bay-area-new-openings-2026-09",
       "hey-yogurt-san-mateo"
     ]
+  },
+  {
+    "id": "source-0322b2b2b9b45d31",
+    "title": "Palo Alto 儿童图书馆过“雅尔达之夜”：伊朗冬至故事和手工",
+    "url": "https://paloalto.bibliocommons.com/events/6abc44f5295b3b0033ca0dd7",
+    "kind": "event",
+    "contentIds": [
+      "pacl-childrens-library-yalda-night-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-0327f4ae0586aee7",
@@ -361,6 +391,16 @@
     "contentIds": [
       "point-reyes-bear-valley-first-visit-guide"
     ]
+  },
+  {
+    "id": "source-05163ac2f12fe5a1",
+    "title": "Berkeley Telegraph 大道节日手作市集：200 多个本地手工艺人",
+    "url": "https://www.telegraphfair.com/",
+    "kind": "event",
+    "contentIds": [
+      "telegraph-holiday-street-fair-2026"
+    ],
+    "endDate": "2026-12-24"
   },
   {
     "id": "source-057a32f2cfc515e8",
@@ -517,6 +557,16 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-07c3c7942b0c68f3",
+    "title": "Grace 座堂《Sing You a Merry Christmas》：全家一起唱的圣诞演出",
+    "url": "https://gracecathedral.org/series/sing-you-a-merry-christmas-2/",
+    "kind": "event",
+    "contentIds": [
+      "grace-cathedral-sing-merry-christmas-2026"
+    ],
+    "endDate": "2026-12-23"
+  },
+  {
     "id": "source-07ecc3edc13675ce",
     "title": "Litquake Out Loud 与独立出版书市",
     "url": "https://www.litquake.org/events-1/litquake-out-loud-1",
@@ -551,9 +601,11 @@
     "url": "https://www.dunkindonuts.com/contact-us/",
     "kind": "offer",
     "contentIds": [
+      "bay-area-birthday-perks",
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
+      "dunkin-birthday-triple-points",
       "dunkin-survey-donut-2026"
     ]
   },
@@ -657,6 +709,9 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
+      "homedepot-christmas-car-ornament-nov21-2026",
+      "homedepot-dump-truck-nov7-2026",
+      "homedepot-holiday-train-dec5-2026",
       "homedepot-monthly-kids-workshops",
       "homedepot-october-preview"
     ]
@@ -1089,7 +1144,7 @@
     "contentIds": [
       "sjpl-alum-rock-basic-english-2026"
     ],
-    "endDate": "2026-12-13"
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-10803a7443b15558",
@@ -1099,6 +1154,26 @@
     "contentIds": [
       "bay-area-outlets-malls-shopping-guide"
     ]
+  },
+  {
+    "id": "source-10826e342d358cbf",
+    "title": "Evergreen 分馆周日亲子故事时间，之后留下来玩",
+    "url": "https://sjpl.bibliocommons.com/events/6a722151e30fe4845966cabf",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-evergreen-sunday-storytime-winter-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
+    "id": "source-10b17a0741f814a5",
+    "title": "Mitchell Park 图书馆周六 STEAM：自己做“雪”",
+    "url": "https://paloalto.bibliocommons.com/events/6a46e77fb96ccc750c590cc6",
+    "kind": "event",
+    "contentIds": [
+      "pacl-mitchell-park-steam-snow-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-113c1535b609abc2",
@@ -1195,6 +1270,16 @@
       "target-beauty-sep26"
     ],
     "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-12b9106bbe7d6a0c",
+    "title": "Parkside 分馆周日下午亲子故事时间（12 月）",
+    "url": "https://sfpl.org/events/2026/12/20/storytime-families",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-parkside-sunday-storytime-dec-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-12c0e94a730d",
@@ -1388,6 +1473,16 @@
     ]
   },
   {
+    "id": "source-15cde118e0aa68e2",
+    "title": "Oakley 图书馆周六乐高俱乐部",
+    "url": "https://ccclib.bibliocommons.com/events/693b45024be11d3d00d7a427",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-oakley-lego-club-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-15da3d674801f1db",
     "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
     "url": "https://patch.com/california/walnutcreek/amp/34737505/fashion-brand-opening-new-store-in-walnut-creek",
@@ -1436,6 +1531,16 @@
       "roundup-novato-dia-muertos-2026"
     ],
     "endDate": "2026-10-24"
+  },
+  {
+    "id": "source-165812c2864d2e28",
+    "title": "Calabazas 分馆《水浒传》儿童读书会：全程普通话",
+    "url": "https://sjpl.bibliocommons.com/events/6a5fb68ac7e02e3d006aacd5",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-calabazas-water-margin-kids-book-club-2026"
+    ],
+    "endDate": "2026-12-14"
   },
   {
     "id": "source-16bec81a07757820",
@@ -1726,6 +1831,16 @@
     "endDate": "2026-10-18"
   },
   {
+    "id": "source-1bcb1d5e7b602ba6",
+    "title": "Noah’s 生日鸡蛋三明治：需同时购物",
+    "url": "https://locations.noahs.com/us/ca/berkeley",
+    "kind": "offer",
+    "contentIds": [
+      "noahs-birthday-egg-sandwich-with-purchase",
+      "noahs-welcome-bagel-with-purchase"
+    ]
+  },
+  {
     "id": "source-1c33a893621ee530",
     "title": "帮长辈识破冒充官员和亲人急事的诈骗",
     "url": "https://www.ssa.gov/scam/",
@@ -1864,6 +1979,18 @@
       "tech-teachers-tacos-oct23-2026"
     ],
     "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-1df418c83379b3b4",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.apple.com/retail/unionsquare/",
+    "kind": "guide",
+    "contentIds": [
+      "apple-union-square-free-sessions",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals"
+    ]
   },
   {
     "id": "source-1e7e3fdafb8d07eb",
@@ -2089,6 +2216,16 @@
       "bay-area-october-muni-clipper-payment-update-2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-219789e480982cf1",
+    "title": "Sunset 分馆麻将：上午新手班、下午麻将会",
+    "url": "https://sfpl.org/events/2026/12/26/workshop-mahjong-beginners",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-sunset-mahjong-dec26-2026"
+    ],
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-21f461ec77e63a5a",
@@ -2424,6 +2561,16 @@
     ]
   },
   {
+    "id": "source-26251c1cb4b4bfaf",
+    "title": "Los Altos 图书馆湾区桌游日：从 1998 年办到现在",
+    "url": "https://sccl.bibliocommons.com/events/6961562d8b29ea2800c880a9",
+    "kind": "event",
+    "contentIds": [
+      "sccl-los-altos-bay-area-games-day-2026"
+    ],
+    "endDate": "2026-12-19"
+  },
+  {
     "id": "source-264a41b364241313",
     "title": "Crab Cove 海湾晨间观鸟：6岁起可报名",
     "url": "https://anc.apm.activecommunities.com/ebparks/activity/search/detail/60889",
@@ -2508,6 +2655,7 @@
     "url": "https://www.redrobin.com/locations/ca/sanbruno/san-bruno-193",
     "kind": "offer",
     "contentIds": [
+      "redrobin-royalty-welcome-appetizer",
       "roundup-red-robin-kids-birthday-2026"
     ]
   },
@@ -2587,6 +2735,16 @@
       "san-jose-waterways-art-climate-2026"
     ],
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-27f0ad04a88450d5",
+    "title": "Hiller 航空博物馆圣诞周末三场亲子活动：滑翔机、驾驶舱、机器人",
+    "url": "https://www.hiller.org/event/glider-discovery/2026-10-11/",
+    "kind": "event",
+    "contentIds": [
+      "hiller-aviation-holiday-week-programs-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-28172e0e66590113",
@@ -2962,6 +3120,18 @@
     ]
   },
   {
+    "id": "source-2f9697a31c19208e",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.target.com/l/target-circle-360/-/N-2rguk",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "target-circle-360-paid-monthly-gifts"
+    ]
+  },
+  {
     "id": "source-2fda347f76043765",
     "title": "Walnut Creek Diablo Improv：即兴喜剧周末",
     "url": "https://diabloimprovfestival.org/",
@@ -3222,9 +3392,12 @@
     "url": "https://www.michaels.com/customer-care/classes-events-and-parties/in-store-events-faq",
     "kind": "guide",
     "contentIds": [
-      "bay-area-freebies-deals-2026-09"
-    ],
-    "endDate": "2026-09-30"
+      "bay-area-freebies-deals-2026-09",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "michaels-makebreak-buy-base"
+    ]
   },
   {
     "id": "source-34ba43c70d636ee2",
@@ -3567,6 +3740,16 @@
     ]
   },
   {
+    "id": "source-39089d7844424378",
+    "title": "Roseland 图书馆“环球零食”12 月场：音乐、问答和一个国家的零食",
+    "url": "https://events.sonomalibrary.org/event/global-goodies-117007",
+    "kind": "event",
+    "contentIds": [
+      "scl-roseland-global-goodies-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
+  },
+  {
     "id": "source-3912fb58959ba370",
     "title": "湾区成人英语课：找到免费课程，也找到能坚持的时间表",
     "url": "https://www.ccsf.edu/admissions-recordsregistration/noncredit-admission",
@@ -3645,6 +3828,16 @@
       "sf-family-rain-fog-car-free-october-2026",
       "sf-first-72-hours-car-free-october-2026"
     ]
+  },
+  {
+    "id": "source-3a911f821d886b75",
+    "title": "Oakland Ballet《胡桃夹子》：Paramount 剧院两场日场",
+    "url": "https://oaklandballet.org/performances-events/graham-lustigs-the-nutcracker/",
+    "kind": "event",
+    "contentIds": [
+      "oakland-ballet-nutcracker-paramount-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-3aee6cd0d12e472a",
@@ -3841,6 +4034,16 @@
     ]
   },
   {
+    "id": "source-3de9a1d42c9c55bf",
+    "title": "Dougherty Station 图书馆周六亲子桌游和象棋",
+    "url": "https://ccclib.bibliocommons.com/events/6950638a7f0b8a3e004e5991",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-dougherty-station-family-games-2026"
+    ],
+    "endDate": "2026-12-26"
+  },
+  {
     "id": "source-3df6e2c935001055",
     "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
     "url": "https://asialivesv.com/press-page/",
@@ -3849,6 +4052,16 @@
       "bay-area-new-openings-2026-09"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-3e047758424844f3",
+    "title": "Santa Rosa 中央图书馆周日“给狗狗读书”",
+    "url": "https://events.sonomalibrary.org/event/read-dog-91171",
+    "kind": "event",
+    "contentIds": [
+      "scl-central-santa-rosa-read-to-dog-dec-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-3e323ea54a86cd33",
@@ -3880,6 +4093,26 @@
       "bay-area-new-openings-2026-09"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-3e70551da3eefacb",
+    "title": "奥克兰动物园 Glowfari：大型动物灯组夜游",
+    "url": "https://www.oaklandzoo.org/programs-and-events/glowfari-2026-27/",
+    "kind": "event",
+    "contentIds": [
+      "oakland-zoo-glowfari-2026"
+    ],
+    "endDate": "2027-01-31"
+  },
+  {
+    "id": "source-3ecb2d69979621bf",
+    "title": "奥克兰亚裔分馆周四幼儿故事时间（12 月）",
+    "url": "https://oaklandlibrary.bibliocommons.com/events/6488c97a5714a0bd276a7cf4",
+    "kind": "event",
+    "contentIds": [
+      "opl-asian-branch-toddler-storytime-dec-2026"
+    ],
+    "endDate": "2026-12-17"
   },
   {
     "id": "source-3efe666c90a5cdc9",
@@ -3993,6 +4226,16 @@
     ]
   },
   {
+    "id": "source-40fea40e75ddd131",
+    "title": "湾区探索博物馆冬季主题“Winter wonderlab”：无冰溜冰场和大姜饼屋",
+    "url": "https://bayareadiscoverymuseum.org/events/",
+    "kind": "event",
+    "contentIds": [
+      "bay-area-discovery-museum-winter-wonderlab-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-4119e5621679d126",
     "title": "McDonald's 满$1领中薯，每周一次至10/4",
     "url": "https://www.mcdonalds.com/us/en-us/restaurant-locator.html",
@@ -4040,6 +4283,15 @@
       "stanford-halloween-concert-2026"
     ],
     "endDate": "2026-10-30"
+  },
+  {
+    "id": "source-42142e023e0f00f0",
+    "title": "Dunkin’ 生日福利是 3 倍积分，需消费",
+    "url": "https://www.dunkindonuts.com/locations/us/ca/walnut-creek/1250-newell-ave/store-355054/",
+    "kind": "offer",
+    "contentIds": [
+      "dunkin-birthday-triple-points"
+    ]
   },
   {
     "id": "source-422884c5f23bb1be",
@@ -4118,6 +4370,16 @@
     "contentIds": [
       "angel-island-ferry-first-day-guide"
     ]
+  },
+  {
+    "id": "source-4429709bb7cd3846",
+    "title": "纳帕 Meritage 度假村户外溜冰场：一场 90 分钟，含租鞋",
+    "url": "https://www.meritageresort.com/experience/event-calendar/ice-skating/",
+    "kind": "event",
+    "contentIds": [
+      "meritage-holiday-ice-skating-2026"
+    ],
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-4469115e8e98bff8",
@@ -4273,7 +4535,7 @@
     "contentIds": [
       "scl-forestville-saturday-storytime-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-4637e1cb3264eb8c",
@@ -4357,6 +4619,18 @@
     ]
   },
   {
+    "id": "source-480364b99a75dbbf",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.lego.com/en-us/stores/events/lbr-26mt-ghost-street",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "lego-ghost-street-stoneridge-oct25-2026"
+    ]
+  },
+  {
     "id": "source-4807ba8b001f744d",
     "title": "旧金山学校与学区：从地址核对到 SFUSD 入学",
     "url": "https://www.ccsf.edu/apply-ccsf/start-here",
@@ -4393,6 +4667,16 @@
       "target-beauty-sep26"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-48daf9766f10f047",
+    "title": "Exploratorium 冬季光影展 Glow：在科学馆里玩光",
+    "url": "https://www.exploratorium.edu/visit/calendar/glow",
+    "kind": "event",
+    "contentIds": [
+      "exploratorium-glow-2026"
+    ],
+    "endDate": "2027-01-24"
   },
   {
     "id": "source-48ecd37ee389bbc9",
@@ -4514,6 +4798,26 @@
     "endDate": "2026-10-04"
   },
   {
+    "id": "source-4bb70db8405ef66a",
+    "title": "奥克兰图书馆 MOCHA 儿童美术工作坊：三个周六在三个分馆",
+    "url": "https://oaklandlibrary.bibliocommons.com/events/6a837653bf1aec09082b3f3a",
+    "kind": "event",
+    "contentIds": [
+      "opl-mocha-family-art-workshops-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
+    "id": "source-4c203a42c600fd06",
+    "title": "Village Square 分馆冬日派对：提线木偶表演、手工和点心",
+    "url": "https://sjpl.bibliocommons.com/events/6a765ac288e9bf28003653b4",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-village-square-winter-celebration-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
+  },
+  {
     "id": "source-4c3a376417842498",
     "title": "Pleasanton 周六上午：农夫市集买两餐，再进免费社区博物馆",
     "url": "https://www.museumonmain.org/visitcontact.html",
@@ -4532,6 +4836,26 @@
       "uptown-brian-regan-2026"
     ],
     "endDate": "2026-10-09"
+  },
+  {
+    "id": "source-4c9c718be77ccfb1",
+    "title": "Danville 图书馆“中午跨年”故事会：提前一个周末迎新年",
+    "url": "https://ccclib.bibliocommons.com/events/6aac8697607483003827bf95",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-danville-noon-years-eve-storytime-dec26-2026"
+    ],
+    "endDate": "2026-12-26"
+  },
+  {
+    "id": "source-4c9ee2385a31925b",
+    "title": "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
+    "url": "https://sfpl.org/events/2026/12/19/tutorial-tech-help-kejixiezhu",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-sunset-mandarin-tech-help-dec-2026"
+    ],
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-4ca79c53e0713b68",
@@ -4707,6 +5031,16 @@
     "endDate": "2026-10-30"
   },
   {
+    "id": "source-4f5f5a5b6694c2b7",
+    "title": "San Mateo On Ice：中央公园户外溜冰场，含冰鞋",
+    "url": "https://onicerinks.com/activities/public-skate-sessions/",
+    "kind": "event",
+    "contentIds": [
+      "san-mateo-on-ice-public-skate-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-4f8440786da1664c",
     "title": "帮长辈识破冒充官员和亲人急事的诈骗",
     "url": "https://www.ic3.gov/CrimeInfo/ChineseAuthorityImpersonation",
@@ -4748,6 +5082,16 @@
     "endDate": "2026-11-27"
   },
   {
+    "id": "source-4fed3851da4355de",
+    "title": "奥克兰 Dimond 分馆儿童手工时间",
+    "url": "https://oaklandlibrary.bibliocommons.com/events/6a889c2ebe14820029890d25",
+    "kind": "event",
+    "contentIds": [
+      "opl-dimond-kids-arts-crafts-2026"
+    ],
+    "endDate": "2026-12-26"
+  },
+  {
     "id": "source-4ff94c27298b1b82",
     "title": "东湾学校与学区：先查地址，再找对招生办公室",
     "url": "https://www.mdusd.org/families/enrollmentservices/enrollnow",
@@ -4765,6 +5109,28 @@
       "livermore-great-elephant-migration-2026"
     ],
     "endDate": "2026-12-06"
+  },
+  {
+    "id": "source-508e578e98b7fec0",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.redrobin.com/rewards",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "redrobin-royalty-welcome-appetizer"
+    ]
+  },
+  {
+    "id": "source-5095ec81662901b1",
+    "title": "Willow Glen 分馆周四一对一电脑辅导：可以用普通话",
+    "url": "https://sjpl.bibliocommons.com/events/68df10f9023ff328007ce8dd",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-willow-glen-mandarin-tech-help-dec-2026"
+    ],
+    "endDate": "2026-12-17"
   },
   {
     "id": "source-50d07fc13f7e36ef",
@@ -4855,6 +5221,16 @@
     ]
   },
   {
+    "id": "source-527481398a9dc29b",
+    "title": "Portola 分馆做菲律宾圣诞星灯 Parol：7–18 岁手工",
+    "url": "https://sfpl.org/events/2026/12/19/workshop-2d-parol-decorating-ethel-mahara",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-portola-parol-workshop-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
+  },
+  {
     "id": "source-527d166cf051eb1c",
     "title": "湾区秋季新店手册：餐厅、咖啡与街角新面孔",
     "url": "https://www.sonomacounty.com/media/whats-new/whats-new-in-sonoma-county-summer-2026/",
@@ -4914,6 +5290,16 @@
       "bay-area-freebies-deals-2026-11",
       "smcl-discover-go"
     ]
+  },
+  {
+    "id": "source-53c796e5dc0a90d0",
+    "title": "旧金山总馆周六亲子故事时间（12 月）",
+    "url": "https://sfpl.org/events/2026/12/19/storytime-families-2",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-main-family-storytime-dec-2026"
+    ],
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-53ec73e00e075885",
@@ -5286,12 +5672,34 @@
     ]
   },
   {
+    "id": "source-5aa455da2d3fce13",
+    "title": "85°C App 新会员海盐咖啡礼",
+    "url": "https://www.85cbakerycafe.com/location/",
+    "kind": "offer",
+    "contentIds": [
+      "85c-new-member-sea-salt-coffee",
+      "85c-vip-birthday-cake-slice-half"
+    ]
+  },
+  {
     "id": "source-5ac867e0bbe25d95",
     "title": "湾区购物去哪儿：Outlet、Shopping Mall 与热门购物街区全攻略",
     "url": "https://www.hillsdaleshoppingcenter.com/",
     "kind": "guide",
     "contentIds": [
       "bay-area-outlets-malls-shopping-guide"
+    ]
+  },
+  {
+    "id": "source-5b2b275ee42f7b16",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.85cbakerycafe.com/",
+    "kind": "guide",
+    "contentIds": [
+      "85c-new-member-sea-salt-coffee",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals"
     ]
   },
   {
@@ -5457,6 +5865,26 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "source-5dfc60f86eb1310e",
+    "title": "Fremont 总馆周日亲子桌游：大富翁、妙探寻凶都有",
+    "url": "https://aclibrary.bibliocommons.com/events/6a6bb1a53f18b57d52320cac",
+    "kind": "event",
+    "contentIds": [
+      "acl-fremont-funday-family-board-games-2026"
+    ],
+    "endDate": "2026-12-27"
+  },
+  {
+    "id": "source-5e4329e27c89f30d",
+    "title": "New Ballet《圣何塞胡桃夹子》：放进老圣何塞的胡桃夹子，另有幼儿短版",
+    "url": "https://newballet.com/nutcracker",
+    "kind": "event",
+    "contentIds": [
+      "new-ballet-san-jose-nutcracker-2026"
+    ],
+    "endDate": "2026-12-27"
+  },
+  {
     "id": "source-5e4b6b9214f1498c",
     "title": "Fremont 的湿地半日：Coyote Hills 看鸟与短线散步",
     "url": "https://www.ebparks.org/parks/visitor-centers/coyote-hills",
@@ -5504,7 +5932,7 @@
     "contentIds": [
       "octnov-marin-holiday-lights-2026"
     ],
-    "endDate": "2026-11-30"
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-5f4470f791e3a234",
@@ -5584,6 +6012,16 @@
     "endDate": "2026-10-10"
   },
   {
+    "id": "source-60dbd7bfeee1f3b9",
+    "title": "Gilroy Gardens 北极之夜：节日灯饰、角色见面和现场表演",
+    "url": "https://www.gilroygardens.org/holiday/",
+    "kind": "event",
+    "contentIds": [
+      "gilroy-gardens-north-pole-nights-2026"
+    ],
+    "endDate": "2026-12-30"
+  },
+  {
     "id": "source-60dca65721b0b117",
     "title": "Pleasanton 节日游行和圣诞树点灯：市中心 Main Street",
     "url": "https://www.cityofpleasantonca.gov/your-community/arts-theaters-events/hometown-holiday-celebration/",
@@ -5601,7 +6039,7 @@
     "contentIds": [
       "sjpl-berryessa-mandarin-ell-club-winter-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-60f645d64c8a1de5",
@@ -5611,7 +6049,7 @@
     "contentIds": [
       "sfpl-glen-park-saturday-playtimes-dec-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-6104f69fd0325647",
@@ -5674,6 +6112,19 @@
       "sfpl-richmond-hk-film-hard-boiled-2026"
     ],
     "endDate": "2026-11-14"
+  },
+  {
+    "id": "source-6203262c25c6d937",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.benihana.com/loyalty/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "benihana-kabuki-kids-birthday"
+    ]
   },
   {
     "id": "source-6213597c2802",
@@ -5819,6 +6270,16 @@
     ]
   },
   {
+    "id": "source-63d6731ae691945c",
+    "title": "Hillview 分馆周六手工时间：材料全包",
+    "url": "https://sjpl.bibliocommons.com/events/69445123571fb4d550be6389",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-hillview-saturday-fun-crafts-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-644b32224a8df132",
     "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始",
     "url": "https://www.irs.gov/individuals/free-tax-return-preparation-for-qualifying-taxpayers",
@@ -5835,6 +6296,16 @@
     "contentIds": [
       "sf-visitor-meals-markets-dietary-booking-2026"
     ]
+  },
+  {
+    "id": "source-64d1916692ed9d38",
+    "title": "Marin City 图书馆周六俄语故事时间",
+    "url": "https://marinlibrary.bibliocommons.com/events/6aa45810ca248a0029152ed7",
+    "kind": "event",
+    "contentIds": [
+      "marin-city-russian-storytime-2026"
+    ],
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-64d86b2a6237537c",
@@ -6273,6 +6744,16 @@
     "endDate": "2026-11-22"
   },
   {
+    "id": "source-6c12170ca19d1a29",
+    "title": "奥克兰 Lakeview 分馆象棋俱乐部：每月第一、三个周六",
+    "url": "https://oaklandlibrary.bibliocommons.com/events/695bf20c1f01fb76cec4d4a3",
+    "kind": "event",
+    "contentIds": [
+      "opl-lakeview-chess-club-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-6c134882146dab15",
     "title": "The MAC：Eames & Eames 现代设计展",
     "url": "https://napavalleymuseum.org/blogs/upcoming-exhibitions/eames-eames",
@@ -6319,6 +6800,20 @@
     "kind": "guide",
     "contentIds": [
       "palo-alto-baylands-family-walk-guide"
+    ]
+  },
+  {
+    "id": "source-6d02f00f80858577",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://parisbaguette.com/rewards/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "parisbaguette-birthday-cake-slice",
+      "parisbaguette-welcome-pastry-with-purchase"
     ]
   },
   {
@@ -6373,6 +6868,16 @@
       "bay-area-retail-freebies-family-deals",
       "ikes-love-welcome-sandwich"
     ]
+  },
+  {
+    "id": "source-6df0bb84b1e35243",
+    "title": "Cupertino 图书馆周五晚上中英双语故事时间",
+    "url": "https://sccl.bibliocommons.com/events/6ad110129dbc2b002c8ed272",
+    "kind": "event",
+    "contentIds": [
+      "sccl-cupertino-mandarin-bilingual-storytime-dec-2026"
+    ],
+    "endDate": "2026-12-18"
   },
   {
     "id": "source-6e09345764fd42c8",
@@ -6669,6 +7174,16 @@
     ]
   },
   {
+    "id": "source-737776df2968edaf",
+    "title": "Seven Trees 分馆周日桌游区",
+    "url": "https://sjpl.bibliocommons.com/events/6944507e293fe254002a1f39",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-seven-trees-board-game-zone-winter-2026"
+    ],
+    "endDate": "2026-12-27"
+  },
+  {
     "id": "source-73c5f1fa191dc8fc",
     "title": "2026 年 9 月剩余湾区优惠：Target 样品盒、$1 冷萃与 25¢ 咖啡",
     "url": "https://www.85cbakerycafe.com/menu_tag/top-picks/",
@@ -6854,6 +7369,16 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "source-779471b2aed25b2a",
+    "title": "Santa Rosa 图书馆木偶剧《The Muffin Man》：两个分馆各演一场",
+    "url": "https://events.sonomalibrary.org/event/muffin-man-117155",
+    "kind": "event",
+    "contentIds": [
+      "scl-muffin-man-puppets-dec-2026"
+    ],
+    "endDate": "2026-12-26"
+  },
+  {
     "id": "source-78224f77a2e09ae1",
     "title": "加州驾照与 ID 办理准备：先分清申请类型，再整理材料",
     "url": "https://www.dmv.ca.gov/portal/vehicle-registration/insurance-requirements/",
@@ -7003,6 +7528,16 @@
     ]
   },
   {
+    "id": "source-79c3932a539bf759",
+    "title": "Seven Trees 分馆宝莱坞舞蹈：每月第一个周六，全家一起跳",
+    "url": "https://sjpl.bibliocommons.com/events/6a405c29c52cdc3600ed5ad8",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-seven-trees-bollywood-dance-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-79cfd049a3215bcf",
     "title": "10/10：免费做毛线绕线相框",
     "url": "https://www.michaels.com/class/lil%E2%80%99-witching-hours:-yarn-wrapped-frame-165030091807112",
@@ -7131,7 +7666,7 @@
     "contentIds": [
       "opl-main-family-storytime-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2027-01-02"
   },
   {
     "id": "source-7c2fd76ab527714b",
@@ -7269,6 +7804,16 @@
     "endDate": "2026-10-07"
   },
   {
+    "id": "source-7e6b214cccd9bd04",
+    "title": "Bernal Heights 分馆亲子舞会：跟着音乐“抖掉傻气”",
+    "url": "https://sfpl.org/events/2026/12/26/social-family-dance-party",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-bernal-family-dance-party-dec26-2026"
+    ],
+    "endDate": "2026-12-26"
+  },
+  {
     "id": "source-7e838b10ef727d74",
     "title": "JuXi",
     "url": "https://www.juxialameda.com/",
@@ -7399,6 +7944,26 @@
     "endDate": "2026-11-07"
   },
   {
+    "id": "source-80089a294386441a",
+    "title": "Millbrae 中文手机课：清理 Google Drive 和 iCloud 空间",
+    "url": "https://smcl.bibliocommons.com/events/6a8e0295aafa6100295f1948",
+    "kind": "event",
+    "contentIds": [
+      "smcl-millbrae-phone-storage-mandarin-dec16-2026"
+    ],
+    "endDate": "2026-12-16"
+  },
+  {
+    "id": "source-80ccb36ffd3453a8",
+    "title": "总馆粤语英语双语亲子故事时间（12/31）",
+    "url": "https://sfpl.org/events/2026/12/31/storytime-families-bilingual-englishyueyukecheng-cantonese",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-main-cantonese-storytime-dec31-2026"
+    ],
+    "endDate": "2026-12-31"
+  },
+  {
     "id": "source-80e395ae8e506617",
     "title": "圣何塞攻略",
     "url": "https://www.thetech.org/visit",
@@ -7416,6 +7981,16 @@
       "sfpl-excelsior-multilingual-tech-help-2026"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-81115696ce9c4d6c",
+    "title": "Ingleside 分馆周日国际象棋俱乐部：志愿者教，5 岁以上都能来",
+    "url": "https://sfpl.org/events/2026/12/20/activity-chess-club",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-ingleside-chess-club-dec-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-81243e37ea9f990e",
@@ -7462,9 +8037,11 @@
     "url": "https://www.jamba.com/about/faq",
     "kind": "offer",
     "contentIds": [
+      "bay-area-birthday-perks",
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
+      "jamba-birthday-small-smoothie",
       "jamba-welcome-half-price"
     ]
   },
@@ -7486,6 +8063,16 @@
       "sausalito-toast-street-fair-oct17-2026"
     ],
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-8206adf7d438281b",
+    "title": "Foster City 图书馆创客时间：自己设计 3D 打印、激光切割钥匙扣",
+    "url": "https://smcl.bibliocommons.com/events/6937502d6f9261360009f50d",
+    "kind": "event",
+    "contentIds": [
+      "smcl-foster-city-maker-exploration-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-82203848da57804c",
@@ -7525,6 +8112,16 @@
     "contentIds": [
       "bay-area-k12-midyear-enrollment-guide"
     ]
+  },
+  {
+    "id": "source-835fda7f046c8ea9",
+    "title": "Joyce Ellington 分馆周日桌游时间",
+    "url": "https://sjpl.bibliocommons.com/events/6aa4453c65abe8002a787210",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-joyce-ellington-game-on-winter-2026"
+    ],
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-8365b69584d7e141",
@@ -7597,7 +8194,7 @@
     "contentIds": [
       "marin-south-novato-storytime-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-8498415a2057ab00",
@@ -7607,7 +8204,7 @@
     "contentIds": [
       "ccclib-pleasant-hill-lego-club-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2027-01-02"
   },
   {
     "id": "source-84abe5f002741dca",
@@ -7686,6 +8283,15 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-861f6c8b79aacd44",
+    "title": "加州 Staples 回收打印机、显示器和电池免费",
+    "url": "https://stores.staples.com/ca/fremont",
+    "kind": "offer",
+    "contentIds": [
+      "staples-ca-recycling-fee-waiver"
+    ]
+  },
+  {
     "id": "source-862b24c942cb1576",
     "title": "Downtown Vacaville 21+ Boo Bash",
     "url": "https://downtownvacaville.com/events-in-downtown-vacaville/",
@@ -7709,6 +8315,16 @@
       "lakeshore-stained-glass-oct24-2026"
     ],
     "endDate": "2026-12-05"
+  },
+  {
+    "id": "source-865c0423dcf7c008",
+    "title": "CuriOdyssey 光影展 IlluminOdyssey 十周年：玩光的科学",
+    "url": "https://curiodyssey.org/exhibits-events/illuminodyssey/",
+    "kind": "event",
+    "contentIds": [
+      "curiodyssey-illuminodyssey-2026"
+    ],
+    "endDate": "2027-01-24"
   },
   {
     "id": "source-867bdf6e7c45622a",
@@ -7746,6 +8362,28 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-street-parking-first-time-guide"
+    ]
+  },
+  {
+    "id": "source-86dd466fa67b8560",
+    "title": "音乐剧《Elf》圣诞巡演到旧金山 Golden Gate Theatre",
+    "url": "https://us.atgtickets.com/events/elf-the-musical/golden-gate-theatre/",
+    "kind": "event",
+    "contentIds": [
+      "elf-musical-golden-gate-theatre-2026"
+    ],
+    "endDate": "2026-12-20"
+  },
+  {
+    "id": "source-86ebed046782bcf0",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.bjsrestaurants.com/rewards?category=ALL",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "bjs-new-member-pizookie"
     ]
   },
   {
@@ -7831,10 +8469,12 @@
     "kind": "guide",
     "contentIds": [
       "85c-september-cake",
+      "85c-vip-birthday-cake-slice-half",
+      "bay-area-birthday-perks",
       "bay-area-freebies-deals-2026-10",
-      "bay-area-freebies-deals-2026-11"
-    ],
-    "endDate": "2026-11-30"
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals"
+    ]
   },
   {
     "id": "source-884abc426a2f545c",
@@ -8408,6 +9048,16 @@
     ]
   },
   {
+    "id": "source-918450454a2de46d",
+    "title": "Berkeley Ballet《胡桃夹子之鸟》：在奥克兰演出的自然版胡桃夹子",
+    "url": "https://www.berkeleyballet.org/nutcracker",
+    "kind": "event",
+    "contentIds": [
+      "berkeley-ballet-nutcracker-bird-2026"
+    ],
+    "endDate": "2026-12-20"
+  },
+  {
     "id": "source-91923d144c557359",
     "title": "Kacey Musgraves 奥克兰演唱会",
     "url": "https://www.theoaklandarena.com/events/detail/kacey-musgraves-1",
@@ -8560,6 +9210,18 @@
     ]
   },
   {
+    "id": "source-93807cf215870191",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.sephora.com/happening/stores/berkeley",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "sephora-berkeley-free-sampling"
+    ]
+  },
+  {
     "id": "source-93a5f66b016f17c4",
     "title": "Sergeant Ma",
     "url": "https://www.sergeantma.com/",
@@ -8690,6 +9352,16 @@
     ]
   },
   {
+    "id": "source-95e93e438da5ec05",
+    "title": "纳帕 Meritage 圣诞姜饼屋亲子工作坊：一大一小一张票",
+    "url": "https://www.meritageresort.com/experience/event-calendar/santas-gingerbread-house-workshop/",
+    "kind": "event",
+    "contentIds": [
+      "meritage-gingerbread-house-workshop-2026"
+    ],
+    "endDate": "2026-12-23"
+  },
+  {
     "id": "source-961a796739ccebb0",
     "title": "刚搬来湾区：前 7 天与 30 天的办事顺序、材料和完成标准",
     "url": "https://211bayarea.org/about-211-bay-area/",
@@ -8735,6 +9407,16 @@
     "contentIds": [
       "san-jose-tech-japantown-day-trip"
     ]
+  },
+  {
+    "id": "source-96743977a34505c1",
+    "title": "Milpitas 图书馆幼儿音乐会 Tiny Toots：Bingo Schmingo",
+    "url": "https://sccl.bibliocommons.com/events/6a68e7d4e9de6536001ed06c",
+    "kind": "event",
+    "contentIds": [
+      "sccl-milpitas-tiny-toots-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-96789f4be7a63d4c",
@@ -8843,7 +9525,7 @@
     "contentIds": [
       "opl-asian-branch-family-time-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-980aeebcb8ff16db",
@@ -8873,6 +9555,15 @@
     ]
   },
   {
+    "id": "source-98406f1db4d6c36a",
+    "title": "Ben & Jerry’s 会员生日优惠，内容每月不同",
+    "url": "https://www.benjerry.com/jacklondon",
+    "kind": "offer",
+    "contentIds": [
+      "benjerry-flavor-fanatics-birthday"
+    ]
+  },
+  {
     "id": "source-985d06e1f3120549",
     "title": "免费 Día de los Muertos 家庭庆典",
     "url": "https://sanbruno.ca.gov/Calendar.aspx?EID=5584&calType=0&day=17&month=10&year=2026",
@@ -8899,6 +9590,16 @@
     "contentIds": [
       "bay-area-naturalization-official-path-guide"
     ]
+  },
+  {
+    "id": "source-98ec86739eb3e971",
+    "title": "Belmont 图书馆周末创客空间：有时做科技，有时做手工",
+    "url": "https://smcl.bibliocommons.com/events/6a5546ebc7e02e3d0068e100",
+    "kind": "event",
+    "contentIds": [
+      "smcl-belmont-maker-hangout-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-98f71c343502746c",
@@ -8951,6 +9652,16 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "source-997279d25a075dac",
+    "title": "Saratoga 图书馆冬日魔术秀：魔术师 Mike Della Penna",
+    "url": "https://sccl.bibliocommons.com/events/6a9615a569166f088b965900",
+    "kind": "event",
+    "contentIds": [
+      "sccl-saratoga-winter-magic-show-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
+  },
+  {
     "id": "source-998d197c4cb5eca9",
     "title": "Palo Alto Mitchell Park 图书馆周六亲子故事时间",
     "url": "https://paloalto.bibliocommons.com/events/698e125a2a787a47a5e73be7",
@@ -8990,6 +9701,20 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-9a674d0fb3889105",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://togrp.com/friends-with-benefits-rewards-terms-of-use/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "benihana-fwb-birthday-50",
+      "benihana-fwb-welcome-starter"
+    ]
+  },
+  {
     "id": "source-9a8d548bce8767fb",
     "title": "15岁及以下免费钓鱼比赛",
     "url": "https://www.antiochca.gov/216/Kids-Fishing-Derby",
@@ -9015,6 +9740,18 @@
     "kind": "guide",
     "contentIds": [
       "peninsula-school-district-enrollment-guide"
+    ]
+  },
+  {
+    "id": "source-9b0e023e11f5ca4b",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.ulta.com/beautyservices/store-events/carolina-herrerra/alameda/694608?eventStyle=TimeSlot",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "ulta-alameda-million-fragrance-oct17-2026"
     ]
   },
   {
@@ -9538,6 +10275,15 @@
       "burlingame-mandarin-storytime-2026"
     ],
     "endDate": "2026-10-10"
+  },
+  {
+    "id": "source-a56054ca86840f5d",
+    "title": "IHOP 新会员首次消费后送 5 片煎饼",
+    "url": "https://restaurants.ihop.com/en-us/ca/san-leandro/breakfast-201-davis-street-3774",
+    "kind": "offer",
+    "contentIds": [
+      "ihop-pancakes-after-first-purchase"
+    ]
   },
   {
     "id": "source-a57dc2b6aaaa5991",
@@ -10084,6 +10830,32 @@
     ]
   },
   {
+    "id": "source-ac89e705ff8cd0be",
+    "title": "Paris Baguette 生日周蛋糕切片：需有过购买",
+    "url": "https://parisbaguette.com/locations/ca/fremont/5009-mowry-avenue/",
+    "kind": "offer",
+    "contentIds": [
+      "parisbaguette-birthday-cake-slice",
+      "parisbaguette-welcome-pastry-with-purchase"
+    ]
+  },
+  {
+    "id": "source-ac917fe6b315a101",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.rei.com/events/100671/hella-bae-running-bi-monthly-community-run-at-rei-berkeley/a02cw00000NmPoTAAV",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "rei-berkeley-hella-bae-run-dec16-2026",
+      "rei-berkeley-hella-bae-run-dec2-2026",
+      "rei-berkeley-hella-bae-run-nov18-2026",
+      "rei-berkeley-hella-bae-run-nov4-2026",
+      "rei-berkeley-hella-bae-run-oct21-2026"
+    ]
+  },
+  {
     "id": "source-ac9342577006cc66",
     "title": "刚搬来湾区：前 7 天与 30 天的办事顺序、材料和完成标准",
     "url": "https://media.api.sf.gov/documents/ReadySF_-_Make_a_plan.pdf",
@@ -10170,6 +10942,16 @@
       "lowes-holiday-engine-nov14-2026"
     ],
     "endDate": "2026-11-14"
+  },
+  {
+    "id": "source-ae195a945164098a",
+    "title": "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
+    "url": "https://sfpl.org/events/2026/12/19/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-chinatown-creative-saturdays-dec-2026"
+    ],
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-ae3dff87ed029389",
@@ -10284,6 +11066,16 @@
     ]
   },
   {
+    "id": "source-af88f7cee11f102d",
+    "title": "Bayer Ballet 芭蕾《冰雪女王》：安徒生童话的两幕芭蕾",
+    "url": "https://www.bayerballet.com/onstage",
+    "kind": "event",
+    "contentIds": [
+      "bayer-ballet-snow-queen-2026"
+    ],
+    "endDate": "2026-12-20"
+  },
+  {
     "id": "source-af890b114a660e13",
     "title": "南湾学校与学区：San José、Cupertino、Sunnyvale 怎么查",
     "url": "https://publicschooldirectory.sccoe.org/",
@@ -10342,6 +11134,16 @@
     ]
   },
   {
+    "id": "source-b052971f9e0a108b",
+    "title": "旧金山动物园 ZooLights：14 个灯光区和恐龙展的夜间游园",
+    "url": "https://www.sfzoo.org/zoolights/",
+    "kind": "event",
+    "contentIds": [
+      "sfzoo-zoolights-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-b061e212910e3db1",
     "title": "Newark Days：巡游、游乐设施与社区舞台，选半天就能玩",
     "url": "https://newarkdays.org/schedule",
@@ -10374,6 +11176,18 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "source-b147e21fbbf26370",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.ihop.com/en",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "ihop-pancakes-after-first-purchase"
+    ]
+  },
+  {
     "id": "source-b17d6ab3c67e12fb",
     "title": "湾区 101 城水电、垃圾、宽带与手机联络大全",
     "url": "https://www.usmobile.com/help/docs/troubleshooting-and-setup/contact-us",
@@ -10400,6 +11214,18 @@
     "contentIds": [
       "bay-area-outlets-malls-shopping-guide"
     ]
+  },
+  {
+    "id": "source-b1c41901734aaa38",
+    "title": "11/21 免费特别场：做圣诞小车挂饰",
+    "url": "https://www.homedepot.com/l/Emeryville/CA/Emeryville/94608/627",
+    "kind": "offer",
+    "contentIds": [
+      "homedepot-christmas-car-ornament-nov21-2026",
+      "homedepot-dump-truck-nov7-2026",
+      "homedepot-holiday-train-dec5-2026"
+    ],
+    "endDate": "2026-12-05"
   },
   {
     "id": "source-b1e9e13bd9d80987",
@@ -10469,6 +11295,26 @@
       "roundup-tiburon-asian-greens-2026"
     ],
     "endDate": "2026-10-08"
+  },
+  {
+    "id": "source-b2746eb0dbdeec3a",
+    "title": "Martinez 图书馆周六故事时间：讲故事、唱儿歌，之后留下来玩",
+    "url": "https://ccclib.bibliocommons.com/events/6a4426b786636e3d0051c80c",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-martinez-storytime-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
+    "id": "source-b2b0dc9b544061c3",
+    "title": "旧金山植物园 Lightscape：一英里夜间灯光步道",
+    "url": "https://gggp.org/lightscape/",
+    "kind": "event",
+    "contentIds": [
+      "sf-botanical-lightscape-2026"
+    ],
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-b2f6f82a3bf35b14",
@@ -10840,7 +11686,7 @@
     "contentIds": [
       "pacl-rinconada-tai-chi-2026"
     ],
-    "endDate": "2026-12-13"
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-b9663505343431eb",
@@ -10994,9 +11840,9 @@
       "michaels-ghost-jar-oct11-2026",
       "michaels-halloween-fest-oct17-2026",
       "michaels-halloween-lantern-oct18-2026",
+      "michaels-makebreak-buy-base",
       "michaels-yarn-frame-oct10-2026"
-    ],
-    "endDate": "2026-10-25"
+    ]
   },
   {
     "id": "source-babcbd69d2bc3a66",
@@ -11125,6 +11971,16 @@
     ]
   },
   {
+    "id": "source-bd593884325ef461",
+    "title": "Hillview 分馆周日亲子故事时间，之后留下来玩",
+    "url": "https://sjpl.bibliocommons.com/events/684dbac685662d08198690eb",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-hillview-family-storytime-winter-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-bd5bdf0784f5241f",
     "title": "Atherton 图书馆周六亲子创客时间：认识 3D 打印和激光切割",
     "url": "https://smcl.bibliocommons.com/events/6a67c5bccca66c2f00a66751",
@@ -11132,7 +11988,7 @@
     "contentIds": [
       "smcl-atherton-maker-families-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-bdd2be88e4403c25",
@@ -11440,6 +12296,15 @@
     ]
   },
   {
+    "id": "source-c28bd50d073ffa3c",
+    "title": "El Pollo Loco 会员生日 $5 或 $10 奖励",
+    "url": "https://restaurants.elpolloloco.com/ca/hayward",
+    "kind": "offer",
+    "contentIds": [
+      "elpolloloco-loco-rewards-birthday"
+    ]
+  },
+  {
     "id": "source-c28fb1ab81c3eeb2",
     "title": "家里东西坏了，怎么报修才少跑一趟？",
     "url": "https://web.cslb.ca.gov/Consumers/Hire_A_Contractor/Finding_The_Right_Contractor.aspx",
@@ -11527,6 +12392,16 @@
       "sf-fall-show-oct15-18-2026"
     ],
     "endDate": "2026-10-18"
+  },
+  {
+    "id": "source-c425a6b2ce37a867",
+    "title": "Newark 图书馆 BUDS 社区故事会：带上爸爸、叔叔、兄弟一起来",
+    "url": "https://aclibrary.bibliocommons.com/events/6a87516cd4b10d003007debe",
+    "kind": "event",
+    "contentIds": [
+      "acl-newark-buds-storytime-dec20-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-c4c20e30e021a83c",
@@ -11677,6 +12552,18 @@
     ]
   },
   {
+    "id": "source-c6f777a80bd8022b",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.staples.com/stores/recycling",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "staples-ca-recycling-fee-waiver"
+    ]
+  },
+  {
     "id": "source-c71db87a064008a7",
     "title": "旧金山的海风半日：Lands End 与 Sutro Baths 短线攻略",
     "url": "https://www.nps.gov/goga/planyourvisit/sutro-baths-accessibility.htm",
@@ -11808,6 +12695,16 @@
     ]
   },
   {
+    "id": "source-c89ac9d5cde5a27d",
+    "title": "Vallejo 六旗探索王国 WinterFest：节日灯饰、现场表演和部分游乐设施",
+    "url": "https://www.sixflags.com/discoverykingdom/events/winterfest",
+    "kind": "event",
+    "contentIds": [
+      "six-flags-discovery-kingdom-winterfest-2026"
+    ],
+    "endDate": "2026-12-31"
+  },
+  {
     "id": "source-c8fec558c71c3167",
     "title": "10/12 参加 Woodside 堆肥讲座，限量赠一袋堆肥",
     "url": "https://www.woodsideca.gov/CivicAlerts.aspx?AID=104",
@@ -11867,7 +12764,7 @@
     "contentIds": [
       "sfpl-chinatown-family-storytime-dec-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-ca61e6c88b82e0a5",
@@ -12138,6 +13035,20 @@
     ]
   },
   {
+    "id": "source-ce84ffcf165ae0bc",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.safeway.com/faq/foru.3132.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "safeway-for-u-birthday-treat",
+      "safeway-for-u-monthly-item"
+    ]
+  },
+  {
     "id": "source-ce8be5e1743d9c77",
     "title": "Coyote Point 湾边半日：看飞机、走海滨，再选科学馆",
     "url": "https://www.smcgov.org/parks/coyote-point-recreation-area",
@@ -12283,6 +13194,16 @@
     ]
   },
   {
+    "id": "source-d016b073b89affa7",
+    "title": "Almaden Quicksilver 新年越野跑：儿童跑项目",
+    "url": "https://tctruns.com/hacienda-hills-trail-run-winter/",
+    "kind": "event",
+    "contentIds": [
+      "hacienda-hills-kids-trail-run-jan2-2027"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-d029ddb227fdeca8",
     "title": "圣何塞 Sharks 对 Kings：开季周末",
     "url": "https://www.sapcenter.com/events/detail/sharks-vs-kings-12",
@@ -12291,6 +13212,16 @@
       "sj-sharks-kings-2026"
     ],
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "source-d046fab36d517923",
+    "title": "Educational Park 分馆周日乐高俱乐部：小一点的玩得宝",
+    "url": "https://sjpl.bibliocommons.com/events/6941d6d57ed7c62f00aaca65",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-educational-park-lego-club-winter-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-d04825b12a71a6b4",
@@ -12320,6 +13251,19 @@
       "san-rafael-norcal-bats-library-2026"
     ],
     "endDate": "2026-10-14"
+  },
+  {
+    "id": "source-d08aba4b4af70849",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.elpolloloco.com/rewards/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "elpolloloco-loco-rewards-birthday"
+    ]
   },
   {
     "id": "source-d08ae7bde5956d84",
@@ -12419,6 +13363,16 @@
     "contentIds": [
       "bay-area-elder-scam-prevention-guide"
     ]
+  },
+  {
+    "id": "source-d281b26a9aef5458",
+    "title": "California Revels 冬至演出《American Crossroads》：40 周年",
+    "url": "https://californiarevels.org/wheel-of-the-year/2026-midwinter-revels-american-crossroads",
+    "kind": "event",
+    "contentIds": [
+      "california-revels-midwinter-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-d2d2bcd5a0490c85",
@@ -12573,6 +13527,18 @@
     ]
   },
   {
+    "id": "source-d570e6bd2fef5744",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.michaels.com/customer-care/classes-events-and-parties/online-classes-faq",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "michaels-free-online-tutorials"
+    ]
+  },
+  {
     "id": "source-d5a3bd62e871a3f9",
     "title": "十一月上半月怎么玩：先定区域，再挑活动与免费日",
     "url": "https://www.nist.gov/pml/time-and-frequency-division/popular-links/daylight-saving-time-dst",
@@ -12620,6 +13586,16 @@
     "contentIds": [
       "bay-area-social-security-retirement-preparation-guide"
     ]
+  },
+  {
+    "id": "source-d698a8eaf8150dc0",
+    "title": "San Carlos 图书馆周日游戏故事时间：2–5 岁动起来",
+    "url": "https://smcl.bibliocommons.com/events/6a595f307d9501df1a270949",
+    "kind": "event",
+    "contentIds": [
+      "smcl-san-carlos-playtime-storytime-2026"
+    ],
+    "endDate": "2026-12-20"
   },
   {
     "id": "source-d6d816bbb4d1f2e7",
@@ -12747,6 +13723,19 @@
     ]
   },
   {
+    "id": "source-d9026d5e43ab0d83",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.benjerry.com/scoop-shops/flavor-fanatics/terms-and-conditions",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "benjerry-flavor-fanatics-birthday"
+    ]
+  },
+  {
     "id": "source-d91b8d052aba5cc4",
     "title": "Purisima 红杉林返绿徒步",
     "url": "https://www.openspace.org/events/guided-activities/return-green",
@@ -12784,7 +13773,8 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
-      "ikea-emeryville-as-is-wednesdays"
+      "ikea-emeryville-as-is-wednesdays",
+      "ikea-family-new-member-20-off"
     ]
   },
   {
@@ -12947,6 +13937,20 @@
       "half-moon-bay-october-pumpkin-coast-guide-2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-dc28bc4358d9efdb",
+    "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
+    "url": "https://www.noahs.com/contact/faq",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-birthday-perks",
+      "bay-area-freebies-deals-2026-10",
+      "bay-area-freebies-deals-2026-11",
+      "bay-area-retail-freebies-family-deals",
+      "noahs-birthday-egg-sandwich-with-purchase",
+      "noahs-welcome-bagel-with-purchase"
+    ]
   },
   {
     "id": "source-dc37b05befa30ab4",
@@ -13113,7 +14117,8 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
-      "ikea-family-hot-drink"
+      "ikea-family-hot-drink",
+      "ikea-family-new-member-20-off"
     ]
   },
   {
@@ -13133,7 +14138,7 @@
     "contentIds": [
       "smcl-half-moon-bay-saturday-storytime-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-df9193f9f1369587",
@@ -13177,6 +14182,16 @@
     "endDate": "2026-10-09"
   },
   {
+    "id": "source-e02df3976353948f",
+    "title": "Camp Harmony 跨年民谣过夜营：在 Sonoma 山里住几晚，唱歌、学乐器、跳民间舞",
+    "url": "https://www.sffmc.org/camp-harmony/",
+    "kind": "event",
+    "contentIds": [
+      "sffmc-camp-harmony-2026-27"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-e02e1bbb6fecf020",
     "title": "Joyce Ellington 分馆万圣节：故事会、游行和馆内讨糖",
     "url": "https://sjpl.bibliocommons.com/events/6ac4082ede300e0045186d78",
@@ -13216,6 +14231,16 @@
     "endDate": "2026-10-15"
   },
   {
+    "id": "source-e0be8732406ce951",
+    "title": "Calabazas 分馆周四亲子中文活动：中文故事、唱歌跳舞和小小艺术",
+    "url": "https://sjpl.bibliocommons.com/events/6a7e0aa9d4b10d003006460c",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-calabazas-mandarin-stories-songs-dec-2026"
+    ],
+    "endDate": "2026-12-31"
+  },
+  {
     "id": "source-e0dc6a0b8204e000",
     "title": "10/3 免费做女巫糖果盒",
     "url": "https://www.homedepot.com/l/store-locator/",
@@ -13224,6 +14249,16 @@
       "homedepot-october-preview"
     ],
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "source-e112263ae7ae660e",
+    "title": "纳帕 Meritage“和小精灵 Ember 一起做”：节日早午餐活动，含溜冰",
+    "url": "https://www.meritageresort.com/experience/event-calendar/building-with-ember-the-elf/",
+    "kind": "event",
+    "contentIds": [
+      "meritage-building-with-ember-the-elf-2026"
+    ],
+    "endDate": "2026-12-23"
   },
   {
     "id": "source-e119e8de76998c7f",
@@ -13255,6 +14290,26 @@
       "chicha-berkeley-bogo-sep25"
     ],
     "endDate": "2026-11-30"
+  },
+  {
+    "id": "source-e173096b59eaef8b",
+    "title": "Portola Valley 图书馆缝纫机入门：7 岁以上可以和大人一起学",
+    "url": "https://smcl.bibliocommons.com/events/6a3c6a55cf21930366acade9",
+    "kind": "event",
+    "contentIds": [
+      "smcl-portola-valley-sewing-beginners-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
+    "id": "source-e1925cf5984cb8db",
+    "title": "总馆《胡桃夹子》故事会和椅子舞：旧金山芭蕾舞团来讲",
+    "url": "https://sfpl.org/events/2026/12/19/activity-sf-ballets-nutcracker-oral-history-and-chair-dance-class",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-main-nutcracker-chair-dance-dec19-2026"
+    ],
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-e1b1ffd1d1744c4a",
@@ -13325,6 +14380,16 @@
     "endDate": "2026-10-17"
   },
   {
+    "id": "source-e336f4834118034e",
+    "title": "Los Altos 图书馆中英双语故事时间：普通话和英语",
+    "url": "https://sccl.bibliocommons.com/events/6a56d18488e9bf280030f056",
+    "kind": "event",
+    "contentIds": [
+      "sccl-los-altos-mandarin-bilingual-storytime-2026"
+    ],
+    "endDate": "2026-12-29"
+  },
+  {
     "id": "source-e33f2b60431088a4",
     "title": "十月文化出行怎么省：先用图书馆查馆票，再排半日路线",
     "url": "https://www.discoverandgo.org/",
@@ -13333,6 +14398,16 @@
       "bay-area-october-library-museum-pass-guide-2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-e3659cff2a45ff56",
+    "title": "联合广场节日溜冰场：市中心户外冰场，每天开到晚上 11 点",
+    "url": "https://unionsquareicerink.com/union-square-ice-skating/",
+    "kind": "event",
+    "contentIds": [
+      "union-square-holiday-ice-rink-2026"
+    ],
+    "endDate": "2027-01-18"
   },
   {
     "id": "source-e3a393522a7eabf1",
@@ -13355,6 +14430,16 @@
       "bay-area-retail-freebies-family-deals",
       "lowes-firefighting-plane-oct17"
     ]
+  },
+  {
+    "id": "source-e3ee27d74ff307d8",
+    "title": "Concord 图书馆普通话双语故事时间",
+    "url": "https://ccclib.bibliocommons.com/events/6ac69298ebad22004543c17a",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-concord-mandarin-storytime-dec2-2026"
+    ],
+    "endDate": "2026-12-02"
   },
   {
     "id": "source-e4046f53d8c8e806",
@@ -13466,6 +14551,17 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-e78ad6617d678b24",
+    "title": "Benihana 会员生日 $50、半生日 $25 堂食抵扣",
+    "url": "https://www.benihana.com/locations/burlingame/",
+    "kind": "offer",
+    "contentIds": [
+      "benihana-fwb-birthday-50",
+      "benihana-fwb-welcome-starter",
+      "benihana-kabuki-kids-birthday"
+    ]
+  },
+  {
     "id": "source-e7fb84f3fa462e68",
     "title": "十月搭 BART：Mission 电梯延期、West Oakland 停车减少，还有黄线施工",
     "url": "https://www.bart.gov/news/articles/2026/news20260702-0",
@@ -13564,6 +14660,16 @@
     ]
   },
   {
+    "id": "source-e9270cdb40726ba7",
+    "title": "Petaluma 图书馆西班牙语音乐律动：不会西语也能玩",
+    "url": "https://events.sonomalibrary.org/event/spanish-music-and-movement-113575",
+    "kind": "event",
+    "contentIds": [
+      "scl-petaluma-spanish-music-movement-jan2-2027"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-e963edc7c9fe20b3",
     "title": "11/21 起，SFMOMA 一楼可免费看 Sarah Sze 新装置",
     "url": "https://www.sfmoma.org/exhibition/sarah-sze/",
@@ -13582,7 +14688,7 @@
     "contentIds": [
       "sccl-cupertino-family-storytime-2026"
     ],
-    "endDate": "2026-12-12"
+    "endDate": "2026-12-26"
   },
   {
     "id": "source-e997b9b3c68608fc",
@@ -13673,6 +14779,15 @@
     ]
   },
   {
+    "id": "source-ebdf3086daaa3663",
+    "title": "BJ’s 新会员送一份 Pizookie 甜点",
+    "url": "https://www.bjsrestaurants.com/locations/ca/newark",
+    "kind": "offer",
+    "contentIds": [
+      "bjs-new-member-pizookie"
+    ]
+  },
+  {
     "id": "source-ebf24e35a7ca0b73",
     "title": "Sips and Stars：21岁以上酒与星空之夜",
     "url": "https://sugarloafpark.org/event/sips-and-stars-4/",
@@ -13704,6 +14819,16 @@
     ]
   },
   {
+    "id": "source-ec583af514cd5b21",
+    "title": "Belmont 图书馆周六亲子故事时间，之后留下来玩",
+    "url": "https://smcl.bibliocommons.com/events/6a3b0cd7c134422d50e9e865",
+    "kind": "event",
+    "contentIds": [
+      "smcl-belmont-family-storytime-winter-2026"
+    ],
+    "endDate": "2027-01-02"
+  },
+  {
     "id": "source-ec62abc66ab4b0df",
     "title": "在湾区找清洁：把工作范围写清楚，报价才有得比",
     "url": "https://www.cdc.gov/hygiene/about/when-and-how-to-clean-and-disinfect-your-home.html",
@@ -13730,6 +14855,16 @@
       "los-gatos-magical-glass-pumpkin-2026"
     ],
     "endDate": "2026-10-10"
+  },
+  {
+    "id": "source-ed526ca4650e6b7a",
+    "title": "San Ramon 图书馆周六国际象棋时间：各年龄、各水平都欢迎",
+    "url": "https://ccclib.bibliocommons.com/events/68bf2a554d5cf93f10282874",
+    "kind": "event",
+    "contentIds": [
+      "ccclib-san-ramon-chess-hour-winter-2026"
+    ],
+    "endDate": "2027-01-02"
   },
   {
     "id": "source-ed6abf030f90dddc",
@@ -13887,6 +15022,16 @@
     "endDate": "2026-11-30"
   },
   {
+    "id": "source-eff57a5804e2f5aa",
+    "title": "Alviso 分馆周日 STEM：动手做科学小实验",
+    "url": "https://sjpl.bibliocommons.com/events/69c588e69057005337d09002",
+    "kind": "event",
+    "contentIds": [
+      "sjpl-alviso-stem-sundays-2026"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-f05309873a4a36d5",
     "title": "湾区租房防骗指南：看房、转账、签合同前先检查什么",
     "url": "https://selfhelp.courts.ca.gov/landlords-and-tenants",
@@ -13955,6 +15100,15 @@
       "bay-area-visitor-coast-redwoods-return-plan-2026",
       "half-moon-bay-autumn-coast-2026",
       "half-moon-bay-coastal-half-day-guide"
+    ]
+  },
+  {
+    "id": "source-f18d31b926fe4540",
+    "title": "Jamba 生日小杯冰沙：需过去一年消费满 $10",
+    "url": "https://locations.jamba.com/ca/fremont",
+    "kind": "offer",
+    "contentIds": [
+      "jamba-birthday-small-smoothie"
     ]
   },
   {
@@ -14142,6 +15296,16 @@
       "bay-area-retail-freebies-family-deals",
       "target-eos-pouch-oct10-2026"
     ]
+  },
+  {
+    "id": "source-f52939bf5f716c2b",
+    "title": "儿童童话乐园 Fairy Winterland：三个周末的冬日灯饰和故事",
+    "url": "https://fairyland.org/winter-fun/",
+    "kind": "event",
+    "contentIds": [
+      "fairyland-fairy-winterland-2026"
+    ],
+    "endDate": "2026-12-27"
   },
   {
     "id": "source-f5b1637b2fc5be9d",
@@ -14610,6 +15774,16 @@
     "endDate": "2026-10-27"
   },
   {
+    "id": "source-fc76561510f7da98",
+    "title": "San Jose 市中心公园圣诞展 Christmas in the Park：免费",
+    "url": "https://christmasinthepark.com/",
+    "kind": "event",
+    "contentIds": [
+      "christmas-in-the-park-san-jose-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-fd0077203291f035",
     "title": "湾区雨天带孩子去哪：OMCA 与 The Tech，两种半日备选",
     "url": "https://museumca.org/visit/",
@@ -14618,6 +15792,16 @@
       "oakland-lake-merritt-omca-half-day",
       "rainy-day-museum-family-guide"
     ]
+  },
+  {
+    "id": "source-fd16d026801f0cb5",
+    "title": "Circus Bella 冬季马戏《BRAVURA》：暖气大帐篷里的近距离马戏",
+    "url": "https://www.circusbella.org/bigtop",
+    "kind": "event",
+    "contentIds": [
+      "circus-bella-bravura-2026"
+    ],
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-fd42e409bd6b5b49",
