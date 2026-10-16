@@ -580,6 +580,10 @@ test('plan-shaped asks the task state does not classify still reach the v2 agent
     '周六带老婆和两个孩子去 California Academy of Sciences 玩半天，我有图书馆的 Discover & Go 通行证，全家都免费吗？顺便排一下', 'In what order should we visit the Exploratorium and the Academy?']) assert.equal(asksForPlan(text), true, text);
   for (const text of ['蓝天使这周末飞吗', '不要排行程，只告诉我门票', 'What does plan a day mean in Chinese?', '排队要多久', '这个活动安排在哪天', '我刚搬到 Fremont，第一周要办哪些事？', 'Any free museum days in SF this month?']) assert.equal(asksForPlan(text), false, text);
   const { assistant, sent } = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1' }, respond: () => reply(fast({ lead: '可以這樣排。' })) });
-  const result = await run(assistant, '週六帶孩子在舊金山玩一天，不開車，幫我排行程', { locale: 'zh-Hant' });
+  const result = await run(assistant, '周六想去 Exploratorium 和 California Academy of Sciences，帮我排一下顺序');
   assert.equal(result.route.path, 'agent'); assert.equal(result.route.reason, 'plan_request'); assert.ok(sent[0].tools.some(tool => tool.name === 'create_plan'));
+  // API-BB-6: 幫我排行程 is now a day plan in the task state, so it is the one-call site plan (no tools).
+  sent.length = 0;
+  const planned = await run(assistant, '週六帶孩子在舊金山玩一天，不開車，幫我排行程', { locale: 'zh-Hant' });
+  assert.equal(planned.route.path, 'agent'); assert.equal(planned.route.reason, 'day_plan'); assert.equal(sent[0].tools, undefined);
 });
