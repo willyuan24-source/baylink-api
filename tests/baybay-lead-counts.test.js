@@ -6,9 +6,11 @@
 // line, people, a duration) is byte-identical. Real leads come from the live checks after API-FIX5 (10-14) and
 // API-BB-4B (10-15). No model, no network.
 // Run on 3fe0801 (every stated count of 2-6 options removed, matching or not), 11 of the first 117 leads failed and
-// at least nine were damaged ("有两场或更多" -> "有或更多", "活动有两场" -> "活动有", "兩個鐘", "坐两站 BART", a Saturday
+// 10 of them were damaged ("有两场或更多" -> "有或更多", "活动有两场" -> "活动有", "兩個鐘", "坐两站 BART", a Saturday
 // and a Sunday count, "There is one free event" -> "There is free event"), so the rule is 74f5b50's again: a count
-// goes only when it differs from the points, and only a plain one (lib/baybayQuality.js section (e)).
+// goes only when it differs from the points, and only a plain one (lib/baybayQuality.js section (e)). The live
+// leads are all 21 distinct leads of the two live checks. Review of c92d087 added back-references, citation
+// markers and how a removed count reads.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createDraftWriter } = require('../lib/baybayProgress');
@@ -25,6 +27,7 @@ const TABLE = {
     ['一般来说，68岁新拿绿卡的长辈可以提交 Medi-Cal 申请，是否获批由官方审核。'],
     ['No full free museum day falls on Oct 17-18, but two free options are open that weekend.', 2, 'No full free museum day falls on Oct 17-18, but free options are open that weekend.'],
     ['可以用中文考笔试，而且现场笔试需要先预约。'],
+    ['可以用中文考笔试，现场笔试需要先预约。'],
     ['周日下午可以去 Irvington 农夫市集逛逛，或走 Coyote Hills 的湿地短线。'],
     ['周六半天可先逛唐人街，再去华埠分馆，全程免费项目。'],
     ['BAYLINK has no East Bay Saturday market listing; the closest Saturday morning markets are in the North Bay.'],
@@ -123,7 +126,25 @@ const TABLE = {
     ['周六有两场比赛，适合带两个孩子去看。'], ['周六两场、周日三场免费活动。'], ['有两场/三场免费活动。'], ['Two free events on Saturday and three on Sunday.'],
     ['周六和周日各有两场免费活动。'], ['两场需要门票，其余都免费。'], ['Two events need tickets; the rest are free.'], ['这两个都免费，适合带孩子。'], ['Two of the events are free.'],
   ],
+  // Review of c92d087: other words in the lead refer back to the count, so it stays even when the points differ.
+  'counts that other words refer back to': [
+    ['Two free events. Both are in Oakland.'], ['Two free events are open this weekend, both in SF.'], ['Two free events fit Saturday; the third is paid.'],
+    ['Two free events fit Saturday; the other one needs tickets.'], ['Two free events fit Saturday, and either works.'], ['两场活动二选一即可，都在奥克兰。'],
+    ['两个地方二者都免费。'], ['两场免费活动适合周六，第三场要买票。'], ['两个地方任选一个就好。'], ['兩場免費活動適合週六，另一場要買票。'], ['兩個地方兩者都免費。'],
+  ],
+  // The count is read as the reader sees the lead (without citation markers) and removed from the lead itself.
+  'citation markers': [
+    ['两场[[e1]]免费活动都在奥克兰。', 2, '[[e1]]免费活动都在奥克兰。'], ['周六有两场免费活动[[e1]]。', 2, '周六有免费活动[[e1]]。'],
+    ['There are two [[e1]] free events.', 2, 'There are [[e1]] free events.'], ['There are two free [1] events.', 2, 'There are free [1] events.'],
+    ['两 [[e1]] 场免费活动都在奥克兰。', 2, '[[e1]]免费活动都在奥克兰。'],
+  ],
+  'how a removed count reads': [
+    ['下面两个活动都免费。', 2, '下面的活动都免费。'], ['下面两个地方都免费。', 2, '下面这些地方都免费。'], ['"Two free events" fit Saturday.', 2, '"Free events" fit Saturday.'],
+    ['Good news: "two free events" fit Saturday.', 2, 'Good news: "free events" fit Saturday.'], ['我有两个推荐：', 2, '我有这些推荐：'],
+  ],
 };
+// What the reader sees of a lead: the draft writer drops citation markers (sanitizeDraft), the result numbers them.
+const visibleOf = text => text.replace(/(?<!\s)\s*\[\[[^\]]{0,100}\]\]/g, '').replace(/\[\d+\]/g, '');
 
 // What a final lead must never read like once a count is taken out of it.
 const DANGLING = [
@@ -159,9 +180,9 @@ for (const [section, rows] of Object.entries(TABLE)) {
         if (final !== lead) for (const [pattern, why] of DANGLING) assert.doesNotMatch(final, pattern, `${why}: ${final}`);
         for (const chunk of [1, 2]) {
           const { sent, events, shown } = stream(lead, locale, chunk, points);
-          assert.equal(sent, final, `streamed / ${n} points / chunk ${chunk}`);
-          assert.equal(events, final, `draft events / ${n} points / chunk ${chunk}`);
-          for (const text of shown) assert.ok(final.startsWith(text), `the draft "${text}" is not a prefix of "${final}"`);
+          assert.equal(sent, visibleOf(final), `streamed / ${n} points / chunk ${chunk}`);
+          assert.equal(events, visibleOf(final), `draft events / ${n} points / chunk ${chunk}`);
+          for (const text of shown) assert.ok(visibleOf(final).startsWith(text), `the draft "${text}" is not a prefix of "${final}"`);
         }
       }
     });
