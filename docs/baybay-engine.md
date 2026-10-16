@@ -153,19 +153,27 @@ instance it decides how soon the first sentence can start. Keep it small:
   serve, from the operators' station lists (read 2026-10-15); "坐 BART 去" keeps `rail:bart` in the task state
   and, with no destination city, places the system reaches rank first. It is a city table only: it never
   states a station, a walk or a travel time.
-- **The lead never states a count** of 2-6 options: `leadConsistency` strips it from the result and the draft
-  writer shows the same text while the lead streams (`leadDraftText`), so the reader never sees the lead change.
-  A count is a number word (English) or a numeral with a measure word (zh) before an option noun (活动, 地方,
-  events, places …); never a date ("December 5"), an age range ("aged 3 to 5"), a stop (第 2 站), people
-  (两个孩子, 一家三口), a duration (two hours, 两个半小时) or a period (两个周末). 这两个地方 reads 这些地方 and
-  去两个地方 reads 去这些地方. While the lead streams, a count whose reading the next characters could still
-  change ("周六带两个…") is held back, never stripped and then restored, so the draft is always a prefix.
-  The 二-六 of 周六 / 星期六 / 礼拜六 / 初二 and of 十二 are a day or a larger number, never a count; 两 / 兩 always can be
-  one ("这周两场" / "這週兩場" is held and stripped while streaming, as in the result). An approximate count
-  (两三个, 两到三个, 两、三个, 2-3个, 三五个) is left whole, as English "two or three" is; 两 / 兩 always starts one
-  (这周两三场, 本周两到三个), and so do 两个到三个, 两个或三个, 三个左右, 两个以上, 3、4个, 2－3个 and 十二三个. A count after a
-  qualifier is a part of the options or an estimate, never their number, and is left whole too (其中两个, 前两个,
-  另外两个, 至少两个, 大约三场, 只有两场; "only two", "about three", "the first two").
+- **A lead's count of the options goes only when it differs from the points, and only a plain one** (captain
+  decision 10-15; the rule of api main 74f5b50, narrowed). Five review rounds of "the lead never states a count"
+  (every count of 2-6 options removed, matching or not) each found zh phrasings it damaged, and the table in
+  `tests/baybay-lead-counts.test.js` still found nine on 3fe0801 (有两场或更多 → 有或更多, 活动有两场 → 活动有,
+  兩個鐘, 坐两站 BART, a Saturday and a Sunday count, "There is one free event" → "There is free event").
+  `leadConsistency` now removes a count only when it differs from the number of options listed (points with
+  cards, else all points) and only when it is plain: '<2-6><measure word>' (zh) or two-six (English) right before
+  an option noun (活动, 地方, 去处, 选择, 博物馆, 讲座 …; events, options, places, ideas …), with at most two short
+  modifiers between (免费, 亲子, 适合孩子的, 好; free, family, South Bay …), the lead's only count, and never beside
+  "the rest" / "each" / 其余 / 各 / 每. 这两个地方 reads 这些地方 and 去两个地方 reads 去这些地方. Ranges and
+  approximations (两三个, 这周两三场, 两到三个, 两个到三个, 2-3个, 3、4个, 两个以上, 两个及以上, 两场或更多, 三个左右),
+  qualified counts (其中两个, 前两个, 大约三场, 一共有两场, 每周两场; "only two", "about three", "the first two"),
+  counts without an option noun (两场都免费, 活动有两场), "one" / 一, numbers that are not counts (dates, times,
+  ages, prices, lines, people, durations, 坐两站, 兩個鐘) and a lead with two counts are never touched. The 一-六
+  of 周六 / 星期六 / 礼拜六 is a day, so 周六两场 is a count; 两 / 兩 always starts a range (这周两三场).
+- **The streamed lead still ends as the result** (live L04): the draft writer holds the lead from a plain count,
+  and from a count whose reading the next characters could still change ("周六带两个…", "There are two…"),
+  until it is settled; a plain count is settled only when the provider call ends and `end({ complete, points })`
+  brings the answer's points (`lib/baybayEngine/stream.js`, `research.js`), so a removed count is never shown
+  and a kept one appears with the rest of the lead. Without the points the held text is not sent (the result
+  carries it). The model is told not to state counts at all, so the hold is rare.
 - **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
   negation); (有没有)不是室内的 / 非室内的 asks for outdoor, but the question 是不是室内的 and 除非室内 stay indoor. "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
   "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
