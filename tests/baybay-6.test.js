@@ -73,6 +73,26 @@ test('live L07: the one-call site day plan sends the fast path\'s request shape,
   }
 });
 
+test('a one-call day plan whose answer cites no stop is retried once with a reminder that names stops[].refs', async () => {
+  // Review (10-16): the shared reminder said "currentPlan.stops sourceIds or admissionFacts.sourceIds", which planView
+  // does not send.
+  const { sent, run } = fixture({ respond: (body, count) => (count === 1 ? { lead: '周六半天可以这样走。', points: [{ text: '先去博物馆，再去公园。', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' } : planAnswer(body)) });
+  const result = await run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程');
+  assert.equal(sent.length, 2);
+  for (const warning of ['day_plan_single_call', 'answer_plan_citation_retry']) assert.ok(result.research.warnings.includes(warning), warning);
+  const [first, second] = sent.map(raw => JSON.parse(raw));
+  // The retry is the same turn, the previous answer and the reminder only: no final-round delta, no tools, no top-level cache.
+  assert.deepEqual(second.messages.slice(0, first.messages.length), first.messages);
+  assert.deepEqual(second.messages.slice(first.messages.length).map(row => row.role), ['assistant', 'user']);
+  const reminder = JSON.stringify(second.messages.at(-1).content);
+  assert.match(reminder, /currentPlan\.stops\[\]\.refs/);
+  assert.doesNotMatch(sent[1], /researchComplete|admissionFacts\.sourceIds/);
+  assert.equal(second.tools, undefined); assert.equal(second.cache_control, undefined);
+  // The cited retry is shown, not a degraded fallback.
+  assert.equal(result.degraded, false, result.research.warnings.join(','));
+  assert.ok(result.sources.length >= 3 && /\[1\]/.test(result.answer), result.answer.slice(0, 200));
+});
+
 test('planView: each stop once with its refs and unconfirmed checks; no repeated admission rows or check messages', async () => {
   const { sent, run } = fixture({ respond: planAnswer });
   await run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程');
@@ -142,7 +162,8 @@ test('weekly markets: the model sees the weekly schedule and the next listed dat
 });
 
 test('weekly markets: an answer that still reads a listed date as the season is repaired, in the lead and the points; the asked day stays', async () => {
-  const windows = [{ start: '2026-10-17', end: '2026-12-12', next: '2026-10-17' }, { start: '2026-10-18', end: '2026-12-13', next: '2026-10-18' }];
+  const windows = [{ start: '2026-10-17', end: '2026-12-12', next: '2026-10-17', refs: ['e1'], titles: ['Oakland Grand Lake 周六农夫市集：100 多个摊位，风雨无阻'] },
+    { start: '2026-10-18', end: '2026-12-13', next: '2026-10-18', refs: ['e2'], titles: ['Fremont Irvington 周日农夫市集：全年每周日开'] }];
   for (const [text, locale, want] of [
     ['Yes, Oakland and Berkeley both have Saturday morning farmers markets starting Sat, Oct 17.', 'en', 'Yes, Oakland and Berkeley both have Saturday morning farmers markets.'],
     ['Grand Lake runs every Saturday from Sat, Oct 17 through Sat, Dec 12, 9 am–2 pm.', 'en', 'Grand Lake runs every Saturday, 9 am–2 pm.'],
@@ -156,7 +177,31 @@ test('weekly markets: an answer that still reads a listed date as the season is 
   }
   // The asked day itself, with or without its weekday, is not a season claim.
   for (const text of ['这周六 10月17日 Grand Lake 有市集，9:00–14:00。', 'Saturday, Oct 17: Grand Lake, 9 am–2 pm.', '週日（10月18日）Irvington 有市集。']) {
-    assert.equal(listingWindowRepair({ lead: text, points: [], gap: '' }, { windows, locale: /[㐀-鿿]/.test(text) ? 'zh-Hans' : 'en' }).repaired, false, text);
+    assert.equal(listingWindowRepair({ lead: text, points: [], gap: '' }, { windows }).repaired, false, text);
+  }
+  // A point that cites the market is repaired; the same words citing another record are that record's own dates.
+  assert.equal(listingWindowRepair({ lead: '', points: [{ text: 'Every Saturday from Oct 17 through Dec 12 [[e1]]', cardIds: ['e1'] }], gap: '' }, { windows }).draft.points[0].text, 'Every Saturday [[e1]]');
+  // Review (10-16): another record's own dates stay, and so does the asked weekend's own range, in the lead, the
+  // gap and the points.
+  const weekend = { start: '2026-10-17', end: '2026-10-18' };
+  for (const [prose, point] of [
+    ['这周末（10月17日（周六） 至 10月18日（周日））有这些选择。', 'Grand Lake 周六市集，9:00–14:00 [[e1]]'],
+    ['这周末东湾农夫市集（10月17日（周六） 至 10月18日（周日））有这些选择。', 'Storytime runs Saturdays from Oct 24 through Dec 12 [[e7]]'],
+    ['10月17日起，这个展览开放。', 'The new exhibit at OMCA opens Saturday, Oct 17, and runs through Dec 12 [[e7]]'],
+    ['Ardenwood pumpkin patch: open from Oct 17 to Oct 31.', '南瓜节 10月17日起至10月31日 [[e8]]'],
+    ['Oakland 周六有 OMCA 新展，10月17日起开放。', 'The museum is open from Sat, Oct 17 through Sat, Dec 12 [[e7]]'],
+  ]) {
+    const result = listingWindowRepair({ lead: prose, points: [{ text: point, cardIds: [] }], gap: prose }, { windows, asked: weekend });
+    assert.equal(result.repaired, false, `${prose} / ${point}`);
+  }
+  // The weekend ask itself: its markets' real windows (Irvington next 10/18, Berkeley and Grand Lake next 10/17) leave the
+  // state's own date range in the lead, in zh-Hans and en.
+  for (const [message, locale, lead] of [['这周末东湾有什么农夫市集', 'zh-Hans', '这周末（10月17日（周六） 至 10月18日（周日））有这些选择。'], ['Any farmers markets in the East Bay this weekend?', 'en', 'This weekend (Sat, Oct 17 to Sun, Oct 18) you have these choices.']]) {
+    const state = resolveTaskState({ message, today: '2026-10-15', carry: true }).state;
+    const site = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state, guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today: '2026-10-15', locale, audience: true });
+    const live = site.items.filter(item => item.weekly && item.row).map(item => ({ start: item.row.startDate, end: item.row.endDate, next: item.nextListed, refs: [item.ref], titles: [item.title, item.row.title] }));
+    assert.ok(live.length >= 2, `${message}: ${live.length} weekly markets`);
+    assert.equal(listingWindowRepair({ lead, points: [], gap: '' }, { windows: live, asked: state.dateRange }).repaired, false, message);
   }
   // End to end: the L08 lead as the model wrote it on 10-15 reaches the reader without "starting Sat, Oct 17".
   const { run } = fixture({ now: '2026-10-15T18:30:00-07:00', respond: body => {
@@ -207,6 +252,18 @@ test('an indoor family ask in a thin city widens to nearby cities in the same ar
   assert.ok(!model.some(item => /few indoor family records/.test(item.note || '')), 'San Jose has enough of its own');
 });
 
+test('a family ask keeps family events that also list adults; adults-only and adult-audience records stay out', () => {
+  // Review (10-16): these list 成人 beside 亲子家庭; on the base they were e2, e2 and e1.
+  for (const [message, id] of [['11月28日旧金山带孩子有什么活动', 'sfpl-main-california-xiangqi-invitational-nov28-2026'], ['12月5日 Marin 带孩子去哪', 'marin-point-reyes-kids-swap-dec5-2026'], ['12月12日 Oakland 亲子活动', 'opl-piedmont-ave-mug-swap-dec12-2026']]) {
+    const { items } = indoorItems(message, 'zh-Hans');
+    const index = items.findIndex(item => item.catalogId === id);
+    assert.ok(index >= 0 && index < 3, `${message}: ${id} at ${index}: ${items.map(item => item.catalogId || item.title).join(' | ')}`);
+  }
+  // The Berryessa adults' English club (18 岁以上) is still not a San Jose family option (see L09 above).
+  const { items } = indoorItems('这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans');
+  assert.ok(!items.some(item => item.catalogId === 'sjpl-berryessa-mandarin-ell-club-fall-2026'));
+});
+
 // ---- Line 4: two-turn date carry and the 12/5 East Bay family ask (live 10-15, X1 / X2) ----
 test('12月5号带娃去哪 then 那周日呢 resolves to Sunday 12/6 (and its English and zh-Hant forms)', async () => {
   for (const [first, second, locale] of [['12月5号带娃去哪', '那周日呢', 'zh-Hans'], ['12月5號帶娃去哪', '那週日呢', 'zh-Hant'], ['Where can I take the kids on December 5?', 'What about Sunday?', 'en']]) {
@@ -245,7 +302,11 @@ test('block N dev: sudden vision loss with stumbling is a 911 stroke emergency; 
   for (const message of ['我在Berkeley租房，房東傳訊息說明天換鎖，沒看過法院文件', '房东趁我上班把门锁换了，把我锁在门外', 'My landlord changed the locks while I was at work', 'The property manager shut off our water to make us leave']) {
     assert.ok(professionalTopics(message).includes('legal'), message);
   }
-  for (const message of ['我想给新家换锁，推荐锁匠', 'How much does it cost to change the locks after moving in?']) assert.ok(!professionalTopics(message).includes('legal'), message);
+  // 业主 / owner / property manager changing locks is the landlord only in a tenant's message (review 10-16).
+  for (const message of ['我租的房子，业主说明天换锁', 'My property manager changed the locks on my rental unit', '业主把我锁在门外了']) assert.ok(professionalTopics(message).includes('legal'), message);
+  for (const message of ['我想给新家换锁，推荐锁匠', 'How much does it cost to change the locks after moving in?', 'I\'m a new home owner, should I change the locks after moving in?',
+    '我是业主，搬进新家要不要换锁？', '業主想換鎖要找誰？', 'Our HOA property manager is changing the locks on the pool gate, who do I ask for a key?', '我是业主，想换锁，推荐个锁匠', '刚买房当了业主，要不要换锁？',
+    'I am a new home owner and want to change the locks, any locksmith?', 'As the owner of a small shop, should I change the locks after firing an employee?']) assert.ok(!professionalTopics(message).includes('legal'), message);
 });
 
 test('帮我排行程 and 排个一天的行程 are day plans; a ranking (排行榜) is not', () => {
