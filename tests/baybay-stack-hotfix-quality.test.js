@@ -78,6 +78,9 @@ test('follow-up turn rules ride after the user turn; no body has a role:system m
   await run(recovered.assistant, '帮我排成周六半天，我们坐 BART 去', { history });
   assert.ok(recovered.sent.length >= 2, `${recovered.sent.length} calls`);
   for (const body of recovered.sent) assert.ok(systemPlacementOk(body), JSON.stringify(body.messages.map(row => row.role)));
-  assert.equal(recovered.sent.at(-1).messages.filter(row => row.role === 'system').length, 0);
+  // API-BB-6: a new site day plan is one call, user turn then the rules as the last message (native role:system is
+  // allowed there); the retry after a 529 resends that same turn, so the rules are never before a user turn.
+  const last = recovered.sent.at(-1).messages;
+  assert.ok(last.every((row, index) => row.role !== 'system' || index === last.length - 1 || last[index + 1].role === 'assistant'), JSON.stringify(last.map(row => row.role)));
   assert.match(operatorText(recovered.sent.at(-1)), /This is a follow-up turn/);
 });

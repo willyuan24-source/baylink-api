@@ -169,3 +169,40 @@ test('weekly markets: an answer that still reads a listed date as the season is 
   assert.doesNotMatch(result.answer, /starting|through Sat, Dec 12|Dec 12/);
   assert.ok(result.research.warnings.includes('answer_listing_window_repaired'));
 });
+
+// ---- Line 3: a rainy-day / indoor family ask (live 10-15, L09) ----
+const indoorItems = (message, locale) => {
+  const today = '2026-10-15';
+  const state = resolveTaskState({ message, today, carry: true }).state;
+  const site = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state, guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today, locale, audience: true });
+  return { state, items: site.items, model: modelItems(site.items) };
+};
+
+test('L09 rainy San Jose: at least three concrete indoor family options with places (and dates for events), no adult events, no sure class', () => {
+  for (const [message, locale] of [['这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans'], ['這週末下雨，San Jose 有什麼室內親子活動？', 'zh-Hant'], ['It might rain this weekend. Any indoor things to do with kids in San Jose?', 'en']]) {
+    const { state, items, model } = indoorItems(message, locale);
+    assert.equal(state.setting, 'indoor', message);
+    const indoor = items.filter(item => ['event', 'place'].includes(item.catalogKind) && item.row?.city === 'San Jose' && ['indoor', 'mixed'].includes(item.row.planning?.setting));
+    assert.ok(indoor.length >= 3, `${message}: ${indoor.map(item => item.title).join(' | ')}`);
+    for (const item of indoor.filter(row => row.catalogKind === 'event')) assert.ok(item.when, `${item.title} has its date`);
+    // A part-indoor museum (The Egyptian Museum and its garden) is not lost to the indoor filter any more.
+    assert.ok(items.some(item => /rosicrucian|venue-sjma|venue-sj-king-library/.test(item.catalogId || '')), message);
+    // No adults-only or adult-audience events padding a family ask.
+    for (const id of ['sjpl-berryessa-mandarin-ell-club-fall-2026', 'sj-funeral-gangster-dinner-2026', 'sj-rush-2026']) assert.ok(!items.some(item => item.catalogId === id), `${message}: ${id}`);
+    // A class with no confirmed session is shown as one to check and book.
+    for (const item of model.filter(row => row.kind === 'offer' && /iPad|Apple/.test(`${row.title} ${row.text}`))) assert.match(item.note || '', /never as a sure session/);
+  }
+});
+
+test('an indoor family ask in a thin city widens to nearby cities in the same area and says so; a full city does not', () => {
+  for (const [message, locale, city] of [['这周末下雨，Fremont 有什么室内亲子活动？', 'zh-Hans', 'Fremont'], ['Rainy weekend in Milpitas: any indoor places for kids?', 'en', 'Milpitas']]) {
+    const { items, model } = indoorItems(message, locale);
+    const nearby = model.filter(item => /not (?:Fremont|Milpitas): the site has few indoor family records/.test(item.note || ''));
+    assert.ok(nearby.length >= 3, `${message}: ${model.map(item => `${item.title}|${item.city}`).join(' ; ')}`);
+    for (const item of nearby) { assert.notEqual(item.city, city); assert.match(item.note, new RegExp(`In ${item.city}, not ${city}`)); }
+    const region = resolveTaskState({ message, today: '2026-10-15', carry: true }).state.region;
+    for (const item of items.filter(row => row.nearby)) assert.equal(item.row.region, region, `${item.title} stays in ${region}`);
+  }
+  const { model } = indoorItems('这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans');
+  assert.ok(!model.some(item => /few indoor family records/.test(item.note || '')), 'San Jose has enough of its own');
+});
