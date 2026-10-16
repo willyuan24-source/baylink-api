@@ -102,3 +102,70 @@ test('plan edits, follow-ups and BAYBAY_DAY_PLAN_FAST=off keep the agent rounds 
   assert.deepEqual(body.cache_control, { type: 'ephemeral' });
   assert.ok(sent.some(raw => raw.includes('researchComplete')));
 });
+
+// ---- Line 2: a weekly market's listed dates are not its season (live 10-15, L06 and L08) ----
+const { buildFastEvidence, modelItems } = require('../lib/baybayEvidence');
+const { resolveTaskState } = require('../lib/baybayState');
+const { loadDiscoveryCatalog } = require('../lib/publicContext');
+const { normalizeGuideQuery } = require('../lib/guideLocale');
+const { listingWindowRepair } = require('../lib/baybayQuality');
+const discoveries = { ...loadDiscoveryCatalog(), english: loadDiscoveryCatalog(undefined, true) };
+const marketItems = (message, locale, today = '2026-10-15') => {
+  const state = resolveTaskState({ message, today, carry: true }).state;
+  const site = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state, guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today, locale, audience: true });
+  return modelItems(site.items).filter(item => /farmers|农夫市集|農夫市集/i.test(item.title));
+};
+
+test('weekly markets: the model sees the weekly schedule and the next listed date, never the listing window, in zh-Hans, zh-Hant and en', () => {
+  const MARKETS = { 'Grand Lake': /Grand Lake/, 'Downtown Berkeley': /Downtown Berkeley|Berkeley 市中心/, Irvington: /Irvington/ };
+  const asks = [['Any farmers markets in the East Bay on Saturday morning?', 'en', ['Grand Lake', 'Downtown Berkeley']], ['周六上午东湾有农夫市集吗？', 'zh-Hans', ['Grand Lake', 'Downtown Berkeley']],
+    ['週六上午東灣有農夫市集嗎？', 'zh-Hant', ['Grand Lake', 'Downtown Berkeley']], ['Is there a farmers market in Fremont on Sunday?', 'en', ['Irvington']],
+    ['周日 Fremont 有农夫市集吗？', 'zh-Hans', ['Irvington']], ['週日 Fremont 有農夫市集嗎？', 'zh-Hant', ['Irvington']]];
+  for (const [message, locale, names] of asks) {
+    const items = marketItems(message, locale);
+    for (const name of names) {
+      const item = items.find(row => MARKETS[name].test(row.title));
+      assert.ok(item, `${message}: ${name} in ${items.map(row => row.title).join(' | ')}`);
+      const view = `${item.when}\n${item.text}`;
+      // Not the window's last date (12/12 for the Saturday markets, 12/13 for Irvington), not "M/D–M/D", not 至 / through.
+      assert.doesNotMatch(view, /12\s*月\s*1[23]\s*日|Dec(?:ember)?\.? 1[23]\b|12\/1[23]|\d{1,2}\/\d{1,2}\s*[–-]\s*\d{1,2}\/\d{1,2}|至|through/, `${message}: ${name}: ${view.slice(0, 160)}`);
+      assert.match(item.when, locale === 'en' ? /^(?:Year-round, every|Every) (?:Saturday|Sunday) \d{1,2}:\d{2}–\d{1,2}:\d{2} · next listed: (?:Sat, Oct 17|Sun, Oct 18)$/ : /^(?:全年)?每[周週][六日] \d{1,2}:\d{2}–\d{1,2}:\d{2}；下一次：10月1[78]日（[周週][六日]）$/, item.when);
+      // "Year-round" only where the record's own text says so (Irvington: 全年每周日开); never for Grand Lake or Berkeley.
+      assert.equal(/全年|Year-round/.test(item.when), name === 'Irvington', `${name}: ${item.when}`);
+      assert.match(item.note, /not its season/);
+    }
+  }
+  // A one-off event keeps its dates; so does an ordinary multi-day event.
+  const oneOff = modelItems(buildFastEvidence({ query: '12月5日 Pleasanton 游行', originalQuery: '12月5日 Pleasanton 游行', state: resolveTaskState({ message: '12月5日 Pleasanton 游行', today: '2026-10-15', carry: true }).state, guideCatalog: guides, catalog: planner, discoveries, today: '2026-10-15', locale: 'zh-Hans', audience: true }).items)
+    .find(item => /Pleasanton/.test(item.title) && item.kind === 'event');
+  assert.ok(oneOff && /12月5日/.test(oneOff.when) && !oneOff.note, JSON.stringify(oneOff && { when: oneOff.when, note: oneOff.note }));
+});
+
+test('weekly markets: an answer that still reads a listed date as the season is repaired, in the lead and the points; the asked day stays', async () => {
+  const windows = [{ start: '2026-10-17', end: '2026-12-12', next: '2026-10-17' }, { start: '2026-10-18', end: '2026-12-13', next: '2026-10-18' }];
+  for (const [text, locale, want] of [
+    ['Yes, Oakland and Berkeley both have Saturday morning farmers markets starting Sat, Oct 17.', 'en', 'Yes, Oakland and Berkeley both have Saturday morning farmers markets.'],
+    ['Grand Lake runs every Saturday from Sat, Oct 17 through Sat, Dec 12, 9 am–2 pm.', 'en', 'Grand Lake runs every Saturday, 9 am–2 pm.'],
+    ['Irvington 农夫市集从10月18日（周日）开始，每周日 9:00–14:00。', 'zh-Hans', 'Irvington 农夫市集，每周日 9:00–14:00。'],
+    ['Irvington 農夫市集10月18日（週日）至12月13日（週日）每週日開。', 'zh-Hant', 'Irvington 農夫市集每週日開。'],
+    ['Grand Lake 周六市集 10/17 起，9:00–14:00。', 'zh-Hans', 'Grand Lake 周六市集，9:00–14:00。'],
+  ]) {
+    const result = listingWindowRepair({ lead: text, points: [{ text, cardIds: [] }], gap: '' }, { windows, locale });
+    assert.equal(result.repaired, true, text);
+    assert.equal(result.draft.lead, want); assert.equal(result.draft.points[0].text, want);
+  }
+  // The asked day itself, with or without its weekday, is not a season claim.
+  for (const text of ['这周六 10月17日 Grand Lake 有市集，9:00–14:00。', 'Saturday, Oct 17: Grand Lake, 9 am–2 pm.', '週日（10月18日）Irvington 有市集。']) {
+    assert.equal(listingWindowRepair({ lead: text, points: [], gap: '' }, { windows, locale: /[㐀-鿿]/.test(text) ? 'zh-Hans' : 'en' }).repaired, false, text);
+  }
+  // End to end: the L08 lead as the model wrote it on 10-15 reaches the reader without "starting Sat, Oct 17".
+  const { run } = fixture({ now: '2026-10-15T18:30:00-07:00', respond: body => {
+    const items = JSON.parse(body.messages[0].content[0].text).evidence;
+    const ref = items.find(item => /Grand Lake/.test(item.title))?.ref || 'e1';
+    return { lead: 'Yes, Oakland and Berkeley both have Saturday morning farmers markets starting Sat, Oct 17.', points: [{ text: `Grand Lake, every Saturday from Sat, Oct 17 through Sat, Dec 12, 9 am–2 pm [[${ref}]]`, cardIds: [ref] }], candidateIds: [], followups: [], coverage: [], gap: '' };
+  } });
+  const result = await run('Any farmers markets in the East Bay on Saturday morning?', { locale: 'en' });
+  assert.equal(result.lead, 'Yes, Oakland and Berkeley both have Saturday morning farmers markets.');
+  assert.doesNotMatch(result.answer, /starting|through Sat, Dec 12|Dec 12/);
+  assert.ok(result.research.warnings.includes('answer_listing_window_repaired'));
+});
