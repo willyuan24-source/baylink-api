@@ -21,6 +21,14 @@ if (!frontend || !registryPath) throw new Error('Usage: node scripts/sync-editor
 // the held one only to check that the pair belongs together (API-SYNC-3b). Never copy the held file.
 const FULL_PLANNER = 'planner-catalog.full.json';
 const HELD_PLANNER = 'planner-catalog.json';
+// /opus-bay's copy may also keep a few fields at the older values its tests pin (web src/data/public-catalog-holdout.ts
+// WORLD_HELD_FIELDS, from web #47). Mirror each web entry here as id -> the field names it holds (API-SYNC-3f). Only those
+// fields of those rows may differ; the API copies the full file, so a held value never reaches the API. A hold the web has
+// dropped is reported as unusedWorldHolds: delete its line here in the next sync.
+const WORLD_HELD_FIELDS = Object.freeze({
+  // SFPL's event page says 11:00 - 4:00 (the full file); tests/opus-bay-w7-s-venues.test.ts W7-S1 pins 11:00-15:00.
+  'sf-marina-library-open-house-oct17-2026': Object.freeze(['dateLabel']),
+});
 const pairs = [
   ['baybay-guides.json', 'guide-catalog.json'], ['baybay-guides.en.json', 'guide-catalog.en.json'],
   ['event-catalog.json', 'event-catalog.json'], [FULL_PLANNER, 'planner-catalog.json'],
@@ -56,8 +64,20 @@ const fullIds = new Set(full.events.map(row => row.id));
 for (const id of heldIds) assert.ok(fullIds.has(id), `public/${HELD_PLANNER} has ${id}, which public/${FULL_PLANNER} lacks: swapped or stale planner files`);
 // isDeepStrictEqual + a short message: assert's diff of two 500-row catalogs takes tens of seconds.
 const heldRows = full.events.filter(row => heldIds.has(row.id));
-const stale = held.data.events.findIndex((row, index) => !isDeepStrictEqual(row, heldRows[index]));
-assert.ok(stale < 0, `public/${HELD_PLANNER} events must equal the same rows of public/${FULL_PLANNER} in the same order; row ${stale + 1} (${held.data.events[stale]?.id}) differs from ${heldRows[stale]?.id}: regenerate both from one web build`);
+// The full row with the held copy's own values put back for the fields WORLD_HELD_FIELDS names (only fields the held row has).
+const expectedHeldRow = (row, index) => {
+  const fullRow = heldRows[index];
+  const fields = fullRow && row?.id === fullRow.id && Object.hasOwn(WORLD_HELD_FIELDS, fullRow.id) ? WORLD_HELD_FIELDS[fullRow.id] : [];
+  return fields.reduce((next, field) => (Object.hasOwn(row, field) ? { ...next, [field]: row[field] } : next), fullRow);
+};
+const stale = held.data.events.findIndex((row, index) => !isDeepStrictEqual(row, expectedHeldRow(row, index)));
+assert.ok(stale < 0, `public/${HELD_PLANNER} events must equal the same rows of public/${FULL_PLANNER} in the same order; row ${stale + 1} (${held.data.events[stale]?.id}) differs from ${heldRows[stale]?.id} beyond the fields WORLD_HELD_FIELDS holds: regenerate both from one web build`);
+const heldById = new Map(held.data.events.map(row => [row.id, row]));
+const worldHeld = Object.entries(WORLD_HELD_FIELDS).flatMap(([id, fields]) => {
+  const fullRow = full.events.find(row => row.id === id), heldRow = heldById.get(id);
+  return fullRow && heldRow ? fields.filter(field => !isDeepStrictEqual(fullRow[field], heldRow[field])).map(field => ({ id, field, full: fullRow[field], held: heldRow[field] })) : [];
+});
+const unusedWorldHolds = Object.keys(WORLD_HELD_FIELDS).filter(id => !worldHeld.some(row => row.id === id));
 for (const key of new Set([...Object.keys(full), ...Object.keys(held.data)])) {
   if (key !== 'events') assert.ok(isDeepStrictEqual(held.data[key], full[key]), `public/${HELD_PLANNER} ${key} must equal public/${FULL_PLANNER} ${key}`);
 }
@@ -101,4 +121,4 @@ if (args.includes('--write')) assert.ok(files.every(row => row.destinationMatche
 console.log(JSON.stringify({ mode: args.includes('--write') ? 'written-and-verified' : 'validated-without-writing',
   counts: { events: eventMap.size, places: planner.places.length, guides: planner.guides.length, discoveries: data('discoveries.json').items.length,
     sources: registry.length, retainedSourceIds: previous.length, opusBayEvents: held.data.events.length },
-  heldOutOfOpusBay, checkedOnly: { source: held.source, bytes: held.bytes.length, sha256: hash(held.bytes) }, files }, null, 2));
+  heldOutOfOpusBay, worldHeld, unusedWorldHolds, checkedOnly: { source: held.source, bytes: held.bytes.length, sha256: hash(held.bytes) }, files }, null, 2));

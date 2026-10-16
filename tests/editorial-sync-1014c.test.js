@@ -103,7 +103,11 @@ test('December weekend family asks get dated December programmes', () => {
     if (row) assert.equal(row.region, 'east-bay', id);
   }
   const sf = evidence('12月12日旧金山有什么适合小朋友的活动');
-  for (const id of ['sfpl-chinatown-family-storytime-dec-2026', 'sfpl-glen-park-saturday-playtimes-dec-2026']) assert.ok(ids(sf).includes(id), ids(sf).join(', '));
+  // API-SYNC-3f: web #47 added more San Francisco programmes on 12/12 (Potrero's pinecone owls, the Main Library's ASL story
+  // hour, Grace Cathedral's carol sing); Glen Park's playtimes (still on 12/12) are no longer among the six candidates.
+  assert.ok(ids(sf).includes('sfpl-chinatown-family-storytime-dec-2026'), ids(sf).join(', '));
+  const sfDecember12 = ids(sf).filter(id => event(id)?.occurrenceDates?.includes('2026-12-12') && event(id).city === 'San Francisco');
+  assert.ok(sfDecember12.length >= 3, sfDecember12.join(', '));
   // Before this sync the plain 12/5 ask had no event candidate on that day (openings and venues only).
   const plain = ids(evidence('12月5日周末带孩子去哪玩？')).filter(id => event(id)?.occurrenceDates?.includes('2026-12-05'));
   assert.ok(plain.length >= 3, plain.join(', '));

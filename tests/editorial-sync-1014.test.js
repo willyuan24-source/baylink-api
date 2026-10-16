@@ -95,7 +95,10 @@ test('BayBay retrieves the nine as candidates for the San Francisco day they hap
     ['10月31日旧金山带孩子去哪', ['sfpl-north-beach-open-house-oct31-2026']],
     ['11月1日旧金山亡灵节活动', ['sfpl-bernal-dia-de-los-muertos-2026']],
     ['11月8日旧金山有什么华人讲座', ['chsa-lily-qi-book-talk-nov8-2026']],
-    ['11月14日旧金山有什么中文读书会', ['sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026']],
+    // API-SYNC-3f: Hard Boiled shares no word with 中文读书会; it was the 6th candidate there only through the 11 and 14 of
+    // the date, and web #47's ZooLights and Union Square ice rink (open on 11/14) take those slots. It is asked as a film.
+    ['11月14日旧金山有什么中文读书会', ['sfpl-chinese-book-club-nov14-2026']],
+    ['11月14日旧金山有什么粤语电影', ['sfpl-richmond-hk-film-hard-boiled-2026']],
   ];
   const found = new Set();
   for (const [message, ids] of asks) {

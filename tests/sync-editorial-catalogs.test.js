@@ -85,6 +85,39 @@ test('swapped planner files fail even when the event catalog was filtered the sa
   assert.match(run.err, /which public\/planner-catalog\.full\.json lacks: swapped or stale planner files/);
 });
 
+// The script's WORLD_HELD_FIELDS mirrors web src/data/public-catalog-holdout.ts (web #47): /opus-bay's copy keeps this
+// row's dateLabel at the value an opus test pins. Remove these cases with the mirror line once the web drops the hold.
+const WORLD_HELD_ID = 'sf-marina-library-open-house-oct17-2026';
+const holdRow = (full, id, change) => json({ ...full, events: full.events.filter(row => !HELD.includes(row.id)).map(row => row.id === id ? { ...row, ...change(row) } : row) });
+
+test('the held copy may keep only the fields WORLD_HELD_FIELDS names, and the report lists them', t => {
+  const full = JSON.parse(read('planner-catalog.json').toString('utf8'));
+  assert.ok(full.events.some(row => row.id === WORLD_HELD_ID) && !HELD.includes(WORLD_HELD_ID), 'the held row is in both fake files');
+  const before = dataHashes();
+  const run = sync(t, (files, rows) => { files['planner-catalog.json'] = holdRow(rows, WORLD_HELD_ID, () => ({ dateLabel: 'pinned label' })); });
+  assert.equal(run.status, 0, run.err);
+  const report = JSON.parse(run.out);
+  const fullRow = full.events.find(row => row.id === WORLD_HELD_ID);
+  assert.deepEqual(report.worldHeld, [{ id: WORLD_HELD_ID, field: 'dateLabel', full: fullRow.dateLabel, held: 'pinned label' }]);
+  assert.deepEqual(report.unusedWorldHolds, []);
+  assert.deepEqual(dataHashes(), before, 'validation never writes; the API keeps the full row');
+  const unused = JSON.parse(sync(t).out);
+  assert.deepEqual(unused.worldHeld, []);
+  assert.deepEqual(unused.unusedWorldHolds, [WORLD_HELD_ID], 'a hold the web dropped is reported, not refused');
+});
+
+test('any other difference in a held row, or the same field in another row, is still refused', t => {
+  const otherField = sync(t, (files, rows) => { files['planner-catalog.json'] = holdRow(rows, WORLD_HELD_ID, row => ({ dateLabel: 'pinned label', costLabel: `${row.costLabel || ''} (stale)` })); });
+  assert.notEqual(otherField.status, 0);
+  assert.match(otherField.err, new RegExp(`\\(${WORLD_HELD_ID}\\) differs from ${WORLD_HELD_ID} beyond the fields WORLD_HELD_FIELDS holds`));
+  const dropped = sync(t, (files, rows) => { files['planner-catalog.json'] = holdRow(rows, WORLD_HELD_ID, () => ({ dateLabel: undefined })); });
+  assert.notEqual(dropped.status, 0, 'a held row keeps the held field itself');
+  const other = JSON.parse(read('planner-catalog.json').toString('utf8')).events.find(row => !HELD.includes(row.id) && row.id !== WORLD_HELD_ID && row.dateLabel);
+  const otherRow = sync(t, (files, rows) => { files['planner-catalog.json'] = holdRow(rows, other.id, row => ({ dateLabel: `${row.dateLabel} (stale)` })); });
+  assert.notEqual(otherRow.status, 0);
+  assert.match(otherRow.err, /regenerate both from one web build/);
+});
+
 test('a full file that was not regenerated with the held one is refused, row by row and for places and guides', t => {
   const staleRow = sync(t, (files, full) => {
     const events = full.events.filter(row => !HELD.includes(row.id)).map((row, index) => index === 0 ? { ...row, costLabel: `${row.costLabel || ''} (changed in a later content merge)` } : row);
