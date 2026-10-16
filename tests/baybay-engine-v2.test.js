@@ -82,6 +82,12 @@ test('system block 1 is byte-identical across modes, locales, routes and paths, 
   await run(assistant, '还有吗', { currentPath: '/events/santana-row-glass-pumpkin-2026' });
   await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
   await run(assistant, '今天 BART 有没有大面积延误？', { searchMode: 'smart', member: true });
+  // API-BB-6: a new site day plan is one call without tools (counted with the fast calls below); the agent rounds
+  // with the site tools run with BAYBAY_DAY_PLAN_FAST=off.
+  const rounds = assistantWith({ config: { BAYBAY_DAY_PLAN_FAST: 'off' }, respond: (body, count) => reply(body.tools?.length && count % 2 === 1 && body.tool_choice?.type === 'auto'
+    ? message([{ type: 'tool_use', id: `tool-${count}`, name: 'search_site', input: { query: 'Berkeley' } }], 'tool_use') : fast({ lead: '可以。' })) });
+  await run(rounds.assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  sent.push(...rounds.sent);
   for (const body of sent) systems.push(hash(body.system));
   assert.ok(sent.length >= 8);
   assert.equal(new Set(systems).size, 1, 'one frozen system prefix');
@@ -532,12 +538,21 @@ test('the v2 agent carries the v1 plan and research rules after the user turn; t
   const rulesOf = body => body.messages.filter(row => row.role === 'system' || /^<system-reminder>/.test(row.content?.[0]?.text || '')).map(row => row.content[0].text).join('\n');
   const guest = await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
   assert.equal(guest.route.path, 'agent');
-  const siteRules = rulesOf(sent[0]);
+  // API-BB-6: a new site day plan is one call around the calculated plan: the plan-call rules, not the research rules.
+  const callRules = rulesOf(sent[0]);
+  for (const pattern of [/Day plan \(calculated; no tools\)/, /candidateIds are currentPlan\.stops ids in order/, /one point per stop in visiting order/, /Weekly hours never guarantee/,
+    /city-only origin/, /admission facts/, /does not make companions free/, /Never say that anything was reserved/]) assert.match(callRules, pattern);
+  assert.doesNotMatch(callRules, /Plans and research|create_plan|Tool failures/);
+  assert.equal(sent[0].tools, undefined);
+  sent.length = 0;
+  const roundsRun = assistantWith({ config: { BAYBAY_MAX_MODEL_ROUNDS: '1', BAYBAY_DAY_PLAN_FAST: 'off' }, respond: () => reply(fast({ lead: '可以安排半天。' })) });
+  await run(roundsRun.assistant, '周六带孩子在 Berkeley 安排一天行程，不开车');
+  const siteRules = rulesOf(roundsRun.sent[0]);
   for (const pattern of [/Plans and research/, /complete final ordered choice/, /within maxStops/, /fewer suitable stops/, /apply planEdit exactly/, /Weekly hours never guarantee/,
     /city-only origin/, /admissionFacts/, /Check each traveler/, /Tool failures are unknowns/, /never move a named place to another day/, /one point each/]) assert.match(siteRules, pattern);
   assert.doesNotMatch(siteRules, /verify_candidate|relatedSources/, 'site-only runs have no source-reading tools');
-  assert.deepEqual(sent[0].system, systemBlocks(), 'block 1 stays frozen');
-  assert.equal(sent[0].messages[0].role, 'user');
+  assert.deepEqual(roundsRun.sent[0].system, systemBlocks(), 'block 1 stays frozen');
+  assert.equal(roundsRun.sent[0].messages[0].role, 'user');
   sent.length = 0;
   await run(assistant, '周六带孩子在 Berkeley 安排一天行程，不开车', { searchMode: 'smart', member: true });
   assert.match(rulesOf(sent[0]), /verify_candidate/); assert.match(rulesOf(sent[0]), /relatedSources/);
