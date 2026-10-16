@@ -90,9 +90,8 @@ test('lead consistency: a count that differs from the listed options loses the n
   const points = n => Array.from({ length: n }, (_, index) => ({ text: `点 ${index}`, cardIds: [`e${index + 1}`] }));
   assert.equal(leadConsistency({ lead: '周六东湾有两场免费活动，适合孩子。', points: points(3) }).draft.lead, '周六东湾有免费活动，适合孩子。');
   assert.equal(leadConsistency({ lead: 'Yes, two free South Bay family events are listed for Sat, Oct 17.', points: points(3) }, { locale: 'en' }).draft.lead, 'Yes, free South Bay family events are listed for Sat, Oct 17.');
-  // API-BB-5 (live L04): a matching count goes too; the streamed lead never showed it.
-  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, ['lead_count']);
-  assert.equal(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).draft.lead, '周六有免费活动。');
+  // A matching count stays (API-BB-5 captain decision 10-15: the 74f5b50 rule; tests/baybay-lead-counts.test.js holds the table).
+  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
   // API-BB-5 review round 5: an approximate count is left whole, as "two or three" is in English (never "两免费活动").
@@ -106,10 +105,10 @@ test('lead consistency: a count that differs from the listed options loses the n
     ['其中两个地方免费。', 'zh-Hans'], ['有大约三场活动适合孩子。', 'zh-Hans'], ['There are only two free events.', 'en'], ['There are about three free events.', 'en']]) {
     for (const count of [2, 3, 4]) assert.deepEqual(leadConsistency({ lead, points: points(count) }, { locale }).draft.lead, lead, `${lead} / ${count}`);
   }
-  // API-BB-5 review: the never-stated rule strips only a count of options; dates, ages, stops, people and durations stay,
-  // and what is left reads as a sentence.
-  const en = lead => leadConsistency({ lead, points: points(2) }, { locale: 'en' }).draft.lead;
-  const zh = lead => leadConsistency({ lead, points: points(2) }).draft.lead;
+  // API-BB-5 review: only a plain count of the options is removed (here four options, so every count differs); dates,
+  // ages, stops, people and durations stay, and what is left reads as a sentence.
+  const en = lead => leadConsistency({ lead, points: points(4) }, { locale: 'en' }).draft.lead;
+  const zh = lead => leadConsistency({ lead, points: points(4) }).draft.lead;
   for (const lead of ['December 5 is packed with family events.', 'The weekend of December 5 brings free events in Pleasanton.', 'Kids aged 3 to 5 love these places.',
     'Kids aged three to five love these places.', 'Saturday, December 5 events include the Pleasanton parade', 'Spend two hours at the events', 'Bring your two-year-old to these events.']) assert.equal(en(lead), lead);
   assert.equal(en('Saturday, Dec 5 has two free events.'), 'Saturday, Dec 5 has free events.');

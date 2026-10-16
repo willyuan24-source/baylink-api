@@ -83,43 +83,57 @@ test('English asks reach the Chinese catalog rows: L08 East Bay markets, a Pleas
   assert.match(zh.items.find(item => item.id === 'oakland-grand-lake-farmers-market-2026').title, /[㐀-鿿]/);
 });
 
-test('live L04: the streamed lead never shows a count, so the result does not correct it', async () => {
+test('live L04: the streamed lead ends as the result: a count that differs from the points is removed from both, a matching one kept', async () => {
   const { createBayBayAssistant } = require('../lib/baybayAgent');
   const { createPublicContext } = require('../lib/publicContext');
   const lead = 'No free museum days are listed for this weekend, but two free options are open that weekend [[e1]].';
-  const answer = { lead, points: [{ text: 'SFMOMA public spaces are free [[e1]].', cardIds: [] }, { text: 'The Exploratorium has a free day later [[e2]].', cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' };
-  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-5-isolated-secret-0123456789' },
-    catalog: planner, guideCatalog: guides, englishGuideCatalog: guidesEn, isTest: true, now: () => Date.parse('2026-10-14T19:00:00Z'),
-    ai: async (payload, options) => {
-      const text = JSON.stringify(answer);
-      if (options?.onText) for (let index = 0; index < text.length; index += 3) options.onText(text.slice(index, index + 3));
-      return { model: 'claude-sonnet-5-5', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text }] }] };
-    } });
-  const events = [];
-  const result = await assistant.run({ message: 'Are there any free museum days in San Francisco this weekend?', locale: 'en', currentPath: '/en', history: [], searchMode: 'site', webAccess: { allowed: false },
-    pageContext: createPublicContext({ guideCatalog: guides }).resolve({ context: { currentPath: '/en' }, currentPath: '/en', today: TODAY, locale: 'en' }), onDraft: event => events.push(event) });
-  const drafted = events.filter(event => event.field === 'lead').map(event => event.text).join('');
-  assert.ok(drafted.length > 20, drafted);
-  assert.doesNotMatch(drafted, /\btwo\b/i);
-  assert.doesNotMatch(result.lead, /\btwo\b/i);
-  assert.equal(result.corrected, false);
+  const point = text => ({ text, cardIds: [] });
+  // Live L04 had three points under "two free options"; captain decision 10-15: a matching count stays (the 74f5b50 rule).
+  for (const [points, kept] of [[[point('The Cable Car Museum is free [[e1]].'), point('SFMOMA public spaces are free [[e1]].'), point('The Exploratorium has a free day later [[e2]].')], false],
+    [[point('SFMOMA public spaces are free [[e1]].'), point('The Exploratorium has a free day later [[e2]].')], true]]) {
+    const answer = { lead, points, candidateIds: [], followups: [], coverage: [], gap: '' };
+    const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_ENGINE: 'v2', BAYBAY_STATE_SECRET: 'api-bb-5-isolated-secret-0123456789' },
+      catalog: planner, guideCatalog: guides, englishGuideCatalog: guidesEn, isTest: true, now: () => Date.parse('2026-10-14T19:00:00Z'),
+      ai: async (payload, options) => {
+        const text = JSON.stringify(answer);
+        if (options?.onText) for (let index = 0; index < text.length; index += 3) options.onText(text.slice(index, index + 3));
+        return { model: 'claude-sonnet-5-5', status: 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text }] }] };
+      } });
+    const events = [];
+    const result = await assistant.run({ message: 'Are there any free museum days in San Francisco this weekend?', locale: 'en', currentPath: '/en', history: [], searchMode: 'site', webAccess: { allowed: false },
+      pageContext: createPublicContext({ guideCatalog: guides }).resolve({ context: { currentPath: '/en' }, currentPath: '/en', today: TODAY, locale: 'en' }), onDraft: event => events.push(event) });
+    const drafted = events.filter(event => event.field === 'lead').map(event => event.text).join('');
+    assert.equal(drafted, result.lead.replace(/\s*\[\d+\]/g, ''), `${points.length} points`);
+    assert.equal(/\btwo free options\b/.test(result.lead), kept, result.lead);
+    assert.equal(result.corrected, false);
+  }
 });
 
 test('review: a streamed lead with people or a count is always a prefix of the result (zh and en, any chunking)', () => {
   const { createDraftWriter } = require('../lib/baybayProgress');
   const { leadConsistency } = require('../lib/baybayQuality');
-  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }];
+  const two = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }], three = [...two, { text: 'c', cardIds: ['z'] }];
   for (const [lead, locale] of [['周六带两个孩子去奥克兰动物园。', 'zh-Hans'], ['周六有两场比赛，适合带两个孩子去看。', 'zh-Hans'], ['这周六可以去两家博物馆，再去公园。', 'zh-Hans'],
     ['一家三口可以去这两个地方', 'zh-Hans'], ['这周末东湾有 3 场适合孩子的活动', 'zh-Hans'], ['周六东湾有两场免费活动，适合孩子。', 'zh-Hant'],
     ['December 5 is packed with family events in Pleasanton.', 'en'], ['Two free events fit your Saturday.', 'en'], ['Kids aged three to five love these places.', 'en']]) {
-    const final = leadConsistency({ lead, points }, { locale }).draft.lead;
-    for (const chunk of [1, 2, 3, 5]) for (const batchChars of [1, 8]) {
-      const writer = createDraftWriter({ emit: () => {}, locale, batchChars, setTimer: () => null, clearTimer: () => {} });
-      for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
-      writer.done('lead'); writer.end({ complete: true });
-      assert.equal(writer.sent().lead, final, `${lead} / ${chunk} / ${batchChars}`);
+    for (const points of [two, three]) {
+      const final = leadConsistency({ lead, points }, { locale }).draft.lead;
+      for (const chunk of [1, 2, 3, 5]) for (const batchChars of [1, 8]) {
+        const writer = createDraftWriter({ emit: () => {}, locale, batchChars, setTimer: () => null, clearTimer: () => {} });
+        for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
+        writer.done('lead');
+        // Until the points are known, a plain count and what follows it are held (the draft stays a prefix).
+        assert.ok(final.startsWith(writer.sent().lead), `${lead} / ${chunk} / ${batchChars}: ${writer.sent().lead}`);
+        writer.end({ complete: true, points });
+        assert.equal(writer.sent().lead, final, `${lead} / ${points.length} / ${chunk} / ${batchChars}`);
+      }
     }
   }
+  // Without the points the held count is never sent.
+  const writer = createDraftWriter({ emit: () => {}, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
+  writer.text('lead', undefined, '周六东湾有两场免费活动，适合孩子。'); writer.done('lead'); writer.end({ complete: true });
+  assert.equal(writer.sent().lead, '周六东湾有');
+  const points = two;
   // People and a non-option count stay as written.
   assert.equal(leadConsistency({ lead: '周六带两个孩子去奥克兰动物园。', points }).draft.lead, '周六带两个孩子去奥克兰动物园。');
   assert.equal(leadConsistency({ lead: '周六有两场比赛，适合带两个孩子去看。', points }).draft.lead, '周六有两场比赛，适合带两个孩子去看。');
@@ -439,13 +453,15 @@ test('review round 2: holiday weekends with 那个/放假的, English background
   const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }];
   for (const [lead, locale] of [['周六两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans'], ['这周六三个地方都可以去，都在 BART 沿线。', 'zh-Hans'],
     ['星期六两场活动都适合 5 岁孩子。', 'zh-Hans'], ['週六兩場免費活動都在奧克蘭。', 'zh-Hant']]) {
-    const final = leadConsistency({ lead, points }, { locale }).draft.lead;
-    for (const chunk of [1, 2]) {
-      const events = [];
-      const writer = createDraftWriter({ emit: event => events.push(event), locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
-      for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
-      writer.done('lead');
-      assert.equal(events.filter(event => event.field === 'lead').map(event => event.text).join(''), final, `${lead} / ${chunk}`);
+    for (const answerPoints of [points, [...points, { text: 'c', cardIds: ['z'] }], [...points, { text: 'c', cardIds: ['z'] }, { text: 'd', cardIds: ['w'] }]]) {
+      const final = leadConsistency({ lead, points: answerPoints }, { locale }).draft.lead;
+      for (const chunk of [1, 2]) {
+        const events = [];
+        const writer = createDraftWriter({ emit: event => events.push(event), locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
+        for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
+        writer.done('lead'); writer.end({ complete: true, points: answerPoints });
+        assert.equal(events.filter(event => event.field === 'lead').map(event => event.text).join(''), final, `${lead} / ${answerPoints.length} / ${chunk}`);
+      }
     }
   }
   assert.equal(leadConsistency({ lead: '十二个活动都在奥克兰', points }).draft.lead, '十二个活动都在奥克兰', '十二 is not 二');
@@ -473,10 +489,11 @@ test('review round 4: 是不是室内 is not outdoor; 这周两场 streams as th
     ['加州科学院是不是室内的', '那这周末带娃去哪']]) assert.notEqual(walk(messages).setting, 'outdoor', messages.join(' / '));
   assert.equal(walk(['下雨天这周末带娃去哪', '这些地方是不是室内的']).setting, 'indoor');
   for (const messages of [['这周末带娃去哪', '有没有不是室内的'], ['有没有非室内的']]) assert.equal(walk(messages).setting, 'outdoor', messages.join(' / '));
-  // 两 / 兩 right after 周 / 週 is a count, never a weekday: held and stripped while streaming, as the result strips it.
+  // 两 / 兩 right after 周 / 週 is a count, never a weekday: held while streaming and removed as the result removes it
+  // (four points, so every count here differs from them).
   const { createDraftWriter } = require('../lib/baybayProgress');
   const { leadConsistency } = require('../lib/baybayQuality');
-  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }, { text: 'c', cardIds: ['z'] }];
+  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }, { text: 'c', cardIds: ['z'] }, { text: 'd', cardIds: ['w'] }];
   for (const [lead, locale, expected] of [['这周两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans', '这周免费活动都在奥克兰，适合带孩子。'],
     ['本周两个地方都免费，适合下雨天。', 'zh-Hans', '本周这些地方都免费，适合下雨天。'], ['這週兩場免費活動都在奧克蘭。', 'zh-Hant', '這週免費活動都在奧克蘭。'],
     ['周六两场免费活动都在奥克兰，适合带孩子。', 'zh-Hans', '周六免费活动都在奥克兰，适合带孩子。'], ['这周六三个地方都可以去，都在 BART 沿线。', 'zh-Hans', '这周六这些地方都可以去，都在 BART 沿线。']]) {
@@ -484,7 +501,7 @@ test('review round 4: 是不是室内 is not outdoor; 这周两场 streams as th
     for (const chunk of [1, 2]) {
       const writer = createDraftWriter({ emit: () => {}, locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
       for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
-      writer.done('lead'); writer.end({ complete: true });
+      writer.done('lead'); writer.end({ complete: true, points });
       assert.equal(writer.sent().lead, expected, `${lead} / ${chunk}`);
     }
   }
@@ -550,13 +567,14 @@ test('review round 6: a range after 这周 / 本周, approximate and qualified c
   const walk = messages => messages.reduce((state, message) => resolveTaskState({ message, previous: state, today: TODAY, carry: true }).state, undefined);
   const { createDraftWriter } = require('../lib/baybayProgress');
   const { leadConsistency } = require('../lib/baybayQuality');
-  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }, { text: 'c', cardIds: ['z'] }];
+  // Four points, so every count below differs from them (a matching count stays: tests/baybay-lead-counts.test.js).
+  const points = [{ text: 'a', cardIds: ['x'] }, { text: 'b', cardIds: ['y'] }, { text: 'c', cardIds: ['z'] }, { text: 'd', cardIds: ['w'] }];
   const streamed = (lead, locale, chunk) => {
     const events = [];
     const writer = createDraftWriter({ emit: event => events.push(event), locale, batchChars: 1, setTimer: () => null, clearTimer: () => {} });
     for (let index = 0; index < lead.length; index += chunk) writer.text('lead', undefined, lead.slice(index, index + chunk));
     const shown = events.filter(event => event.field === 'lead').map(event => event.text).join('');
-    writer.done('lead');
+    writer.done('lead'); writer.end({ complete: true, points });
     return [shown, events.filter(event => event.field === 'lead').map(event => event.text).join('')];
   };
   const zhLocale = lead => /^[A-Za-z]/.test(lead) ? 'en' : /[週兩費動蘭這]/.test(lead) ? 'zh-Hant' : 'zh-Hans';
