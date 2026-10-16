@@ -14,13 +14,19 @@ const NOW = Date.parse('2026-10-08T17:00:00Z');
 const fastText = JSON.stringify({ lead: '金门公园这周末有免费活动。', points: [], candidateIds: [], followups: [], coverage: [], gap: '' });
 const completed = () => ({ status: 'completed', model: 'claude-sonnet-5-5', usage: { input_tokens: 10, output_tokens: 10 }, output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: fastText }] }] });
 
-// The two quota operations claim() uses, over a Map. `shareStart` pre-fills each
-// per-person row, so a default limit can be checked without asking 80 times.
+// The quota operation claim() uses, over a Map: one findOneAndUpdate, an upsert for a row this process has
+// not claimed yet (API-BB-5); a row at its limit meets the unique id (E11000), as in MongoDB. `shareStart`
+// pre-fills each per-person row, so a default limit can be checked without asking 80 times.
 function memoryQuota({ shareStart = 0 } = {}) {
   const rows = new Map();
   return { rows,
-    updateOne: async ({ id }, update) => { if (!rows.has(id)) rows.set(id, { ...update.$setOnInsert, ...(id.startsWith('baybay-run:') ? { count: shareStart } : {}) }); return {}; },
-    findOneAndUpdate: async ({ id, count }) => { const row = rows.get(id); if (!row || !(row.count < count.$lt)) return null; row.count += 1; return { ...row }; } };
+    findOneAndUpdate: async ({ id, count }, update = {}, options = {}) => {
+      let row = rows.get(id);
+      if (!row && options.upsert) { row = { ...update.$setOnInsert, count: id.startsWith('baybay-run:') ? shareStart : 0 }; rows.set(id, row); }
+      if (!row) return null;
+      if (!(row.count < count.$lt)) { if (options.upsert) throw Object.assign(new Error('E11000 duplicate key error'), { code: 11000 }); return null; }
+      row.count += 1; return { ...row };
+    } };
 }
 
 function setup(config = {}, quota = {}) {

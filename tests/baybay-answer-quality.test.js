@@ -278,7 +278,8 @@ test('live casual family fallback puts the incomplete total before scoped free a
     assert.ok(summary.answer.includes(scope), locale);
     assert.doesNotMatch(summary.answer, /Public pedestrian|Regular daytime|adult 1|成人 1|儿童.*39\.95|兒童.*39\.95/);
     assert.deepEqual(summary.sourceIds, ['museum', 'pier']);
-    assert.match(summary.answer, /2026-10-02/);
+    // API-BB-5: the read date reads 10月2日 in prose, never ISO.
+    assert.match(summary.answer, /10月2日/); assert.doesNotMatch(summary.answer, /\b20\d\d-\d\d-\d\d\b/);
   }
   const english = sourcedPlanSummary(plan, sources, 'en');
   assert.match(english.sections.budget, /^The complete admission subtotal cannot be calculated yet\. Known portions only: \$0\.00/);
@@ -296,7 +297,7 @@ test('fallback keeps sourced adult and child tiers when the overall party total 
   assert.match(summary.answer, /成人 \$40\.00；5 岁儿童 1 × \$20\.00/);
   assert.match(summary.answer, /仍需确认人数及各人的适用票档/);
   assert.match(summary.answer, /普通日间入场；特别体验另收费。/);
-  assert.match(summary.answer, /已读官方记录 · 2026-10-05/);
+  assert.match(summary.answer, /已读官方记录 · 10月5日/);
   assert.doesNotMatch(summary.answer, /\$60\.00|已知门票小计：/);
 });
 

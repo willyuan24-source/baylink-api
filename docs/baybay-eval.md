@@ -117,6 +117,12 @@ ANTHROPIC_WORKSPACE_ID=<eval workspace> node --env-file=<private env file> scrip
 
 The budget must exceed the expected spend by the judge's per-call reserve ($0.50 for Opus), or the judge stops early.
 
+**API-BB-5 book (set `bb5`, block M, pinned Wed 2026-10-14 12:00 PT).** 36 turns in 25 conversations. The first 25 turns (17 conversations) were written for API-BB-5 and used nowhere else (blocks A-L, the audits, the live checks and `tests/baybay-5.test.js` use other wording); the lane's dry runs used them during development, so they are partly a development set. `M-R1-*` (6 turns) come from review round 1. `M-HOLD-*` (5 single turns) were written after the round-1 code freeze as the held-out part: at the freeze 3 of 5 passed their code golds; the two misses (圣诞节前那个周末, "anything free for toddlers") were then fixed, so those two are no longer held-out. The first 25 turns: four conversations that carry child ages, a per-person or total budget, a finish time, indoor, free and the travel mode over two to four turns; two-day, weekend-of, Nth-weekend and month asks; English asks against the Chinese catalog; a home city, and BART and Caltrain day plans; DMV and Medi-Cal guide facts. Extra gold fields, all checked without a model: `evidenceIncludes` (a retrieved record's title or URL must match; arrays are any-of), `evidenceMustNotInclude`, `planRail` (`bart` / `caltrain`: every plan stop is in a city that system serves, `lib/baybayTransit.js`), and `state` objects such as `dateRange` compared field by field. A dry run passes every code gold on 36 of 36 turns after review round 1 (18 of the first 25 fully, 6 on the base); the failures left are answer-text checks (mustInclude, script) that need the live model.
+
+```
+node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --set bb5 --now 2026-10-14T12:00:00-07:00 --budget-usd 1.3 --concurrency 2 --out <folder outside the repo> --run-id bb5-M
+```
+
 ## Metrics
 
 | Metric | Definition |

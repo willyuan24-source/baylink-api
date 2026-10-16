@@ -91,6 +91,108 @@ instance it decides how soon the first sentence can start. Keep it small:
   (live 10-13: about 1–2 s per kind on Render, a few hundred ms locally) in slices of one stage,
   during roughly the first 10–20 s after the first health check. A request in that window waits
   for at most one stage; without the warm-up the first reader of each kind paid the whole cost.
+- API-BB-5 (live check 10-15: lead p50 2.07 s, p90 5.66 s): what still waited before the model call.
+  - The run-share claims (`claim()` in `baybayAgent.js`): a row this process has not claimed yet costs one
+    `findOneAndUpdate` upsert, not an upsert and a claim; a row at its limit meets the unique `id` (E11000)
+    and the plain claim decides. Test doubles (`tests/support/memory-models.js`, the eval and capture quota
+    stubs) follow MongoDB for both.
+  - The spend level (`readBudget`): today's last known level answers after 120 ms while the 30 s cached read
+    finishes; the model call still waits for the fresh level in `reserveAiCall`.
+  - The database keep-alive: while idle, one indexed read of today's quota row every 25 s
+    (`BAYBAY_DB_KEEPALIVE_MS`, at least 5 s; `BAYBAY_DB_KEEPALIVE=off` or `0` turns it off), started with the
+    warm-up, so production only. It never writes; `warmStatus().keepAlive` counts runs and failures.
+  - A new site day plan is one streamed call: the plan engine builds the plan from the site's candidates and
+    the final round writes the answer (`day_plan_single_call`). Edits, plan follow-ups, member web research
+    and `BAYBAY_DAY_PLAN_FAST=off` keep the agent rounds. A failed single call gets one recovery call.
+  - A provider call on a pooled connection the far end had closed fails with "fetch failed" and no HTTP
+    status; `failureReason` calls it `connection` (with the socket code from a fixed set) and the adapter
+    sends it once more when no response or text arrived and 4 s remain (`transport.connectionRetries`).
+    The retry re-sends the POST to `/v1/messages`: if the socket closed after Anthropic had already accepted
+    the request, that turn is billed twice. This is rare, and `aiRequest` reserves each attempt separately, so
+    the governance count stays conservative.
 - Measure with `node scripts/baybay-latency-bench.js --settle 3000` (with `--settle` the bench starts
   the warm-up as the server does; stateMs and siteMs are the CPU part; preModelMs adds the bench's
   fixed Mongo and monitor delays), before and after.
+
+## What a question means (API-BB-5)
+
+- **Date spans** (`askedDateRange` in `lib/entityAliases.js`, engine v2 only through `carry`): 11月21日、22日 /
+  11月21日到22日 / November 21-22 / 11/21-22, the weekend of December 5 / 12月5日那个周末, 12月第一个周末 /
+  first weekend of December, and a month (12月, 12月初, in December, 下个月) become `state.dateRange`. A month
+  bounds an outing ask or an ask about events, never "我1月要回国". A day plan still asks which day of a two-day
+  span. A bare 周末 in an outing ask is the coming weekend (not 周末一般 / usually / every weekend), and a
+  weekday follow-up inside a carried span ("那周日呢" after 12月第一个周末, "What about Saturday?" after the
+  first weekend of December; every English spelling) is that span's weekday.
+  Review round 1: a holiday's own weekend (感恩节周末, Thanksgiving / long weekend) sets no date, as before
+  API-BB-5, and its own words find its events; the weekend before or after a holiday (圣诞节前那个周末, the
+  weekend after Thanksgiving) is that weekend. A month that dates something else in the ask is no span: a
+  move, a birth, a trip or a start (我们3月搬来湾区, 宝宝3月出生, 我1月要回国, 我12月去日本), 12月前, 五月天,
+  12月天气. A child's age beside a date ("12/5 and 8 year old", "Dec 6 and 7-year-old") is not a span's end.
+  `dateRangeFor` is unchanged, so v1 and the planner read dates as before.
+  Review rounds 2-4: the connective forms of a holiday's weekend (感恩节那个周末 / 这个周末 / 放假的周末) set no date
+  either; 长 is a long weekend only directly before 周末 (学长这个周末 is this weekend). An English month in a move,
+  birth or trip-away clause, or a past arrival or start ("We arrived in March"), is no span; a coming one ("We
+  arrive in December", "Winter break starts in December") is. After a span is narrowed to one day after this
+  week, a bare weekday is that day of its Monday-to-Sunday week (12/05 → "What about Sunday?" is 12/06, 12/07 →
+  周日呢 is 12/13); "this Sunday" is still this week's. Review round 5: a weekend asked in the message that does not
+  hold the carried day replaces it (12月5号 → 这周末呢 / "What about this weekend?" is 10/17-18). Review round 6: in
+  English a weekday (Monday-Friday) is the first one on or after the carried day (Dec 5 → "What about Monday?" is
+  12/07; Chinese 周一呢 keeps the Monday-to-Sunday week, 11/30), and days the user lists ("12月5、6号两天都行", "Dec
+  5 or 6 both work") become the span even when they hold the carried day.
+- **Day words are not subjects**: when catalog candidates are scored, 周末 / 周六 / today / 两个 are dropped
+  from the question's terms (the date is a constraint in `candidateFits`), so a far-dated row titled
+  感恩节周末 no longer leads a weekend ask.
+- **English asks**: a candidate is matched against its English aliases with plurals, on the question's subject
+  words: "there / any", a month, a day number, the asked city's own words and region words (south, east, bay,
+  near) never count. An outing ask takes every fitting row; an information ask needs the usual floor (so "my
+  child has a fever at night in San Jose" does not bring the night market); a dated ask needs one subject word
+  in the row's English name ("Cantonese film screenings … on November 14"). An English reader's model sees
+  events, places and plan stops under their English names.
+- **Area and rail fit**: the four San Francisco museum names in the museums alias group name those museums
+  only when the ask names San Francisco or no city. `lib/baybayTransit.js` holds the cities BART and Caltrain
+  serve, from the operators' station lists (read 2026-10-15); "坐 BART 去" keeps `rail:bart` in the task state
+  and, with no destination city, places the system reaches rank first. It is a city table only: it never
+  states a station, a walk or a travel time.
+- **A lead's count of the options goes only when it differs from the points, and only a plain one** (captain
+  decision 10-15; the rule of api main 74f5b50, narrowed). Five review rounds of "the lead never states a count"
+  (every count of 2-6 options removed, matching or not) each found zh phrasings it damaged, and the table in
+  `tests/baybay-lead-counts.test.js` still failed 11 of its first 117 leads on 3fe0801, 10 of them damaged
+  (有两场或更多 → 有或更多, 活动有两场 → 活动有, 兩個鐘, 坐两站 BART, a Saturday and a Sunday count, "There is one
+  free event" → "There is free event"). `leadConsistency` now removes a count only when it differs from the
+  number of options listed (points with cards, else all points) and only when it is plain: '<2-6><measure word>'
+  (zh) or two-six (English) right before an option noun (活动, 地方, 去处, 选择, 博物馆, 讲座, 推荐 …; events,
+  options, places, ideas …), with at most two short modifiers between (免费, 亲子, 适合孩子的, 好; free, family,
+  South Bay …), the lead's only count, never beside "the rest" / "each" / 其余 / 各 / 每, and never when other
+  words refer back to it (both, either, neither, another, the third, the other, 二选一, 二者 / 两者, 任选, 第三场,
+  另一场). 这两个地方 reads 这些地方, 去两个地方 reads 去这些地方, 下面两个活动 reads 下面的活动, and a sentence that
+  opens with a quote keeps its capital. The count is read on the lead without its `[[ref]]` / `[n]` markers (as
+  the streamed lead shows it) and removed from the lead itself; a marker inside the count stays. Ranges and
+  approximations (两三个, 这周两三场, 两到三个, 两个到三个, 2-3个, 3、4个, 两个以上, 两个及以上, 两场或更多, 三个左右),
+  qualified counts (其中两个, 前两个, 大约三场, 一共有两场, 每周两场; "only two", "about three", "the first two"),
+  counts without an option noun (两场都免费, 活动有两场), "one" / 一, English digits ("2 free events"), numbers
+  that are not counts (dates, times, ages, prices, lines, people, durations, 坐两站, 兩個鐘) and a lead with two
+  counts are never touched. The 一-六 of 周六 / 星期六 / 礼拜六 is a day, so 周六两场 is a count; 两 / 兩 always
+  starts a range (这周两三场). Known limits: a count with more than two modifiers or one not on the list
+  (有两场在库比蒂诺的免费活动) and an English digit count are never repaired; a count of a subset with its own
+  verb ("Two events need tickets", 两场活动需要提前预约) is generalized when the points differ.
+- **The streamed lead still ends as the result** (live L04): the draft writer holds the lead from a plain count,
+  and from a count whose reading the next characters could still change ("周六带两个…", "There are two…"),
+  until it is settled; a plain count is settled only when the provider call ends and `end({ complete, points })`
+  brings the answer's points (`lib/baybayEngine/stream.js`, `research.js`), so a removed count is never shown
+  and a kept one appears with the rest of the lead. Without the points the held text is not sent (the result
+  carries it). The whole rest of the lead is held, not only its sentence. The prompt forbids counts, yet 2 of the
+  21 distinct leads in the two live checks (both L04) stated one; in L04 the hold would have shown "No full free
+  museum day falls on Oct 17-18, but" for 2.2-2.5 s (API-BB-4B: first text 2.9 s, done 5.2 s; API-FIX5: 4.7 s and
+  7.2 s). A draft field
+  keeps at most 8,000 raw characters (twice the 4,000-character draft budget): a held lead sends almost nothing,
+  so without the cap every flush re-read the model's whole lead; a capped field shows its streamed prefix only.
+- **Indoor and plans (review round 1, v2)**: 有没有室内的 / 有沒有室內的 asks for indoor (the planner read 没有 as a
+  negation); (有没有)不是室内的 / 非室内的 asks for outdoor, but the question 是不是室内的 and 除非室内 stay indoor. "Plan a Saturday for us", "Can you plan our Sunday?", "half-day plan" and, after an outing turn,
+  "plan it" ask for a day plan; "back by 3" / "done by 4" / "back by 3:30" without am/pm is the afternoon, like
+  3 点前; "what can kids do", "kids activities" and "anything free for kids" are outing asks. "What is fun / free
+  for kids" is one too, but not about one venue or fare ("at the Oakland Zoo", "on Muni" stay information); a
+  kind of place ("at the beach", "at parks", "at museums") is still an outing.
+- **Offers keep to the asked days**: a dated offer outside the span, one held only on another weekday
+  (仅周三, "Wednesdays:"), one whose title or date label lists or ranges other weekdays (周二、周三 / 周一、三、五 /
+  周二至周日 / Fridays and Saturdays / Thursday–Monday) and one closed on every asked day (周二、周三闭馆, Closed
+  Mondays) is not an option for that ask (`offerOnAskedDays` in `lib/baybayEvidence.js`).

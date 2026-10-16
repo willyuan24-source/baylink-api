@@ -86,7 +86,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 function loadCasebook(probe) {
-  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-L]-.+\.json$/.test(file)).sort();
+  const files = probe ? [PROBES[probe]] : readdirSync(EVAL_DIR).filter(file => /^cases-[A-M]-.+\.json$/.test(file)).sort();
   const books = files.map(file => ({ file, ...JSON.parse(readFileSync(path.join(EVAL_DIR, file), 'utf8')) }));
   const cases = books.flatMap(book => book.cases.map(item => ({ ...item, pinnedNow: book.pinnedNow })));
   validateCases(cases);
@@ -112,8 +112,11 @@ export function createMemoryQuota() {
   const rows = new Map();
   return {
     async updateOne(filter, update, options) { if (!rows.has(filter.id) && options?.upsert) rows.set(filter.id, { ...update.$setOnInsert }); return { acknowledged: true }; },
-    async findOneAndUpdate(filter, update) {
-      const row = rows.get(filter.id);
+    async findOneAndUpdate(filter, update, options) {
+      let row = rows.get(filter.id);
+      // An upsert inserts a new row; a row at its limit meets the unique id (E11000), as in MongoDB.
+      if (!row && options?.upsert) { row = { count: 0, ...update.$setOnInsert }; rows.set(filter.id, row); }
+      else if (row && options?.upsert && !(row.count < filter.count.$lt)) throw Object.assign(new Error('E11000 duplicate key error'), { code: 11000 });
       if (!row || !(row.count < filter.count.$lt)) return null;
       row.count += update.$inc.count;
       return { ...row };

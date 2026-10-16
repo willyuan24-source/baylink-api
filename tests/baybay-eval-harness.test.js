@@ -130,7 +130,9 @@ test('arms switch models through runtime config keys; code-defaults sets nothing
   const book = JSON.parse(fs.readFileSync(path.join(EVAL, 'arms.json'), 'utf8'));
   const keys = new Set(['ANTHROPIC_BAYBAY_MODEL', 'ANTHROPIC_BAYBAY_EFFORT', 'BAYBAY_MODEL_AGENT', 'BAYBAY_EFFORT_AGENT', 'BAYBAY_MODEL_PROFESSIONAL', 'BAYBAY_EFFORT_PROFESSIONAL', 'BAYBAY_THINKING_AGENT',
     // API-BB-ENGINE arms: the engine flag and the fast route.
-    'BAYBAY_ENGINE', 'BAYBAY_MODEL_FAST', 'BAYBAY_EFFORT_FAST', 'BAYBAY_THINKING_FAST']);
+    'BAYBAY_ENGINE', 'BAYBAY_MODEL_FAST', 'BAYBAY_EFFORT_FAST', 'BAYBAY_THINKING_FAST',
+    // API-BB-5: the day-plan path (one call by default; off = the agent rounds).
+    'BAYBAY_DAY_PLAN_FAST']);
   for (const [name, arm] of Object.entries(book.arms)) {
     for (const key of Object.keys(arm.config)) assert.ok(keys.has(key), `${name}: ${key}`);
     assert.equal(arm.requestOverrides, undefined, `${name}: thinking goes through BAYBAY_THINKING_AGENT, which only Haiku receives`);

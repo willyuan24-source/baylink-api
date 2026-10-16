@@ -90,8 +90,34 @@ test('lead consistency: a count that differs from the listed options loses the n
   const points = n => Array.from({ length: n }, (_, index) => ({ text: `点 ${index}`, cardIds: [`e${index + 1}`] }));
   assert.equal(leadConsistency({ lead: '周六东湾有两场免费活动，适合孩子。', points: points(3) }).draft.lead, '周六东湾有免费活动，适合孩子。');
   assert.equal(leadConsistency({ lead: 'Yes, two free South Bay family events are listed for Sat, Oct 17.', points: points(3) }, { locale: 'en' }).draft.lead, 'Yes, free South Bay family events are listed for Sat, Oct 17.');
+  // A matching count stays (API-BB-5 captain decision 10-15: the 74f5b50 rule; tests/baybay-lead-counts.test.js holds the table).
   assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, []);
+  assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
+  // API-BB-5 review round 5: an approximate count is left whole, as "two or three" is in English (never "两免费活动").
+  for (const [lead, locale] of [['这周末有两三场免费活动。', 'zh-Hans'], ['這週末有兩三場免費活動。', 'zh-Hant'], ['两三个地方都适合带孩子。', 'zh-Hans'], ['推荐两到三个地方。', 'zh-Hans'],
+    ['有2到3个活动适合孩子。', 'zh-Hans'], ['这周末有2-3个活动。', 'zh-Hans'], ['奥克兰有三五个好去处。', 'zh-Hans'], ['有两、三个地方可以去。', 'zh-Hans'],
+    // Review round 6: a range right after 这周 / 本周 / 這週, ranges of whole counts, 、 and full-width dashes after a digit, 左右 / 以上,
+    // and a part of the options or an estimate ("其中两个", "大约三场", "only two").
+    ['这周两三场免费活动都在奥克兰。', 'zh-Hans'], ['本周两三个地方都适合带孩子。', 'zh-Hans'], ['這週兩三場免費活動都在奧克蘭。', 'zh-Hant'], ['这周两到三个地方都可以去。', 'zh-Hans'],
+    ['这周两三个地方都可以去。', 'zh-Hans'], ['有两个到三个地方可以去。', 'zh-Hans'], ['有两个或三个地方可以去。', 'zh-Hans'], ['这周末有三个左右的免费活动。', 'zh-Hans'],
+    ['有两个以上的选择。', 'zh-Hans'], ['有3、4个活动适合孩子。', 'zh-Hans'], ['有2－3个活动适合孩子。', 'zh-Hans'], ['有2—3个活动适合孩子。', 'zh-Hans'],
+    ['其中两个地方免费。', 'zh-Hans'], ['有大约三场活动适合孩子。', 'zh-Hans'], ['There are only two free events.', 'en'], ['There are about three free events.', 'en']]) {
+    for (const count of [2, 3, 4]) assert.deepEqual(leadConsistency({ lead, points: points(count) }, { locale }).draft.lead, lead, `${lead} / ${count}`);
+  }
+  // API-BB-5 review: only a plain count of the options is removed (here four options, so every count differs); dates,
+  // ages, stops, people and durations stay, and what is left reads as a sentence.
+  const en = lead => leadConsistency({ lead, points: points(4) }, { locale: 'en' }).draft.lead;
+  const zh = lead => leadConsistency({ lead, points: points(4) }).draft.lead;
+  for (const lead of ['December 5 is packed with family events.', 'The weekend of December 5 brings free events in Pleasanton.', 'Kids aged 3 to 5 love these places.',
+    'Kids aged three to five love these places.', 'Saturday, December 5 events include the Pleasanton parade', 'Spend two hours at the events', 'Bring your two-year-old to these events.']) assert.equal(en(lead), lead);
+  assert.equal(en('Saturday, Dec 5 has two free events.'), 'Saturday, Dec 5 has free events.');
+  assert.equal(en('Two free events fit your Saturday'), 'Free events fit your Saturday');
+  for (const lead of ['第 2 站去公园', '第 2 站安排在 Oakland 图书馆', '周六带两个孩子去奥克兰动物园。', '两个周末都有市集活动', '带两个小朋友去公园玩']) assert.equal(zh(lead), lead);
+  assert.equal(zh('一家三口可以去这两个地方'), '一家三口可以去这些地方');
+  assert.equal(zh('周六可以去两个地方'), '周六可以去这些地方');
+  assert.equal(zh('这周末东湾有 3 场适合孩子的活动'), '这周末东湾有适合孩子的活动');
+  assert.equal(zh('周六 Oakland 两场活动都免费。'), '周六 Oakland 活动都免费。');
   const choice = leadConsistency({ lead: '坐渡轮去 Sausalito 更省脚力。', points: [{ text: '现有资料不能判断哪个更省力。', cardIds: [] }, { text: '选平路、能坐下的地方。', cardIds: [] }] });
   assert.deepEqual(choice.repairs, ['lead_choice']); assert.equal(choice.draft.points.length, 1);
 });

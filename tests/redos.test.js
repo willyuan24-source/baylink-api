@@ -214,6 +214,39 @@ for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) })
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
 
+// API-BB-5 review (c92d087): a lead held at an early count sends almost nothing, so the draft writer never reached
+// its 4,000-character stop and re-read the model's whole lead on every 40-character flush (1.4 s of CPU for a
+// 16,000-character lead held at 两场 and followed by more 两场). A field now keeps at most 8,000 raw characters,
+// and the streamed count scan stops at the lead's first plain or unsettled count.
+test('API-BB-5: the draft writer streams a held 16,000-character lead at batchChars 40 in linear time', () => {
+  const timings = timeInChild(`
+const { createDraftWriter } = require(require('path').join(ROOT, 'lib/baybayProgress'));
+const fill = (unit, n) => unit.repeat(Math.ceil(n / unit.length)).slice(0, n);
+const points = [1, 2, 3].map(n => ({ text: 'p' + n, cardIds: ['e' + n] }));
+const stream = lead => {
+  const writer = createDraftWriter({ emit: () => {}, locale: /[\\u3400-\\u9fff]/.test(lead) ? 'zh-Hans' : 'en', batchChars: 40, setTimer: () => null, clearTimer: () => {} });
+  for (let index = 0; index < lead.length; index += 3) writer.text('lead', undefined, lead.slice(index, index + 3));
+  writer.done('lead');
+  writer.end({ complete: true, points });
+  return writer.sent().lead;
+};
+const cases = {
+  'held at 两场 + 两场': '有两场免费活动，' + fill('两场', 16000),
+  'held at 两场 + 两': '有两场免费活动，' + fill('两', 16000),
+  'held at 两场 + 这周两': '有两场免费活动，' + fill('这周两', 16000),
+  'held at 两场 + 两个孩子': '有两场免费活动，' + fill('带两个孩子去，', 16000),
+  'held at 两场 + prose': '有两场免费活动，' + fill('周六带孩子去公园散步，', 16000),
+  'held at two + two kids': 'There are two free events, ' + fill('two kids and ', 16000),
+  'a URL the sanitiser drops': 'https://example.com/' + fill('a', 16000),
+};
+for (const lead of Object.values(cases)) stream(lead); // warm up
+for (const [name, lead] of Object.entries(cases)) out.push({ name, ms: time(() => stream(lead)), sent: stream(lead) });`);
+  assert.equal(timings.length, 7);
+  for (const { name, ms } of timings) assert.ok(ms < 200, `${name}: ${ms.toFixed(1)} ms`);
+  // Held at the count: only the text before it was streamed (the result carries the rest).
+  assert.deepEqual(timings.map(row => row.sent), ['有', '有', '有', '有', '有', 'There are', '']);
+});
+
 test('the linearised API-BB-QUALITY citation patterns keep their matches', () => {
   const { dropOffArea, leadConsistency } = require('../lib/baybayQuality');
   const areaOf = ref => ({ sf1: 'sf', eb1: 'east-bay' })[ref] || null;

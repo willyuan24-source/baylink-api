@@ -34,14 +34,15 @@ test('the real walk question drops initial concert/festival cards after citing t
   const result = await assistant.run({ message: '旧金山适合周末散步的两个站内去处，分别是什么？请给资料来源，并把没有核实的开放时间和费用说清楚。',
     searchMode: 'site', locale: 'zh-Hans', onQuickCard: cards => initialCards.push(...cards) });
   assert.equal(calls, 2); assert.equal(result.degraded, false, JSON.stringify(result.research.warnings));
-  assert.ok(initialCards.some(card => card.id === 'sf-journey-final-frontier-november-2026'));
-  // API-SYNC-3c (web CNT-SUPPLY-2): two new SF library programmes, the 12/5 Chinatown storytime and the 11/28 Bernal game
-  // night (感恩节周末), now take two of the three preview places from Presidio ArtSpan and Ferry Plaza. The final answer
-  // still drops every preview card; the TODO subtest keeps the preview's relevance gap visible.
-  assert.ok(initialCards.length >= 2, initialCards.map(card => card.id).join(', '));
+  // API-SYNC-3c (web CNT-SUPPLY-2) put two new SF library programmes, the 12/5 Chinatown storytime and the 11/28 Bernal
+  // game night (感恩节周末), in the preview on their 周末 / 周六 titles. API-BB-5: a day word is a date constraint, not a
+  // subject, so Presidio ArtSpan and Ferry Plaza are back in the preview beside the 12/5 Chinatown storytime (on the walk's
+  // Chinatown); the Journey concert is no longer previewed. The exact preview is pinned so drift stays visible, and the
+  // final answer drops every preview card.
+  assert.deepEqual(initialCards.map(card => card.id), ['sfpl-chinatown-family-storytime-dec-2026', 'sf-presidio-artspan-oct24-2026', 'ferry-plaza-farmers-market-2026-autumn']);
   assert.deepEqual(result.localMatches, []);
   assert.deepEqual(result.sources.map(source => source.url), ['/guides/presidio-picnic-day-guide', '/guides/sf-chinatown-north-beach-walk-guide']);
-  await t.test('a walk ask previews a walk-relevant SF item (Presidio ArtSpan or Ferry Plaza)', { todo: 'API-SYNC-3c follow-up: the preview ranks far-dated library programmes above walk-relevant items' }, () => {
+  await t.test('a walk ask previews a walk-relevant SF item (Presidio ArtSpan or Ferry Plaza)', () => {
     assert.ok(initialCards.some(card => /presidio|ferry-plaza/.test(card.id)), initialCards.map(card => card.id).join(', '));
   });
 });
