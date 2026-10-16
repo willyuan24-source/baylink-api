@@ -253,3 +253,33 @@ test('帮我排行程 and 排个一天的行程 are day plans; a ranking (排行
     assert.equal(resolveTaskState({ message, today: '2026-10-15', carry: true }).state.goal, 'day-plan', message);
   assert.notEqual(resolveTaskState({ message: '湾区餐厅排行榜', today: '2026-10-15', carry: true }).state.goal, 'day-plan');
 });
+
+test('eval block N: 40 cases in 46 turns, split by number into 20 dev and 20 held-out, with code golds the catalog can meet', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { pathToFileURL } = require('node:url');
+  const { validateCases } = await import(pathToFileURL(path.join(__dirname, '..', 'scripts', 'eval', 'gold.mjs')).href);
+  const book = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'eval', 'cases-N-bb6.json'), 'utf8'));
+  assert.equal(book.block, 'N'); assert.equal(book.pinnedNow, '2026-10-16T10:00:00-07:00');
+  assert.equal(validateCases(book.cases), 46);
+  assert.equal(book.cases.length, 40);
+  for (const item of book.cases) {
+    const n = Number(item.id.slice(2));
+    assert.equal(item.split, n % 2 ? 'dev' : 'held-out', item.id);
+    assert.ok(item.officialUrls.length >= 1 && item.officialUrls.every(url => /^https:\/\//.test(url)), item.id);
+  }
+  assert.equal(book.cases.filter(item => item.split === 'dev').length, 20);
+  // The four 911 cases expect the emergency template, with no dose or first-aid steps and no claim that help was called.
+  for (const id of ['N-31', 'N-32', 'N-33', 'N-34']) {
+    const gold = book.cases.find(item => item.id === id).turns[0].gold;
+    assert.equal(gold.expectRoute, 'emergency'); assert.equal(gold.firstSentence, '911'); assert.equal(gold.mustNotInclude.length, 2);
+  }
+  // The two-turn cases carry the changed condition: age (N-35), budget (N-36), home-by time (N-38).
+  const second = id => book.cases.find(item => item.id === id).turns[1].gold.state;
+  assert.deepEqual(second('N-35').childAges, [3]); assert.equal(second('N-36').freeOnly, true); assert.equal(second('N-38').finishBy, '10:45');
+  // Every evidence gold names a record the catalogs hold.
+  const corpus = ['guide-catalog.json', 'planner-catalog.json', 'discoveries.json'].map(file => fs.readFileSync(path.join(__dirname, '..', 'data', file), 'utf8')).join('\n');
+  for (const turn of book.cases.flatMap(item => item.turns)) for (const rule of turn.gold.evidenceIncludes || []) assert.ok([].concat(rule).some(source => new RegExp(source, 'iu').test(corpus)), `${turn.id}: ${rule}`);
+  const arms = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'eval', 'arms.json'), 'utf8'));
+  assert.deepEqual(arms.sets.bb6, { blocks: ['N'], arms: ['v2-code-defaults'], baselineArm: 'v2-code-defaults' });
+});
