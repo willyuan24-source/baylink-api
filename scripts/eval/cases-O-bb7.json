@@ -7,6 +7,7 @@
     "Written before any API-BB-7 code change (base a976e0c). Block N stays as it is: its held-out turns are reported, never tuned on.",
     "Seven failure types from block N held-out (N-02, N-06, N-10, N-18, N-22, N-36-2, N-40-2), each with new dev and held-out asks: age said as \"X, almost Y\"; a dated city ask with an age; a neighbourhood that names its city; Social Security credits / retirement; a withheld deposit (and a deposit that is not a rental one); a changed budget of zero; a follow-up without its topic noun (and one that changes topic).",
     "Plus two English rainy-day paraphrases from the API-BB-6 review (dev) and one zh-Hans held-out: state.family is the family signal added by this lane.",
+    "Cases 37-40 were added before any code change, after o-dry-0 showed cases 5-8 pass on the base: the dated-ask failure needs an event name with a weekday word beside the full date.",
     "Split fixed here: tune only on dev; held-out is measured once on the base (o-dry-0) and once on the final tip."
   ],
   "cases": [
@@ -1201,6 +1202,134 @@
           },
           "judge": {
             "expect": "室内亲子选项。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-37",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-37",
+          "message": "Oakland的2026年12月12日Family Saturday活动，我带6岁的孩子去，门票写5美元，能只带10美元吗？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                6
+              ],
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "12月12日（周六）Oakland，6 岁；不承诺 10 美元一定够。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-38",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-38",
+          "message": "On December 12, 2026 at the Berkeley Super Sunday craft fair with my 9-year-old; parking is 8 dollars, is 10 enough?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                9
+              ],
+              "city": "Berkeley"
+            }
+          },
+          "judge": {
+            "expect": "Sat Dec 12 in Berkeley, age 9; \"Super Sunday\" is the fair's name, not a second date."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-39",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-39",
+          "message": "Fremont的2026年12月19日Sunday Funday，帶8歲的兒子去，停車要4美元嗎？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "date": "2026-12-19",
+              "childAges": [
+                8
+              ],
+              "city": "Fremont"
+            }
+          },
+          "judge": {
+            "expect": "12月19日（週六）Fremont，8 歲。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-40",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-40",
+          "message": "San Jose on December 19, 2026 for the Family Sunday open house with my 5-year-old. Entry is 3 dollars; can we bring only 5?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "date": "2026-12-19",
+              "childAges": [
+                5
+              ],
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "Sat Dec 19 in San Jose, age 5."
           }
         }
       ]
