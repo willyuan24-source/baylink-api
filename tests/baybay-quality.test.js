@@ -90,8 +90,11 @@ test('lead consistency: a count that differs from the listed options loses the n
   const points = n => Array.from({ length: n }, (_, index) => ({ text: `点 ${index}`, cardIds: [`e${index + 1}`] }));
   assert.equal(leadConsistency({ lead: '周六东湾有两场免费活动，适合孩子。', points: points(3) }).draft.lead, '周六东湾有免费活动，适合孩子。');
   assert.equal(leadConsistency({ lead: 'Yes, two free South Bay family events are listed for Sat, Oct 17.', points: points(3) }, { locale: 'en' }).draft.lead, 'Yes, free South Bay family events are listed for Sat, Oct 17.');
-  // A matching count stays (API-BB-5 captain decision 10-15: the 74f5b50 rule; tests/baybay-lead-counts.test.js holds the table).
-  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, []);
+  // A matching count stays (API-BB-5 captain decision 10-15: the 74f5b50 rule; tests/baybay-lead-counts.test.js holds the table);
+  // API-BB-8: one that says that many exist says they are the ones BAYLINK lists.
+  assert.deepEqual(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).repairs, ['lead_scope']);
+  assert.equal(leadConsistency({ lead: '周六有三项免费活动。', points: points(3) }).draft.lead, '周六有 BAYLINK 收录的三项免费活动。');
+  assert.deepEqual(leadConsistency({ lead: '这三项活动都免费。', points: points(3) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '第2站是华埠分馆，逛两个半小时。', points: points(2) }).repairs, []);
   assert.deepEqual(leadConsistency({ lead: '两个孩子都适合的有三项。', points: points(3) }).repairs, []);
   // API-BB-5 review round 5: an approximate count is left whole, as "two or three" is in English (never "两免费活动").

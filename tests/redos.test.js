@@ -291,3 +291,38 @@ for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) })
   assert.equal(timings.length, 16 * 6 * 4);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
+
+// API-BB-8: the point citation and plan-stop repairs (pointRepairs, leadStopOrder) and the lead's scope attribution run on
+// model-written text: five 600-character points, a 200-character lead, with whitespace, [[ and name runs.
+test('API-BB-8: pointRepairs, leadStopOrder and the lead scope stay under 50 ms at the fast draft bounds', () => {
+  const timings = timeInChild(`
+const { pointRepairs, leadStopOrder, leadConsistency } = require(require('path').join(ROOT, 'lib', 'baybayQuality'));
+const { usualDayHours } = require(require('path').join(ROOT, 'lib', 'baybayEvidence'));
+const fill = (head, pump, size, tail) => head + pump.repeat(Math.ceil((size - head.length - tail.length) / pump.length)).slice(0, size - head.length - tail.length) + tail;
+const stops = [{ title: 'Ferry Plaza 农夫市集：海边逛一圈', aliases: ['Ferry Plaza Farmers Market: A Waterfront Stroll'], refs: ['s-1'], clock: { kind: 'hours', text: '8:00–14:00' } },
+  { title: 'Ferry Building · 公共大厅与外部会合点', refs: ['e2'] }, { title: '唐人街与 North Beach', aliases: ['Chinatown & North Beach'], refs: ['e3'] }];
+const citable = ref => ['s-1', 'e2', 'e3'].includes(ref);
+const cases = {};
+for (const pad of [' ', '\t', '\u3000', '[[', '[[ ', ']]', '[[e2]]', 'ferry ', '渡轮', '农夫市集', 'Ferry Plaza ', '8:', 'two ', '有两个'])
+  for (const head of ['', '先逛 Ferry Plaza ', 'Yes, two East Bay farmers markets ', '东湾周六有两个农夫市集'])
+    cases['repairs ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad)] = () => {
+      const points = Array.from({ length: 5 }, (_, n) => ({ text: fill(head, pad, 600, n ? '。' : ' [[e2]]'), cardIds: n === 1 ? ['e3'] : [] }));
+      pointRepairs({ lead: 'x', points, gap: '' }, { citable, stops, locale: 'zh-Hans' });
+      leadStopOrder(fill(head, pad, 200, '唐人街'), stops);
+      // Review of API-BB-8: the list check runs on the gaps between out-of-order mentions and on the text around them.
+      leadStopOrder(fill(head + '渡轮大厦', pad, 180, '农夫市集，再去唐人街'), stops);
+      leadStopOrder(fill(head + 'the Ferry Building', pad, 180, 'the Ferry Plaza Farmers Market and Chinatown'), stops);
+      // Second review: and on the words before the first mention (day and part-of-day runs).
+      leadStopOrder(fill(head + 'Saturday ', pad, 180, 'Chinatown, then the Ferry Building'), stops);
+      leadStopOrder(fill('', 'saturday morning, ', 180, 'visit Chinatown, then the Ferry Building'), stops);
+      leadStopOrder(fill(head + '周六', pad, 180, '先逛唐人街，再去渡轮大厦'), stops);
+      leadStopOrder(fill('', '周六上午，', 180, '先逛唐人街，再去渡轮大厦'), stops);
+      leadConsistency({ lead: fill(head, pad, 200, ' run on Saturday.'), points: points.slice(0, 2) }, { locale: /[㐀-鿿]/.test(head) ? 'zh-Hans' : 'en' });
+      leadConsistency({ lead: fill(head + 'The festival has', pad, 200, ' two shows.'), points: points.slice(0, 2) }, { locale: 'en', siteListed: false });
+      usualDayHours([fill(head + '10/11 通常周日', pad, 4000, '中午开门')], { start: '2026-10-18' }, '2026-10-16', 'zh-Hans');
+    };
+for (const fn of Object.values(cases)) fn(); // warm up
+for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
+  assert.equal(timings.length, 14 * 4);
+  for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
+});
