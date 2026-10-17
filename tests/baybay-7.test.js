@@ -317,9 +317,11 @@ test('review L09: an indoor family ask gives each place\'s recorded hours for th
 test('review X1 / L07 in zh-Hant and en: the storytime is in the top five; the plan keeps stops on one route and hands every site stop off', async () => {
   const { run } = fixture();
   const result = await run('12月5日東灣有什麼適合孩子的活動', { locale: 'zh-Hant' });
-  // API-SYNC-3g (web #48): San Leandro's 12/5 Mandarin storytime counts too (as in live X1 above).
-  const rank = (result.evidence || []).findIndex(row => /奥克兰总馆周六亲子故事时间|奧克蘭總館週六親子故事時間|San Leandro 主[馆館]普通[话話]故事[会會]/.test(row.title || ''));
+  // API-SYNC-3g (web #48): San Leandro's 12/5 Mandarin storytime counts too (as in live X1 above); Oakland Main stays in the evidence.
+  const oakland = /奥克兰总馆周六亲子故事时间|奧克蘭總館週六親子故事時間/;
+  const rank = (result.evidence || []).findIndex(row => oakland.test(row.title || '') || /San Leandro 主[馆館]普通[话話]故事[会會]/.test(row.title || ''));
   assert.ok(rank >= 0 && rank < 5, `rank ${rank + 1}: ${(result.evidence || []).slice(0, 8).map(row => row.title).join(' | ')}`);
+  assert.ok((result.evidence || []).some(row => oakland.test(row.title || '')), (result.evidence || []).map(row => row.title).join(' | '));
   const km = (a, b) => Math.hypot((a.lat - b.lat) * 111, (a.lng - b.lng) * 111 * Math.cos(a.lat * Math.PI / 180));
   for (const [message, locale] of [['週六想帶爸媽在舊金山玩半天，坐公車，幫我排個行程', 'zh-Hant'], ['Plan a Saturday half day in San Francisco with my parents by bus', 'en'], ['周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程', 'zh-Hans']]) {
     const plan = (await fixture().run(message, { locale })).assistantPlan;

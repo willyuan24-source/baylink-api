@@ -130,7 +130,10 @@ test('BayBay: a 12/5 Mandarin storytime ask gets San Leandro\'s 10:30 storytime,
     const [view] = modelItems([result.items[rank]]);
     assert.match(view.text, /12\/5（周六）· 10:30–11:00/, message);
     assert.match(view.title, locale === 'en' ? /^Mandarin Storytime at San Leandro Main Library/ : /普通[话話]故事[会會]/, message);
-    assert.match(view.cost, /活动页没写费用和报名/, message); // no fee claimed
+    // No fee claimed. The zh views carry the record's own label; the English check stays label-free so that English
+    // cost labels (follow-up 5) can land without breaking it.
+    if (locale === 'en') assert.doesNotMatch(view.cost || '', /\bfree\b|免费|免費/i, message);
+    else assert.match(view.cost, /活动页没写费用和报名/, message);
   }
 });
 
@@ -155,18 +158,19 @@ test('BayBay: a Bruma ask gets the announced opening with no first day, never an
   }
 });
 
-const CHSA_ASKS = [['11月15日 CHSA 台湾华人寻根讲座怎么报名？', 'zh-Hans'], ['How do I register for the CHSA Taiwanese Chinese roots seminar on November 15?', 'en']];
-test('BayBay: a CHSA 11/15 seminar ask never carries the broken short link; the Chinese ask gets the flyer\'s registration page', () => {
+const CHSA_ASKS = [['11月15日 CHSA 台湾华人寻根讲座怎么报名？', 'zh-Hans'], ['How do I register for the CHSA Taiwanese Chinese roots seminar on November 15?', 'en'],
+  ['11月15日 CHSA 台灣華人尋根講座怎麼報名？', 'zh-Hant'], ['CHSA 尋根講座報名網址', 'zh-Hant']];
+test('BayBay: a CHSA 11/15 seminar ask never carries the broken short link; the zh-Hans ask gets the flyer\'s registration page', () => {
   for (const [message, locale] of CHSA_ASKS) {
     const result = evidence(message, locale);
     const item = result.items.find(row => row.id === CHSA);
     assert.ok(item, `${message}: ${itemIds(result).join(', ')}`);
     const [view] = modelItems([item]);
     assert.match(view.text, /CHSA 活动页上的报名短链接现在会跳到一个无关的网页/, message);
-    if (locale !== 'en') assert.match(view.text, /LoveBoatAlumni\.org\/roots2026/, message);
+    if (locale === 'zh-Hans') assert.match(view.text, /LoveBoatAlumni\.org\/roots2026/, message);
     assert.ok(!modelItems(result.items).some(row => /tinyurl|bit\.ly/i.test(row.text)), message);
   }
-  // Before this sync the English ask found no record of the seminar at all.
+  // Before this sync the English ask and "CHSA 尋根講座報名網址" found no record of the seminar at all.
 });
 
 test('BayBay: the 12/12 and 11/28 San Francisco Chinese-language asks see the new library programmes', () => {
@@ -205,10 +209,18 @@ test('a one-word name finds its opening', { todo: 'API-SYNC-3g follow-up (before
   }
 });
 
-test('the English CHSA ask keeps the flyer\'s registration page in the item text', { todo: 'API-SYNC-3g follow-up: an English reader gets the Chinese record text plus its cost line, and the text budget cuts it just before "主办方传单写的报名页是 LoveBoatAlumni.org/roots2026" (the Chinese view, without the cost line, keeps it). English event text is API-SYNC-3e follow-up 2' }, () => {
-  const [message, locale] = CHSA_ASKS[1];
-  const item = evidence(message, locale).items.find(row => row.id === CHSA);
-  assert.match(modelItems([item])[0].text, /LoveBoatAlumni\.org\/roots2026/);
+test('the English and zh-Hant CHSA asks keep the flyer\'s registration page in the item text', { todo: 'API-SYNC-3g follow-up: in English and zh-Hant the item text is cut just after "CHSA 活动页上的报名短链接现在会跳到一个无关的网页；" and before "主办方传单写的报名页是 LoveBoatAlumni.org/roots2026", so those readers are told the link is broken and get no working one. Only the zh-Hans view keeps it. English event text is API-SYNC-3e follow-up 2; the fix is to keep a plan line that carries a registration URL inside the text budget' }, () => {
+  for (const [message, locale] of CHSA_ASKS.filter(([, askLocale]) => askLocale !== 'zh-Hans')) {
+    const item = evidence(message, locale).items.find(row => row.id === CHSA);
+    assert.match(modelItems([item])[0].text, /LoveBoatAlumni\.org\/roots2026/, message);
+  }
+});
+
+const SJMA = 'san-jose-sjma-dia-muertos-community-2026';
+test('a free-only 10/24 ask keeps the SJMA Día de los Muertos community day (free admission, paid add-on)', { todo: 'API-SYNC-3g follow-up, newly wrong after this deploys, matters until 10/24: web #48 recoded the row from cost free to mixed ("糖骷髅装饰另购票") and planning.admissionUsd from 0 to null, so the free-only filter drops it although its costLabel still says "全天免费入场". Before this sync it was the first plan candidate of "10月24日 San Jose 有什么免费活动？" and the English ask, and the 4th of "10月24号周末带娃有什么免费活动". Fix: a free-only ask keeps a mixed row whose admission is free, or the web restores admissionUsd 0 (the paid decorating is optional)' }, () => {
+  for (const message of ['10月24日 San Jose 有什么免费活动？', '10月24号周末带娃有什么免费活动', 'What free events are in San Jose on October 24?']) {
+    assert.ok(evidence(message).candidates.some(row => row.id === SJMA), message);
+  }
 });
 
 test('a dated one-day event\'s when gives its session hours', { todo: 'API-SYNC-3g follow-up: a single-day event\'s model view gives only the date in when (San Leandro: "12月5日（周六）"); its 10:30–11:00 is in the text only. API-BB-7 added session hours for multi-date events' }, () => {
