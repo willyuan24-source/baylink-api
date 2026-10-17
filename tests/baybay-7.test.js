@@ -139,7 +139,7 @@ test('live L07: the day plan uses a record\'s own session times, links event sto
   assert.deepEqual(plan.stops[0].openingWindows, [{ open: '11:00', close: '16:00' }]);
   assert.ok(!plan.checks.some(check => check.code === 'opening_hours'), JSON.stringify(plan.checks.map(check => check.code)));
   // The planner hand-off keeps catalog places whose link is their official site.
-  assert.ok(result.assistantPlan.handoff?.stops?.length === stops.length || !result.assistantPlan.handoff, JSON.stringify(result.assistantPlan.handoff));
+  assert.ok(result.assistantPlan.handoff && result.assistantPlan.handoff.stops.length === stops.length, JSON.stringify(result.assistantPlan.handoff));
 });
 
 test('a day plan puts a stop that closes by 15:00 first and keeps same-spot stops together', () => {
@@ -231,4 +231,100 @@ test('eval block O: 40 cases in 50 turns, dev and held-out fixed before any code
   for (const turn of book.cases.flatMap(item => item.turns)) for (const rule of turn.gold.evidenceIncludes || []) assert.ok([].concat(rule).some(source => new RegExp(source, 'iu').test(corpus)), `${turn.id}: ${rule}`);
   const arms = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'eval', 'arms.json'), 'utf8'));
   assert.deepEqual(arms.sets.bb7, { blocks: ['O'], arms: ['v2-code-defaults'], baselineArm: 'v2-code-defaults' });
+});
+
+// ---- Review 10-16 (round 1) ----
+test('review: dotted a.m. / p.m. times stay as written; 24-hour times still become 12-hour', () => {
+  for (const text of ['Runs 9:00 a.m.-2:00 p.m.', '4:30 p.m.', '10:30 a.m. daily', 'Opens 10:30 a.m.', 'Office hours 8:00 a.m. to 5:00 p.m.']) assert.equal(englishClock(text), text);
+  assert.equal(englishClock('Open 9:00-14:00, doors 18:30.'), 'Open 9am–2pm, doors 6:30pm.');
+});
+
+test('review: an outing after a professional turn is not a professional follow-up (zh-Hans, zh-Hant, en); professional follow-ups still are', () => {
+  const history = message => [{ role: 'user', content: message }, { role: 'assistant', content: '…' }];
+  for (const [message, before] of [
+    ['她周六想去动物园，可以吗？', '我住 San Jose，想帮妈妈申请 Medi-Cal。'],
+    ['她週六想去動物園，可以嗎？', '我住 San Jose，想幫媽媽申請 Medi-Cal。'],
+    ['Can we take her to the zoo this Saturday?', 'I live in San Jose and want to help my mom apply for Medi-Cal.'],
+    ['她喜欢画画，周六有什么画画课？', '我爸想申请 Medicare'],
+    ['她喜歡畫畫，週六有什麼畫畫課？', '我爸想申請 Medicare'],
+    ['She likes painting. Any art classes on Saturday?', 'My dad wants to sign up for Medicare.'],
+    ['那她明天想去吃早茶，哪家好？', '我爸的绿卡快过期了，怎么续？'],
+    ['那她明天想去飲茶，哪家好？', '我爸的綠卡快過期了，怎麼續？'],
+    ['Then she wants dim sum tomorrow. Which place is good?', 'My dad\'s green card expires soon. How do we renew it?'],
+  ]) assert.equal(professionalFollowup(message, history(before)), null, message);
+  for (const [message, before, topic] of [
+    ['他英文不好，可以找誰用中文問？', '我爸剛滿65歲，想問 Medicare 怎麼報名。', 'medicare'],
+    ['She lost the renewal letter. What now?', 'How do I renew my mom\'s Medi-Cal in Fremont?', 'insurance'],
+    ['她不會用電腦，還有什麼辦法？', '想幫媽媽申請 Medi-Cal。', 'insurance'],
+  ]) assert.deepEqual(professionalFollowup(message, history(before))?.topics, [topic], message);
+});
+
+test('review: a chosen stop order is kept; the engine\'s own order does not put a 12:00 session before a museum that is open from the start', () => {
+  const museum = planner.places.find(row => row.id === 'venue-sfmoma');
+  const pumpkin = planner.events.find(row => row.id === 'sf-sunnydale-pumpkin-fest-2026');
+  const candidates = [{ ...museum, kind: 'place' }, { ...pumpkin, kind: 'event' }];
+  const state = { date: '2026-10-17', city: 'San Francisco', startTime: '10:00' };
+  const chosen = buildItinerary({ state, candidates, selectedIds: [`place:${museum.id}`, `event:${pumpkin.id}`], now: Date.parse(LIVE) });
+  assert.deepEqual(chosen.stops.map(stop => stop.entityId), [museum.id, pumpkin.id]);
+  const reversed = buildItinerary({ state, candidates, selectedIds: [`event:${pumpkin.id}`, `place:${museum.id}`], now: Date.parse(LIVE) });
+  assert.deepEqual(reversed.stops.map(stop => stop.entityId), [pumpkin.id, museum.id], 'the user\'s own order, even when it is not the best');
+  const auto = buildItinerary({ state, candidates, now: Date.parse(LIVE) });
+  assert.deepEqual(auto.stops.map(stop => stop.entityId), [museum.id, pumpkin.id]);
+});
+
+test('review: a 3-stop Oakland plan does not visit the OMCA twice (Lake Merritt and venue-omca share the spot and page)', () => {
+  const ids = ['venue-oakland-main-library', 'lake-merritt', 'venue-omca'];
+  const candidates = ids.map(id => ({ ...planner.places.find(row => row.id === id), kind: 'place' }));
+  const plan = buildItinerary({ state: { date: '2026-10-18', city: 'Oakland', startTime: '10:00' }, candidates, now: Date.parse(LIVE) });
+  const chosen = plan.stops.map(stop => stop.entityId);
+  assert.ok(!(chosen.includes('lake-merritt') && chosen.includes('venue-omca')), chosen.join(' | '));
+});
+
+test('review: family asks keep family-friendly evening and fair records; only grown-up evening records are dropped', () => {
+  const { adultEvening } = require('../lib/baybayEvidence');
+  const row = id => planner.events.find(item => item.id === id);
+  for (const id of ['pacific-coast-fog-fest-2026', 'san-jose-365-night-market-october-2026', 'sf-sundown-beetlejuice-2026', 'oakland-autumn-lights-festival-2026', 'roundup-schulz-pearls-jubilee-2026']) assert.equal(adultEvening(row(id)), false, id);
+  for (const id of ['sj-funeral-gangster-dinner-2026', 'tiburon-wine-festival-2026', 'r2-vallejo-wonder-after-dark-2026']) assert.equal(adultEvening(row(id)), true, id);
+});
+
+test('review: task state false positives (neighbourhood beside a named city, no money for parking, a 0-50 range, "almost 3" o\'clock)', () => {
+  for (const [message, city] of [['Any events at Parkside Hall in San Jose this Saturday?', 'San Jose'], ['周六 San Jose Parkside Hall 有什么活动？', 'San Jose'],
+    ['Where can I get a good tenderloin steak in San Jose?', 'San Jose'], ['Saturday storytime at the Berryessa branch library?', 'San Jose'], ['Kids events in the Tenderloin on Saturday?', 'San Francisco']]) assert.equal(stateOf(message).city, city, message);
+  assert.notEqual(stateOf('Camping at Lake Berryessa this weekend?').city, 'San Jose');
+  for (const message of ['I have no money worries, just want the best museum in SF on Sunday', 'No money for parking, so we will take BART. Any museums in SF on Saturday?',
+    '预算0-50美元，周六旧金山有什么博物馆？', 'Our budget is 0-20 dollars per person, museums in SF Saturday?']) assert.notEqual(stateOf(message).freeOnly, true, message);
+  for (const message of ['It is almost 3, any coffee shop open near Fremont BART?', 'We live almost 5 blocks from Fremont BART, anything on Saturday?',
+    'My kid is one of the performers at the Saturday show in Fremont, any parking?', 'The market has nearly 15 stalls, is the Saturday market in Fremont good?']) assert.deepEqual(stateOf(message).childAges, [], message);
+  assert.equal(stateOf('It is almost 3, any coffee shop open near Fremont BART?').family, undefined);
+  assert.deepEqual(stateOf('Our daughter is almost 6. Any kids events in Palo Alto this Saturday?').childAges, [5]);
+  assert.deepEqual(stateOf('She is turning 5 years old soon; Saturday ideas in Oakland?').childAges, [4]);
+});
+
+test('review L09: an indoor family ask gives each place\'s recorded hours for the asked day; an evening ask leaves out places that close at 18:00', () => {
+  for (const [message, locale, want] of [['这周六 San Jose 下雨，有什么室内亲子活动？', 'zh-Hans', '周六 11:00–18:00'], ['這週六 San Jose 下雨，有什麼室內親子活動？', 'zh-Hant', '週六 11:00–18:00'], ['Indoor things to do with kids in San Jose this Saturday?', 'en', 'Saturday 11am–6pm']]) {
+    const sjma = fast(message, locale).model.find(item => /San José Museum of Art/.test(item.title));
+    assert.equal(sjma?.when, want, message);
+  }
+  const evening = fast('这周六晚上 San Jose 有什么适合带孩子的活动？', 'zh-Hans').model;
+  assert.ok(!evening.some(item => /San José Museum of Art|King, Jr\. Library/.test(item.title)), evening.map(item => item.title).join(' | '));
+});
+
+test('review X1 / L07 in zh-Hant and en: the storytime is in the top five; the plan keeps stops on one route and hands every site stop off', async () => {
+  const { run } = fixture();
+  const result = await run('12月5日東灣有什麼適合孩子的活動', { locale: 'zh-Hant' });
+  const rank = (result.evidence || []).findIndex(row => /奥克兰总馆周六亲子故事时间|奧克蘭總館週六親子故事時間/.test(row.title || ''));
+  assert.ok(rank >= 0 && rank < 5, `rank ${rank + 1}: ${(result.evidence || []).slice(0, 8).map(row => row.title).join(' | ')}`);
+  const km = (a, b) => Math.hypot((a.lat - b.lat) * 111, (a.lng - b.lng) * 111 * Math.cos(a.lat * Math.PI / 180));
+  for (const [message, locale] of [['週六想帶爸媽在舊金山玩半天，坐公車，幫我排個行程', 'zh-Hant'], ['Plan a Saturday half day in San Francisco with my parents by bus', 'en'], ['周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程', 'zh-Hans']]) {
+    const plan = (await fixture().run(message, { locale })).assistantPlan;
+    const stops = plan.stops;
+    assert.ok(stops.length >= 2, `${message}: ${stops.map(stop => stop.title).join(' | ')}`);
+    const located = stops.filter(stop => Number.isFinite(stop.location?.lat));
+    assert.ok(located.length >= 2, `${message}: ${stops.map(stop => stop.title).join(' | ')}`);
+    for (const stop of located) assert.ok(located.some(other => other !== stop && km(stop.location, other.location) <= 3), `${message}: ${stop.title}`);
+    const ids = stops.map(stop => stop.entityId);
+    assert.ok(!(ids.includes('sf-bay-area-science-festival-2026') && ids.includes('sf-marina-library-open-house-oct17-2026')), `${message}: ${ids.join(' | ')}`);
+    assert.ok(plan.handoff, `${message}: a dated plan has a hand-off`);
+    assert.deepEqual(plan.handoff.stops.map(stop => stop.id), stops.map(stop => stop.entityId), message);
+  }
 });
