@@ -12,15 +12,19 @@ const event = id => planner.events.find(row => row.id === id);
 const opening = (english, id) => loadDiscoveryCatalog(undefined, english).items.find(row => row.kind === 'opening' && row.id === id);
 
 // Web CNT-HOTFIX-2 (H70, c10a856b): the official site no longer gives a brunch start date, so 10/17 is unconfirmed (call first)
-// instead of "no brunch on 10/17". The 10/18 label stays.
-test('Old Post Office brunch from 10/18, Saturday 10/17 unconfirmed, in both languages (audit G03, H70)', () => {
+// instead of "no brunch on 10/17". API-SYNC-3g (web #48 freshness review, read 10-16): the 10/18 label is gone too (brunch
+// Sat–Sun, no start date); 10/17 stays unconfirmed (call first).
+test('Old Post Office brunch on weekends with no start date, Saturday 10/17 unconfirmed, in both languages (audit G03, H70)', () => {
   const zh = opening(false, 'old-post-office-burlingame');
   const en = opening(true, 'old-post-office-burlingame');
-  assert.match(zh.dateLabel, /早午餐 10\/18 起/);
-  assert.match(zh.details[0], /10\/17 周六是否供应未能确认，去前先打 650-502-1000/);
+  assert.match(zh.dateLabel, /早午餐周六日/);
+  assert.doesNotMatch(zh.dateLabel, /10\/18/);
+  assert.match(zh.details[0], /早午餐周六、周日 11:00–14:00/);
+  assert.match(zh.details[0], /10\/17 周六想去吃早午餐，先打 650-502-1000 问是否已开始供应/);
   assert.doesNotMatch(zh.details[0], /10\/17 周六还没有早午餐/);
-  assert.match(en.dateLabel, /brunch from Oct 18/);
-  assert.match(en.details[0], /brunch on Saturday, Oct 17 is unconfirmed, so call \(650\) 502-1000/);
+  assert.match(en.dateLabel, /brunch Sat–Sun/);
+  assert.doesNotMatch(en.dateLabel, /Oct 18/);
+  assert.match(en.details[0], /for brunch on Saturday, Oct 17, call 650-502-1000 first to ask whether it has begun/);
 });
 
 test('moved and unconfirmed dates agree across the planner and event catalogs', () => {

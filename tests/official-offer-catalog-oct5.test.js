@@ -37,7 +37,8 @@ const cases = [
     query: 'MOD Pizza KEF2026 Kids Meal',
     source: 'https://modpizza.com/kids-eat-free-deal/',
     zh: ['周日买常规披萨或沙拉', '每买一份 Regular-size', '12 岁及以下', '不适用电话或第三方订单'],
-    en: ['Sundays: Buy a regular pizza or salad', 'Each regular-size pizza or salad purchased', '12 or under', 'No phone orders, third-party orders'],
+    // API-SYNC-3g (web #48 freshness review, read 10-16): the English card was reworded; the same terms.
+    en: ['Sundays: Buy a regular pizza or salad', 'Each Regular-size pizza or salad you buy', '12 or under', 'not for phone or third-party orders'],
   },
   {
     query: 'PetSmart Meet the Spooky Pets',

@@ -37,7 +37,7 @@ test('dated candidate admission labels are citable editorial snapshots even when
   for (const expected of ['成人$15', '5岁及以下免费', '$10/车停车', '11/7', '19:00–22:00']) assert.ok(source.text.includes(expected), expected);
   assert.equal(source.verification, 'catalog');
   assert.equal(source.verifiedLive, false);
-  assert.equal(source.checkedAt, '2026-10-05');
+  assert.equal(source.checkedAt, '2026-10-16'); // the row's own read date (API-SYNC-3g: web #48 re-read it 10-16; it was 10-05)
   assert.equal(event.admissionFacts.knownTotalUsd, null, 'publishing price tiers must not invent party size or a computed total');
   assert.equal(event.admissionFacts.basis, 'catalog');
 });

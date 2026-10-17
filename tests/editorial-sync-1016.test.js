@@ -160,8 +160,9 @@ test('an 11/14 San Francisco ask is not matched by the date\'s digits', () => {
   assert.equal(book[0], 'sfpl-chinese-book-club-nov14-2026', book.join(', '));
   assert.ok(!book.some(id => lights.includes(id)), book.join(', '));
   // An outing ask still lists every fitting event, but the Chinese programmes now come first (ZooLights and the rink led).
+  // API-SYNC-3g (web #48): Visitacion Valley's 11/14 calligraphy and chess afternoon is a fourth Chinese programme that day.
   const community = evidence('11月14日旧金山有什么华人活动').candidates.map(row => row.id);
-  assert.deepEqual(community.slice(0, 3).sort(), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026'], community.join(', '));
+  assert.deepEqual(community.slice(0, 4).sort(), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026', 'sfpl-visitacion-valley-calligraphy-chess-nov14-2026'], community.join(', '));
   // A number that is not the date still counts: Pier 39 on a dated ask.
   const pier = itemIds(evidence('10月24日去 Pier 39 有什么好玩的'));
   assert.ok(pier.includes('guide:sf-fishermans-wharf-pier39-guide'), pier.join(', '));

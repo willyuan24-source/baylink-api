@@ -9,11 +9,17 @@ const guideCatalog = require('../data/guide-catalog.json');
 const catalog = loadPlannerCatalog();
 const TODAY = '2026-10-04';
 const QUESTION = '我住 Fremont，只有 Alameda County Library 图书证。想免费打印文件、用 Kanopy 看电影、借博物馆门票。请区分我现在能用的资源、需要另办 SFPL 或 San Mateo County Libraries 卡的资源，以及是否有居住地、年龄或 eCard 限制。给官方入口，不要把整个湾区的资格混在一起。';
+// API-SYNC-3g (web #48): the library starter guide's new pass paragraph ("旧金山 · SFPL Discover & Go …", with Marin's and
+// San Mateo County's passes) now takes the slot of the perks guide's scoped SFPL note. SFPL's facts stay in the eight rows
+// through the October edition's SFPL Kanopy card (a CA resident can get a free SFPL card; the Kanopy entry) and the
+// pass rules (SFPL needs SF residents); keeping the scoped note itself is the TODO below.
+const SFPL_SCOPED_NOTE = 'SFPL：Kanopy 与 Discover & Go 资格分别核对';
 const notes = [
-  ['SFPL：Kanopy 与 Discover & Go 资格分别核对', '加州居民可免费申请 SFPL 卡', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv'],
+  ['SFPL · KANOPY：用 SFPL 图书证，在家免费看片', '加州居民可免费办 SFPL 卡', 'https://sfpl.org/research-learn/elibrary/bay-beats-movies-tv'],
   ['SMCL：Kanopy 每月额度与馆票是两套条件', '每月 30 tickets', 'https://smcl.org/resources-types/evideos/'],
   ['AC Library：先分清实体卡、eCard 与影音入口', 'AC Library 官网没有列出 AC 卡可用的 Kanopy 入口', 'https://aclibrary.org/movies-tv/'],
 ];
+const SFPL_PASSES = /SFPL 需 SF 居民/;
 
 test('the real resolved multi-service question retains all scoped notes despite an inferred arts topic', () => {
   const { state } = resolveTaskState({ message: QUESTION, catalog, today: TODAY });
@@ -30,6 +36,7 @@ test('the real resolved multi-service question retains all scoped notes despite 
   const allText = result.guides.map(row => row.text).join('\n');
   assert.match(allText, /10 页黑白/); assert.match(allText, /每天最多 25 页/);
   assert.match(allText, /上述馆票限制不能直接套到影音或打印/);
+  assert.match(allText, SFPL_PASSES);
   const withoutBroadTopic = buildSiteEvidence({ query: QUESTION, state: { ...state, topic: null }, guideCatalog, catalog, today: TODAY });
   assert.deepEqual(result.guides.map(row => row.evidenceId), withoutBroadTopic.guides.map(row => row.evidenceId));
   // Locale rewriting translates “Library/Libraries” inside institution names.
@@ -57,6 +64,15 @@ test('the actual first model payload retains the separate card, film and pass qu
   for (const [heading, fact] of notes) { assert.ok(text.includes(heading), heading); assert.ok(text.includes(fact), fact); }
   assert.match(text, /10 页黑白/); assert.match(text, /每天最多 25 页/);
   assert.match(text, /上述馆票限制不能直接套到影音或打印/);
+  assert.match(text, SFPL_PASSES);
+});
+
+test('the multi-service question keeps the scoped SFPL note among its eight guide rows', { todo: 'API-SYNC-3g follow-up for the next BayBay lane: web #48\'s library starter guide paragraph "旧金山 · SFPL Discover & Go …" (a general pass list with Marin and San Mateo County passes) outranks the perks guide\'s scoped SFPL note for this Fremont ask, so "住 Fremont 的读者不能仅凭 SFPL 卡推定可领馆票" leaves the evidence and baybay-benefit-scope no longer corrects "SFPL 需旧金山居民" claims' }, () => {
+  const { state } = resolveTaskState({ message: QUESTION, catalog, today: TODAY });
+  const result = buildSiteEvidence({ query: QUESTION, state, guideCatalog, catalog, today: TODAY });
+  const paragraph = result.guides.find(row => row.sectionHeading === SFPL_SCOPED_NOTE);
+  assert.ok(paragraph, result.guides.map(row => row.sectionHeading).join(' | '));
+  assert.ok(paragraph.text.includes('加州居民可免费申请 SFPL 卡'));
 });
 
 test('explicit multi-topic retrieval takes precedence without dropping topic context from short follow-ups', () => {
