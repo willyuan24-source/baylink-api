@@ -327,3 +327,24 @@ Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/bayb
   city, the city parse reads it without its neighbourhood, so "Richmond District" / "Outer Richmond" beside 旧金山 /
   San Francisco / SF is San Francisco and not also the East Bay city of Richmond. "9:00 a.m" (no final dot) stays as
   written, and "she" / "he" count as a child word for "almost N" only as "she is" / "he turns" / "she's".
+- **Review round 3 (10-17)**. The round 2 carry was still a list of cue words: 17 of 28 new leisure follow-ups after a
+  Medi-Cal, SSA or deposit turn kept the guard (那她想学英文，找谁？ / 她喜欢唱歌，还有什么选择？ / "Instead, anything nice
+  for her to see around Santa Clara?"), and 17 of 23 professional ones lost it (那她要带什么证件？ / 要多久才批下来？ / "What
+  if she gets denied?" / "How do I get it back?"). `professionalFollowup()` now carries on signals. A follow-up keeps the
+  turn before's topic only when (a) it names that topic's domain: documents, approval, a denial, the office (also after
+  去哪), an appointment, an application, eligibility, a deadline, a letter, the phone or online channel, help in Chinese
+  or the wait for every topic (`FOLLOWUP_ANY`); a premium, coverage, a doctor, income or a house for Medi-Cal, Medicare
+  and medical; a benefit amount (领多少 / 少多少 / how much), credits or the claiming age for SSA; a deposit, getting it
+  back (要回来 / get it back), the landlord, the lease, a list of charges or small claims court for legal; a visa, an
+  interview or a passport for immigration; a refund, filing or a deduction for tax (`FOLLOWUP_DOMAIN`); or (b) it is a
+  bare cue with only a pronoun and filler around it (怎么办？/ 然后呢？/ 还有什么办法？/ 他还能怎么办？/ What now? /
+  What else can I do? / Then what?). It never carries when it names a subject or activity that is not professional
+  (`FOLLOWUP_LEISURE`: learning English, mahjong, singing, gardening, friends, hanging out, sights, food, the weekend, an
+  outing with the kids, places to go, indoors / outdoors, the weather, boredom / 闷 / 无聊), even beside 找谁 / 还有什么选择
+  / instead / other ways or a professional word (押金的事先放一放，那附近有什么好吃的？). A shared signal does not carry
+  either when the follow-up names another topic family's subject instead (`FOLLOWUP_SUBJECT`: 房东… after a Medi-Cal
+  turn); a follow-up that names two topics' domains keeps only the ones it names. A message with no professional user
+  turn before it is unchanged. A chain of follow-ups (documents, then approval time) keeps the topic of the professional
+  turn it started from, up to three user turns back, while every turn in it carries. Social Security credits said as
+  points are SSA: 社安工作点数 / 社會安全工作點數 / 社安点数 / 工作点数 / "Social Security 退休金够不够点数" ("Social Security
+  退休金怎么申请", with no credits word, stays a site answer as the G12 regression requires).
