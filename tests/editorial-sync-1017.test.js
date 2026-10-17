@@ -209,9 +209,12 @@ test('a one-word name finds its opening', { todo: 'API-SYNC-3g follow-up (before
   }
 });
 
-test('the English and zh-Hant CHSA asks keep the flyer\'s registration page in the item text', { todo: 'API-SYNC-3g follow-up: in English and zh-Hant the item text is cut just after "CHSA 活动页上的报名短链接现在会跳到一个无关的网页；" and before "主办方传单写的报名页是 LoveBoatAlumni.org/roots2026", so those readers are told the link is broken and get no working one. Only the zh-Hans view keeps it. English event text is API-SYNC-3e follow-up 2; the fix is to keep a plan line that carries a registration URL inside the text budget' }, () => {
-  for (const [message, locale] of CHSA_ASKS.filter(([, askLocale]) => askLocale !== 'zh-Hans')) {
+// API-BB-9: snippet keeps a sentence that gives a registration page's address, so every locale's reader gets the working
+// page with the note that the CHSA short link is broken.
+test('the zh-Hans, zh-Hant and English CHSA asks keep the registration page from the flyer in the item text', () => {
+  for (const [message, locale] of CHSA_ASKS) {
     const item = evidence(message, locale).items.find(row => row.id === CHSA);
+    assert.ok(item, message);
     assert.match(modelItems([item])[0].text, /LoveBoatAlumni\.org\/roots2026/, message);
   }
 });
