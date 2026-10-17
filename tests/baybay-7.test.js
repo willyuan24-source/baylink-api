@@ -200,6 +200,8 @@ test('block O dev: ages said as "almost N" and 快N岁, a weekday inside an even
 
 test('block O dev: Social Security credits are SSA; a withheld deposit is legal; a follow-up without its topic noun keeps the guard', () => {
   for (const message of ['我在 Oakland 打工三年了，社安积分够不够领退休金？', '社會安全退休金要幾個積分？', 'How many Social Security credits do I need to get retirement benefits?']) assert.deepEqual(professionalTopics(message), ['ssa'], message);
+  // A Medicare question that mentions Social Security retirement stays Medicare (block N dev N-15).
+  for (const message of ['我爸还没领社安退休金，65岁时 Medicare 会自动生效吗？', 'My mom is not on Social Security retirement yet; does Medicare start by itself at 65?']) assert.deepEqual(professionalTopics(message), ['medicare'], message);
   const credits = professionalResponse('How many Social Security credits do I need to get retirement benefits?', 'en', { guideCatalog: guides, englishGuideCatalog: guidesEn });
   assert.deepEqual(credits.safety.resources.map(row => row.id), ['ssa-benefits']);
   assert.deepEqual(credits.safety.guides.map(row => row.slug), ['bay-area-social-security-retirement-preparation-guide']);
