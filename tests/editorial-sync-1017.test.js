@@ -217,10 +217,24 @@ test('the English and zh-Hant CHSA asks keep the flyer\'s registration page in t
 });
 
 const SJMA = 'san-jose-sjma-dia-muertos-community-2026';
-test('a free-only 10/24 ask keeps the SJMA Día de los Muertos community day (free admission, paid add-on)', { todo: 'API-SYNC-3g follow-up, newly wrong after this deploys, matters until 10/24: web #48 recoded the row from cost free to mixed ("糖骷髅装饰另购票") and planning.admissionUsd from 0 to null, so the free-only filter drops it although its costLabel still says "全天免费入场". Before this sync it was the first plan candidate of "10月24日 San Jose 有什么免费活动？" and the English ask, and the 4th of "10月24号周末带娃有什么免费活动". Fix: a free-only ask keeps a mixed row whose admission is free, or the web restores admissionUsd 0 (the paid decorating is optional)' }, () => {
+// API-BB-9: web #48 recoded the row from cost free to mixed ('糖骷髅装饰另购票') and planning.admissionUsd from 0 to null. Its
+// cost label leads with free entry and every other clause is a separately paid extra, so priceOf reads its admission as
+// $0 and a free-only ask keeps it; the model view's cost says the decorating is paid.
+test('a free-only 10/24 ask keeps the SJMA Día de los Muertos community day (free admission, paid add-on)', () => {
   for (const message of ['10月24日 San Jose 有什么免费活动？', '10月24号周末带娃有什么免费活动', 'What free events are in San Jose on October 24?']) {
-    assert.ok(evidence(message).candidates.some(row => row.id === SJMA), message);
+    const result = evidence(message);
+    assert.ok(result.candidates.some(row => row.id === SJMA), message);
+    if (/San Jose/.test(message)) {
+      const item = result.items.find(row => row.id === SJMA);
+      assert.ok(item, message);
+      assert.match(modelItems([item])[0].cost, /免费入场.*另购票/, message);
+    }
   }
+  assert.equal(require('../lib/planner').priceOf(event(SJMA)), 0);
+  // A clause that is neither a paid extra nor free keeps a mixed row unpriced (Almaden's harvest festival sells tickets for its main activities).
+  assert.equal(require('../lib/planner').priceOf({ cost: 'mixed', costLabel: '免费入场；鬼屋、南瓜园、游戏和手工要买票，票价现场公布', planning: {} }), null);
+  assert.equal(require('../lib/planner').priceOf({ cost: 'mixed', costLabel: '免费入场；工作坊 $15 另购', planning: {} }), null);
+  assert.equal(require('../lib/planner').priceOf({ cost: 'mixed', costLabel: '居民免费入场；餐饮另计', planning: {} }), null);
 });
 
 test('a dated one-day event\'s when gives its session hours', { todo: 'API-SYNC-3g follow-up: a single-day event\'s model view gives only the date in when (San Leandro: "12月5日（周六）"); its 10:30–11:00 is in the text only. API-BB-7 added session hours for multi-date events' }, () => {
