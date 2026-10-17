@@ -123,7 +123,9 @@ test('the actual bad library response is repaired from original scoped source pa
   assert.doesNotMatch(response.answer, /重复的长篇正文|入口： 和/);
 });
 
-test('the bad library response loses its SFPL residency claims for Kanopy and the card', { todo: 'API-SYNC-3g follow-up for the next BayBay lane: on web #48\'s catalog the scoped SFPL note (Discover & Go 馆票要求旧金山居民; 加州居民可免费申请 SFPL 卡) is no longer retrieved for this ask (TODO in baybay-retrieval-context), and the remaining SFPL statements carry no SF-residence restriction to attribute to passes ("旧金山 · SFPL Discover & Go" parses as entity 旧金山, "SFPL 需 SF 居民" sits under a non-institution heading), so repairBenefitCoverage keeps "SFPL需旧金山居民" and "SFPL要求旧金山居民"' }, async () => {
+// API-BB-9: web #48's starter-guide pass paragraph ('旧金山 · SFPL Discover & Go：旧金山市县居民…') now scopes as entity SFPL, so
+// its pass statement owns the SF-residence restriction and the repair corrects the Kanopy and card claims.
+test('the bad library response loses its SFPL residency claims for Kanopy and the card', async () => {
   const { summaries } = await runBadLibraryResponse();
   assert.match(summaries.kanopy, /加州居民可免费(?:申请|办) SFPL 卡/);
   assert.doesNotMatch(summaries.kanopy, /SFPL需旧金山居民/);

@@ -67,12 +67,18 @@ test('the actual first model payload retains the separate card, film and pass qu
   assert.match(text, SFPL_PASSES);
 });
 
-test('the multi-service question keeps the scoped SFPL note among its eight guide rows', { todo: 'API-SYNC-3g follow-up for the next BayBay lane: web #48\'s library starter guide paragraph "旧金山 · SFPL Discover & Go …" (a general pass list with Marin and San Mateo County passes) outranks the perks guide\'s scoped SFPL note for this Fremont ask, so "住 Fremont 的读者不能仅凭 SFPL 卡推定可领馆票" leaves the evidence and baybay-benefit-scope no longer corrects "SFPL 需旧金山居民" claims' }, () => {
+// API-BB-9 (API-SYNC-3g follow-up): on web #48's catalog the library starter guide's pass paragraph ("旧金山 · SFPL
+// Discover & Go：旧金山市县居民…") outranks the perks guide's scoped SFPL note for this Fremont ask. Its scope now names
+// SFPL (the place label before the acronym is not the institution), so the SF-residence restriction belongs to SFPL's
+// pass statement only, and the October edition's SFPL Kanopy card keeps "加州居民可免费办 SFPL 卡" in the rows.
+test('the multi-service question keeps an SFPL pass statement that limits SF residence to passes, and the open SFPL card rule', () => {
+  const { evidenceScopes } = require('../lib/baybayBenefitScope');
   const { state } = resolveTaskState({ message: QUESTION, catalog, today: TODAY });
   const result = buildSiteEvidence({ query: QUESTION, state, guideCatalog, catalog, today: TODAY });
-  const paragraph = result.guides.find(row => row.sectionHeading === SFPL_SCOPED_NOTE);
-  assert.ok(paragraph, result.guides.map(row => row.sectionHeading).join(' | '));
-  assert.ok(paragraph.text.includes('加州居民可免费申请 SFPL 卡'));
+  const scopes = evidenceScopes(result.guides, { sources: new Map() });
+  const passes = scopes.find(scope => scope.entityKey === 'sfpl' && /Discover & Go/.test(scope.heading) && /旧金山市县居民/.test(scope.text));
+  assert.ok(passes, scopes.map(scope => `${scope.entity} | ${scope.heading.slice(0, 40)}`).join(' || '));
+  assert.ok(scopes.some(scope => scope.entityKey === 'sfpl' && scope.text.includes('加州居民可免费办 SFPL 卡')));
 });
 
 test('explicit multi-topic retrieval takes precedence without dropping topic context from short follow-ups', () => {
