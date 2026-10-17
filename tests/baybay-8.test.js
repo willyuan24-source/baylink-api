@@ -7,7 +7,8 @@ const { createBayBayAssistant } = require('../lib/baybayAgent');
 const { loadPlannerCatalog } = require('../lib/planner');
 const { createPublicContext, loadDiscoveryCatalog } = require('../lib/publicContext');
 const { resolveTaskState } = require('../lib/baybayState');
-const { buildFastEvidence, modelItems } = require('../lib/baybayEvidence');
+const { buildFastEvidence, modelItems, nightFor, usualDayHours } = require('../lib/baybayEvidence');
+const { siteListed } = require('../lib/baybayEngine/evidence');
 const { normalizeGuideQuery } = require('../lib/guideLocale');
 const { leadConsistency, leadStopOrder, pointRepairs, stopNames } = require('../lib/baybayQuality');
 const { createDraftWriter } = require('../lib/baybayProgress');
@@ -110,7 +111,7 @@ describe('API-BB-8 item 1: a point that names a record keeps its source', () => 
     assert.match(result.points[1].text, /10am–2:30pm \[2\]/);
   });
 
-  it('live L06 (part of the day): the cited points keep their two sources', async () => {
+  it('live L06 (part of the day): the cited points keep their two sources; a restored marker is spaced as the answer\'s own', async () => {
     const respond = user => {
       const coyote = refOf(user, /Coyote Hills/, 'place'), sucre = refOf(user, /Sucré/);
       return { lead: '周日下午可以先去 Coyote Hills 走湿地短线，再去 Mission Blvd 喝下午茶。', points: [{ text: `Coyote Hills 可看鸟、走湿地短线。 [[${coyote}]]`, cardIds: [coyote] },
@@ -120,7 +121,7 @@ describe('API-BB-8 item 1: a point that names a record keeps its source', () => 
     const result = await run('周日下午想在 Fremont 带爸妈散散步，有什么好去处？');
     assert.ok(result.taskState.preferences.includes('time-of-day:afternoon'));
     assert.equal(result.sources.length, 2);
-    assert.match(result.points[1].text, /寿司。\[2\]$/);
+    assert.match(result.points[1].text, /寿司。 \[2\]$/, 'the Coyote Hills point writes " [[ref]]"');
   });
 
   it('pointRepairs: cardIds refs, a plan stop, nothing citable, already cited', () => {
@@ -130,15 +131,19 @@ describe('API-BB-8 item 1: a point that names a record keeps its source', () => 
     const en = pointRepairs(draft, { citable, locale: 'en' });
     assert.equal(en.cited, 2);
     assert.deepEqual(en.draft.points.map(point => point.text), ['Grand Lake runs Saturdays. [[e1]]', '格兰湖周六有市集。 [[e2]]', 'Already [[e2]].', 'Nothing to cite.', '']);
-    assert.equal(pointRepairs(draft, { citable, locale: 'zh-Hans' }).draft.points[1].text, '格兰湖周六有市集。[[e2]]');
+    // Chinese: spaced as the answer's own markers ("Already [[e2]]" has a space); with none, no space.
+    assert.equal(pointRepairs(draft, { citable, locale: 'zh-Hans' }).draft.points[1].text, '格兰湖周六有市集。 [[e2]]');
+    assert.equal(pointRepairs({ ...draft, points: draft.points.filter(point => !/Already/.test(point.text)) }, { citable, locale: 'zh-Hans' }).draft.points[1].text, '格兰湖周六有市集。[[e2]]');
     const stops = [{ title: 'Ferry Plaza 农夫市集：海边逛一圈', refs: ['s-abc'], clock: { kind: 'hours', text: '8:00–14:00' } }, { title: 'Ferry Building · 公共大厅与外部会合点', refs: ['e9'] }];
     const plan = pointRepairs({ lead: 'x', points: [{ text: '先逛 Ferry Plaza 农夫市集约 1 小时。', cardIds: [] }, { text: '再去渡轮大厦。', cardIds: [] }, { text: 'Muni 免费。', cardIds: [] }], gap: '' }, { citable, stops, locale: 'zh-Hans' });
     assert.deepEqual(plan.stopOf, [0, 1, -1]);
-    assert.equal(plan.draft.points[0].text, '先逛 Ferry Plaza 农夫市集约 1 小时。开放时段 8:00–14:00。[[s-abc]]');
+    assert.equal(plan.draft.points[0].text, '先逛 Ferry Plaza 农夫市集约 1 小时。记录的开放时段 8:00–14:00。[[s-abc]]');
     assert.equal(plan.draft.points[1].text, '再去渡轮大厦。', 'its only ref is not citable');
     assert.deepEqual(pointRepairs({ lead: 'x', points: [{ text: 'Shop at Ferry Plaza from 8am. [[s-abc]]', cardIds: [] }], gap: '' }, { citable, stops, locale: 'en' }).draft.points[0].text, 'Shop at Ferry Plaza from 8am. [[s-abc]]', 'a point with a time and a citation is left alone');
     assert.equal(pointRepairs({ lead: 'x', points: [{ text: 'Shop at Ferry Plaza [[s-abc]]', cardIds: [] }], gap: '' }, { citable, stops: [{ ...stops[0], clock: { kind: 'hours', text: '8am–2pm' } }], locale: 'en' }).draft.points[0].text,
-      'Shop at Ferry Plaza. Open 8am–2pm. [[s-abc]]', 'the clock goes before the trailing citation');
+      'Shop at Ferry Plaza. Recorded hours: 8am–2pm. [[s-abc]]', 'the clock goes before the trailing citation');
+    assert.equal(pointRepairs({ lead: 'x', points: [{ text: '先逛 Ferry Plaza 农夫市集约 1 小时', cardIds: [] }], gap: '' }, { citable: () => false, stops, locale: 'zh-Hans' }).draft.points[0].text,
+      '先逛 Ferry Plaza 农夫市集约 1 小时，记录的开放时段 8:00–14:00。', 'a point without an end mark is joined with "，"');
   });
 });
 
@@ -284,7 +289,7 @@ describe('API-BB-8 item 6: a plan\'s lead and points follow its stops', () => {
     assert.deepEqual(result.assistantPlan.stops.map(stop => stop.entityId), ['ferry-plaza-farmers-market-2026-autumn', 'venue-ferry-building', 'chinatown']);
     assert.equal(user().currentPlan.stops[0].hours, '08:00–14:00', 'the model is given the market\'s hours');
     assert.equal(result.lead, '周六半天可以逛农夫市集、渡轮大厦，再去唐人街，全程搭公交。');
-    assert.equal(result.points[0].text, '先到 Ferry Plaza 农夫市集逛约 1 小时，逛市集免费，吃的买的另付；周六有市集，具体摊位以官方为准。开放时段 8:00–14:00。[1]');
+    assert.equal(result.points[0].text, '先到 Ferry Plaza 农夫市集逛约 1 小时，逛市集免费，吃的买的另付；周六有市集，具体摊位以官方为准。记录的开放时段 8:00–14:00。 [1]');
     assert.deepEqual(result.points[0].cardIds, ['event:ferry-plaza-farmers-market-2026-autumn']);
     assert.deepEqual(result.points[2].cardIds, ['guide:sf-chinatown-north-beach-walk-guide']);
     assert.deepEqual(result.points[3].cardIds, []);
@@ -304,10 +309,122 @@ describe('API-BB-8 item 6: a plan\'s lead and points follow its stops', () => {
     const stops = [{ title: 'Ferry Plaza 农夫市集：海边逛一圈', aliases: ['Ferry Plaza Farmers Market: A Waterfront Stroll', 'Ferry Plaza 農夫市集：海邊逛一圈'] },
       { title: 'Ferry Building · 公共大厅与外部会合点', aliases: ['Ferry Building · 公共大廳與外部會合點'] }, { title: '唐人街与 North Beach', aliases: ['San Francisco Chinatown', 'Chinatown & North Beach'] }];
     assert.equal(leadStopOrder('週六半天可以逛渡輪大廈、農夫市集，再去唐人街。', stops).lead, '週六半天可以逛農夫市集、渡輪大廈，再去唐人街。');
-    assert.equal(leadStopOrder('Start at the Ferry Building, then Ferry Plaza Farmers Market and Chinatown.', stops).lead, 'Start at the Ferry Plaza Farmers Market, then Ferry Building and Chinatown.');
+    // An English mention takes its "the" with it.
+    assert.equal(leadStopOrder('Saturday: the Ferry Building, the Ferry Plaza Farmers Market, then Chinatown.', stops).lead, 'Saturday: the Ferry Plaza Farmers Market, the Ferry Building, then Chinatown.');
+    assert.equal(leadStopOrder('The Ferry Building, the Ferry Plaza Farmers Market, then Chinatown.', stops).lead, 'The Ferry Plaza Farmers Market, the Ferry Building, then Chinatown.');
+    assert.equal(leadStopOrder('周六可以逛唐人街和 Ferry Building。', [stops[1], stops[2]]).lead, '周六可以逛 Ferry Building 和唐人街。', 'a Latin name moved next to Chinese is spaced');
     for (const lead of ['先逛农夫市集，再去渡轮大厦和唐人街。', '周六可以去唐人街。', '先去唐人街，再去渡轮大厦，最后回唐人街吃饭。']) assert.deepEqual(leadStopOrder(lead, stops), { lead, repaired: false }, lead);
     assert.ok(stopNames(stops[1]).includes('渡轮大厦'));
     assert.ok(!stopNames(stops[2]).includes('san francisco'), 'a city is not a stop name');
+  });
+});
+
+// The two-lens review of API-BB-8 (10-14 / 10-17): the repairs must never turn a correct answer into a wrong one.
+const STOPS = [{ title: 'Ferry Plaza 农夫市集：海边逛一圈', aliases: ['Ferry Plaza Farmers Market: A Waterfront Stroll', 'Ferry Plaza 農夫市集：海邊逛一圈'] },
+  { title: 'Ferry Building · 公共大厅与外部会合点', aliases: ['Ferry Building · 公共大廳與外部會合點'] }, { title: '唐人街与 North Beach', aliases: ['San Francisco Chinatown', 'Chinatown & North Beach'] }];
+
+describe('API-BB-8 review: a plan repair never moves what a lead or point says to another stop', () => {
+  it('leadStopOrder reorders a plain list of stops only; a lead that says something about a stop keeps its words (zh-Hans, zh-Hant, en)', () => {
+    for (const [lead, stops] of [
+      ['周六上午先逛渡轮大厦的农夫市集，再去唐人街', STOPS], ['先去渡轮大厦前的农夫市集', STOPS], ['从渡轮大厦出发，逛农夫市集和唐人街', STOPS], ['唐人街离渡轮大厦和农夫市集都不远', STOPS],
+      ['週六上午先逛渡輪大廈的農夫市集，再去唐人街', STOPS], ['唐人街适合午饭，农夫市集上午最热闹。', STOPS], ['周六半天可先逛唐人街，再去海边的 Ferry Building 一带', [STOPS[1], STOPS[2]]],
+      ['Walk from the Ferry Building to the Ferry Plaza Farmers Market', STOPS], ['Start at the Ferry Building, then Ferry Plaza Farmers Market and Chinatown.', STOPS],
+      ['Spend Saturday morning in Chinatown for dim sum, then browse the Ferry Plaza farmers market and rest at the Ferry Building.', STOPS],
+    ]) assert.deepEqual(leadStopOrder(lead, stops), { lead, repaired: false, mismatch: true }, lead);
+    // The live L07 lead is a plain list and is still put in visiting order.
+    assert.equal(leadStopOrder('周六半天可以逛渡轮大厦、农夫市集，再去唐人街，全程搭公交。', STOPS).lead, '周六半天可以逛农夫市集、渡轮大厦，再去唐人街，全程搭公交。');
+  });
+
+  it('live L07 with a lead that is not a list: the lead is kept and the mismatch is logged', async () => {
+    const lead = '周六上午先逛渡轮大厦的农夫市集，再去唐人街，全程搭公交。';
+    const { run } = fixture({ respond: user => ({ ...l07Draft(user), lead }) });
+    const result = await run(L07);
+    assert.equal(result.lead, lead);
+    assert.ok(result.research.warnings.includes('answer_lead_order_mismatch'), result.research.warnings.join(','));
+    assert.ok(!result.research.warnings.includes('answer_lead_order_repaired'));
+  });
+
+  it('live L07: a point that walks from the market into the Ferry Building is about the Ferry Building (no market hours, card or source on it)', async () => {
+    const { run } = fixture({ respond: user => { const draft = l07Draft(user); draft.points[1] = { text: '逛完农夫市集后，走进渡轮大厦大厅休息、吃点东西。', cardIds: [] }; return draft; } });
+    const result = await run(L07);
+    assert.doesNotMatch(result.points[1].text, /8:00–14:00/, result.points[1].text);
+    assert.ok(!result.points[1].cardIds.includes('event:ferry-plaza-farmers-market-2026-autumn'), JSON.stringify(result.points[1]));
+    const cited = Number(/\[(\d+)\]$/.exec(result.points[1].text)?.[1]);
+    if (cited) assert.doesNotMatch(result.sources[cited - 1].url, /farmers-market/, 'not the market as its source');
+    assert.match(result.points[0].text, /记录的开放时段 8:00–14:00/, 'the market point still gets its hours');
+  });
+
+  it('pointRepairs: an overview that names every stop is about none; a point that names two stops is about stop i only in a point-per-stop answer', () => {
+    const citable = ref => ['s-m', 's-b', 's-c'].includes(ref);
+    const stops = [{ ...STOPS[0], refs: ['s-m'], clock: { kind: 'hours', text: '8:00–14:00' } }, { ...STOPS[1], refs: ['s-b'] }, { ...STOPS[2], refs: ['s-c'] }];
+    const overview = pointRepairs({ lead: 'x', points: [{ text: '先逛农夫市集，再去渡轮大厦和唐人街，全程公交。', cardIds: [] }, { text: '农夫市集周六上午最热闹。', cardIds: [] },
+      { text: '渡轮大厦大厅可休息。', cardIds: [] }, { text: '唐人街吃午饭。', cardIds: [] }], gap: '' }, { citable, stops });
+    assert.deepEqual(overview.stopOf, [-1, 0, 1, 2]);
+    assert.equal(overview.draft.points[0].text, '先逛农夫市集，再去渡轮大厦和唐人街，全程公交。');
+    assert.equal(overview.draft.points[1].text, '农夫市集周六上午最热闹。记录的开放时段 8:00–14:00。[[s-m]]');
+    const walk = pointRepairs({ lead: 'x', points: [{ text: '先到 Ferry Plaza 农夫市集逛约 1 小时。', cardIds: [] }, { text: '逛完农夫市集后，走进渡轮大厦大厅休息。', cardIds: [] }, { text: '最后去唐人街。', cardIds: [] }], gap: '' }, { citable, stops });
+    assert.deepEqual(walk.stopOf, [0, 1, 2]);
+    assert.equal(walk.draft.points[1].text, '逛完农夫市集后，走进渡轮大厦大厅休息。[[s-b]]');
+    assert.deepEqual(pointRepairs({ lead: 'x', points: [{ text: '逛完农夫市集后，走进渡轮大厦大厅休息。', cardIds: [] }], gap: '' }, { citable, stops }).stopOf, [-1]);
+  });
+});
+
+describe('API-BB-8 review: a count names BAYLINK only for BAYLINK\'s own options', () => {
+  const points = n => Array.from({ length: n }, (_, index) => ({ text: `点 ${index}`, cardIds: [`e${index + 1}`] }));
+  it('a lead whose points cite the web keeps its count as written, in the result and in the streamed lead', () => {
+    const lead = 'There are two Korean BBQ spots in Santa Clara.';
+    assert.equal(leadConsistency({ lead, points: points(2) }, { locale: 'en', siteListed: false }).draft.lead, lead);
+    assert.equal(leadConsistency({ lead, points: points(2) }, { locale: 'en' }).draft.lead, 'There are two Korean BBQ spots listed on BAYLINK in Santa Clara.');
+    const writer = createDraftWriter({ emit: () => {}, locale: 'en', batchChars: 1, setTimer: () => null, clearTimer: () => {} });
+    writer.text('lead', undefined, lead); writer.done('lead');
+    writer.end({ complete: true, points: points(2), siteListed: false });
+    assert.equal(writer.sent().lead, lead);
+  });
+
+  it('siteListed: false when a point cites a web search result or names a web candidate', () => {
+    const store = { sources: new Map([['s-web', { id: 's-web', verification: 'search-result' }], ['s-site', { id: 's-site', verification: 'site-record' }]]),
+      candidates: new Map([['web-kbbq', { id: 'web-kbbq', origin: 'web' }], ['event-a', { id: 'event-a' }]]) };
+    const turn = { store, itemRefs: new Map([['e1', { sourceId: 's-site', candidateId: 'event-a' }], ['e2', { sourceId: 's-web' }]]), contextReferences: [] };
+    assert.equal(siteListed(turn, [{ text: 'A [[e1]]', cardIds: ['e1'] }]), true);
+    assert.equal(siteListed(turn, [{ text: 'A [[e1]]', cardIds: [] }, { text: 'B [[e2]]', cardIds: [] }]), false);
+    assert.equal(siteListed(turn, [{ text: 'B [[s-web]]', cardIds: [] }]), false);
+    assert.equal(siteListed(turn, [{ text: 'C', cardIds: ['web-kbbq'] }]), false);
+  });
+
+  it('a count of what one record contains ("The festival has two shows") is no count of the options; a place that has two markets is', () => {
+    for (const n of [2, 3]) assert.equal(leadConsistency({ lead: 'The festival has two shows.', points: points(n) }, { locale: 'en' }).draft.lead, 'The festival has two shows.', `${n} points`);
+    assert.equal(leadConsistency({ lead: 'Oakland has two farmers markets on Saturday.', points: points(2) }, { locale: 'en' }).draft.lead, 'Oakland has two farmers markets listed on BAYLINK on Saturday.');
+  });
+});
+
+describe('API-BB-8 review: evidence fit and record hours', () => {
+  it('live L09: the freebies guide\'s Presidio Field Station paragraph (603 Mason Street, no city) is no evidence for San Jose (zh-Hans, zh-Hant, en)', async () => {
+    for (const [message, locale] of [['这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans'], ['這週末下雨，San Jose 有什麼室內親子活動？', 'zh-Hant'], ['It might rain this weekend. Any indoor things to do with kids in San Jose?', 'en']]) {
+      const respond = user => { const first = (user.evidence || []).find(item => item.kind === 'place'); return { lead: 'x', points: [{ text: `${first.title} [[${first.ref}]]`, cardIds: [first.ref] }], candidateIds: [], followups: [], coverage: [], gap: '' }; };
+      const { run, user } = fixture({ respond });
+      const result = await run(message, { locale });
+      const texts = [...(user().evidence || []).map(item => `${item.title} ${item.text || ''}`), ...result.evidence.map(row => `${row.title} ${row.url}`)];
+      assert.ok(!texts.some(text => /Presidio|603 Mason/i.test(text)), `${locale}: ${texts.filter(text => /Presidio|603 Mason/i.test(text)).join(' | ')}`);
+    }
+  });
+
+  it('nightFor: an evening event for teens or students is a family option when a child is 12 or older', () => {
+    const evening = audience => ({ audience, sessions: [{ date: '2026-10-30', start: '19:30' }] });
+    assert.equal(nightFor(evening(['音乐爱好者'])), true);
+    assert.equal(nightFor(evening(['青少年'])), true, 'no older child in the ask');
+    for (const audience of [['青少年'], ['学生优惠'], ['teens'], ['students']]) assert.equal(nightFor(evening(audience), true), false, audience[0]);
+    assert.equal(nightFor(evening(['音乐爱好者']), true), true);
+    assert.equal(nightFor({ audience: ['音乐爱好者'], sessions: [{ start: '17:00' }] }), false, 'not every session is in the evening');
+  });
+
+  it('usualDayHours: not on a date the record says differs (Sucré 10/11); a range or a negation is not one time', () => {
+    const sucre = ['10/11 的庆典开始时间与通常周日中午开门不同，先核当日安排'];
+    assert.equal(usualDayHours(sucre, { start: '2026-10-18' }, '2026-10-16', 'zh-Hans'), '记录：周日通常中午开门');
+    assert.equal(usualDayHours(sucre, { start: '2026-10-11' }, '2026-10-09', 'zh-Hans'), '', 'the record says 10/11 differs');
+    assert.equal(fast('这周日下午想在 Fremont 带爸妈散散步，有什么好去处？', 'zh-Hans', '2026-10-09').model.find(item => /Sucré/.test(item.title))?.when, undefined);
+    const friday = { start: '2026-10-23' };
+    for (const text of ['周五 · 12:00 至打烊', '周五中午不开门', '周五 12:00 前开门', '周五未中午开门']) assert.equal(usualDayHours([text], friday, '2026-10-16', 'zh-Hans'), '', text);
+    assert.equal(usualDayHours(['周五 12:00 开门'], friday, '2026-10-16', 'zh-Hans'), '记录：周五 12:00 开门');
   });
 });
 
