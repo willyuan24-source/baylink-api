@@ -351,15 +351,17 @@ Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/bayb
 
 ## API-BB-8: sources kept, honest counts, family hours, guide card type, evidence fit, plan lead order
 
-Fixes from the API-BB-7 live check (10-17, api `bc0ee27`) and its independent read. Tests: `tests/baybay-8.test.js`
-(the live L08 and L07 answers replayed as the model wrote them); `tests/redos.test.js` (API-BB-8 block).
+Fixes from the API-BB-7 live check (10-17, api `bc0ee27`) and its independent read, then from the lane's two-lens
+review (the repairs must never turn a correct answer into a wrong one). Tests: `tests/baybay-8.test.js` (the live L08
+and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `tests/redos.test.js` (API-BB-8 block).
 
 - **A point keeps its source** (live L08: 0 sources; L07: the market point had no [n]). The cause was not a repair
   step: the model's L08 output (698 characters) is its draft without a single `[[ref]]`; both points named their market
   only in `cardIds`. In L07 the market stop's only ref was a store id (`s-…`), as the market is not an evidence item.
   `pointRepairs()` (`lib/baybayQuality.js`), the last of `resolveDraft`'s repairs, gives a point that cites nothing the
-  refs it lists in `cardIds` (refs that resolve to a source), or the first ref of the one plan stop it names; appended at
-  the point's end (zh with no space, en after a space), so the streamed point stays a prefix of the result. Warning
+  refs it lists in `cardIds` (refs that resolve to a source), or the first ref of the plan stop it is about
+  (`pointStops`, below); appended at the point's end and spaced as the answer's own markers (en always; zh when a point
+  of the answer writes " [[ref]]"), so the streamed point stays a prefix of the result. Warning
   `answer_point_citation_restored`. The count, listing-window, 12-hour-clock and area repairs keep a point's markers
   (tested end to end).
 - **A catalog count names its scope** (live L08 "Yes, two East Bay farmers markets run on Saturday mornings" read as
@@ -370,14 +372,21 @@ Fixes from the API-BB-7 live check (10-17, api `bc0ee27`) and its independent re
   streamed lead is held, so the streamed lead stays a prefix. A lead that already names its scope (BAYLINK, 收录, listed,
   站内) and a count that refers back (这两个 / 两场…都 / Here are three) are unchanged; a count that differs from the points
   still loses its number. markets, museums, libraries, parks, venues, storytimes, programmes, classes, shows, fairs and
-  parades (en) and 农夫市集 / 图书馆 / 美术馆 (zh) count as option nouns. Repair `lead_scope`.
+  parades (en) and 农夫市集 / 图书馆 / 美术馆 (zh) count as option nouns. Repair `lead_scope`. Review: only when the options
+  are BAYLINK's: `siteListed(turn, points)` (`lib/baybayEngine/evidence.js`) is false when a point cites a web search
+  result or names a web candidate (a signed-in research turn), and then the count stays as written, in the result and
+  in the streamed lead (`draftWriter.end({ siteListed })`). A count of what one record contains ("The festival has two
+  shows": storytimes, programmes, classes, workshops, shows, concerts, exhibits, parades after has / includes / features
+  / offers / hosts / with) is no count of the options. A digit after the inserted words is spaced ("收录的 5 个").
 - **Hours that matter** (`lib/baybayEvidence.js`). On a family ask a place's recorded hours lead with the children's
   area when its hours note gives that area's opening times (`childAreaOpens`, King Library: "周六 儿童区 10:00 起（全馆
   8:00–18:00）", en "Saturday children's area from 10am (building 8am–6pm)"); only the opening time is recorded, so no
   closing time is made up, and a day the area opens with the building is unchanged. A place or opening without recorded
   hours whose Chinese record says when it usually opens on an asked day gives that as its `when` (`usualDayHours`,
   Sucré: "记录：周日通常中午开门", "On record: Sunday, usually opens at noon"); a range ("周二至周日 16:00–22:00") is not
-  read as one time, and events are left alone (their sessions are their hours).
+  read as one time, and events are left alone (their sessions are their hours). Review: nor a range or a negation in
+  words (no 至 / 到 / 不 / 未 / 前 / 后 between the time and the verb: "周五 · 12:00 至打烊", "中午不开门"), and not on a date
+  the same sentence names ("10/11 的庆典开始时间与通常周日中午开门不同": no usual time for 10/11).
 - **Guide card type**. A place shown as its BAYLINK guide (`quickRef`) is a leisure guide in the web's guide category
   `city` (all 29 place guides are): the card carries `guideType: 'leisure'`, `guideCategory: 'city'` and `typeLabel`
   (城市指南 / City guide), in the preview cards and the final cards. A guide card from the page context carries none.
@@ -387,16 +396,27 @@ Fixes from the API-BB-7 live check (10-17, api `bc0ee27`) and its independent re
   Museum, the Cable Car Museum, Happy Hollow, Poppy & Claro) is left out of a city or area ask after scoring, unless the
   ask names its venue in Latin letters; on a family ask that is not about the evening, an event whose stated audience
   names no children, families, all ages or public and whose every session starts at 18:00 or later (Rush's concerts) is
-  not a candidate. Both run after scoring, so the other records keep their scores: over the 244 first turns of blocks
-  A–O only those records (and King Library's hours) changed. SF asks lose the two SF offers until their records get a
-  region (data follow-up). Guide reference sources (Presidio Field Station is a source of the October freebies guide)
-  are not filtered.
-- **Plan lead and points** (live L07). On the one-call new day plan the lead names the stops in visiting order
-  (`leadStopOrder`: each stop's one mention moves into the slots the mentions take, "逛渡轮大厦、农夫市集" → "逛农夫市集、
-  渡轮大厦"; warning `answer_lead_order_repaired`); a lead that compares or swaps stops, names a stop twice or names fewer
-  than two is unchanged. A point that names a stop gets the stop's card in `cardIds` and, when it gives no clock time,
-  the stop's time (a timed session, else the record's opening window that day: "开放时段 8:00–14:00" / "Open 8am–2pm";
-  warning `answer_plan_point_time_added`). `planView` gives an untimed stop its `hours`, and the plan-call rules ask for
+  not a candidate; with a child of 12 or older in the ask, an evening event for teens or students (青少年 / 学生 / teens /
+  students / youth) is a family option. Review: a paragraph of a guide with no one city that gives a street address but
+  names no city (the October freebies guide's Presidio Field Station, "603 Mason Street"; 6 paragraphs in the catalog)
+  is left out of a city or area ask unless the ask names the venue, so neither it nor its official link reaches a San
+  Jose ask. All of these run after scoring, so the other records keep their scores: over the 244 first turns of blocks
+  A–O only those records (and King Library's hours) changed. SF asks lose the two SF offers (Randall Museum, the Cable
+  Car Museum) until their records get a region (data follow-up; the PR lists which SF asks get what instead).
+- **Plan lead and points** (live L07). On the one-call new day plan a lead that lists the stops out of visiting order
+  lists them in order (`leadStopOrder`: each stop's one mention moves into the slots the mentions take, "逛渡轮大厦、农夫
+  市集" → "逛农夫市集、渡轮大厦"; an English mention takes its "the"; warning `answer_lead_order_repaired`); a lead that
+  compares or swaps stops, names a stop twice or names fewer than two is unchanged. Review: only a plain list moves.
+  Between two mentions there may be only list connectors (、，, 和 与 與 及 跟, then optionally 然后 / 接着 / 最后 / 再 + 去 / 到 /
+  逛; en ", " / "and" / "then"), nothing locative or possessive before the first (的 从 到 离; from, to, at, in, near, 's …)
+  and only punctuation after the last. Any other out-of-order lead ("先逛渡轮大厦的农夫市集", "从渡轮大厦出发", "Chinatown for
+  dim sum, then … the Ferry Building") is kept, because moving only the names would move what it says about each stop;
+  warning `answer_lead_order_mismatch`. A point about a stop (`pointStops`: it names that one stop; a point that names two
+  or more is about stop i only in a point-per-stop answer, as point i, naming stop i, when no one-stop point is about
+  stop i, so "逛完农夫市集后，走进渡轮大厦大厅休息" is about the Ferry Building and an overview of every stop is about none) gets
+  the stop's card in `cardIds` and, when it gives no clock time, the stop's time (a timed session, else the record's
+  opening window that day: "记录的开放时段 8:00–14:00" / "Recorded hours: 8am–2pm", joined with "，" when the point has no end
+  mark yet; warning `answer_plan_point_time_added`). `planView` gives an untimed stop its `hours`, and the plan-call rules ask for
   the stop order in the lead and each stop's time or hours in its point. Stop names: the title's and aliases' parts,
   their Latin names, a few Chinese names of Latin venues (Ferry Building / 渡轮大厦, Chinatown / 唐人街 / 华埠); a name two
   stops share names neither.
