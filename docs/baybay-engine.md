@@ -231,8 +231,14 @@ Live check after API-BB-5 (10-15) and the 40 unseen questions of eval block N. T
   "…起", "从…开始" or "… 至 …" phrase with a weekly record's first or next listed date (or a range from it to the
   last) only in a point that cites the record (or, citing nothing, names it) and in a lead or gap sentence that
   does; another record's own dates stay, and a range inside the asked dates (the asked weekend) stays (warning
-  `answer_listing_window_repaired`). A dated ask outside the listing window (the Grand Lake market in January) still
-  drops the weekly record in retrieval: open for a later lane.
+  `answer_listing_window_repaired`). In a segment that cites nothing, the phrase must also belong to the market:
+  the nearest subject before it (with none before, the first after it) is the market's name or the market noun,
+  not another subject (an evidence record that is not a weekly market, named by a title word; an exhibit /
+  festival / show noun; another Latin name in Chinese prose that is not a city, weekday, month or market), so
+  "先逛农夫市集，再去 OMCA 看10月17日起开放的新展" keeps the exhibit's date. A sentence that calls the dates the
+  listed dates (列出的日期, "listed dates") stays; "Oct." / "Sat." does not end a lead sentence. A dated ask outside
+  the listing window (the Grand Lake market in January) still drops the weekly record in retrieval: open for a
+  later lane.
 - **The asked day's own session first** (live X1): on a dated ask a multi-date event's view starts with its
   occurrence on the asked day and that session's hours, then the dates it is listed for ("12月5日（周六）
   10:30–11:00（列出的日期：…）").
@@ -248,4 +254,6 @@ Live check after API-BB-5 (10-15) and the 40 unseen questions of eval block N. T
 - **Block N dev findings**: sudden vision loss with stumbling, staggering or lost balance (走路摇晃, 踉跄, 站不住)
   is the BE-FAST stroke pair (911 template); a landlord who changes the locks, locks a tenant out or cuts the
   utilities is a legal question (业主 / owner / property manager changing locks only in a tenant's message: a
-  homeowner changing their own locks is not); 帮我排行程 / 排个一天的行程 is a day plan.
+  homeowner changing their own locks is not; 出租, 租车 and "help me out" are not a tenant's message, and re-keying
+  between tenants is not a lockout unless the message has a dispute such as 不交房租, "won't pay" or evict);
+  帮我排行程 / 排个一天的行程 is a day plan.
