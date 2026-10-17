@@ -303,3 +303,17 @@ Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/bayb
   credits and retirement are the SSA guard with SSA's credits page and the retirement guide; more withheld-deposit
   phrasings are legal; a follow-up that does not repeat its topic noun keeps the previous user turn's professional guard
   (`professionalFollowup`), one about an outing or a museum does not.
+- **Review round 1 (10-16)**. English times written with dotted a.m. / p.m. ("9:00 a.m.–2:00 p.m.") are left as
+  written. A professional follow-up needs a professional cue (还有什么办法 / 怎么办 / 找谁 / what now / can he wait…), never
+  a bare pronoun, "can we" or a leading 那, and an outing word (动物园 / zoo / 画画课 / 早茶 / dim sum…) ends the carry. The
+  plan engine reorders only stops it chose itself (each stop's latest start: a fixed session's start, or an hour before a
+  close at or before 15:00; a 12:00 session no longer jumps ahead of a museum open from the start); a user's or a model's
+  selected order is kept and the opening-window check flags a late stop. `routeStops` anchors on the first located stop
+  and skips a `venue-*` record that mirrors a chosen place (Lake Merritt and venue-omca). `adultEvening` reads title,
+  category and audience, not the summary, and its evening rule needs an adult-reading audience (成人 / 18岁以上 / adults).
+  A neighbourhood names its city only when no city is named; "Lake Berryessa" and "tenderloin steak" are not districts;
+  "no money for parking" and "预算0-50美元" are not a zero budget; English "almost N" is an age only beside a child word
+  or before "years old". A place shows its recorded hours (`planning.schedule`) for the asked day or weekend (SJMA:
+  周六 11:00–18:00 / Saturday 11am–6pm), and on an evening ask a place that closes within an hour of the window is
+  closed for it like an event. The plan's stop `path`, `external`, `openingWindows` and `handoff` are payload fields:
+  the web plan card does not read them yet (web follow-up).
