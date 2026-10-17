@@ -149,7 +149,8 @@ test('weekly markets: the model sees the weekly schedule and the next listed dat
       const view = `${item.when}\n${item.text}`;
       // Not the window's last date (12/12 for the Saturday markets, 12/13 for Irvington), not "M/D–M/D", not 至 / through.
       assert.doesNotMatch(view, /12\s*月\s*1[23]\s*日|Dec(?:ember)?\.? 1[23]\b|12\/1[23]|\d{1,2}\/\d{1,2}\s*[–-]\s*\d{1,2}\/\d{1,2}|至|through/, `${message}: ${name}: ${view.slice(0, 160)}`);
-      assert.match(item.when, locale === 'en' ? /^(?:Year-round, every|Every) (?:Saturday|Sunday) \d{1,2}:\d{2}–\d{1,2}:\d{2} · next listed: (?:Sat, Oct 17|Sun, Oct 18)$/ : /^(?:全年)?每[周週][六日] \d{1,2}:\d{2}–\d{1,2}:\d{2}；下一次：10月1[78]日（[周週][六日]）$/, item.when);
+      // API-BB-7: English shows 12-hour times, as the cards do ("9am–2pm").
+      assert.match(item.when, locale === 'en' ? /^(?:Year-round, every|Every) (?:Saturday|Sunday) \d{1,2}(?::\d{2})?(?:am|pm)?–\d{1,2}(?::\d{2})?(?:am|pm) · next listed: (?:Sat, Oct 17|Sun, Oct 18)$/ : /^(?:全年)?每[周週][六日] \d{1,2}:\d{2}–\d{1,2}:\d{2}；下一次：10月1[78]日（[周週][六日]）$/, item.when);
       // "Year-round" only where the record's own text says so (Irvington: 全年每周日开); never for Grand Lake or Berkeley.
       assert.equal(/全年|Year-round/.test(item.when), name === 'Irvington', `${name}: ${item.when}`);
       assert.match(item.note, /not its season/);
@@ -315,13 +316,14 @@ test('12月5号带娃去哪 then 那周日呢 resolves to Sunday 12/6 (and its E
 });
 
 test('12月5日东湾有什么适合孩子的活动: the Oakland library storytimes are in the evidence with their 12/5 session first', () => {
-  for (const [message, locale, day] of [['12月5日东湾有什么适合孩子的活动', 'zh-Hans', /^12月5日（周六） 10:30–11:00（列出的日期：/], ['What can kids do in the East Bay on December 5?', 'en', /^Sat, Dec 5 10:30–11:00 \(dates listed: /]]) {
+  for (const [message, locale, day] of [['12月5日东湾有什么适合孩子的活动', 'zh-Hans', /^12月5日（周六） 10:30–11:00（列出的日期：/], ['What can kids do in the East Bay on December 5?', 'en', /^Sat, Dec 5 10:30–11am \(dates listed: /]]) {
     const { model } = indoorItems(message, locale);
     const story = model.find(item => /奥克兰总馆周六亲子故事时间|family storytime at Oakland/i.test(item.title));
     assert.ok(story, `${message}: ${model.map(item => item.title).join(' | ')}`);
     assert.match(story.when, day);
-    // The day's one-off events stay ahead of the weekly series.
-    assert.ok(model.findIndex(item => /Pleasanton/.test(item.title)) < model.indexOf(story), model.map(item => item.title).join(' | '));
+    // API-BB-7 (live 10-16: the storytime was 11th of 40 and left out): children's programmes take turns with the day's
+    // one-off events, so the storytime is among the first five items and the parade is still there.
+    assert.ok(model.indexOf(story) < 5 && model.some(item => /Pleasanton/.test(item.title)), model.map(item => item.title).join(' | '));
   }
 });
 

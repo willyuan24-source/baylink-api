@@ -257,3 +257,94 @@ Live check after API-BB-5 (10-15) and the 40 unseen questions of eval block N. T
   homeowner changing their own locks is not; 出租, 租车 and "help me out" are not a tenant's message, and re-keying
   between tenants is not a lockout unless the message has a dispute such as 不交房租, "won't pay" or evict);
   帮我排行程 / 排个一天的行程 is a day plan.
+
+## API-BB-7: live-check follow-ups (family signal, storytimes, part of the day, plan stops, English times) and block O
+
+Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/baybay-7.test.js`.
+
+- **Family signal in task state** (live L09). `state.family` (optional, like `community`): 亲子 / 親子 / 带娃 / 孩子 /
+  小朋友 / with kids / family, or any child age, sets it; a follow-up (那周日呢) keeps it; no kids / adults only clears it;
+  "family doctor" and the like do not set it. Every family branch in `lib/baybayEvidence.js` (`buildSiteEvidence`,
+  `audienceRecall`, the indoor widening) reads it besides the child ages and the ask's own words.
+- **No evening records for grown-ups on a family ask**: an event whose audience is stated and names no children,
+  families, all ages or the general public, and that is a dinner, bar or 21+ record or starts at 18:00 or later
+  (`adultEvening`, beside `adultOnly`), is not a candidate (San Jose's murder-mystery dinner theatre for 朋友 / 戏剧爱好者).
+- **Indoor family asks lead with fully indoor options**: an indoor family ask in a city puts that city's fully indoor
+  family places (library, museum) first in the audience list; a part-indoor record (`planning.setting: mixed`) carries a
+  note: never lead with it on an indoor or rainy-day ask, list it after the fully indoor options and say which part is
+  outdoors. The thin-city widening (API-BB-6) is unchanged.
+- **Children's programmes on a dated family ask** (live X1). `audienceRecall` lets children's programmes (an audience
+  that names children: storytime, family time, LEGO club, not only 全家 / 各年龄) take turns with the day's one-off family
+  events (one-off programmes first, then storytimes; the list whose head ranked first starts), with six slots on a
+  dated family ask (four before). "12月5日东湾有什么适合孩子的活动": the Oakland Main storytime is item 3 (was 9 of 10;
+  payload evidence 3 of 40, was 11), and the parade and book sale stay.
+- **The asked part of the day** (live L06). With 下午 / 晚上 / afternoon / evening (window starts 13:00 / 18:00; 中午 11:30)
+  or a start time, an event whose session that day ends within an hour of the window's start is left out of the model's
+  items, or, when the ask names it (one of the ask's own subject words in its title, not a synonym), kept with a
+  "closes at" note. A morning ask is not narrowed.
+- **Day plan** (live L07, `lib/baybayPlan.js`). An event with no `planning.schedule` uses its own sessions
+  (`recordSchedule`; a session of 3 h or more is an opening window: the science festival's 11:00–16:00, which the plan
+  called missing hours). An event stop links to `/events/<id>`; a stop whose link is another site's page is
+  `external: true` (the planner hand-off still keeps catalog places; only web discoveries leave it). After the first
+  stop, a stop within 3 km of one already chosen comes before one with no location or farther (`routeStops`). A stop
+  that closes by 15:00 goes first and stops under 0.5 km apart stay together (`closingOrder`): L07 is now Ferry Plaza
+  market → Ferry Building → Chinatown (was Chinatown → the Mission Bay festival → Ferry Building). Transit lines per leg
+  are not added: no catalog or guide field holds a leg's line (see PR, open item).
+- **English times** (live L08). English when-lines use 12-hour times as the cards do ("Every Saturday 9am–2pm",
+  "Sat, Dec 5 10:30–11am"), and `englishClockRepair()` (`lib/baybayQuality.js`, in `resolveDraft`) rewrites 24-hour
+  times left in an English lead, point or gap (warning `answer_english_clock_repaired`); Chinese answers keep 24-hour
+  times.
+- **Block O dev findings** (`lib/baybayState.js`, `lib/safetyRouting.js`): the child's age now ("two, almost three" is 2,
+  快四岁了 is 3, beside 三岁多 the "almost" adds nothing; "my son is two"); beside a full date a weekday word inside an
+  event's own name ("Family Saturday", "Super Sunday") is not a second date; a neighbourhood names its city (Mission
+  District, Richmond District, Inner / Outer Sunset, Sunset 图书馆, Noe Valley, Rockridge, Willow Glen, ...; "Richmond"
+  alone stays the East Bay city), and a nearby ask from home (我住 X，附近…) is about the home city; an admission budget
+  changed to zero (预算改成0, "budget is now zero", "no money for tickets") is budget 0 and free-only; Social Security
+  credits and retirement are the SSA guard with SSA's credits page and the retirement guide; more withheld-deposit
+  phrasings are legal; a follow-up that does not repeat its topic noun keeps the previous user turn's professional guard
+  (`professionalFollowup`), one about an outing or a museum does not.
+- **Review round 1 (10-16)**. English times written with dotted a.m. / p.m. ("9:00 a.m.–2:00 p.m.") are left as
+  written. A professional follow-up needs a professional cue (还有什么办法 / 怎么办 / 找谁 / what now / can he wait…), never
+  a bare pronoun, "can we" or a leading 那, and an outing word (动物园 / zoo / 画画课 / 早茶 / dim sum…) ends the carry. The
+  plan engine reorders only stops it chose itself (each stop's latest start: a fixed session's start, or an hour before a
+  close at or before 15:00; a 12:00 session no longer jumps ahead of a museum open from the start); a user's or a model's
+  selected order is kept and the opening-window check flags a late stop. `routeStops` anchors on the first located stop
+  and skips a `venue-*` record that mirrors a chosen place (Lake Merritt and venue-omca). `adultEvening` reads title,
+  category and audience, not the summary, and its evening rule needs an adult-reading audience (成人 / 18岁以上 / adults).
+  A neighbourhood names its city only when no city is named; "Lake Berryessa" and "tenderloin steak" are not districts;
+  "no money for parking" and "预算0-50美元" are not a zero budget; English "almost N" is an age only beside a child word
+  or before "years old". A place shows its recorded hours (`planning.schedule`) for the asked day or weekend (SJMA:
+  周六 11:00–18:00 / Saturday 11am–6pm), and on an evening ask a place that closes within an hour of the window is
+  closed for it like an event. The plan's stop `path`, `external`, `openingWindows` and `handoff` are payload fields:
+  the web plan card does not read them yet (web follow-up).
+- **Review round 2 (10-17)**. A cue alone no longer carries the guard: an ask that names a day, a date or a part of the
+  day (周六 / 明天 / 这周末 / on Saturday / this morning) or an outing place (图书馆 / 故事会 / 市集 / 爬山 / 带她去 /
+  library / storytime / farmers market / go to) is an outing unless it also names a professional action (申请 / 办 / 续 /
+  预约 / office / apply / renew / appointment / appeal), and the cues are narrow (还能怎么办 / 还能找谁 / 还能申请, not a
+  bare 还能; "can she still apply / qualify / keep / wait", not a bare "still"; 还有什么地方 only before 申请 / 办; "what
+  else" only as the whole question). After a Medi-Cal turn, "What else can she do on Saturday in San Jose?",
+  她周六还能去图书馆吗？ and "Instead, can we go to the library on Sunday?" are site answers again. When a message names a
+  city, the city parse reads it without its neighbourhood, so "Richmond District" / "Outer Richmond" beside 旧金山 /
+  San Francisco / SF is San Francisco and not also the East Bay city of Richmond. "9:00 a.m" (no final dot) stays as
+  written, and "she" / "he" count as a child word for "almost N" only as "she is" / "he turns" / "she's".
+- **Review round 3 (10-17)**. The round 2 carry was still a list of cue words: 17 of 28 new leisure follow-ups after a
+  Medi-Cal, SSA or deposit turn kept the guard (那她想学英文，找谁？ / 她喜欢唱歌，还有什么选择？ / "Instead, anything nice
+  for her to see around Santa Clara?"), and 17 of 23 professional ones lost it (那她要带什么证件？ / 要多久才批下来？ / "What
+  if she gets denied?" / "How do I get it back?"). `professionalFollowup()` now carries on signals. A follow-up keeps the
+  turn before's topic only when (a) it names that topic's domain: documents, approval, a denial, the office (also after
+  去哪), an appointment, an application, eligibility, a deadline, a letter, the phone or online channel, help in Chinese
+  or the wait for every topic (`FOLLOWUP_ANY`); a premium, coverage, a doctor, income or a house for Medi-Cal, Medicare
+  and medical; a benefit amount (领多少 / 少多少 / how much), credits or the claiming age for SSA; a deposit, getting it
+  back (要回来 / get it back), the landlord, the lease, a list of charges or small claims court for legal; a visa, an
+  interview or a passport for immigration; a refund, filing or a deduction for tax (`FOLLOWUP_DOMAIN`); or (b) it is a
+  bare cue with only a pronoun and filler around it (怎么办？/ 然后呢？/ 还有什么办法？/ 他还能怎么办？/ What now? /
+  What else can I do? / Then what?). It never carries when it names a subject or activity that is not professional
+  (`FOLLOWUP_LEISURE`: learning English, mahjong, singing, gardening, friends, hanging out, sights, food, the weekend, an
+  outing with the kids, places to go, indoors / outdoors, the weather, boredom / 闷 / 无聊), even beside 找谁 / 还有什么选择
+  / instead / other ways or a professional word (押金的事先放一放，那附近有什么好吃的？). A shared signal does not carry
+  either when the follow-up names another topic family's subject instead (`FOLLOWUP_SUBJECT`: 房东… after a Medi-Cal
+  turn); a follow-up that names two topics' domains keeps only the ones it names. A message with no professional user
+  turn before it is unchanged. A chain of follow-ups (documents, then approval time) keeps the topic of the professional
+  turn it started from, up to three user turns back, while every turn in it carries. Social Security credits said as
+  points are SSA: 社安工作点数 / 社會安全工作點數 / 社安点数 / 工作点数 / "Social Security 退休金够不够点数" ("Social Security
+  退休金怎么申请", with no credits word, stays a site answer as the G12 regression requires).

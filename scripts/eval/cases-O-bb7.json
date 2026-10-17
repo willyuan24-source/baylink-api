@@ -1,0 +1,1338 @@
+{
+  "version": 1,
+  "block": "O",
+  "title": "API-BB-7: fresh dev + held-out pairs for block N's held-out failure types",
+  "pinnedNow": "2026-10-16T10:00:00-07:00",
+  "notes": [
+    "Written before any API-BB-7 code change (base a976e0c). Block N stays as it is: its held-out turns are reported, never tuned on.",
+    "Seven failure types from block N held-out (N-02, N-06, N-10, N-18, N-22, N-36-2, N-40-2), each with new dev and held-out asks: age said as \"X, almost Y\"; a dated city ask with an age; a neighbourhood that names its city; Social Security credits / retirement; a withheld deposit (and a deposit that is not a rental one); a changed budget of zero; a follow-up without its topic noun (and one that changes topic).",
+    "Plus two English rainy-day paraphrases from the API-BB-6 review (dev) and one zh-Hans held-out: state.family is the family signal added by this lane.",
+    "Cases 37-40 were added before any code change, after o-dry-0 showed cases 5-8 pass on the base: the dated-ask failure needs an event name with a weekday word beside the full date.",
+    "Split fixed here: tune only on dev; held-out is measured once on the base (o-dry-0) and once on the final tip."
+  ],
+  "cases": [
+    {
+      "id": "O-01",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "age_almost"
+      ],
+      "turns": [
+        {
+          "id": "O-01",
+          "message": "My son is two, almost three. Is there a toddler storytime in Fremont this Saturday?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                2
+              ],
+              "city": "Fremont"
+            }
+          },
+          "judge": {
+            "expect": "Uses age 2 (not 3); a toddler storytime that fits, with its time, or says none is listed."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-02",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "age_almost"
+      ],
+      "turns": [
+        {
+          "id": "O-02",
+          "message": "女儿三岁多，快四岁了，这周六 Oakland 有什么适合她的活动？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "childAges": [
+                3
+              ],
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "按 3 岁理解；给出适合 3 岁的周六 Oakland 活动及时间。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-03",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "age_almost"
+      ],
+      "turns": [
+        {
+          "id": "O-03",
+          "message": "兒子快滿五歲，週日 San Jose 有適合他的室內活動嗎？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "childAges": [
+                4
+              ],
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "按 4 歲理解；室內、適合 4 歲的週日 San Jose 選項。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-04",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "age_almost"
+      ],
+      "turns": [
+        {
+          "id": "O-04",
+          "message": "Our daughter is almost 6. Any kids events in Palo Alto on Saturday?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                5
+              ],
+              "city": "Palo Alto"
+            }
+          },
+          "judge": {
+            "expect": "Age 5 (almost 6); Saturday Palo Alto kids events with times."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-05",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "dated_city_age"
+      ],
+      "turns": [
+        {
+          "id": "O-05",
+          "message": "Oakland的2026年12月12日有什么亲子活动？我带6岁、怕吵的孩子。",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                6
+              ],
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "12月12日（周六）Oakland，按 6 岁、怕吵挑安静的亲子活动。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-06",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "dated_city_age"
+      ],
+      "turns": [
+        {
+          "id": "O-06",
+          "message": "On December 12, 2026 in Berkeley, what can I do with my 8-year-old who does not like crowds?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                8
+              ],
+              "city": "Berkeley"
+            }
+          },
+          "judge": {
+            "expect": "Sat Dec 12 in Berkeley, quiet options for an 8-year-old."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-07",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "dated_city_age"
+      ],
+      "turns": [
+        {
+          "id": "O-07",
+          "message": "2026年12月19日在Palo Alto，帶9歲、怕人多的女兒去哪裡好？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "date": "2026-12-19",
+              "childAges": [
+                9
+              ],
+              "city": "Palo Alto"
+            }
+          },
+          "judge": {
+            "expect": "12月19日（週六）Palo Alto，9 歲、怕人多。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-08",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "dated_city_age"
+      ],
+      "turns": [
+        {
+          "id": "O-08",
+          "message": "San Jose的2026年11月28日，我带5岁、比较内向的儿子，有什么安静的活动？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "date": "2026-11-28",
+              "childAges": [
+                5
+              ],
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "11月28日（周六）San Jose，5 岁、内向，安静的活动。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-09",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "neighbourhood_city"
+      ],
+      "turns": [
+        {
+          "id": "O-09",
+          "message": "周六想带孩子去 Mission District 逛逛，有什么活动？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "city": "San Francisco"
+            }
+          },
+          "judge": {
+            "expect": "Mission District 在旧金山；周六旧金山（Mission 附近）的亲子活动。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-10",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "neighbourhood_city"
+      ],
+      "turns": [
+        {
+          "id": "O-10",
+          "message": "我住Richmond District，週日附近圖書館有中文活動嗎？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "city": "San Francisco"
+            }
+          },
+          "judge": {
+            "expect": "Richmond District 是舊金山的街區，不是東灣的 Richmond 市。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-11",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "neighbourhood_city"
+      ],
+      "turns": [
+        {
+          "id": "O-11",
+          "message": "Anything fun for kids in Willow Glen this weekend?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "Willow Glen is in San Jose."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-12",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "neighbourhood_city"
+      ],
+      "turns": [
+        {
+          "id": "O-12",
+          "message": "Anything for kids near Noe Valley this Saturday?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "city": "San Francisco"
+            }
+          },
+          "judge": {
+            "expect": "Noe Valley is in San Francisco."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-13",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "neighbourhood_city"
+      ],
+      "turns": [
+        {
+          "id": "O-13",
+          "message": "Rockridge 这周末有什么亲子活动？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "Rockridge 在 Oakland。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-14",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "ssa_benefits"
+      ],
+      "turns": [
+        {
+          "id": "O-14",
+          "message": "我在 Oakland 打工三年了，社安积分够不够领退休金？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": "ssa",
+            "evidenceIncludes": [
+              "social-security-retirement"
+            ],
+            "mustInclude": [
+              [
+                "40"
+              ]
+            ]
+          },
+          "judge": {
+            "expect": "退休金一般需要 40 个工作积分，按有社安税的收入累积，每年最多 4 个；去 my Social Security 查工作记录。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-15",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "ssa_benefits"
+      ],
+      "turns": [
+        {
+          "id": "O-15",
+          "message": "How many Social Security credits do I need to get retirement benefits?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "ssa",
+            "evidenceIncludes": [
+              "social-security-retirement"
+            ]
+          },
+          "judge": {
+            "expect": "40 credits for retirement benefits, earned from covered earnings, up to 4 a year; check the earnings record."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-16",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "ssa_benefits"
+      ],
+      "turns": [
+        {
+          "id": "O-16",
+          "message": "我媽在Fremont做了十年兼職，社會安全退休福利要怎麼查工作記錄？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "safetyTopic": "ssa",
+            "evidenceIncludes": [
+              "social-security-retirement"
+            ]
+          },
+          "judge": {
+            "expect": "用 my Social Security 帳戶查收入記錄；不保證資格。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-17",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "ssa_benefits"
+      ],
+      "turns": [
+        {
+          "id": "O-17",
+          "message": "My dad is 66. Can he start his Social Security retirement payments now?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "ssa",
+            "evidenceIncludes": [
+              "social-security-retirement"
+            ]
+          },
+          "judge": {
+            "expect": "Points to SSA for his own record and claiming age; no amounts."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-18",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "deposit"
+      ],
+      "turns": [
+        {
+          "id": "O-18",
+          "message": "我在 Fremont 退租了，房东扣了我一大半押金说是清洁费，也没给收据，正常吗？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": "legal",
+            "evidenceIncludes": [
+              "california-tenant-deposit-rights-help-guide"
+            ]
+          },
+          "judge": {
+            "expect": "加州一般 21 天内退还并附扣款明细；正常损耗不能扣；可找法律援助。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-19",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "deposit"
+      ],
+      "turns": [
+        {
+          "id": "O-19",
+          "message": "I moved out of my San Jose apartment a month ago and the landlord still has not sent back the security deposit. What are the rules?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "legal",
+            "evidenceIncludes": [
+              "california-tenant-deposit-rights-help-guide"
+            ]
+          },
+          "judge": {
+            "expect": "21 days and an itemized statement in California; small claims or legal aid."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-20",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "deposit",
+        "negative"
+      ],
+      "turns": [
+        {
+          "id": "O-20",
+          "message": "去 San Mateo On Ice 租冰鞋要交押金吗？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": null
+          },
+          "judge": {
+            "expect": "溜冰场的租鞋问题，不是租房押金。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-21",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "deposit"
+      ],
+      "turns": [
+        {
+          "id": "O-21",
+          "message": "退租後房東把整筆押金都扣了，說地毯舊了，我可以要回來嗎？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "safetyTopic": "legal",
+            "evidenceIncludes": [
+              "california-tenant-deposit-rights-help-guide"
+            ]
+          },
+          "judge": {
+            "expect": "正常磨損不可扣；21 天明細；法律援助。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-22",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "deposit"
+      ],
+      "turns": [
+        {
+          "id": "O-22",
+          "message": "My landlord is taking 900 dollars out of my deposit for normal wear and tear. Is that allowed in California?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "legal",
+            "evidenceIncludes": [
+              "california-tenant-deposit-rights-help-guide"
+            ]
+          },
+          "judge": {
+            "expect": "Normal wear and tear is not deductible; itemized statement within 21 days."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-23",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "deposit",
+        "negative"
+      ],
+      "turns": [
+        {
+          "id": "O-23",
+          "message": "Do I need to pay a deposit to borrow a laptop from the San Jose library?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": null
+          },
+          "judge": {
+            "expect": "A library device loan, not a rental deposit."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-24",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "budget_zero",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-24-1",
+          "message": "周六带6岁孩子在 San Jose 玩，门票预算100美元，有什么推荐？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "childAges": [
+                6
+              ],
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "第一轮：按 6 岁、San Jose、周六给选择。"
+          }
+        },
+        {
+          "id": "O-24-2",
+          "message": "预算改成0了，城市和孩子都不变，还有哪些能去？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "childAges": [
+                6
+              ],
+              "city": "San Jose",
+              "freeOnly": true
+            }
+          },
+          "judge": {
+            "expect": "改为免费：只给免费的；保留 6 岁和 San Jose。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-25",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "budget_zero",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-25-1",
+          "message": "Saturday in Oakland with my 7-year-old. We can pay for tickets. Ideas?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                7
+              ],
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "Turn 1: Saturday Oakland options for a 7-year-old."
+          }
+        },
+        {
+          "id": "O-25-2",
+          "message": "Actually we have no money for tickets now. Same city and kid.",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                7
+              ],
+              "city": "Oakland",
+              "freeOnly": true
+            }
+          },
+          "judge": {
+            "expect": "Free options only; keeps Oakland and age 7."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-26",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "budget_zero",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-26-1",
+          "message": "週日帶5歲女兒在 Palo Alto 玩，門票可以付，有什麼好去處？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "childAges": [
+                5
+              ],
+              "city": "Palo Alto"
+            }
+          },
+          "judge": {
+            "expect": "第一輪：週日 Palo Alto，5 歲。"
+          }
+        },
+        {
+          "id": "O-26-2",
+          "message": "改一下：現在門票預算是零，其他不變。",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "childAges": [
+                5
+              ],
+              "city": "Palo Alto",
+              "freeOnly": true
+            }
+          },
+          "judge": {
+            "expect": "改為免費；保留 5 歲與 Palo Alto。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-27",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "budget_zero",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-27-1",
+          "message": "We are in Berkeley this Sunday with a 4-year-old, and admission costs are fine. What should we do?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                4
+              ],
+              "city": "Berkeley"
+            }
+          },
+          "judge": {
+            "expect": "Turn 1: Sunday Berkeley, age 4."
+          }
+        },
+        {
+          "id": "O-27-2",
+          "message": "Scratch that, we cannot spend anything on admission anymore.",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "childAges": [
+                4
+              ],
+              "city": "Berkeley",
+              "freeOnly": true
+            }
+          },
+          "judge": {
+            "expect": "Free only; keeps Berkeley and age 4."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-28",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "followup_topic",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-28-1",
+          "message": "我住 San Jose，想帮妈妈申请 Medi-Cal。",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": "insurance",
+            "evidenceIncludes": [
+              "medicare-hicap-medi-cal"
+            ]
+          },
+          "judge": {
+            "expect": "第一轮：Medi-Cal 申请渠道。"
+          }
+        },
+        {
+          "id": "O-28-2",
+          "message": "她不会用电脑，也不想开网上账号，还有什么办法？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": "insurance",
+            "evidenceIncludes": [
+              "medicare-hicap-medi-cal"
+            ]
+          },
+          "judge": {
+            "expect": "仍是 Medi-Cal：县社会服务办公室电话、现场或邮寄申请。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-29",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "followup_topic",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-29-1",
+          "message": "My landlord in Oakland kept my whole security deposit.",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "legal"
+          },
+          "judge": {
+            "expect": "Turn 1: deposit rules."
+          }
+        },
+        {
+          "id": "O-29-2",
+          "message": "He says he will mail a list of charges next month. Can he wait that long?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "legal"
+          },
+          "judge": {
+            "expect": "Still the deposit: 21 days for the itemized statement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-30",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "followup_topic",
+        "negative",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-30-1",
+          "message": "想帮爸爸在线申请 Medi-Cal。",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": "insurance"
+          },
+          "judge": {
+            "expect": "第一轮：Medi-Cal。"
+          }
+        },
+        {
+          "id": "O-30-2",
+          "message": "这周末带孩子去 San Jose 哪里玩？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "safetyTopic": null
+          },
+          "judge": {
+            "expect": "新话题：周末出游，不是 Medi-Cal。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-31",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "followup_topic",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-31-1",
+          "message": "我爸剛滿65歲，想問 Medicare 怎麼報名。",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "safetyTopic": "medicare"
+          },
+          "judge": {
+            "expect": "第一輪：Medicare 報名。"
+          }
+        },
+        {
+          "id": "O-31-2",
+          "message": "他英文不好，可以找誰用中文問？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "safetyTopic": "medicare"
+          },
+          "judge": {
+            "expect": "仍是 Medicare：HICAP 免費中文諮詢、1-800-MEDICARE 口譯。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-32",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "followup_topic",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-32-1",
+          "message": "How do I renew my mom's Medi-Cal in Fremont?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "insurance"
+          },
+          "judge": {
+            "expect": "Turn 1: Medi-Cal renewal."
+          }
+        },
+        {
+          "id": "O-32-2",
+          "message": "She lost the renewal letter. What now?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "insurance"
+          },
+          "judge": {
+            "expect": "Still Medi-Cal: the county office can resend or take it by phone."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-33",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "followup_topic",
+        "negative",
+        "multi_turn"
+      ],
+      "turns": [
+        {
+          "id": "O-33-1",
+          "message": "My landlord will not return my deposit.",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": "legal"
+          },
+          "judge": {
+            "expect": "Turn 1: deposit."
+          }
+        },
+        {
+          "id": "O-33-2",
+          "message": "OK, thanks. Any free museums in San Francisco this Sunday?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "safetyTopic": null
+          },
+          "judge": {
+            "expect": "A new topic: free museums."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-34",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "rainy_family"
+      ],
+      "turns": [
+        {
+          "id": "O-34",
+          "message": "If it rains this weekend, what indoor things can we do with kids in San Jose?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "city": "San Jose",
+              "setting": "indoor",
+              "family": true
+            },
+            "evidenceIncludes": [
+              [
+                "Tech Interactive",
+                "Egyptian Museum",
+                "King, Jr\\. Library",
+                "Museum of Art"
+              ]
+            ]
+          },
+          "judge": {
+            "expect": "Three or more indoor family options in San Jose with hours or sessions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-35",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "rainy_family"
+      ],
+      "turns": [
+        {
+          "id": "O-35",
+          "message": "Rainy weekend in San Jose with kids, indoor ideas?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "city": "San Jose",
+              "setting": "indoor",
+              "family": true
+            },
+            "evidenceIncludes": [
+              [
+                "Tech Interactive",
+                "Egyptian Museum",
+                "King, Jr\\. Library",
+                "Museum of Art"
+              ]
+            ]
+          },
+          "judge": {
+            "expect": "Indoor family options in San Jose."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-36",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "rainy_family"
+      ],
+      "turns": [
+        {
+          "id": "O-36",
+          "message": "下雨天带小朋友在 San Jose 室内能玩什么？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "city": "San Jose",
+              "setting": "indoor",
+              "family": true
+            }
+          },
+          "judge": {
+            "expect": "室内亲子选项。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-37",
+      "block": "O",
+      "split": "dev",
+      "locale": "zh-Hans",
+      "currentPath": "/",
+      "tags": [
+        "dev",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-37",
+          "message": "Oakland的2026年12月12日Family Saturday活动，我带6岁的孩子去，门票写5美元，能只带10美元吗？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hans",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                6
+              ],
+              "city": "Oakland"
+            }
+          },
+          "judge": {
+            "expect": "12月12日（周六）Oakland，6 岁；不承诺 10 美元一定够。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-38",
+      "block": "O",
+      "split": "dev",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "dev",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-38",
+          "message": "On December 12, 2026 at the Berkeley Super Sunday craft fair with my 9-year-old; parking is 8 dollars, is 10 enough?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "date": "2026-12-12",
+              "childAges": [
+                9
+              ],
+              "city": "Berkeley"
+            }
+          },
+          "judge": {
+            "expect": "Sat Dec 12 in Berkeley, age 9; \"Super Sunday\" is the fair's name, not a second date."
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-39",
+      "block": "O",
+      "split": "held-out",
+      "locale": "zh-Hant",
+      "currentPath": "/",
+      "tags": [
+        "held-out",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-39",
+          "message": "Fremont的2026年12月19日Sunday Funday，帶8歲的兒子去，停車要4美元嗎？",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "zh-Hant",
+            "state": {
+              "date": "2026-12-19",
+              "childAges": [
+                8
+              ],
+              "city": "Fremont"
+            }
+          },
+          "judge": {
+            "expect": "12月19日（週六）Fremont，8 歲。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "O-40",
+      "block": "O",
+      "split": "held-out",
+      "locale": "en",
+      "currentPath": "/en",
+      "tags": [
+        "held-out",
+        "dated_city_age",
+        "weekday_in_name"
+      ],
+      "turns": [
+        {
+          "id": "O-40",
+          "message": "San Jose on December 19, 2026 for the Family Sunday open house with my 5-year-old. Entry is 3 dollars; can we bring only 5?",
+          "gold": {
+            "expectRoute": "assistant",
+            "script": "en",
+            "state": {
+              "date": "2026-12-19",
+              "childAges": [
+                5
+              ],
+              "city": "San Jose"
+            }
+          },
+          "judge": {
+            "expect": "Sat Dec 19 in San Jose, age 5."
+          }
+        }
+      ]
+    }
+  ]
+}
