@@ -1055,6 +1055,15 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-0f87edba95447e9a",
+    "title": "湾区图书馆不只借书：把办卡、学习和数字资源真正用起来",
+    "url": "https://marinlibrary.org/museums/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-library-starter-guide"
+    ]
+  },
+  {
     "id": "source-0fa294c327c0feab",
     "title": "Phoebe Bridgers：The Lost Tour",
     "url": "https://www.chasecenter.com/events/phoebe-bridgers-20261027/",
@@ -1301,6 +1310,15 @@
       "target-acotar-keychain-oct26-2026"
     ],
     "endDate": "2026-10-26"
+  },
+  {
+    "id": "source-1312f1587bf27c84",
+    "title": "湾区图书馆不只借书：把办卡、学习和数字资源真正用起来",
+    "url": "https://www.smcgov.org/parks/vehicle-entry-fee-waivers",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-library-starter-guide"
+    ]
   },
   {
     "id": "source-131466cc32246135",
@@ -1588,6 +1606,15 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "hedley-club"
+    ]
+  },
+  {
+    "id": "source-17bf73fd2dc08f18",
+    "title": "湾区华人资源地图",
+    "url": "https://chsa.org/faqs/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
     ]
   },
   {
@@ -2098,6 +2125,15 @@
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
       "michaels-ghost-jar-oct11-2026"
+    ]
+  },
+  {
+    "id": "source-1f544beec2af7ff5",
+    "title": "湾区华人资源地图",
+    "url": "https://aclibrary.org/elibrary/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
     ]
   },
   {
@@ -2691,6 +2727,16 @@
     ]
   },
   {
+    "id": "source-27afcd76ef2d4e4d",
+    "title": "湾区华人资源地图",
+    "url": "https://marinlibrary.org/resource/lote4kids/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map",
+      "bay-area-library-starter-guide"
+    ]
+  },
+  {
     "id": "source-27b2bb8aa7fb",
     "title": "10/27 Muir Woods：符合身份条件免入园费",
     "url": "https://www.nps.gov/muwo/planyourvisit/fees.htm",
@@ -2883,6 +2929,16 @@
     "contentIds": [
       "sf-golden-gate-bridge-fort-point-guide"
     ]
+  },
+  {
+    "id": "source-2a955fbfa72f673f",
+    "title": "Visitacion Valley 分馆书法与棋类午后：练毛笔字，下象棋、围棋",
+    "url": "https://sfpl.org/events/2026/11/14/activity-chinese-calligraphy-and-chess-games",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-visitacion-valley-calligraphy-chess-nov14-2026"
+    ],
+    "endDate": "2026-11-14"
   },
   {
     "id": "source-2ab6808373589c9e",
@@ -4919,6 +4975,15 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "source-4de9f752b37eed61",
+    "title": "湾区华人资源地图",
+    "url": "https://www.caccusa.org/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-4df0ae1e4d8f7b9f",
     "title": "Stanford 的 Cantor 美术馆常年免费",
     "url": "https://museum.stanford.edu/visit",
@@ -5218,6 +5283,16 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-bulky-items-ewaste-hhw-guide"
+    ]
+  },
+  {
+    "id": "source-5273d6a435f13a5b",
+    "title": "Rhone at Westfield Valley Fair",
+    "url": "https://www.rhone.com/locations/valley-fair/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "santa-clara-rhone-valley-fair-new-store-2026"
     ]
   },
   {
@@ -5691,6 +5766,15 @@
     ]
   },
   {
+    "id": "source-5b0941049257e425",
+    "title": "湾区中文长者服务：餐食、日间照护、陪伴与县级转介",
+    "url": "https://www.onlok.org/senior-center/activities",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-senior-services-referral-guide"
+    ]
+  },
+  {
     "id": "source-5b2b275ee42f7b16",
     "title": "2026 年 10 月湾区省钱攻略：免费场馆、亲子手工与图书馆门票",
     "url": "https://www.85cbakerycafe.com/",
@@ -6158,6 +6242,16 @@
     ]
   },
   {
+    "id": "source-62aec4413ea5cbdf",
+    "title": "神韵 2027 旧金山演出：War Memorial Opera House 四场",
+    "url": "https://tickets.shenyun.com/event/schedule/shenyun-2027-san-francisco-2027-1-2-2pm",
+    "kind": "event",
+    "contentIds": [
+      "sf-shen-yun-war-memorial-2026-27"
+    ],
+    "endDate": "2027-01-03"
+  },
+  {
     "id": "source-62bb902f34367064",
     "title": "AC Library 持卡人每天免费打印 10 页黑白文件",
     "url": "https://aclibrary.org/faq/print-scan-fax/",
@@ -6439,6 +6533,26 @@
       "oakland-drunken-film-fest-free-shorts-2026"
     ],
     "endDate": "2026-10-09"
+  },
+  {
+    "id": "source-672c81502372d847",
+    "title": "CMT San Jose《Matilda》音乐剧",
+    "url": "https://www.cmtsj.org/matilda-the-musical/",
+    "kind": "event",
+    "contentIds": [
+      "san-jose-matilda-nov2026"
+    ],
+    "endDate": "2026-11-22"
+  },
+  {
+    "id": "source-67ac742abd4053d9",
+    "title": "Nékter Juice Bar",
+    "url": "https://locations.nekterjuicebar.com/ll/us/ca/pittsburg/2261-w-leland-rd/",
+    "kind": "opening",
+    "contentIds": [
+      "bay-area-new-openings-2026-09",
+      "pittsburg-nekter-opening-2026"
+    ]
   },
   {
     "id": "source-67cc2f6c70b0aa52",
@@ -7213,6 +7327,15 @@
     "endDate": "2026-10-04"
   },
   {
+    "id": "source-74600cd0746f606a",
+    "title": "湾区中文长者服务：餐食、日间照护、陪伴与县级转介",
+    "url": "https://www.cupertino.gov/Parks-Recreation/Senior-Center/Socials",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-senior-services-referral-guide"
+    ]
+  },
+  {
     "id": "source-7467965da5c219ad",
     "title": "Black Diamond 山径挑战：5.2英里爬升路线",
     "url": "https://www.ebparks.org/events/black-diamond-trails-challenge-hike",
@@ -7697,6 +7820,15 @@
     "endDate": "2026-11-15"
   },
   {
+    "id": "source-7c74a5864019ae79",
+    "title": "湾区华人资源地图",
+    "url": "https://www.cccsf.us/tours",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-7c995900d4c379aa",
     "title": "10/10 Santa Rosa 博物馆免费家庭日",
     "url": "https://museumsc.org/visit/",
@@ -7980,7 +8112,7 @@
     "contentIds": [
       "sfpl-excelsior-multilingual-tech-help-2026"
     ],
-    "endDate": "2026-11-15"
+    "endDate": "2026-12-13"
   },
   {
     "id": "source-81115696ce9c4d6c",
@@ -8184,7 +8316,8 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "santa-clara-rhone-valley-fair-new-store-2026"
-    ]
+    ],
+    "endDate": "2026-09-30"
   },
   {
     "id": "source-84969b4907239f57",
@@ -8515,6 +8648,16 @@
     ]
   },
   {
+    "id": "source-889f32b0e0c5eab6",
+    "title": "Sunset 分馆麻将：上午新手入门，下午麻将俱乐部",
+    "url": "https://sfpl.org/events/2026/11/28/workshop-mahjong-beginners",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-sunset-mahjong-nov28-2026"
+    ],
+    "endDate": "2026-11-28"
+  },
+  {
     "id": "source-88bb3d64d99f8da2",
     "title": "Angel Island 一日：先定回程船，再走海湾与移民历史",
     "url": "https://www.parks.ca.gov/?page_id=468",
@@ -8788,6 +8931,7 @@
       "bay-area-everyday-free-perks",
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "bay-area-library-starter-guide",
       "marin-library-parking-passes"
     ]
   },
@@ -8808,6 +8952,16 @@
     "contentIds": [
       "bay-area-city-utilities-internet-phone-directory"
     ]
+  },
+  {
+    "id": "source-8d68a51138a849ab",
+    "title": "作家刘宗坤谈《异乡故人》：总馆分享与签名",
+    "url": "https://sfpl.org/events/2026/12/12/zuojia-liuzongkun-yixiangguren",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-main-liu-zongkun-author-talk-dec12-2026"
+    ],
+    "endDate": "2026-12-12"
   },
   {
     "id": "source-8d9599c734b4f11a",
@@ -8837,7 +8991,7 @@
     "contentIds": [
       "sf-opera-manon-2026"
     ],
-    "endDate": "2026-10-30"
+    "endDate": "2026-11-01"
   },
   {
     "id": "source-8e1fd1c8393d1aef",
@@ -9435,6 +9589,24 @@
     "kind": "guide",
     "contentIds": [
       "muir-woods-reservation-day-trip"
+    ]
+  },
+  {
+    "id": "source-9709b19e8214ae15",
+    "title": "Alameda 一日两种节奏：USS Hornet 航母与海岸散步",
+    "url": "https://www.ebparks.org/parks/visitor-centers/crab-cove",
+    "kind": "guide",
+    "contentIds": [
+      "alameda-uss-hornet-shoreline-day-guide"
+    ]
+  },
+  {
+    "id": "source-97136cf680007728",
+    "title": "湾区华人资源地图",
+    "url": "https://sfpl.org/locations/chinatown",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
     ]
   },
   {
@@ -10202,6 +10374,7 @@
     "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=12505.",
     "kind": "guide",
     "contentIds": [
+      "bay-area-newcomer-first-month-checklist",
       "california-driver-license-id-preparation-guide"
     ]
   },
@@ -10312,6 +10485,16 @@
     "contentIds": [
       "half-moon-bay-pumpkin-season-2026-guide"
     ]
+  },
+  {
+    "id": "source-a5c0c3267eea1227",
+    "title": "法藏寺冬季佛七：每晚 19:20 讲法",
+    "url": "https://www.chanpureland.org/foqi.html",
+    "kind": "event",
+    "contentIds": [
+      "sf-dharma-treasury-winter-foqi-talks-2026"
+    ],
+    "endDate": "2026-12-25"
   },
   {
     "id": "source-a5ca1befca3762c0",
@@ -10441,6 +10624,7 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "bay-area-library-starter-guide",
       "curiodyssey-museums-for-all",
       "san-mateo-coyote-point-bayfront-guide",
       "san-mateo-curiodyssey-teacher-military-ongoing"
@@ -10652,6 +10836,16 @@
       "sjpl-berryessa-diwali-2026"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-aa63a6e6f05e3fd4",
+    "title": "San Leandro 主馆普通话故事会（12/5）",
+    "url": "https://www.sanleandro.org/Calendar.aspx?EID=7840&calType=0&day=16&month=10&year=2026",
+    "kind": "event",
+    "contentIds": [
+      "sanleandro-main-mandarin-storytime-dec5-2026"
+    ],
+    "endDate": "2026-12-05"
   },
   {
     "id": "source-aa6c4a383f250c79",
@@ -11161,6 +11355,7 @@
     "contentIds": [
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
+      "bay-area-library-starter-guide",
       "sf-free-culture-eligibility-october-2026",
       "sfpl-discover-go"
     ]
@@ -11800,6 +11995,15 @@
     ]
   },
   {
+    "id": "source-ba8de894e8046cf5",
+    "title": "湾区华人资源地图",
+    "url": "https://oaklandlibrary.org/locations/asa/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-baa92f8668aa22b3",
     "title": "9 月 19 日，把海边散步变成一次净滩：湾区报名与出发攻略",
     "url": "https://savesfbay.org/calendar/",
@@ -11900,6 +12104,16 @@
     "contentIds": [
       "bay-area-street-parking-first-time-guide"
     ]
+  },
+  {
+    "id": "source-bbaefaae352d9422",
+    "title": "法藏寺冬季禅七：每晚 19:20 讲法",
+    "url": "https://www.chanpureland.org/chanqi.html",
+    "kind": "event",
+    "contentIds": [
+      "sf-dharma-treasury-winter-chanqi-talks-2026"
+    ],
+    "endDate": "2027-01-03"
   },
   {
     "id": "source-bbe039ae54543229",
@@ -12148,6 +12362,15 @@
       "many-moons-festival-20261003"
     ],
     "endDate": "2026-10-03"
+  },
+  {
+    "id": "source-c08f281ad0042151",
+    "title": "湾区华人资源地图",
+    "url": "https://www.chinatowncdc.org/about-us/contact-us",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
   },
   {
     "id": "source-c0a46a407c95341b",
@@ -13346,6 +13569,15 @@
     "endDate": "2026-09-26"
   },
   {
+    "id": "source-d1f14c2d12617b39",
+    "title": "湾区华人资源地图",
+    "url": "https://smcl.bibliocommons.com/v2/events?series=6ab6c171ca248a0029186961",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-language-resource-map"
+    ]
+  },
+  {
     "id": "source-d1fbe3f984335e66",
     "title": "Santa Clara Art & Wine：在 Central Park 逛手作、听音乐",
     "url": "https://www.santaclaraca.gov/our-city/departments-g-z/parks-recreation/parks-recreation-special-events/art-wine-festival",
@@ -13363,6 +13595,16 @@
     "contentIds": [
       "bay-area-elder-scam-prevention-guide"
     ]
+  },
+  {
+    "id": "source-d22f817dd35d7841",
+    "title": "Visitacion Valley 分馆书法自习与棋类午后（12/12）",
+    "url": "https://sfpl.org/events/2026/12/12/activity-chinese-calligraphy-and-chess-games",
+    "kind": "event",
+    "contentIds": [
+      "sfpl-visitacion-calligraphy-chess-dec12-2026"
+    ],
+    "endDate": "2026-12-12"
   },
   {
     "id": "source-d281b26a9aef5458",
@@ -13391,7 +13633,7 @@
     "contentIds": [
       "sfpl-main-california-xiangqi-invitational-nov28-2026"
     ],
-    "endDate": "2026-11-28"
+    "endDate": "2026-11-29"
   },
   {
     "id": "source-d32e73a23b764ca8",
@@ -13847,6 +14089,15 @@
     "kind": "guide",
     "contentIds": [
       "bay-area-chinese-language-resource-map",
+      "bay-area-chinese-senior-services-referral-guide"
+    ]
+  },
+  {
+    "id": "source-daafc7a34545d9d2",
+    "title": "湾区中文长者服务：餐食、日间照护、陪伴与县级转介",
+    "url": "https://sjpl.bibliocommons.com/v2/events?series=6a0792ea3246e7b84b4f6443",
+    "kind": "guide",
+    "contentIds": [
       "bay-area-chinese-senior-services-referral-guide"
     ]
   },
@@ -14450,6 +14701,15 @@
       "bay-area-new-openings-2026-09"
     ],
     "endDate": "2026-09-30"
+  },
+  {
+    "id": "source-e4480065d5387d4e",
+    "title": "湾区中文长者服务：餐食、日间照护、陪伴与县级转介",
+    "url": "https://sjpl.bibliocommons.com/v2/events?languages=5d65e5fbe6fec218adacff4d",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-chinese-senior-services-referral-guide"
+    ]
   },
   {
     "id": "source-e506294fafbd6fda",

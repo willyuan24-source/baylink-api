@@ -6849,7 +6849,7 @@
       "kind": "event",
       "cost": "free",
       "costLabel": "免费公共艺术展。",
-      "summary": "30 件真人比例大象雕塑组成户外展览，材料为干燥马缨丹植物。展期跨至 12 月。",
+      "summary": "27 件真人比例大象雕塑组成户外展览，材料为干燥马缨丹植物。展期跨至 12 月。",
       "plan": [
         "常设户外展无需购买门票；相关专项活动按各主办方安排。"
       ],
@@ -6861,7 +6861,7 @@
       "sourceLabel": "333arts.org",
       "verifiedAt": "2026-10-15",
       "imageKey": "official-livermore-great-elephant-migration-2026",
-      "dek": "30 头真人比例大象雕塑的户外展",
+      "dek": "27 头真人比例大象雕塑的户外展",
       "shortTitle": "Livermore 大象迁徙公共艺术展",
       "venueShort": "Bankhead Plaza & Stockmen’s Park",
       "aliases": [
@@ -9395,16 +9395,17 @@
       "id": "sf-opera-manon-2026",
       "title": "旧金山歌剧院《曼侬》",
       "startDate": "2026-10-15",
-      "endDate": "2026-10-30",
+      "endDate": "2026-11-01",
       "occurrenceDates": [
         "2026-10-15",
         "2026-10-18",
         "2026-10-21",
         "2026-10-24",
         "2026-10-27",
-        "2026-10-30"
+        "2026-10-30",
+        "2026-11-01"
       ],
-      "dateLabel": "10/15–10/30 · 10/18 14:00；其余所列日期 19:30；约 3 小时 25 分钟",
+      "dateLabel": "10/15–11/1 · 10/18、11/1 14:00；其余所列日期 19:30；约 3 小时 25 分钟",
       "region": "sf",
       "city": "San Francisco",
       "venue": "War Memorial Opera House · 301 Van Ness Avenue, San Francisco, CA 94102",
@@ -9412,7 +9413,7 @@
       "kind": "performance",
       "cost": "paid",
       "costLabel": "官方标价 $30 起；可售座位及最终总额以购票页为准",
-      "summary": "马斯内法语歌剧，配英文字幕；10 月有六场，完整剧期至 11 月 1 日。",
+      "summary": "马斯内法语歌剧，配英文字幕；10/15 至 11/1 共七场，11/1 是最后一场。",
       "plan": [
         "按具体场次购票；不是起止日期之间每天演出"
       ],
@@ -9449,12 +9450,16 @@
         {
           "date": "2026-10-30",
           "start": "19:30"
+        },
+        {
+          "date": "2026-11-01",
+          "start": "14:00"
         }
       ],
       "price": {
         "min": 30
       },
-      "dateNote": "演出约 3 小时 25 分钟",
+      "dateNote": "10/18、11/1 14:00 开演，其余场次 19:30；演出约 3 小时 25 分钟",
       "shortTitle": "旧金山歌剧院《曼侬》",
       "venueShort": "War Memorial Opera House",
       "address": "301 Van Ness Avenue, San Francisco, CA 94102",
@@ -10857,7 +10862,7 @@
     {
       "kind": "event",
       "region": "north-bay",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
       "id": "november-north-eames-exhibition-2026",
       "title": "The MAC：Eames & Eames 现代设计展",
@@ -12512,7 +12517,7 @@
         "2026-11-07",
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -12523,7 +12528,7 @@
       "dateLabel": "10/17、10/24、10/31、11/7、11/14 · 周六 14:30–16:00",
       "city": "San Francisco",
       "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
-      "summary": "旧金山公共图书馆华埠分馆每周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；活动以粤语和普通话进行。",
+      "summary": "旧金山公共图书馆华埠分馆每周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；图书馆把它列在中文活动类别里。",
       "plan": [
         "形式是自主练习，不是老师授课。",
         "五个周六都在同一时段，选一次去就可以。"
@@ -12927,7 +12932,7 @@
         "2026-11-07",
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -13974,7 +13979,7 @@
       ],
       "officialUrl": "https://milpitas.gov/MAP",
       "sourceLabel": "City of Milpitas",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-16",
       "imageKey": "everyday",
       "occurrenceDates": [
         "2026-10-20",
@@ -15281,7 +15286,7 @@
       "region": "east-bay",
       "category": "family",
       "cost": "unknown",
-      "costLabel": "不用报名；活动页没有写费用",
+      "costLabel": "活动页没有写费用，也未列报名要求",
       "sourceLabel": "Alameda County Library 活动页（Cherryland）",
       "title": "Cherryland 图书馆粤语、国语故事会",
       "dateLabel": "10/24（周六）· 10:30 粤语场、11:30 国语场",
@@ -15463,7 +15468,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -15960,7 +15965,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -16137,7 +16142,7 @@
       ],
       "officialUrl": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261024-Halloween-Hoopla-Parade-and-Carnival",
       "sourceLabel": "menlopark.gov",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-15",
       "imageKey": "autumn-neighbors",
       "shortTitle": "Menlo Park 万圣节游行",
       "dek": "装扮游行到 Fremont Park，接着玩嘉年华",
@@ -16306,7 +16311,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -16477,7 +16482,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-opl-main-family-storytime-2026",
       "region": "east-bay",
       "category": "family",
@@ -17136,11 +17141,12 @@
       "venue": "San José Museum of Art · 110 S Market Street, San Jose, CA 95113",
       "category": "culture",
       "kind": "event",
-      "cost": "free",
-      "costLabel": "全天免费入场；餐饮及商店消费另计。",
+      "cost": "mixed",
+      "costLabel": "全天免费入场；糖骷髅装饰另购票；餐饮及商店消费另计。",
       "summary": "以文化展示、现场娱乐与艺术创作为主的跨年龄社区活动。",
       "plan": [
-        "免费；可提前登记快速签到，也欢迎现场到访。",
+        "免费登记，馆方强烈建议提前登记，也接待现场到访；活动 16:00 结束，博物馆开到 18:00。",
+        "糖骷髅装饰要另买票，当天在博物馆买。",
         "完整节目仍在更新，以馆方最新公告为准。"
       ],
       "audience": [
@@ -17176,7 +17182,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": 0,
+        "admissionUsd": null,
         "schedule": {
           "sourceUrl": "https://sjmusart.org/programs-at-sjma/community-days/dia-de-los-muertos",
           "verifiedAt": "2026-09-29",
@@ -17307,7 +17313,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -17476,7 +17482,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -18035,7 +18041,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -18195,7 +18201,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -18353,7 +18359,7 @@
         "2026-12-05",
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
@@ -18909,12 +18915,13 @@
       "id": "sfpl-excelsior-multilingual-tech-help-2026",
       "kind": "event",
       "startDate": "2026-10-25",
-      "endDate": "2026-11-15",
+      "endDate": "2026-12-13",
       "occurrenceDates": [
         "2026-10-25",
-        "2026-11-15"
+        "2026-11-15",
+        "2026-12-13"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -18922,13 +18929,13 @@
       "costLabel": "免费；不用报名",
       "sourceLabel": "旧金山公共图书馆活动页（Excelsior 分馆）",
       "title": "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
-      "dateLabel": "10/25、11/15 · 周日 13:00–16:00",
+      "dateLabel": "10/25、11/15、12/13 · 周日 13:00–16:00",
       "city": "San Francisco",
       "venue": "Excelsior 分馆会议室 · 4400 Mission Street, San Francisco, CA 94112",
       "summary": "digitalLIFT 在 Excelsior 分馆开设随到随问的科技答疑，可用英语、西班牙语、菲律宾语、粤语和普通话，一对一帮忙用手机、平板或电脑：给家人发短信、视频看诊、网上买菜都可以问。",
       "plan": [
         "带上自己的手机、平板、iPad 或笔记本电脑。",
-        "10/25 和 11/15 两个周日，时间相同。"
+        "中文支持：粤语、普通话都能问。10/25、11/15、12/13 三个周日时间相同；12/13 在分馆一楼开放区（General Floor Area）。"
       ],
       "audience": [
         "成人"
@@ -18944,6 +18951,11 @@
         },
         {
           "date": "2026-11-15",
+          "start": "13:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-13",
           "start": "13:00",
           "end": "16:00"
         }
@@ -18967,7 +18979,7 @@
           "sourceUrl": "https://sfpl.org/events/2026/10/25/tutorial-drop-tech-help-english-spanish-filipino-cantonese-mandarin",
           "verifiedAt": "2026-10-12",
           "validFrom": "2026-10-25",
-          "validThrough": "2026-11-15",
+          "validThrough": "2026-12-13",
           "sessions": [
             {
               "date": "2026-10-25",
@@ -18976,6 +18988,11 @@
             },
             {
               "date": "2026-11-15",
+              "start": "13:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-13",
               "start": "13:00",
               "end": "16:00"
             }
@@ -19000,7 +19017,7 @@
         "2026-12-20",
         "2026-12-27"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -20515,7 +20532,7 @@
       ],
       "officialUrl": "https://paplayers.org/show/the-addams-family/",
       "sourceLabel": "paplayers.org",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-15",
       "imageKey": "coverage-stage",
       "shortTitle": "Palo Alto《亚当斯一家》",
       "dek": "用一部音乐喜剧过万圣节",
@@ -20615,7 +20632,7 @@
       "officialUrl": "https://www.365nightmarket.com/event-details/365-night-market-at-grand-century-mall-san-jose-2026-10-30-16-00",
       "sourceLabel": "365 Night Market",
       "imageKey": "autumn-neighbors",
-      "verifiedAt": "2026-09-30",
+      "verifiedAt": "2026-10-15",
       "shortTitle": "San Jose 365 夜市",
       "dek": "两晚的小吃、购物和音乐夜市",
       "dateNote": "官网写 10/30 16:00 至 10/31 22:00，未分列每晚时段",
@@ -20897,7 +20914,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -20969,7 +20986,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -21058,7 +21075,7 @@
       "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/McClellan-Events/Baer-Blacksmith-Shop-Demonstrations",
       "sourceLabel": "City of Cupertino",
       "verifiedAt": "2026-10-02",
-      "imageKey": "everyday",
+      "imageKey": "official-cupertino-baer-blacksmith-fall-2026",
       "occurrenceDates": [
         "2026-10-31",
         "2026-11-28"
@@ -21110,7 +21127,7 @@
       ],
       "officialUrl": "https://marincountrymart.com/events/0zog7elnls9d0aljsi62915xu1zww4",
       "sourceLabel": "marincountrymart.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-15",
       "imageKey": "official-mcm-halloween-spectacular-20261031",
       "shortTitle": "Marin Country Mart 万圣节",
       "dek": "装扮比赛、店铺讨糖和南瓜称重竞猜",
@@ -21159,7 +21176,7 @@
       ],
       "officialUrl": "https://foodwise.org/events/fall-fruit-celebration/",
       "sourceLabel": "Foodwise",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-15",
       "imageKey": "ferry-market",
       "relatedGuideSlug": "san-francisco-autumn-food-markets-2026",
       "shortTitle": "Ferry Plaza 秋果品尝",
@@ -21282,7 +21299,7 @@
       ],
       "officialUrl": "https://www.sausalito.gov/departments/parks_and_recreation/city_special_events/halloween_sausalito_october_31_2026.php",
       "sourceLabel": "Sausalito 市 2026 Halloween 官方页",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-15",
       "imageKey": "region-sausalito",
       "shortTitle": "Sausalito 万圣节游行",
       "dek": "游行到公园讨糖，还有狗狗装扮赛",
@@ -21326,7 +21343,7 @@
       ],
       "officialUrl": "https://mhplaza.org/allevents/avenida26",
       "sourceLabel": "mhplaza.org",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-15",
       "imageKey": "official-san-jose-avenida-altares-2026",
       "shortTitle": "San José 亡灵节祭坛大道",
       "dek": "社区祭坛、亲子艺术和手工市集",
@@ -21374,7 +21391,7 @@
       ],
       "officialUrl": "https://ybgfestival.org/event/halloween-hoopla-2026/",
       "sourceLabel": "ybgfestival.org",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-15",
       "imageKey": "official-sf-halloween-hoopla-2026",
       "shortTitle": "Yerba Buena 万圣节游行",
       "dek": "马戏表演、现场音乐，最后全体装扮游行",
@@ -21420,7 +21437,7 @@
       ],
       "officialUrl": "https://www.sfopera.com/operas/the-marriage-of-figaro/",
       "sourceLabel": "sfopera.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-15",
       "imageKey": "weekend",
       "dek": "莫扎特喜歌剧开演，意大利语配英文字幕",
       "sessions": [
@@ -21453,7 +21470,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -21536,7 +21553,7 @@
       ],
       "officialUrl": "https://www.sapcenter.com/events/detail/sharks-vs-kings-17",
       "sourceLabel": "sapcenter.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-15",
       "imageKey": "weekend",
       "shortTitle": "Sharks 对 Senators 冰球赛",
       "dek": "Los Tiburones 主题场，下午开赛",
@@ -21565,7 +21582,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -21638,7 +21655,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -21711,7 +21728,7 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -21782,12 +21799,12 @@
       "occurrenceDates": [
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
       "cost": "free",
-      "costLabel": "图书馆活动免费；不用报名",
+      "costLabel": "图书馆活动免费；活动页未列报名要求",
       "sourceLabel": "San Mateo County Libraries 活动页（San Carlos）",
       "title": "San Carlos 图书馆亡灵节音乐会：Cascada de Flores 双语互动演出",
       "dateLabel": "10/31（周六）· 10:30–11:15",
@@ -21867,7 +21884,7 @@
       ],
       "officialUrl": "https://downtownvacaville.com/events-in-downtown-vacaville/",
       "sourceLabel": "downtownvacaville.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-15",
       "imageKey": "weekend",
       "shortTitle": "Vacaville 市中心讨糖",
       "dek": "市中心讨糖、广场音乐和稻草人比赛",
@@ -21906,7 +21923,7 @@
       "venue": "Big Break Visitor Center · 69 Big Break Road",
       "category": "outdoors",
       "cost": "free",
-      "costLabel": "活动和停车免费；无需报名",
+      "costLabel": "活动免费；无需报名",
       "summary": "跟随自然教育员认识 Delta 湿地。5岁起，儿童须有成人参与；路线约0.5–2英里，以铺装、较平缓路段为主。",
       "plan": [
         "14:00在游客中心集合；穿步行鞋、带水。",
@@ -21918,7 +21935,7 @@
       ],
       "officialUrl": "https://www.ebparks.org/events/big-break-nature-walk-29",
       "sourceLabel": "East Bay Regional Park District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "imageKey": "november-community",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
       "shortTitle": "Big Break 湿地散步",
@@ -22042,7 +22059,7 @@
       ],
       "officialUrl": "https://www.ebparks.org/events/black-diamond-trails-challenge-hike",
       "sourceLabel": "East Bay Regional Park District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-15",
       "imageKey": "weekend",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
       "shortTitle": "Black Diamond 山径挑战",
@@ -22121,7 +22138,7 @@
       ],
       "officialUrl": "https://www.ebparks.org/events/native-american-heritage-month-brushy-peak-hike-1",
       "sourceLabel": "East Bay Regional Park District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-15",
       "imageKey": "weekend",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
       "shortTitle": "Brushy Peak 原住民历史徒步",
@@ -22171,7 +22188,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-fort-mason-farmers-market",
       "title": "Fort Mason 周日农夫市集：11月五个周日",
       "occurrenceDates": [
@@ -22200,7 +22217,7 @@
       ],
       "officialUrl": "https://fortmason.org/event/sunday-farmers-market/2026-11-29/",
       "sourceLabel": "Fort Mason Center / California Farmers Markets Association",
-      "imageKey": "octnov-fort-mason-context",
+      "imageKey": "official-nov2026-fort-mason-farmers-market",
       "startDate": "2026-11-01",
       "endDate": "2026-11-29",
       "shortTitle": "Fort Mason 周日农夫市集",
@@ -22311,7 +22328,7 @@
       ],
       "officialUrl": "https://www.visitoakland.com/events/annual-events/dia-de-los-muertos-festival/",
       "sourceLabel": "Visit Oakland",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-15",
       "imageKey": "november-community",
       "shortTitle": "Fruitvale 亡灵节",
       "dek": "社区祭坛、音乐、手作摊和家庭活动",
@@ -22354,7 +22371,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-presidio-free-yoga",
       "title": "Presidio 草地免费瑜伽：先预约再出门",
       "occurrenceDates": [
@@ -22493,7 +22510,7 @@
         "2026-12-20",
         "2026-12-27"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-pacl-rinconada-tai-chi-2026",
       "region": "peninsula",
       "category": "culture",
@@ -22665,7 +22682,7 @@
       ],
       "officialUrl": "https://www.suisun.com/Events-directory/D%C3%ADa-de-los-Muertos-Celebration",
       "sourceLabel": "Suisun City 市官方活动页",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-15",
       "imageKey": "culture-visit",
       "dek": "社区祭坛、民俗舞和音乐的纪念晚会",
       "sessions": [
@@ -22695,7 +22712,7 @@
       "occurrenceDates": [
         "2026-11-01"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -22762,12 +22779,12 @@
       "occurrenceDates": [
         "2026-11-01"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
       "cost": "free",
-      "costLabel": "图书馆活动免费；不用报名",
+      "costLabel": "图书馆活动免费；活动页未列报名要求",
       "sourceLabel": "San Mateo County Libraries 活动页（Foster City）",
       "title": "Foster City 图书馆：绘本作家 Nidhi Chanani 讲故事、现场画画",
       "dateLabel": "11/1（周日）· 10:30–11:30",
@@ -22832,7 +22849,7 @@
       "occurrenceDates": [
         "2026-11-01"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-15",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -23213,8 +23230,8 @@
         "2027-01-17",
         "2027-01-18"
       ],
-      "verifiedAt": "2026-10-15",
-      "imageKey": "",
+      "verifiedAt": "2026-10-16",
+      "imageKey": "official-union-square-holiday-ice-rink-2026",
       "region": "sf",
       "category": "family",
       "cost": "paid",
@@ -23545,6 +23562,7 @@
       "venue": "奥克兰动物园 · 9777 Golf Links Road, Oakland, CA 94605",
       "summary": "奥克兰动物园的 Glowfari 灯会 11/6 到 2027/1/31 晚上开放，看的是动物和自然主题的大型灯组，不是夜里看动物。16:30 到 18:30 之间按所买时段入场，19:30 停止入场，21:00 前离园。11/20 到 12/23 每晚 18:00–21:00 游乐区有圣诞老人。",
       "plan": [
+        "门票 10/20 开卖：会员 9:00、公众 12:00；之后按日期提前 28 天放票，早买更便宜；票不退，也不能改日期。",
         "不开放的日子：11/9、10、16、17、26，12/24、25，1 月的 4、5、11、12、18、19、25、26 日。",
         "白天的动物园门票不能用来看 Glowfari，白天的游客在灯会开始前要先离园。",
         "园内有热可可和小吃卖。"
@@ -23947,7 +23965,7 @@
         "2026-11-07",
         "2026-11-08"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-marin-crafts",
       "title": "Marin Arts & Crafts Show 手作展",
       "dateLabel": "11/6–8 · 每日10:00–17:00",
@@ -24076,7 +24094,7 @@
         "2027-01-02",
         "2027-01-03"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -24436,7 +24454,7 @@
       "occurrenceDates": [
         "2026-11-07"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -24525,7 +24543,7 @@
       ],
       "officialUrl": "https://presidio.gov/explore/events/dia-de-los-muertos-and-diwali-festival",
       "sourceLabel": "Presidio Trust",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-nov2026-presidio-dia-muertos-diwali",
       "shortTitle": "Presidio 亡灵节与排灯节",
       "dek": "故事、演出、仪式和手作，认识两个节庆",
@@ -24571,7 +24589,7 @@
     {
       "kind": "event",
       "region": "north-bay",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
       "id": "november-north-sugarloaf-public-star-party-2026",
       "title": "Sugarloaf 公众观星夜",
@@ -24639,7 +24657,7 @@
     },
     {
       "id": "roundup-windsor-fall-swap-2026",
-      "title": "Windsor 秋季装饰与衣物交换",
+      "title": "Windsor 季节装饰交换与节日绿植 DIY",
       "kind": "event",
       "startDate": "2026-11-07",
       "endDate": "2026-11-07",
@@ -24650,11 +24668,11 @@
       "category": "family",
       "cost": "unknown",
       "costLabel": "当前介绍未单列费用；查看该场详情",
-      "summary": "镇政府列出的秋季交换活动，可交换、捐出或领取季节装饰及衣物。",
+      "summary": "镇政府和 Windsor Garden Club 办的交换活动：可以交换、捐出或领取秋季装饰，再用园艺社提供的本地植物材料学做节日绿植摆设。随到随参加，材料现场提供，也欢迎带多余的工具和绿植来分享。",
       "plan": [
         "这是11/7独立场次，不要沿用10/16的时段或登记信息。",
-        "出发前确认这一场接收哪些物件、是否收费。",
-        "可按季节整理一小袋适用物件，避免携带大件后发现不在受理范围。"
+        "镇政府页没写收费，也没写收哪些装饰；有疑问打 707-838-1026 问。",
+        "这一场的介绍没有写衣物；写了衣物交换的是 12/5 修理会之后的那一场。"
       ],
       "audience": [
         "本地居民"
@@ -24663,8 +24681,8 @@
       "sourceLabel": "Windsor 镇可持续生活活动页",
       "verifiedAt": "2026-10-02",
       "imageKey": "refresh-makers",
-      "shortTitle": "Windsor 秋季交换会",
-      "dek": "交换、捐出或领取季节装饰和衣物",
+      "shortTitle": "Windsor 秋季装饰交换",
+      "dek": "交换秋季装饰，学做节日绿植摆设",
       "sessions": [
         {
           "date": "2026-11-07",
@@ -24674,9 +24692,9 @@
       ],
       "venueShort": "Huerta Gym",
       "aliases": [
-        "Windsor 秋季装饰与衣物交换",
-        "Windsor fall decoration and clothing swap",
-        "Windsor 秋季裝飾與衣物交換"
+        "Windsor 季节装饰交换与节日绿植 DIY",
+        "Windsor Seasonal Decoration Swap and DIY Holiday Greenery",
+        "Windsor 季節裝飾交換與節日綠植 DIY"
       ],
       "planning": {
         "admissionUsd": null
@@ -24690,7 +24708,7 @@
       "occurrenceDates": [
         "2026-11-07"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -24809,7 +24827,7 @@
       "occurrenceDates": [
         "2026-11-07"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -24880,7 +24898,7 @@
       "occurrenceDates": [
         "2026-11-07"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
@@ -24951,7 +24969,7 @@
       "occurrenceDates": [
         "2026-11-07"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
@@ -25025,7 +25043,7 @@
       "imageKey": "autumn-neighbors",
       "officialUrl": "https://www.ssfca.gov/Departments/Parks-Recreation/Events/Senior-Holiday-Boutique-Makers-Faire",
       "sourceLabel": "City of South San Francisco",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "title": "South San Francisco 节日手作市集",
       "dateLabel": "11/7 周六 · 10:00–16:00",
       "venue": "Library | Parks and Recreation Center 宴会及社交厅，901 Civic Campus Way",
@@ -25160,7 +25178,7 @@
       "occurrenceDates": [
         "2026-11-08"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-chsa-lily-qi-book-talk-nov8-2026",
       "region": "sf",
       "category": "culture",
@@ -25232,7 +25250,7 @@
       "imageKey": "weekend",
       "officialUrl": "https://www.openspace.org/events/guided-activities/sentinel-sky-20",
       "sourceLabel": "Midpeninsula Regional Open Space District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "title": "Mount Umunhum 冷战历史：Sentinel in the Sky",
       "dateLabel": "11/8 周日 · 13:00–15:00",
       "venue": "Sierra Azul Preserve；Mount Umunhum 山顶停车区（Los Gatos 附近山区）",
@@ -25435,7 +25453,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-presidio-250-years-walk",
       "title": "250 Years on the Presidio：护林员历史步行",
       "occurrenceDates": [
@@ -25527,7 +25545,7 @@
     {
       "kind": "event",
       "region": "north-bay",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
       "id": "november-north-sugarloaf-nature-talk-2026",
       "title": "Sugarloaf 自然桌边讲解：颜色、图案与信号",
@@ -25689,7 +25707,7 @@
       "occurrenceDates": [
         "2026-11-08"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -25760,7 +25778,7 @@
       "occurrenceDates": [
         "2026-11-08"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -25832,7 +25850,7 @@
       "occurrenceDates": [
         "2026-11-08"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -26082,7 +26100,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-arion-press-public-tours",
       "title": "Arion Press：走进手工铸字与装订工坊",
       "occurrenceDates": [
@@ -26108,7 +26126,7 @@
       ],
       "officialUrl": "https://fortmason.org/event/arion-press-public-tours-2026/2026-11-21/1/",
       "sourceLabel": "Fort Mason Center / Arion Press",
-      "imageKey": "octnov-fort-mason-context",
+      "imageKey": "official-nov2026-arion-press-public-tours",
       "startDate": "2026-11-12",
       "endDate": "2026-11-21",
       "shortTitle": "Arion Press 工坊导览",
@@ -26587,8 +26605,8 @@
       "category": "culture",
       "cost": "paid",
       "imageKey": "november-theater",
-      "officialUrl": "https://sanjosetheaters.org/event/matilda-the-musical/",
-      "sourceLabel": "San Jose Theaters / CMT San Jose",
+      "officialUrl": "https://www.cmtsj.org/matilda-the-musical/",
+      "sourceLabel": "CMT San Jose",
       "verifiedAt": "2026-10-05",
       "kind": "performance",
       "occurrenceDates": [
@@ -26600,13 +26618,13 @@
         "2026-11-22"
       ],
       "title": "CMT San Jose《Matilda》音乐剧",
-      "dateLabel": "11/13–15、11/20–22 · 按场次选票",
+      "dateLabel": "11/13–15、11/20–22 · 周五 19:00，周六 14:00、19:00，周日 13:00；11/15 加 18:00",
       "venue": "Montgomery Theater，271 South Market Street",
-      "costLabel": "付费；10/16 开售，金额以正式售票页为准",
-      "summary": "CMT Rising Stars 以 Roald Dahl 的故事改编音乐剧，描写 Matilda 用想象力与勇气改变生活。11 月有六个演出日，不是天天演出。",
+      "costLabel": "付费；票价见 CMT 官方售票页",
+      "summary": "CMT Rising Stars 以 Roald Dahl 的故事改编音乐剧，描写 Matilda 用想象力与勇气改变生活。11 月有六个演出日共九场，不是天天演出。",
       "plan": [
-        "11/13 19:00；11/14 14:00、19:00；11/15 13:00、18:00。11/20–22 另有场次，购票时逐场确认。",
-        "从剧场官方 Buy Tickets 进入，不把开售预告理解成余票或特价保证。",
+        "CAKE、NEWT 两组演员轮流演，想看哪一组按场次选票。",
+        "从 CMT 节目页的 Tickets 进入购票。",
         "年龄适宜度、儿童购票和无障碍座位先问票房；附近餐饮与停车另计。"
       ],
       "audience": [
@@ -26637,16 +26655,22 @@
           "start": "18:00"
         },
         {
-          "date": "2026-11-20"
+          "date": "2026-11-20",
+          "start": "19:00"
         },
         {
-          "date": "2026-11-21"
+          "date": "2026-11-21",
+          "start": "14:00"
         },
         {
-          "date": "2026-11-22"
+          "date": "2026-11-21",
+          "start": "19:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "13:00"
         }
       ],
-      "dateNote": "11/20–22 场次见售票页",
       "venueShort": "Montgomery Theater",
       "aliases": [
         "CMT San Jose《Matilda》音乐剧",
@@ -26659,7 +26683,7 @@
         "reservation": "required",
         "programTimeUnconfirmed": true,
         "schedule": {
-          "sourceUrl": "https://sanjosetheaters.org/event/matilda-the-musical/",
+          "sourceUrl": "https://www.cmtsj.org/matilda-the-musical/",
           "verifiedAt": "2026-10-05",
           "validFrom": "2026-11-13",
           "validThrough": "2026-11-22",
@@ -26701,7 +26725,7 @@
               "start": "13:00"
             }
           ],
-          "note": "官方确认开演时刻但没有公布每场结束时间，因此只列 sessions.start，不编造结束时间或把全天日历占位当营业窗口。10 月 16 日开售；票价、适龄建议和儿童规则待正式售票页确认。"
+          "note": "官方确认开演时刻但没有公布每场结束时间，因此只列 sessions.start，不编造结束时间或把全天日历占位当营业窗口。票价、适龄建议和儿童规则以 CMT 节目页的售票入口为准。"
         }
       }
     },
@@ -26713,7 +26737,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -27028,11 +27052,12 @@
       "title": "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
       "dateLabel": "11/14 起 · 节日季至 2027/1/10；12/24、12/25 闭园；11/16–12/13 哪天开放看官方票务",
       "venue": "Filoli Historic House & Garden，86 Cañada Road",
-      "costLabel": "付费；按日期、时段及票种计价，会员规则另查",
+      "costLabel": "日间 $40 起、晚间灯饰 $45 起；会员日间免费（要预约），Guild 级以上会员晚间八折",
       "summary": "节日季为 2026 年 11 月 14 日至 2027 年 1 月 10 日，闭馆例外见官方票务。日间可看装饰宅邸、花园和 Thistlewyck Village；晚间为 Holiday Lights，日间票不能当夜间票，村落项目到 1 月 3 日。",
       "plan": [
         "日间 10:00–15:30，最晚入场 13:30；晚间 16:00–22:00，最晚入场 20:00，按已购票入场时段到达。",
         "先确认余票、年龄票档及退款改期条款；官方写明票不退款，改期另收费。",
+        "Circle、Family for All、Community Family 会员日间和晚间都免费，不用预约。",
         "餐饮、礼物和附加体验按各自价格另付。"
       ],
       "audience": [
@@ -27065,6 +27090,10 @@
       "shortTitle": "Filoli 节日季",
       "dek": "日间看装饰宅邸和花园，晚上看灯饰",
       "dateNote": "日间 10:00–15:30（最晚 13:30 入场）；晚间 16:00–22:00（最晚 20:00 入场）",
+      "price": {
+        "min": 40,
+        "note": "晚间灯饰 $45 起"
+      },
       "venueShort": "Filoli",
       "aliases": [
         "Filoli 节日季开幕：日间花园与夜间灯饰分开选",
@@ -27346,7 +27375,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -27416,7 +27445,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "culture",
@@ -27486,7 +27515,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -27575,7 +27604,7 @@
       ],
       "officialUrl": "https://www.ebparks.org/events/birding-basics-kids",
       "sourceLabel": "East Bay Regional Park District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "imageKey": "expanded-coyote-hills",
       "relatedGuideSlug": "east-bay-november-nature-programs-2026",
       "shortTitle": "Coyote Hills 儿童识鸟",
@@ -27654,7 +27683,7 @@
       ],
       "officialUrl": "https://redoakvictory.us/events/",
       "sourceLabel": "SS Red Oak Victory",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "imageKey": "november-community",
       "shortTitle": "Red Oak Victory 船上摇摆舞",
       "dek": "历史船上跟着现场乐队跳摇摆舞",
@@ -27700,7 +27729,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-sf-renegade-craft-winter",
       "title": "Renegade Craft 冬季手作市集",
       "occurrenceDates": [
@@ -28041,7 +28070,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -28108,7 +28137,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -28168,6 +28197,73 @@
       }
     },
     {
+      "id": "sfpl-visitacion-valley-calligraphy-chess-nov14-2026",
+      "kind": "event",
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "occurrenceDates": [
+        "2026-11-14"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Visitacion Valley 分馆）",
+      "title": "Visitacion Valley 分馆书法与棋类午后：练毛笔字，下象棋、围棋",
+      "dateLabel": "11/14（周六）· 14:00–15:30",
+      "city": "San Francisco",
+      "venue": "Visitacion Valley 分馆会议室 · 201 Leland Avenue, San Francisco, CA 94134",
+      "summary": "旧金山公共图书馆 Visitacion Valley 分馆的周六下午活动：自己练中文书法，或者下西洋棋、中国象棋、跳棋和围棋，各年龄都可以来，适合几代人一起参加。活动介绍有中英文；馆方没有另外注明语言的活动用英语进行。",
+      "plan": [
+        "直接去就行；形式是自己练字和下棋，不是老师授课。"
+      ],
+      "audience": [
+        "所有年龄",
+        "祖孙和亲子家庭"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/14/activity-chinese-calligraphy-and-chess-games",
+      "shortTitle": "Visitacion Valley 书法棋类",
+      "dek": "练毛笔字，下象棋、围棋和跳棋，几代人都能来",
+      "sessions": [
+        {
+          "date": "2026-11-14",
+          "start": "14:00",
+          "end": "15:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Visitacion Valley 分馆",
+      "address": "201 Leland Avenue, San Francisco, CA 94134",
+      "aliases": [
+        "Visitacion Valley 分馆书法与棋类午后：练毛笔字，下象棋、围棋",
+        "Calligraphy and board-game afternoon at the Visitacion Valley branch: brush writing, xiangqi and Go",
+        "Visitacion Valley 分館書法與棋類午後：練毛筆字，下象棋、圍棋"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "optional",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/14/activity-chinese-calligraphy-and-chess-games",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-11-14",
+          "validThrough": "2026-11-14",
+          "sessions": [
+            {
+              "date": "2026-11-14",
+              "start": "14:00",
+              "end": "15:30"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sjpl-almaden-sounds-of-south-asia-2026",
       "kind": "event",
       "startDate": "2026-11-14",
@@ -28175,7 +28271,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-sjpl-almaden-sounds-of-south-asia-2026",
       "region": "south-bay",
       "category": "culture",
@@ -28247,7 +28343,7 @@
         "2026-11-14",
         "2026-11-15"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -28344,10 +28440,10 @@
       "title": "Belmont 图书馆之友旧书义卖",
       "dateLabel": "11/14–11/15（周六、周日）",
       "city": "Belmont",
-      "venue": "Belmont 图书馆 · 1110 Alameda de las Pulgas, Belmont, CA 94002",
+      "venue": "Belmont 图书馆 Taube Room · 1110 Alameda de las Pulgas, Belmont, CA 94002",
       "summary": "Belmont 图书馆之友的周末旧书义卖，有各个年龄段的二手书，收入用来支持图书馆。",
       "plan": [
-        "活动页只列日期、没有列时段，按图书馆开放时间去。"
+        "活动页只写 11/14、11/15 两天，没写几点开始和结束；书展时段可打 1-833-937-7625 或写信 belmont@smcl.org 问。"
       ],
       "audience": [
         "全年龄",
@@ -28399,7 +28495,7 @@
       "occurrenceDates": [
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -28482,9 +28578,10 @@
       "venue": "Foster City Community Center",
       "summary": "美国华人历史学会的家谱讲座：通过档案、数据库和真实案例，讲怎样用美国、台湾和中国的资料找到祖籍村落、规划回乡，并为下一代保存家族故事；也欢迎当年参加过台湾“爱之船”项目的人。",
       "plan": [
-        "只办现场活动，10/15 开始报名。",
+        "只办现场活动。主办方传单写在 Foster City Community Center 顶楼的 Wind Room，地址 1000 E Hillsdale Blvd；CHSA 活动页只写 Foster City Community Center。",
         "不论家族世代在台湾，还是 1949 年前后从大陆迁台，都适合。",
-        "主办方传单的日程：14:00 见面会，15:00–17:00 讲座，17:00–17:30 问答；18:00–20:00 另有自愿参加的聚餐，费用自付。"
+        "CHSA 活动页写 14:00–17:00；主办方传单的日程：14:00 顶楼见面会，15:00–17:00 讲座，17:00–17:30 问答；18:00–20:00 另有自愿参加的聚餐，费用自付。",
+        "10/15 起开放报名。CHSA 活动页上的报名短链接现在会跳到一个无关的网页；主办方传单写的报名页是 LoveBoatAlumni.org/roots2026。"
       ],
       "audience": [
         "成人",
@@ -28548,7 +28645,7 @@
       "costLabel": "免费；须报名，余位以官网为准",
       "summary": "欢迎初学者，可借双筒望远镜。6岁起，从 Grant Avenue 入口出发；大雨取消，晨间注意保暖。",
       "plan": [
-        "报名从10月6日9:00开放，至11月14日16:00结束。",
+        "报名页写 10/6 9:00 至 11/14 16:00 网上报名，但 10/16 打开时显示这个活动暂不能网上报名；想去先打 510-544-3187 问怎么报。",
         "不要导航到11月2日场次使用的 West Winton 入口。",
         "先查看确认邮件、天气和公园公告。"
       ],
@@ -28619,12 +28716,12 @@
       "venue": "House of Happy Walls Museum, 2400 London Ranch Road",
       "category": "culture",
       "cost": "mixed",
-      "costLabel": "讲座不另收费；公园入场$15/车，座位有限须预约",
+      "costLabel": "讲座不另收费；公园入场 $15/车；官网 10/16 显示已售罄",
       "summary": "作家 Marlo Faulkner 介绍 The Second Mrs. London，并安排讨论与签书；场地在博物馆二楼。",
       "plan": [
-        "先预约座位，再把车辆入园费计入预算。",
-        "官方注明二楼仅楼梯可达；需要无台阶通行者提前联系公园确认替代安排。",
-        "编辑建议：为停车后到博物馆留出时间，别把14:00当作抵达公园大门的时间。"
+        "官网 10/16 显示已售罄，可联系公园登记补票。",
+        "讲座在博物馆二楼，官网写只能走楼梯上去；行动不便的先打 (707) 938-5216 问。",
+        "停车后走到博物馆要几分钟，14:00 是开讲时间，早点进公园。"
       ],
       "audience": [
         "艺术爱好者",
@@ -28646,6 +28743,7 @@
         "free": true,
         "note": "公园入场每车 $15"
       },
+      "status": "sold_out",
       "venueShort": "House of Happy Walls Museum",
       "address": "2400 London Ranch Road",
       "aliases": [
@@ -28662,7 +28760,7 @@
           "verifiedAt": "2026-10-05",
           "validFrom": "2026-11-15",
           "validThrough": "2026-11-15",
-          "note": "讲座不另收费；公园入场$15/车，座位有限须预约",
+          "note": "讲座不另收费；公园入场$15/车；官网10/16显示已售罄，可联系公园登记补票",
           "sessions": [
             {
               "date": "2026-11-15",
@@ -28843,7 +28941,7 @@
       "imageKey": "weekend",
       "officialUrl": "https://www.openspace.org/events/guided-activities/tidal-marsh-appreciation",
       "sourceLabel": "Midpeninsula Regional Open Space District",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-16",
       "title": "Ravenswood 潮汐湿地慢走与观鸟",
       "dateLabel": "11/15 周日 · 9:30–12:00",
       "venue": "Ravenswood Preserve；East Palo Alto Bay Road 尽头停车区",
@@ -28911,7 +29009,7 @@
       "occurrenceDates": [
         "2026-11-15"
       ],
-      "verifiedAt": "2026-10-12",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -29051,7 +29149,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-presidio-campfire-history-talks",
       "title": "Presidio 营火圈：半小时护林员故事",
       "occurrenceDates": [
@@ -29833,7 +29931,7 @@
       "costLabel": "$60 一张票（一位大人加一个孩子）",
       "sourceLabel": "The Meritage Resort 官网（姜饼屋工作坊）",
       "title": "纳帕 Meritage 圣诞姜饼屋亲子工作坊：一大一小一张票",
-      "dateLabel": "11/19–12/23 · 12/17 前周四至周日，12/18–12/23 每天 11:00–20:00",
+      "dateLabel": "11/19–12/23 · 周四五 16:00–20:00，周末 11:00–20:00；12/18–23 每天 11:00–20:00",
       "city": "Napa",
       "venue": "The Meritage Resort 美食美酒中心 · 875 Bordeaux Way, Napa, CA 94558",
       "summary": "纳帕 Meritage 度假村的圣诞姜饼屋工作坊：每张票包含一位大人和一个孩子、一套姜饼屋材料和全部装饰用品，大人有一杯酒，孩子有热可可。11/19 到 12/17 周四、周五 16:00–20:00，周末 11:00–20:00（黑色星期五 11/27 从 11 点开），12/18 到 12/23 每天 11:00–20:00。",
@@ -29850,6 +29948,119 @@
         "min": 60,
         "note": "一大一小一张票"
       },
+      "sessions": [
+        {
+          "date": "2026-11-19",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-20",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-21",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-22",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-27",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-03",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-04",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-06",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-10",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-11",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-13",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-17",
+          "start": "16:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-18",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-19",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-20",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-21",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-22",
+          "start": "11:00",
+          "end": "20:00"
+        },
+        {
+          "date": "2026-12-23",
+          "start": "11:00",
+          "end": "20:00"
+        }
+      ],
+      "dateNote": "11/27（黑色星期五）11:00–20:00",
       "venueShort": "Meritage 度假村",
       "address": "875 Bordeaux Way, Napa, CA 94558",
       "aliases": [
@@ -30035,7 +30246,7 @@
         "2027-01-02",
         "2027-01-03"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -30406,7 +30617,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-fort-point-history-talks",
       "title": "Fort Point 历史短讲：金门大桥下的15分钟",
       "occurrenceDates": [
@@ -31275,7 +31486,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -31401,7 +31612,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -31537,7 +31748,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -31674,7 +31885,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -31820,7 +32031,7 @@
       "region": "peninsula",
       "category": "culture",
       "cost": "paid",
-      "costLabel": "成人 $50、5–12 岁 $30，5 岁以下免费；只在官网卖限定日期票",
+      "costLabel": "早鸟成人 $40、5–12 岁 $25（10/16–31 卖）；11/1 起普通票成人 $50、5–12 岁 $30；5 岁以下免费；只在官网卖",
       "sourceLabel": "Great Dickens Christmas Fair 官网票务页",
       "title": "Great Dickens Christmas Fair：Cow Palace 里的维多利亚时代伦敦圣诞市集",
       "dateLabel": "11/21–12/20 每个周末和 11/27 · 10:00–18:00",
@@ -31828,9 +32039,9 @@
       "venue": "Cow Palace 展览馆 · 2600 Geneva Avenue, Daly City, CA 94014",
       "summary": "湾区每年的狄更斯圣诞市集，Cow Palace 四英亩多的展厅布置成维多利亚时代的伦敦，有剧场、酒馆、舞会和小店，还有几百位狄更斯笔下和维多利亚舞台上的人物；2026 年办五个周末，加上感恩节后的周五。",
       "plan": [
-        "票只在官网卖，按日期限量，现场不卖票；10/16–31 卖前两个周末的早鸟票（成人 $40、5–12 岁 $25）。",
-        "15:00 后入场的黄昏票成人 $35、儿童 $20；Cow Palace 停车每辆 $20。",
-        "票价另加平台和信用卡手续费（成人票合计约 $55.92）。"
+        "票只在官网卖，现场不卖票。普通票季内任选一天用一次；早鸟票只在 10/16–31 卖，只能在 11/21、22、27、28、29 用。",
+        "含平台和信用卡手续费的总价：早鸟成人 $45.62、5–12 岁 $30.17；普通票成人 $55.92、5–12 岁 $35.32。",
+        "11/1 起另有 15:00 后入场的黄昏票：成人 $35、5–12 岁 $20；Cow Palace 停车每辆 $20。"
       ],
       "audience": [
         "全家",
@@ -32173,7 +32384,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -32280,7 +32491,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-coyote-hills-tule-work-play",
       "title": "Coyote Hills：认识 Tule 湿地植物并做手作",
       "occurrenceDates": [
@@ -32359,7 +32570,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-foodwise-market-memories-demo",
       "title": "Ferry Plaza 免费烹饪示范：Market Memories",
       "occurrenceDates": [
@@ -32440,7 +32651,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-hiller-context",
       "title": "Hiller 周末航空动手体验",
       "dateLabel": "11/21 · 10:30–15:00",
@@ -32508,7 +32719,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-purisima-context",
       "region": "peninsula",
       "category": "family",
@@ -32581,7 +32792,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-windy-hill-context",
       "region": "peninsula",
       "category": "family",
@@ -32658,7 +32869,7 @@
         "2026-12-19",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -32763,7 +32974,7 @@
         "2026-11-21",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -32847,7 +33058,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -32912,7 +33123,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -32976,7 +33187,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -33040,7 +33251,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "culture",
@@ -33104,7 +33315,7 @@
         "2026-11-21",
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-14",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -33115,7 +33326,7 @@
       "dateLabel": "11/21、11/28 · 周六 14:30–16:00",
       "city": "San Francisco",
       "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
-      "summary": "旧金山公共图书馆华埠分馆周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；活动以粤语和普通话进行。10 月到 11/14 的场次另列一条。",
+      "summary": "旧金山公共图书馆华埠分馆周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；图书馆把它列在中文活动类别里。10 月到 11/14 的场次另列一条。",
       "plan": [
         "形式是自主练习，不是老师授课；11/28 感恩节周末照常有。"
       ],
@@ -33184,7 +33395,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -33300,7 +33511,7 @@
       "occurrenceDates": [
         "2026-11-21"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -33381,7 +33592,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -33519,7 +33730,7 @@
         "2026-12-19",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -33651,7 +33862,7 @@
         "2026-12-19",
         "2026-12-20"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -33823,7 +34034,7 @@
         "2026-12-19",
         "2026-12-20"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -33989,7 +34200,7 @@
         "2026-12-19",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -34363,7 +34574,7 @@
       "costLabel": "活动免费但须报名；停车按所用入口另付",
       "summary": "跟自然教育员在湾岸寻找越冬鸟，新手也欢迎。6岁及以上可参加，可借用双筒望远镜；大雨取消，不能直接把它当作免报名散步。",
       "plan": [
-        "官方报名截至11月21日16:00；先完成登记并检查余位，再安排清晨出门。",
+        "报名页写 10/6 9:00 至 11/21 16:00 网上报名，但 10/16 打开时显示这个活动暂不能网上报名；想去先打 510-544-3187 问怎么报。",
         "7:45前后到 Crab Cove 的 Doug Siden Visitor Center，带保暖防风衣。",
         "自有望远镜可带来；Crown Beach官方收费停车场为每车$5，集合点与停车入口要分别核对。"
       ],
@@ -34512,7 +34723,7 @@
         "2026-12-20",
         "2026-12-27"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -34641,7 +34852,7 @@
         "2026-12-27",
         "2027-01-03"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -34919,7 +35130,7 @@
         "2026-12-27",
         "2027-01-03"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -35057,7 +35268,7 @@
         "2026-12-20",
         "2026-12-27"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -35184,7 +35395,7 @@
         "2026-12-13",
         "2026-12-20"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -37014,9 +37225,10 @@
       "id": "sfpl-main-california-xiangqi-invitational-nov28-2026",
       "kind": "event",
       "startDate": "2026-11-28",
-      "endDate": "2026-11-28",
+      "endDate": "2026-11-29",
       "occurrenceDates": [
-        "2026-11-28"
+        "2026-11-28",
+        "2026-11-29"
       ],
       "verifiedAt": "2026-10-14",
       "imageKey": "",
@@ -37026,12 +37238,14 @@
       "costLabel": "免费；不用报名",
       "sourceLabel": "旧金山公共图书馆活动页（总馆中文中心）",
       "title": "旧金山总馆加州象棋邀请赛：看国际大师对弈",
-      "dateLabel": "11/28（周六）· 10:00–17:30",
+      "dateLabel": "11/28（周六）10:00–17:30 · 11/29（周日）12:00–17:30",
       "city": "San Francisco",
-      "venue": "旧金山公共图书馆总馆 Latino/Hispanic 社区活动室 · 100 Larkin Street, San Francisco, CA 94102",
+      "venue": "旧金山公共图书馆总馆 · 100 Larkin Street, San Francisco, CA 94102",
       "summary": "北加州象棋协会和洛杉矶象棋协会与旧金山公共图书馆合办的七轮邀请赛，采用亚洲象棋规则，开放时段可以观看美国代表队成员、加拿大特邀棋手和南北加州棋手对弈；国际特级大师、前女子世界冠军黄玉莹担任裁判长。",
       "plan": [
-        "首日 10:00 开幕，第一轮 10:45、第二轮 13:15、第三轮 15:00，16:30 首日总结。"
+        "首日 10:00 开幕，第一轮 10:45、第二轮 13:15、第三轮 15:00，16:30 首日总结。",
+        "第二天 11/29 在三楼中文中心展区：12:00 第五轮，13:30 第六轮，15:05 第七轮（决赛轮），16:30 颁奖。",
+        "第一天在 Latino/Hispanic 社区活动室。这是邀请赛，普通访客在开放时段观赛，不是报名参赛。"
       ],
       "audience": [
         "成人",
@@ -37044,6 +37258,11 @@
         {
           "date": "2026-11-28",
           "start": "10:00",
+          "end": "17:30"
+        },
+        {
+          "date": "2026-11-29",
+          "start": "12:00",
           "end": "17:30"
         }
       ],
@@ -37066,12 +37285,95 @@
           "sourceUrl": "https://sfpl.org/events/2026/11/28/presentation-california-xiangqi-invitational-jiazhouxiangqiyaoqingsai",
           "verifiedAt": "2026-10-14",
           "validFrom": "2026-11-28",
-          "validThrough": "2026-11-28",
+          "validThrough": "2026-11-29",
           "sessions": [
             {
               "date": "2026-11-28",
               "start": "10:00",
               "end": "17:30"
+            },
+            {
+              "date": "2026-11-29",
+              "start": "12:00",
+              "end": "17:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-sunset-mahjong-nov28-2026",
+      "kind": "event",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "occurrenceDates": [
+        "2026-11-28"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；要先打电话预约",
+      "sourceLabel": "旧金山公共图书馆活动页（Sunset 分馆）",
+      "title": "Sunset 分馆麻将：上午新手入门，下午麻将俱乐部",
+      "dateLabel": "11/28（周六）· 入门 10:30–12:00 · 俱乐部 13:30–15:00",
+      "city": "San Francisco",
+      "venue": "Sunset 分馆活动室 · 1305 18th Avenue, San Francisco, CA 94122",
+      "summary": "旧金山公共图书馆 Sunset 分馆 11/28 的两场麻将活动：上午是给从没玩过的人的入门课，下午的麻将俱乐部什么水平都可以来，一起玩、交朋友。馆方把它列在华裔社区主题活动里；没有另外注明语言，按馆方说明用英语进行。",
+      "plan": [
+        "11/14 起打 415-355-2808 预约，名额有限；每人先约一场，想再约要在下一场前一周打电话问有没有空位。",
+        "准时到：迟到 10 分钟算缺席，位子会让给候补的人。"
+      ],
+      "audience": [
+        "成人",
+        "想学麻将的新手"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/11/28/workshop-mahjong-beginners",
+      "shortTitle": "Sunset 分馆麻将入门与俱乐部",
+      "dek": "上午新手入门课，下午什么水平都能一起玩",
+      "sessions": [
+        {
+          "date": "2026-11-28",
+          "start": "10:30",
+          "end": "12:00"
+        },
+        {
+          "date": "2026-11-28",
+          "start": "13:30",
+          "end": "15:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Sunset 分馆",
+      "address": "1305 18th Avenue, San Francisco, CA 94122",
+      "aliases": [
+        "Sunset 分馆麻将：上午新手入门，下午麻将俱乐部",
+        "Mahjong at the Sunset branch: a beginners' class in the morning, a mahjong club in the afternoon",
+        "Sunset 分館麻將：上午新手入門，下午麻將俱樂部"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 18,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/11/28/workshop-mahjong-beginners",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-11-28",
+          "validThrough": "2026-11-28",
+          "sessions": [
+            {
+              "date": "2026-11-28",
+              "start": "10:30",
+              "end": "12:00"
+            },
+            {
+              "date": "2026-11-28",
+              "start": "13:30",
+              "end": "15:00"
             }
           ]
         }
@@ -38055,6 +38357,71 @@
       }
     },
     {
+      "id": "sanleandro-main-mandarin-storytime-dec5-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-05",
+      "occurrenceDates": [
+        "2026-12-05"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "east-bay",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "活动页没写费用和报名",
+      "sourceLabel": "San Leandro 市政府活动日历（图书馆主馆）",
+      "title": "San Leandro 主馆普通话故事会（12/5）",
+      "dateLabel": "12/5（周六）· 10:30–11:00",
+      "city": "San Leandro",
+      "venue": "San Leandro 图书馆主馆 · 300 Estudillo Ave, San Leandro, CA 94577",
+      "summary": "San Leandro 公共图书馆主馆的普通话故事会：社区教育者用普通话唱歌、讲绘本、念诗，各年龄的孩子都欢迎。",
+      "plan": [
+        "中文授课：社区教育者用普通话带唱歌、讲书和念诗。",
+        "费用和是否要报名，活动页都没写；有疑问打图书馆 510-577-3960。"
+      ],
+      "audience": [
+        "各年龄的孩子和家人",
+        "想让孩子多听普通话的家庭"
+      ],
+      "officialUrl": "https://www.sanleandro.org/Calendar.aspx?EID=7840&calType=0&day=16&month=10&year=2026",
+      "shortTitle": "San Leandro 普通话故事会",
+      "dek": "社区教育者用普通话唱歌、讲书、念诗",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "10:30",
+          "end": "11:00"
+        }
+      ],
+      "venueShort": "San Leandro 图书馆主馆",
+      "address": "300 Estudillo Ave, San Leandro, CA 94577",
+      "aliases": [
+        "San Leandro 主馆普通话故事会（12/5）",
+        "Mandarin Storytime at San Leandro Main Library (Dec 5)",
+        "San Leandro 主館普通話故事會（12/5）"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://www.sanleandro.org/Calendar.aspx?EID=7840&calType=0&day=16&month=10&year=2026",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-05",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "10:30",
+              "end": "11:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sccl-saratoga-fratello-marionettes-dec5-2026",
       "kind": "event",
       "startDate": "2026-12-05",
@@ -38262,6 +38629,106 @@
               "date": "2026-12-05",
               "start": "14:00",
               "end": "15:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-chinatown-creative-saturdays-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-26",
+      "occurrenceDates": [
+        "2026-12-05",
+        "2026-12-12",
+        "2026-12-19",
+        "2026-12-26"
+      ],
+      "verifiedAt": "2026-10-15",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（华埠分馆）",
+      "title": "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
+      "dateLabel": "12/5、12/12、12/19、12/26 · 周六 14:30–16:00",
+      "city": "San Francisco",
+      "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
+      "summary": "旧金山公共图书馆华埠分馆 12 月四个周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游；图书馆把它列在中文活动类别里。10 月到 11 月的场次另列。",
+      "plan": [
+        "华人文化主题：形式是自主练习，没有老师授课；圣诞节后的 12/26 照常有。"
+      ],
+      "audience": [
+        "成人",
+        "说粤语或普通话的长辈"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/19/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+      "shortTitle": "华埠周六书法桌游（12 月）",
+      "dek": "自己练毛笔字、填色或玩桌游的安静午后",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-19",
+          "start": "14:30",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-26",
+          "start": "14:30",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "华埠/麦礼谦分馆",
+      "address": "1135 Powell Street, San Francisco, CA 94108",
+      "aliases": [
+        "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
+        "Creative Saturday Afternoons at the Chinatown branch in December: calligraphy, coloring and board games",
+        "華埠分館週六午後（12 月）：中文書法、填色與桌遊"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 18,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/19/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
+          "verifiedAt": "2026-10-15",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-26",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-19",
+              "start": "14:30",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-26",
+              "start": "14:30",
+              "end": "16:00"
             }
           ]
         }
@@ -38665,6 +39132,106 @@
               "date": "2026-12-05",
               "start": "11:00",
               "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-sunset-mandarin-tech-help-dec-2026",
+      "kind": "event",
+      "startDate": "2026-12-05",
+      "endDate": "2026-12-26",
+      "occurrenceDates": [
+        "2026-12-05",
+        "2026-12-12",
+        "2026-12-19",
+        "2026-12-26"
+      ],
+      "verifiedAt": "2026-10-15",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名，先到先帮",
+      "sourceLabel": "旧金山公共图书馆活动页（Sunset 分馆）",
+      "title": "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
+      "dateLabel": "12/5、12/12、12/19、12/26 · 周六 14:00–16:00",
+      "city": "San Francisco",
+      "venue": "Sunset 分馆青少年区 · 1305 18th Avenue, San Francisco, CA 94122",
+      "summary": "旧金山公共图书馆 Sunset 分馆 12 月四个周六下午的科技协助：会说国语和英语的科技实习生一对一帮忙，比如用手机和平板、上网搜索、设电子邮箱、在邮件里加附件、从手机传照片等基本操作。",
+      "plan": [
+        "中文支持：讲国语和英语的科技实习生一对一帮忙；四个周六都是 14:00–16:00，带上自己的手机或平板。"
+      ],
+      "audience": [
+        "成人",
+        "说普通话的长辈"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/19/tutorial-tech-help-kejixiezhu",
+      "shortTitle": "Sunset 分馆国语科技协助",
+      "dek": "手机、平板、邮箱和电脑问题，随到随问",
+      "sessions": [
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-12",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-19",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-26",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Sunset 分馆",
+      "address": "1305 18th Avenue, San Francisco, CA 94122",
+      "aliases": [
+        "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
+        "Tech help at the Sunset branch, one-on-one in Mandarin or English",
+        "Sunset 分館科技協助：國語和英語實習生一對一幫忙"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 18,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/19/tutorial-tech-help-kejixiezhu",
+          "verifiedAt": "2026-10-15",
+          "validFrom": "2026-12-05",
+          "validThrough": "2026-12-26",
+          "sessions": [
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-12",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-19",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-26",
+              "start": "14:00",
+              "end": "16:00"
             }
           ]
         }
@@ -40094,6 +40661,73 @@
       }
     },
     {
+      "id": "sfpl-main-liu-zongkun-author-talk-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（总馆）",
+      "title": "作家刘宗坤谈《异乡故人》：总馆分享与签名",
+      "dateLabel": "12/12（周六）· 10:00–12:00",
+      "city": "San Francisco",
+      "venue": "总馆 Koret Lobby 与 Latino/Hispanic Community Room · 100 Larkin Street, San Francisco, CA 94102",
+      "summary": "旧金山公共图书馆总馆的中文作家活动：刘宗坤带着散文集《异乡故人》（壹嘉出版）到场，谈故土记忆、在得克萨斯州生活二十多年和七年骑行 18 个国家的经历，之后现场签名交流。",
+      "plan": [
+        "华人文化主题：活动介绍全用中文写；讲座用哪种语言，图书馆没另外写明，可写信 chinesecenter@sfpl.org 问。"
+      ],
+      "audience": [
+        "成人",
+        "中文读者"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/12/zuojia-liuzongkun-yixiangguren",
+      "shortTitle": "刘宗坤《异乡故人》分享会",
+      "dek": "旅美作家谈故土、移民生活和长途骑行",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "10:00",
+          "end": "12:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "旧金山总馆",
+      "address": "100 Larkin Street, San Francisco, CA 94102",
+      "aliases": [
+        "作家刘宗坤谈《异乡故人》：总馆分享与签名",
+        "Author Liu Zongkun on his essay collection Yixiang Guren: talk and signing at the Main Library",
+        "作家劉宗坤談《異鄉故人》：總館分享與簽名"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 18,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/12/zuojia-liuzongkun-yixiangguren",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "10:00",
+              "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sfpl-marina-puppet-movie-studio-dec12-2026",
       "kind": "event",
       "startDate": "2026-12-12",
@@ -40224,6 +40858,73 @@
               "date": "2026-12-12",
               "start": "11:00",
               "end": "12:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sfpl-visitacion-calligraphy-chess-dec12-2026",
+      "kind": "event",
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "occurrenceDates": [
+        "2026-12-12"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；不用报名",
+      "sourceLabel": "旧金山公共图书馆活动页（Visitacion Valley 分馆）",
+      "title": "Visitacion Valley 分馆书法自习与棋类午后（12/12）",
+      "dateLabel": "12/12（周六）· 14:00–15:30",
+      "city": "San Francisco",
+      "venue": "Visitacion Valley 分馆会议室 · 201 Leland Avenue, San Francisco, CA 94134",
+      "summary": "旧金山公共图书馆 Visitacion Valley 分馆的周六午后：自己练中文书法，或者下西洋棋、象棋、波子棋和围棋，各年龄都可以来。",
+      "plan": [
+        "华人文化主题：自己练书法、下棋，没有老师授课；图书馆活动没另外注明时用英语进行。"
+      ],
+      "audience": [
+        "各年龄",
+        "祖孙一起来"
+      ],
+      "officialUrl": "https://sfpl.org/events/2026/12/12/activity-chinese-calligraphy-and-chess-games",
+      "shortTitle": "Visitacion 书法与棋类午后",
+      "dek": "自己练书法，下象棋、围棋或西洋棋",
+      "sessions": [
+        {
+          "date": "2026-12-12",
+          "start": "14:00",
+          "end": "15:30"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "venueShort": "Visitacion Valley 分馆",
+      "address": "201 Leland Avenue, San Francisco, CA 94134",
+      "aliases": [
+        "Visitacion Valley 分馆书法自习与棋类午后（12/12）",
+        "Calligraphy practice and board games at Visitacion Valley Library (Dec 12)",
+        "Visitacion Valley 分館書法自習與棋類午後（12/12）"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://sfpl.org/events/2026/12/12/activity-chinese-calligraphy-and-chess-games",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-12-12",
+          "validThrough": "2026-12-12",
+          "sessions": [
+            {
+              "date": "2026-12-12",
+              "start": "14:00",
+              "end": "15:30"
             }
           ]
         }
@@ -41805,78 +42506,116 @@
       }
     },
     {
-      "id": "sfpl-chinatown-creative-saturdays-dec-2026",
+      "id": "sf-dharma-treasury-winter-foqi-talks-2026",
       "kind": "event",
       "startDate": "2026-12-19",
-      "endDate": "2026-12-26",
+      "endDate": "2026-12-25",
       "occurrenceDates": [
         "2026-12-19",
-        "2026-12-26"
+        "2026-12-20",
+        "2026-12-21",
+        "2026-12-22",
+        "2026-12-23",
+        "2026-12-24",
+        "2026-12-25"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
-      "cost": "free",
-      "costLabel": "图书馆活动免费；不用报名",
-      "sourceLabel": "旧金山公共图书馆活动页（华埠分馆）",
-      "title": "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
-      "dateLabel": "12/19、12/26 · 周六 14:30–16:00",
+      "cost": "unknown",
+      "costLabel": "官网没写费用；参加佛七或住寺先联系寺方报名",
+      "sourceLabel": "法藏寺 / Bodhi Light International 官网（佛七）",
+      "title": "法藏寺冬季佛七：每晚 19:20 讲法",
+      "dateLabel": "12/19–12/25 · 每晚 19:20 讲法",
       "city": "San Francisco",
-      "venue": "华埠/麦礼谦分馆会议室 · 1135 Powell Street, San Francisco, CA 94108",
-      "summary": "旧金山公共图书馆华埠分馆 12 月两个周六下午开放会议室，成人可以自主练习中文书法、填色或玩桌游，活动以粤语和国语进行。10 月到 11 月的场次另列。",
+      "venue": "法藏寺 Dharma Treasury Temple · 3201 Ulloa St, San Francisco, CA 94116",
+      "summary": "法藏寺（Bodhi Light International）12/19–12/26 办冬季佛七，一周专念阿弥陀佛圣号、讲净土法门；寺方日历列出 12/19 到 12/25 每晚 19:20 的讲法。",
       "plan": [
-        "形式是自主练习，不是老师授课；圣诞节后的 12/26 照常有。"
+        "华人文化主题（宗教社区）：寺方讲经一般用英语，按需要翻成中文、越南语等；这几晚有没有中文翻译，先打 628-280-2720 问。",
+        "想参加整个佛七或在寺里住，官网请先联系报名。"
       ],
       "audience": [
-        "成人",
-        "说粤语或普通话的长辈"
+        "对净土修行感兴趣的成人"
       ],
-      "officialUrl": "https://sfpl.org/events/2026/12/19/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
-      "shortTitle": "华埠周六书法桌游（12 月）",
-      "dek": "自己练毛笔字、填色或玩桌游的安静午后",
+      "officialUrl": "https://www.chanpureland.org/foqi.html",
+      "shortTitle": "法藏寺冬季佛七讲法",
+      "dek": "念佛一周，每晚 19:20 法师讲法",
       "sessions": [
         {
           "date": "2026-12-19",
-          "start": "14:30",
-          "end": "16:00"
+          "start": "19:20"
         },
         {
-          "date": "2026-12-26",
-          "start": "14:30",
-          "end": "16:00"
+          "date": "2026-12-20",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-21",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-22",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-23",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-24",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-25",
+          "start": "19:20"
         }
       ],
-      "price": {
-        "free": true
-      },
-      "venueShort": "华埠/麦礼谦分馆",
-      "address": "1135 Powell Street, San Francisco, CA 94108",
+      "venueShort": "法藏寺",
+      "address": "3201 Ulloa St, San Francisco, CA 94116",
       "aliases": [
-        "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
-        "Creative Saturday Afternoons at the Chinatown branch in December: calligraphy, coloring and board games",
-        "華埠分館週六午後（12 月）：中文書法、填色與桌遊"
+        "法藏寺冬季佛七：每晚 19:20 讲法",
+        "Dharma Treasury Temple winter FoQi: a talk every evening at 7:20 pm",
+        "法藏寺冬季佛七：每晚 19:20 講法"
       ],
       "planning": {
-        "admissionUsd": 0,
-        "minAge": 18,
+        "admissionUsd": null,
+        "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
         "schedule": {
-          "sourceUrl": "https://sfpl.org/events/2026/12/19/activity-creative-saturday-afternoons-chuangyiwuxianzhouliuwu",
-          "verifiedAt": "2026-10-15",
+          "sourceUrl": "https://www.chanpureland.org/foqi.html",
+          "verifiedAt": "2026-10-16",
           "validFrom": "2026-12-19",
-          "validThrough": "2026-12-26",
+          "validThrough": "2026-12-25",
           "sessions": [
             {
               "date": "2026-12-19",
-              "start": "14:30",
-              "end": "16:00"
+              "start": "19:20"
             },
             {
-              "date": "2026-12-26",
-              "start": "14:30",
-              "end": "16:00"
+              "date": "2026-12-20",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-21",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-22",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-23",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-24",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-25",
+              "start": "19:20"
             }
           ]
         }
@@ -42089,84 +42828,6 @@
               "date": "2026-12-19",
               "start": "14:00",
               "end": "15:00"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "sfpl-sunset-mandarin-tech-help-dec-2026",
-      "kind": "event",
-      "startDate": "2026-12-19",
-      "endDate": "2026-12-26",
-      "occurrenceDates": [
-        "2026-12-19",
-        "2026-12-26"
-      ],
-      "verifiedAt": "2026-10-15",
-      "imageKey": "",
-      "region": "sf",
-      "category": "culture",
-      "cost": "free",
-      "costLabel": "图书馆活动免费；不用报名，先到先帮",
-      "sourceLabel": "旧金山公共图书馆活动页（Sunset 分馆）",
-      "title": "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
-      "dateLabel": "12/19、12/26 · 周六 14:00–16:00",
-      "city": "San Francisco",
-      "venue": "Sunset 分馆青少年区 · 1305 18th Avenue, San Francisco, CA 94122",
-      "summary": "旧金山公共图书馆 Sunset 分馆两个周六下午的科技协助：会说国语和英语的科技实习生一对一帮忙，比如用手机和平板、上网搜索、设电子邮箱、在邮件里加附件、从手机传照片等基本操作。",
-      "plan": [
-        "12/19 和 12/26 两个周六都是 14:00–16:00，带上自己的手机或平板。"
-      ],
-      "audience": [
-        "成人",
-        "说普通话的长辈"
-      ],
-      "officialUrl": "https://sfpl.org/events/2026/12/19/tutorial-tech-help-kejixiezhu",
-      "shortTitle": "Sunset 分馆国语科技协助",
-      "dek": "手机、平板、邮箱和电脑问题，随到随问",
-      "sessions": [
-        {
-          "date": "2026-12-19",
-          "start": "14:00",
-          "end": "16:00"
-        },
-        {
-          "date": "2026-12-26",
-          "start": "14:00",
-          "end": "16:00"
-        }
-      ],
-      "price": {
-        "free": true
-      },
-      "venueShort": "Sunset 分馆",
-      "address": "1305 18th Avenue, San Francisco, CA 94122",
-      "aliases": [
-        "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
-        "Tech help at the Sunset branch, one-on-one in Mandarin or English",
-        "Sunset 分館科技協助：國語和英語實習生一對一幫忙"
-      ],
-      "planning": {
-        "admissionUsd": 0,
-        "minAge": 18,
-        "reservation": "unknown",
-        "setting": "indoor",
-        "schedule": {
-          "sourceUrl": "https://sfpl.org/events/2026/12/19/tutorial-tech-help-kejixiezhu",
-          "verifiedAt": "2026-10-15",
-          "validFrom": "2026-12-19",
-          "validThrough": "2026-12-26",
-          "sessions": [
-            {
-              "date": "2026-12-19",
-              "start": "14:00",
-              "end": "16:00"
-            },
-            {
-              "date": "2026-12-26",
-              "start": "14:00",
-              "end": "16:00"
             }
           ]
         }
@@ -42849,6 +43510,136 @@
       }
     },
     {
+      "id": "sf-dharma-treasury-winter-chanqi-talks-2026",
+      "kind": "event",
+      "startDate": "2026-12-27",
+      "endDate": "2027-01-03",
+      "occurrenceDates": [
+        "2026-12-27",
+        "2026-12-28",
+        "2026-12-29",
+        "2026-12-30",
+        "2026-12-31",
+        "2027-01-01",
+        "2027-01-02",
+        "2027-01-03"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "随喜捐款，不收固定费用；住寺先联系寺方",
+      "sourceLabel": "法藏寺 / Bodhi Light International 官网（禅七）",
+      "title": "法藏寺冬季禅七：每晚 19:20 讲法",
+      "dateLabel": "12/27–2027/1/3 · 每晚 19:20 讲法",
+      "city": "San Francisco",
+      "venue": "法藏寺 Dharma Treasury Temple · 3201 Ulloa St, San Francisco, CA 94116",
+      "summary": "法藏寺 12/26 起的冬季禅七（到 2027/1/30）是中国禅宗的密集禅修，可以全程，也可以只来坐一支香、一天或一周；寺方日历列出每晚 19:20 的讲法，这里列到 1/3。",
+      "plan": [
+        "华人文化主题（宗教社区）：寺方讲经一般用英语，按需要翻成中文、越南语等；这几晚有没有中文翻译，先打 628-280-2720 问。",
+        "官网写全程、部分时间参加都可以；想在寺里住，先联系报名。"
+      ],
+      "audience": [
+        "对禅修感兴趣的成人"
+      ],
+      "officialUrl": "https://www.chanpureland.org/chanqi.html",
+      "shortTitle": "法藏寺冬季禅七讲法",
+      "dek": "可全程也可只坐一支香，每晚 19:20 讲法",
+      "sessions": [
+        {
+          "date": "2026-12-27",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-28",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-29",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-30",
+          "start": "19:20"
+        },
+        {
+          "date": "2026-12-31",
+          "start": "19:20"
+        },
+        {
+          "date": "2027-01-01",
+          "start": "19:20"
+        },
+        {
+          "date": "2027-01-02",
+          "start": "19:20"
+        },
+        {
+          "date": "2027-01-03",
+          "start": "19:20"
+        }
+      ],
+      "price": {
+        "free": true,
+        "note": "随喜捐款"
+      },
+      "dateNote": "禅七 12/26 开始，到 2027/1/30",
+      "venueShort": "法藏寺",
+      "address": "3201 Ulloa St, San Francisco, CA 94116",
+      "aliases": [
+        "法藏寺冬季禅七：每晚 19:20 讲法",
+        "Dharma Treasury Temple winter ChanQi: a talk every evening at 7:20 pm",
+        "法藏寺冬季禪七：每晚 19:20 講法"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://www.chanpureland.org/chanqi.html",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-12-27",
+          "validThrough": "2027-01-03",
+          "sessions": [
+            {
+              "date": "2026-12-27",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-28",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-29",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-30",
+              "start": "19:20"
+            },
+            {
+              "date": "2026-12-31",
+              "start": "19:20"
+            },
+            {
+              "date": "2027-01-01",
+              "start": "19:20"
+            },
+            {
+              "date": "2027-01-02",
+              "start": "19:20"
+            },
+            {
+              "date": "2027-01-03",
+              "start": "19:20"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "sffmc-camp-harmony-2026-27",
       "kind": "event",
       "startDate": "2026-12-29",
@@ -42928,6 +43719,99 @@
           "verifiedAt": "2026-10-15",
           "validFrom": "2026-12-29",
           "validThrough": "2027-01-03"
+        }
+      }
+    },
+    {
+      "id": "sf-shen-yun-war-memorial-2026-27",
+      "kind": "performance",
+      "startDate": "2026-12-30",
+      "endDate": "2027-01-03",
+      "occurrenceDates": [
+        "2026-12-30",
+        "2026-12-31",
+        "2027-01-02",
+        "2027-01-03"
+      ],
+      "verifiedAt": "2026-10-16",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "$80 起，售票页价格已含手续费",
+      "sourceLabel": "Shen Yun 官方售票页（旧金山场次）",
+      "title": "神韵 2027 旧金山演出：War Memorial Opera House 四场",
+      "dateLabel": "12/30 19:30；12/31、1/2、1/3 14:00",
+      "city": "San Francisco",
+      "venue": "War Memorial Opera House · 301 Van Ness Avenue, San Francisco, CA 94102",
+      "summary": "神韵 2027 年旧金山场次：中国古典舞和音乐的舞台演出，在 War Memorial Opera House 演四场，周三晚场一场、下午场三场。",
+      "plan": [
+        "华人文化主题：舞蹈和音乐演出，不是中文课程。",
+        "售票页没写最低入场年龄，带小孩先问票务 888-633-6999；轮椅座位打 City Box Office 415-392-4400。"
+      ],
+      "audience": [
+        "喜欢舞台演出的成人和家庭"
+      ],
+      "officialUrl": "https://tickets.shenyun.com/event/schedule/shenyun-2027-san-francisco-2027-1-2-2pm",
+      "shortTitle": "神韵 2027 旧金山演出",
+      "dek": "中国古典舞与音乐的舞台演出，共四场",
+      "sessions": [
+        {
+          "date": "2026-12-30",
+          "start": "19:30"
+        },
+        {
+          "date": "2026-12-31",
+          "start": "14:00"
+        },
+        {
+          "date": "2027-01-02",
+          "start": "14:00"
+        },
+        {
+          "date": "2027-01-03",
+          "start": "14:00"
+        }
+      ],
+      "price": {
+        "min": 80,
+        "note": "售票页价格含手续费"
+      },
+      "venueShort": "War Memorial Opera House",
+      "address": "301 Van Ness Avenue, San Francisco, CA 94102",
+      "aliases": [
+        "神韵 2027 旧金山演出：War Memorial Opera House 四场",
+        "Shen Yun 2027 in San Francisco: four performances at the War Memorial Opera House",
+        "神韻 2027 舊金山演出：War Memorial Opera House 四場"
+      ],
+      "planning": {
+        "admissionUsd": 80,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://tickets.shenyun.com/event/schedule/shenyun-2027-san-francisco-2027-1-2-2pm",
+          "verifiedAt": "2026-10-16",
+          "validFrom": "2026-12-30",
+          "validThrough": "2027-01-03",
+          "sessions": [
+            {
+              "date": "2026-12-30",
+              "start": "19:30"
+            },
+            {
+              "date": "2026-12-31",
+              "start": "14:00"
+            },
+            {
+              "date": "2027-01-02",
+              "start": "14:00"
+            },
+            {
+              "date": "2027-01-03",
+              "start": "14:00"
+            }
+          ]
         }
       }
     },
@@ -44049,7 +44933,7 @@
       "title": "Marufuku Ramen · Burlingame",
       "region": "peninsula",
       "city": "Burlingame",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening、10/12 起按常规时间营业，现在只列常规营业时间；品牌首页的分店目录仍标 Coming Soon，两处说法不一。",
       "guideSlug": "",
       "path": "/openings/marufuku-burlingame-announced",
       "officialUrl": "https://www.marufukuramen.com/burlingame",
@@ -44526,9 +45410,10 @@
       "summary": "运动与日常服装品牌新店位于Valley Fair一层Bloomingdale’s附近，可作为零售探索补充。",
       "guideSlug": "",
       "path": "/openings/santa-clara-rhone-valley-fair-new-store-2026",
-      "officialUrl": "https://www.westfield.com/en/united-states/valleyfair/events/now-open-or-rhone/138806",
+      "officialUrl": "https://www.rhone.com/locations/valley-fair/",
       "cost": "unknown",
       "category": "shop",
+      "address": "2855 Stevens Creek Blvd Suite 1611, Santa Clara, CA 95050",
       "imageKey": "autumn-new-shops",
       "openingStatus": "open",
       "planning": {
@@ -44967,8 +45852,8 @@
           "weekly": {
             "1": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -44977,8 +45862,8 @@
             ],
             "2": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -44987,8 +45872,8 @@
             ],
             "3": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -44997,8 +45882,8 @@
             ],
             "4": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -45007,8 +45892,8 @@
             ],
             "5": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -45017,8 +45902,8 @@
             ],
             "6": [
               {
-                "open": "11:00",
-                "close": "15:00"
+                "open": "11:30",
+                "close": "14:30"
               },
               {
                 "open": "17:00",
@@ -45026,7 +45911,7 @@
               }
             ]
           },
-          "note": "官网列周一至周六午、晚餐，15:00–17:00 不营业；周日时间未确认。"
+          "note": "官网列周一至周六午餐 11:30–14:30、晚餐 17:00–21:00，14:30–17:00 不营业；周日没有列营业时间。"
         }
       },
       "offerIds": [],
@@ -45198,6 +46083,28 @@
       ]
     },
     {
+      "id": "opening-millbrae-cafe-announced-2026",
+      "title": "Millbrae’s Cafe",
+      "region": "peninsula",
+      "city": "Millbrae",
+      "summary": "Millbrae 新开的咖啡馆，在 1663 El Camino Real，供应带拉丁风味的咖啡饮品和轻食；官网已列出每天的营业时间，也可以网上点单。",
+      "guideSlug": "",
+      "path": "/openings/millbrae-cafe-announced-2026",
+      "officialUrl": "https://www.millbraescafe.com/",
+      "cost": "unknown",
+      "category": "restaurant",
+      "address": "1663 El Camino Real, Millbrae, CA",
+      "imageKey": "autumn-new-shops",
+      "openingStatus": "open",
+      "planning": {
+        "admissionUsd": null
+      },
+      "offerIds": [],
+      "aliases": [
+        "Millbrae’s Cafe"
+      ]
+    },
+    {
       "id": "opening-pittsburg-nekter-opening-2026",
       "title": "Nékter Juice Bar",
       "region": "east-bay",
@@ -45205,10 +46112,10 @@
       "summary": "新设果汁与 smoothie 分店。",
       "guideSlug": "",
       "path": "/openings/pittsburg-nekter-opening-2026",
-      "officialUrl": "https://www.nekterjuicebar.com/",
+      "officialUrl": "https://locations.nekterjuicebar.com/ll/us/ca/pittsburg/2261-w-leland-rd/",
       "cost": "unknown",
       "category": "cafe",
-      "address": "2261 West Leland Road, Pittsburg, CA",
+      "address": "2261 W Leland Rd, B01, Pittsburg, CA 94565",
       "imageKey": "autumn-new-shops",
       "openingStatus": "open",
       "planning": {

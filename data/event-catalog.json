@@ -1607,14 +1607,15 @@
     "id": "sf-opera-manon-2026",
     "title": "旧金山歌剧院《曼侬》",
     "startDate": "2026-10-15",
-    "endDate": "2026-10-30",
+    "endDate": "2026-11-01",
     "occurrenceDates": [
       "2026-10-15",
       "2026-10-18",
       "2026-10-21",
       "2026-10-24",
       "2026-10-27",
-      "2026-10-30"
+      "2026-10-30",
+      "2026-11-01"
     ]
   },
   {
@@ -2841,10 +2842,11 @@
     "id": "sfpl-excelsior-multilingual-tech-help-2026",
     "title": "Excelsior 分馆多语科技答疑：粤语、普通话都能问",
     "startDate": "2026-10-25",
-    "endDate": "2026-11-15",
+    "endDate": "2026-12-13",
     "occurrenceDates": [
       "2026-10-25",
-      "2026-11-15"
+      "2026-11-15",
+      "2026-12-13"
     ]
   },
   {
@@ -3684,7 +3686,7 @@
   },
   {
     "id": "roundup-windsor-fall-swap-2026",
-    "title": "Windsor 秋季装饰与衣物交换",
+    "title": "Windsor 季节装饰交换与节日绿植 DIY",
     "startDate": "2026-11-07",
     "endDate": "2026-11-07"
   },
@@ -4182,6 +4184,15 @@
   {
     "id": "sfpl-richmond-hk-film-hard-boiled-2026",
     "title": "香港动作经典《辣手神探》：粤语原声放映",
+    "startDate": "2026-11-14",
+    "endDate": "2026-11-14",
+    "occurrenceDates": [
+      "2026-11-14"
+    ]
+  },
+  {
+    "id": "sfpl-visitacion-valley-calligraphy-chess-nov14-2026",
+    "title": "Visitacion Valley 分馆书法与棋类午后：练毛笔字，下象棋、围棋",
     "startDate": "2026-11-14",
     "endDate": "2026-11-14",
     "occurrenceDates": [
@@ -5377,6 +5388,16 @@
     "id": "sfpl-main-california-xiangqi-invitational-nov28-2026",
     "title": "旧金山总馆加州象棋邀请赛：看国际大师对弈",
     "startDate": "2026-11-28",
+    "endDate": "2026-11-29",
+    "occurrenceDates": [
+      "2026-11-28",
+      "2026-11-29"
+    ]
+  },
+  {
+    "id": "sfpl-sunset-mahjong-nov28-2026",
+    "title": "Sunset 分馆麻将：上午新手入门，下午麻将俱乐部",
+    "startDate": "2026-11-28",
     "endDate": "2026-11-28",
     "occurrenceDates": [
       "2026-11-28"
@@ -5502,6 +5523,15 @@
     ]
   },
   {
+    "id": "sanleandro-main-mandarin-storytime-dec5-2026",
+    "title": "San Leandro 主馆普通话故事会（12/5）",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "occurrenceDates": [
+      "2026-12-05"
+    ]
+  },
+  {
     "id": "sccl-saratoga-fratello-marionettes-dec5-2026",
     "title": "Saratoga 图书馆提线木偶节日秀：《北极圣诞歌舞》",
     "startDate": "2026-12-05",
@@ -5526,6 +5556,18 @@
     "endDate": "2026-12-05",
     "occurrenceDates": [
       "2026-12-05"
+    ]
+  },
+  {
+    "id": "sfpl-chinatown-creative-saturdays-dec-2026",
+    "title": "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-26",
+    "occurrenceDates": [
+      "2026-12-05",
+      "2026-12-12",
+      "2026-12-19",
+      "2026-12-26"
     ]
   },
   {
@@ -5577,6 +5619,18 @@
     "endDate": "2026-12-05",
     "occurrenceDates": [
       "2026-12-05"
+    ]
+  },
+  {
+    "id": "sfpl-sunset-mandarin-tech-help-dec-2026",
+    "title": "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-26",
+    "occurrenceDates": [
+      "2026-12-05",
+      "2026-12-12",
+      "2026-12-19",
+      "2026-12-26"
     ]
   },
   {
@@ -5759,6 +5813,15 @@
     ]
   },
   {
+    "id": "sfpl-main-liu-zongkun-author-talk-dec12-2026",
+    "title": "作家刘宗坤谈《异乡故人》：总馆分享与签名",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
     "id": "sfpl-marina-puppet-movie-studio-dec12-2026",
     "title": "Marina 分馆木偶电影工作坊：做海洋生物木偶，用手机拍短片",
     "startDate": "2026-12-12",
@@ -5770,6 +5833,15 @@
   {
     "id": "sfpl-potrero-pinecone-owls-dec12-2026",
     "title": "Potrero 分馆松果猫头鹰手工：听故事、认识旧金山的猫头鹰",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "occurrenceDates": [
+      "2026-12-12"
+    ]
+  },
+  {
+    "id": "sfpl-visitacion-calligraphy-chess-dec12-2026",
+    "title": "Visitacion Valley 分馆书法自习与棋类午后（12/12）",
     "startDate": "2026-12-12",
     "endDate": "2026-12-12",
     "occurrenceDates": [
@@ -5965,13 +6037,18 @@
     ]
   },
   {
-    "id": "sfpl-chinatown-creative-saturdays-dec-2026",
-    "title": "华埠分馆周六午后（12 月）：中文书法、填色与桌游",
+    "id": "sf-dharma-treasury-winter-foqi-talks-2026",
+    "title": "法藏寺冬季佛七：每晚 19:20 讲法",
     "startDate": "2026-12-19",
-    "endDate": "2026-12-26",
+    "endDate": "2026-12-25",
     "occurrenceDates": [
       "2026-12-19",
-      "2026-12-26"
+      "2026-12-20",
+      "2026-12-21",
+      "2026-12-22",
+      "2026-12-23",
+      "2026-12-24",
+      "2026-12-25"
     ]
   },
   {
@@ -6000,16 +6077,6 @@
     "endDate": "2026-12-19",
     "occurrenceDates": [
       "2026-12-19"
-    ]
-  },
-  {
-    "id": "sfpl-sunset-mandarin-tech-help-dec-2026",
-    "title": "Sunset 分馆科技协助：国语和英语实习生一对一帮忙",
-    "startDate": "2026-12-19",
-    "endDate": "2026-12-26",
-    "occurrenceDates": [
-      "2026-12-19",
-      "2026-12-26"
     ]
   },
   {
@@ -6099,6 +6166,22 @@
     ]
   },
   {
+    "id": "sf-dharma-treasury-winter-chanqi-talks-2026",
+    "title": "法藏寺冬季禅七：每晚 19:20 讲法",
+    "startDate": "2026-12-27",
+    "endDate": "2027-01-03",
+    "occurrenceDates": [
+      "2026-12-27",
+      "2026-12-28",
+      "2026-12-29",
+      "2026-12-30",
+      "2026-12-31",
+      "2027-01-01",
+      "2027-01-02",
+      "2027-01-03"
+    ]
+  },
+  {
     "id": "sffmc-camp-harmony-2026-27",
     "title": "Camp Harmony 跨年民谣过夜营：在 Sonoma 山里住几晚，唱歌、学乐器、跳民间舞",
     "startDate": "2026-12-29",
@@ -6108,6 +6191,18 @@
       "2026-12-30",
       "2026-12-31",
       "2027-01-01",
+      "2027-01-02",
+      "2027-01-03"
+    ]
+  },
+  {
+    "id": "sf-shen-yun-war-memorial-2026-27",
+    "title": "神韵 2027 旧金山演出：War Memorial Opera House 四场",
+    "startDate": "2026-12-30",
+    "endDate": "2027-01-03",
+    "occurrenceDates": [
+      "2026-12-30",
+      "2026-12-31",
       "2027-01-02",
       "2027-01-03"
     ]
