@@ -143,6 +143,33 @@ const TABLE = {
     ['Good news: "two free events" fit Saturday.', 2, 'Good news: "free events" fit Saturday.'], ['我有两个推荐：', 2, '我有这些推荐：'],
   ],
 };
+// API-BB-8 (live 10-17, L08 "Yes, two East Bay farmers markets run on Saturday mornings"): with as many points as it
+// says, a count that says that many exist (zh after 有, en as the subject, after "There are" / "has") names its scope:
+// the ones BAYLINK lists. Every other lead with a matching count stays byte-identical, as before.
+const ATTRIBUTED = {
+  '周六东湾有两场免费活动，适合孩子。': '周六东湾有 BAYLINK 收录的两场免费活动，适合孩子。',
+  '周六有三项免费活动。': '周六有 BAYLINK 收录的三项免费活动。',
+  '这周末东湾有 3 场适合孩子的活动。': '这周末东湾有 BAYLINK 收录的 3 场适合孩子的活动。',
+  '有 2 场免费活动适合孩子。': '有 BAYLINK 收录的 2 场免费活动适合孩子。',
+  '有5个免费活动。': '有 BAYLINK 收录的5个免费活动。',
+  '有四个免费的亲子活动。': '有 BAYLINK 收录的四个免费的亲子活动。',
+  '這週末有兩場免費活動。': '這週末有 BAYLINK 收錄的兩場免費活動。',
+  '有兩個地方可以去。': '有 BAYLINK 收錄的兩個地方可以去。',
+  'Two free events fit your Saturday.': 'Two free events listed on BAYLINK fit your Saturday.',
+  'There are two free events this weekend.': 'There are two free events listed on BAYLINK this weekend.',
+  'Saturday, Dec 5 has two free events.': 'Saturday, Dec 5 has two free events listed on BAYLINK.',
+  'Four family festivals run this weekend.': 'Four family festivals listed on BAYLINK run this weekend.',
+  '有两个不错的去处。': '有 BAYLINK 收录的两个不错的去处。',
+  '周六 Oakland 有 2 场活动。': '周六 Oakland 有 BAYLINK 收录的 2 场活动。',
+  'There are two kid-friendly events this weekend.': 'There are two kid-friendly events listed on BAYLINK this weekend.',
+  'No free museum day this weekend. Two free events fit Saturday.': 'No free museum day this weekend. Two free events listed on BAYLINK fit Saturday.',
+  'There are two great free events in Oakland this Saturday.': 'There are two great free events listed on BAYLINK in Oakland this Saturday.',
+  '這週末東灣有 3 場適合孩子的活動。': '這週末東灣有 BAYLINK 收錄的 3 場適合孩子的活動。',
+  '礼拜六有两场免费活动。': '礼拜六有 BAYLINK 收录的两场免费活动。',
+  '周六有两场免费活动[[e1]]。': '周六有 BAYLINK 收录的两场免费活动[[e1]]。',
+  'There are two [[e1]] free events.': 'There are two [[e1]] free events listed on BAYLINK.',
+  'There are two free [1] events.': 'There are two free [1] events listed on BAYLINK.',
+};
 // What the reader sees of a lead: the draft writer drops citation markers (sanitizeDraft), the result numbers them.
 const visibleOf = text => text.replace(/(?<!\s)\s*\[\[[^\]]{0,100}\]\]/g, '').replace(/\[\d+\]/g, '');
 
@@ -174,7 +201,7 @@ for (const [section, rows] of Object.entries(TABLE)) {
     test(`lead counts / ${section}: ${lead}`, () => {
       for (const n of count ? [count, count + 1] : [2, 3]) {
         const points = pointsOf(n);
-        const expected = stripped !== undefined && count !== n ? stripped : lead;
+        const expected = stripped !== undefined && count !== n ? stripped : count === n && ATTRIBUTED[lead] ? ATTRIBUTED[lead] : lead;
         const final = leadConsistency({ lead, points }, { locale }).draft.lead;
         assert.equal(final, expected, `${lead} / ${n} points`);
         if (final !== lead) for (const [pattern, why] of DANGLING) assert.doesNotMatch(final, pattern, `${why}: ${final}`);
