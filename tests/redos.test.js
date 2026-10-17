@@ -291,3 +291,27 @@ for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) })
   assert.equal(timings.length, 16 * 6 * 4);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
+
+// API-BB-8: the point citation and plan-stop repairs (pointRepairs, leadStopOrder) and the lead's scope attribution run on
+// model-written text: five 600-character points, a 200-character lead, with whitespace, [[ and name runs.
+test('API-BB-8: pointRepairs, leadStopOrder and the lead scope stay under 50 ms at the fast draft bounds', () => {
+  const timings = timeInChild(`
+const { pointRepairs, leadStopOrder, leadConsistency } = require(require('path').join(ROOT, 'lib', 'baybayQuality'));
+const fill = (head, pump, size, tail) => head + pump.repeat(Math.ceil((size - head.length - tail.length) / pump.length)).slice(0, size - head.length - tail.length) + tail;
+const stops = [{ title: 'Ferry Plaza 农夫市集：海边逛一圈', aliases: ['Ferry Plaza Farmers Market: A Waterfront Stroll'], refs: ['s-1'], clock: { kind: 'hours', text: '8:00–14:00' } },
+  { title: 'Ferry Building · 公共大厅与外部会合点', refs: ['e2'] }, { title: '唐人街与 North Beach', aliases: ['Chinatown & North Beach'], refs: ['e3'] }];
+const citable = ref => ['s-1', 'e2', 'e3'].includes(ref);
+const cases = {};
+for (const pad of [' ', '\t', '\u3000', '[[', '[[ ', ']]', '[[e2]]', 'ferry ', '渡轮', '农夫市集', 'Ferry Plaza ', '8:', 'two ', '有两个'])
+  for (const head of ['', '先逛 Ferry Plaza ', 'Yes, two East Bay farmers markets ', '东湾周六有两个农夫市集'])
+    cases['repairs ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad)] = () => {
+      const points = Array.from({ length: 5 }, (_, n) => ({ text: fill(head, pad, 600, n ? '。' : ' [[e2]]'), cardIds: n === 1 ? ['e3'] : [] }));
+      pointRepairs({ lead: 'x', points, gap: '' }, { citable, stops, locale: 'zh-Hans' });
+      leadStopOrder(fill(head, pad, 200, '唐人街'), stops);
+      leadConsistency({ lead: fill(head, pad, 200, ' run on Saturday.'), points: points.slice(0, 2) }, { locale: /[㐀-鿿]/.test(head) ? 'zh-Hans' : 'en' });
+    };
+for (const fn of Object.values(cases)) fn(); // warm up
+for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
+  assert.equal(timings.length, 14 * 4);
+  for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
+});
