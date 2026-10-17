@@ -312,6 +312,11 @@ for (const pad of [' ', '\t', '\u3000', '[[', '[[ ', ']]', '[[e2]]', 'ferry ', '
       // Review of API-BB-8: the list check runs on the gaps between out-of-order mentions and on the text around them.
       leadStopOrder(fill(head + '渡轮大厦', pad, 180, '农夫市集，再去唐人街'), stops);
       leadStopOrder(fill(head + 'the Ferry Building', pad, 180, 'the Ferry Plaza Farmers Market and Chinatown'), stops);
+      // Second review: and on the words before the first mention (day and part-of-day runs).
+      leadStopOrder(fill(head + 'Saturday ', pad, 180, 'Chinatown, then the Ferry Building'), stops);
+      leadStopOrder(fill('', 'saturday morning, ', 180, 'visit Chinatown, then the Ferry Building'), stops);
+      leadStopOrder(fill(head + '周六', pad, 180, '先逛唐人街，再去渡轮大厦'), stops);
+      leadStopOrder(fill('', '周六上午，', 180, '先逛唐人街，再去渡轮大厦'), stops);
       leadConsistency({ lead: fill(head, pad, 200, ' run on Saturday.'), points: points.slice(0, 2) }, { locale: /[㐀-鿿]/.test(head) ? 'zh-Hans' : 'en' });
       leadConsistency({ lead: fill(head + 'The festival has', pad, 200, ' two shows.'), points: points.slice(0, 2) }, { locale: 'en', siteListed: false });
       usualDayHours([fill(head + '10/11 通常周日', pad, 4000, '中午开门')], { start: '2026-10-18' }, '2026-10-16', 'zh-Hans');

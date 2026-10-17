@@ -9,6 +9,7 @@ const { createPublicContext, loadDiscoveryCatalog } = require('../lib/publicCont
 const { resolveTaskState } = require('../lib/baybayState');
 const { buildFastEvidence, modelItems, nightFor, usualDayHours } = require('../lib/baybayEvidence');
 const { siteListed } = require('../lib/baybayEngine/evidence');
+const { createEvidenceStore, createResearchTools } = require('../lib/baybayTools');
 const { normalizeGuideQuery } = require('../lib/guideLocale');
 const { leadConsistency, leadStopOrder, pointRepairs, stopNames } = require('../lib/baybayQuality');
 const { createDraftWriter } = require('../lib/baybayProgress');
@@ -335,6 +336,16 @@ describe('API-BB-8 review: a plan repair never moves what a lead or point says t
     assert.equal(leadStopOrder('周六半天可以逛渡轮大厦、农夫市集，再去唐人街，全程搭公交。', STOPS).lead, '周六半天可以逛农夫市集、渡轮大厦，再去唐人街，全程搭公交。');
   });
 
+  it('leadStopOrder: words before the first stop that tie an activity to it (lunch, a label, another verb) keep the lead as written', () => {
+    const two = [STOPS[1], STOPS[2]];
+    for (const lead of ['午饭去唐人街，再去渡轮大厦。', '早茶：唐人街，再去渡轮大厦。', '先吃唐人街，再逛渡轮大厦。', '午飯去唐人街，再去渡輪大廈。', 'Dim sum: Chinatown, then the Ferry Building.', 'For lunch, visit Chinatown, then the Ferry Building.'])
+      assert.deepEqual(leadStopOrder(lead, two), { lead, repaired: false, mismatch: true }, lead);
+    // A day or part-of-day word and a generic visit verb are still a plain list's opening.
+    for (const [lead, ordered] of [['周六上午，先逛唐人街，再去渡轮大厦。', '周六上午，先逛渡轮大厦，再去唐人街。'], ['这条线很轻松。周六可以逛唐人街，再去渡轮大厦。', '这条线很轻松。周六可以逛渡轮大厦，再去唐人街。'],
+      ['On Saturday morning, explore Chinatown and then the Ferry Building.', 'On Saturday morning, explore the Ferry Building and then Chinatown.'], ['Visit Chinatown, then the Ferry Building.', 'Visit the Ferry Building, then Chinatown.']])
+      assert.equal(leadStopOrder(lead, two).lead, ordered, lead);
+  });
+
   it('live L07 with a lead that is not a list: the lead is kept and the mismatch is logged', async () => {
     const lead = '周六上午先逛渡轮大厦的农夫市集，再去唐人街，全程搭公交。';
     const { run } = fixture({ respond: user => ({ ...l07Draft(user), lead }) });
@@ -391,6 +402,30 @@ describe('API-BB-8 review: a count names BAYLINK only for BAYLINK\'s own options
     assert.equal(siteListed(turn, [{ text: 'C', cardIds: ['web-kbbq'] }]), false);
   });
 
+  it('siteListed: a search result the model has read (page-read) is still the web, and so is a link found on it; a guide\'s read reference link is BAYLINK\'s', async () => {
+    const store = createEvidenceStore({ guides: [{ title: '湾区周末', url: '/guides/bay-weekend', text: '…', sourceUrls: ['https://www.sjpl.org/locations'] }] });
+    const tools = createResearchTools({ store, state: {}, today: '2026-10-17', locale: 'en', searchMode: 'web', isTest: true, deadline: Date.now() + 60000,
+      webSearch: async () => ({ answer: 'Two Korean BBQ spots.', checkedAt: '2026-10-17T10:00:00Z', sources: [{ title: 'KBBQ in Santa Clara', url: 'https://example.com/kbbq-santa-clara' }], candidates: [] }),
+      sourceFetch: async source => ({ text: `Korean barbecue in Santa Clara, open daily. ${source.url} `.repeat(3), links: [{ title: 'Hours', url: 'https://example.com/hours' }] }) });
+    const found = await tools.searchWeb('korean bbq santa clara');
+    const webId = found.sources[0].id;
+    const turn = { store, itemRefs: new Map(), contextReferences: [], webResearch: [{ answer: found.answer, sourceIds: found.sources.map(row => row.id) }] };
+    const lead = 'There are two Korean BBQ spots in Santa Clara.', points = [{ text: `A [[${webId}]]`, cardIds: [] }, { text: 'B', cardIds: [] }];
+    assert.equal(siteListed(turn, points), false, 'search-result');
+    assert.equal((await tools.readSource(webId)).verification, 'page-read');
+    assert.equal(store.sources.get(webId).verification, 'page-read');
+    assert.equal(siteListed(turn, points), false, 'page-read after the search');
+    assert.equal(leadConsistency({ lead, points }, { locale: 'en', siteListed: siteListed(turn, points) }).draft.lead, lead);
+    const linked = [...store.sources.values()].find(row => row.url === 'https://example.com/hours');
+    assert.equal(linked?.discoveredFrom, webId);
+    assert.equal(siteListed(turn, [{ text: `A [[${linked.id}]]`, cardIds: [] }]), false, 'a link found on the read result');
+    const reference = [...store.sources.values()].find(row => row.url === 'https://www.sjpl.org/locations');
+    assert.equal(reference.verification, 'catalog');
+    await tools.readSource(reference.id);
+    assert.equal(store.sources.get(reference.id).verification, 'page-read');
+    assert.equal(siteListed(turn, [{ text: `A [[${reference.id}]]`, cardIds: [] }]), true, 'a guide reference link, read, never searched');
+  });
+
   it('a count of what one record contains ("The festival has two shows") is no count of the options; a place that has two markets is', () => {
     for (const n of [2, 3]) assert.equal(leadConsistency({ lead: 'The festival has two shows.', points: points(n) }, { locale: 'en' }).draft.lead, 'The festival has two shows.', `${n} points`);
     assert.equal(leadConsistency({ lead: 'Oakland has two farmers markets on Saturday.', points: points(2) }, { locale: 'en' }).draft.lead, 'Oakland has two farmers markets listed on BAYLINK on Saturday.');
@@ -423,7 +458,8 @@ describe('API-BB-8 review: evidence fit and record hours', () => {
     assert.equal(usualDayHours(sucre, { start: '2026-10-11' }, '2026-10-09', 'zh-Hans'), '', 'the record says 10/11 differs');
     assert.equal(fast('这周日下午想在 Fremont 带爸妈散散步，有什么好去处？', 'zh-Hans', '2026-10-09').model.find(item => /Sucré/.test(item.title))?.when, undefined);
     const friday = { start: '2026-10-23' };
-    for (const text of ['周五 · 12:00 至打烊', '周五中午不开门', '周五 12:00 前开门', '周五未中午开门']) assert.equal(usualDayHours([text], friday, '2026-10-16', 'zh-Hans'), '', text);
+    for (const text of ['周五 · 12:00 至打烊', '周五中午不开门', '周五 12:00 前开门', '周五未中午开门', '周五中午到晚上营业', '周五中午至晚上营业', '周五中午–晚上营业', '周五中午–打烊']) assert.equal(usualDayHours([text], friday, '2026-10-16', 'zh-Hans'), '', text);
+    assert.equal(usualDayHours(['周五中午到晚上营业'], friday, '2026-10-16', 'en'), '', 'en');
     assert.equal(usualDayHours(['周五 12:00 开门'], friday, '2026-10-16', 'zh-Hans'), '记录：周五 12:00 开门');
   });
 });
