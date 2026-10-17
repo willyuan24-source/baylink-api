@@ -217,6 +217,12 @@ describe('API-BB-8 item 3: hours that matter to the ask', () => {
     assert.ok(saturday, 'still in the evidence');
     assert.equal(saturday.when, undefined);
   });
+
+  it('a range in the record ("周二至周日 16:00–22:00 试营业") is not read as one opening time', () => {
+    const parlour = fast('这周日 Oakland 有什么新开的店？', 'zh-Hans').model.find(item => /Game Parlour/.test(item.title));
+    assert.ok(parlour, 'in the evidence');
+    assert.equal(parlour.when, undefined);
+  });
 });
 
 describe('API-BB-8 item 4: a place\'s guide card is a city guide, not a how-to guide', () => {
@@ -285,6 +291,13 @@ describe('API-BB-8 item 6: a plan\'s lead and points follow its stops', () => {
     assert.equal(result.sources.length, 4);
     assert.match(result.sources[0].url, /ferry-plaza-farmers-market/);
     for (const warning of ['answer_lead_order_repaired', 'answer_point_citation_restored', 'answer_plan_point_time_added']) assert.ok(result.research.warnings.includes(warning), warning);
+  });
+
+  it('a lead that compares or swaps stops keeps its own order', async () => {
+    const { run } = fixture({ respond: user => ({ ...l07Draft(user), lead: '周六半天先选渡轮大厦还是农夫市集，再去唐人街。' }) });
+    const result = await run(L07);
+    assert.equal(result.lead, '周六半天先选渡轮大厦还是农夫市集，再去唐人街。');
+    assert.ok(!result.research.warnings.includes('answer_lead_order_repaired'));
   });
 
   it('leadStopOrder: zh-Hant and en leads follow the stop order; a lead in order, naming one stop, or naming a stop twice is unchanged', () => {
