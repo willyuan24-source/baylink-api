@@ -203,10 +203,19 @@ test('a sold-out event asked about by its place and kind carries its sold-out no
   }
 });
 
-test('a one-word name finds its opening', { todo: 'API-SYNC-3g follow-up (before this sync too): "Florecita 开了吗？" and "Is Florecita open yet?" find no opening for "Florecita Panadería"; "Florecita 新店开了吗？" found it only through 新店 in the old text, which web #48 reworded (新址)' }, () => {
+// API-BB-9: an opening ask that names an opening by its title's first word recalls it with or without a city, and the
+// model reads what the record states: moved, the new address's opening day not announced, not open.
+test('a one-word name finds its opening', () => {
   for (const message of ['Florecita 开了吗？', 'Florecita 新店开了吗？', 'Is Florecita open yet?']) {
-    assert.ok(itemIds(evidence(message)).includes('opening:florecita-mission'), message);
+    const result = evidence(message);
+    assert.ok(itemIds(result).includes('opening:florecita-mission'), message);
+    const [view] = modelItems([result.items.find(row => row.id === 'florecita-mission')]);
+    assert.match(view.status, /尚未开始|not started yet/, message);
+    assert.match(view.text, /新址开业日期未公布|迁址|not announced|moving/, message);
+    assert.doesNotMatch(view.text, /已开业|已開業|now open/i, message);
   }
+  // A first word shared by no other opening, six letters or more, as a whole word: "Flore" or "Florecitas" find nothing by name.
+  assert.ok(!itemIds(evidence('Flore 开了吗？')).includes('opening:florecita-mission'));
 });
 
 // API-BB-9: snippet keeps a sentence that gives a registration page's address, so every locale's reader gets the working
