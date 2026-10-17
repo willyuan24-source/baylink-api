@@ -375,7 +375,9 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   parades (en) and 农夫市集 / 图书馆 / 美术馆 (zh) count as option nouns. Repair `lead_scope`. Review: only when the options
   are BAYLINK's: `siteListed(turn, points)` (`lib/baybayEngine/evidence.js`) is false when a point cites a web search
   result or names a web candidate (a signed-in research turn), and then the count stays as written, in the result and
-  in the streamed lead (`draftWriter.end({ siteListed })`). A count of what one record contains ("The festival has two
+  in the streamed lead (`draftWriter.end({ siteListed })`). A search result stays the web after `read_source` makes it
+  `page-read` (the turn's `webResearch` keeps its id), and so does a link found on such a page (`discoveredFrom`); a
+  guide's own reference link, read or not, is BAYLINK's (second review). A count of what one record contains ("The festival has two
   shows": storytimes, programmes, classes, workshops, shows, concerts, exhibits, parades after has / includes / features
   / offers / hosts / with) is no count of the options. A digit after the inserted words is spaced ("收录的 5 个").
 - **Hours that matter** (`lib/baybayEvidence.js`). On a family ask a place's recorded hours lead with the children's
@@ -385,8 +387,9 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   hours whose Chinese record says when it usually opens on an asked day gives that as its `when` (`usualDayHours`,
   Sucré: "记录：周日通常中午开门", "On record: Sunday, usually opens at noon"); a range ("周二至周日 16:00–22:00") is not
   read as one time, and events are left alone (their sessions are their hours). Review: nor a range or a negation in
-  words (no 至 / 到 / 不 / 未 / 前 / 后 between the time and the verb: "周五 · 12:00 至打烊", "中午不开门"), and not on a date
-  the same sentence names ("10/11 的庆典开始时间与通常周日中午开门不同": no usual time for 10/11).
+  words (no 至 / 到 / 不 / 未 / 前 / 后 between the time and the verb: "周五 · 12:00 至打烊", "中午不开门"; no 至 / 到 between
+  the day and the time: "周日中午到晚上营业"; no dash in either gap), and not on a date the same sentence names ("10/11
+  的庆典开始时间与通常周日中午开门不同": no usual time for 10/11).
 - **Guide card type**. A place shown as its BAYLINK guide (`quickRef`) is a leisure guide in the web's guide category
   `city` (all 29 place guides are): the card carries `guideType: 'leisure'`, `guideCategory: 'city'` and `typeLabel`
   (城市指南 / City guide), in the preview cards and the final cards. A guide card from the page context carries none.
@@ -409,7 +412,10 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   compares or swaps stops, names a stop twice or names fewer than two is unchanged. Review: only a plain list moves.
   Between two mentions there may be only list connectors (、，, 和 与 與 及 跟, then optionally 然后 / 接着 / 最后 / 再 + 去 / 到 /
   逛; en ", " / "and" / "then"), nothing locative or possessive before the first (的 从 到 离; from, to, at, in, near, 's …)
-  and only punctuation after the last. Any other out-of-order lead ("先逛渡轮大厦的农夫市集", "从渡轮大厦出发", "Chinatown for
+  and only punctuation after the last. Second review: and the sentence's words before the first mention are only day or
+  part-of-day words, 先 / 可以 / 可 and a generic visit verb (逛 / 去 / 游 / 走走 / 看看 / 参观; en visit, see, explore, tour,
+  start with, stop by): "午饭去唐人街，再去渡轮大厦", "早茶：…", "先吃…", "Dim sum: Chinatown, then …" are kept, as moving the
+  names would give lunch to the other stop. Any other out-of-order lead ("先逛渡轮大厦的农夫市集", "从渡轮大厦出发", "Chinatown for
   dim sum, then … the Ferry Building") is kept, because moving only the names would move what it says about each stop;
   warning `answer_lead_order_mismatch`. A point about a stop (`pointStops`: it names that one stop; a point that names two
   or more is about stop i only in a point-per-stop answer, as point i, naming stop i, when no one-stop point is about
