@@ -178,7 +178,7 @@ test('the sweep rewrites keep their matches', () => {
 test('API-BB-QUALITY detectors and citation patterns stay under 50 ms at their input bounds', () => {
   const timings = timeInChild(`
 const lib = name => require(require('path').join(ROOT, 'lib', name));
-const { nearbyClarifier, turnRules, leadConsistency, dropOffArea, ensureNewcomerSsn, failureReason } = lib('baybayQuality');
+const { nearbyClarifier, turnRules, leadConsistency, dropOffArea, ensureNewcomerSsn, failureReason, listingWindowRepair } = lib('baybayQuality');
 const { professionalTopics } = lib('safetyRouting');
 const { resolveTaskState } = lib('baybayState');
 const { inferFilters } = lib('planner');
@@ -208,9 +208,20 @@ Object.assign(cases, {
   'gap overlap [[ runs (20000)': () => leadConsistency({ lead: fill('[[', '[[\u3000', 20000), points: [point(fill('[[', '[[ ', 20000)), point('乙')], gap: '请以官方页面为准。' + '[['.repeat(3000) }),
   'failure reason HTTP digits (6000)': () => failureReason(new Error(fill('HTTP ', '1', 6000))),
 });
+// API-BB-6 review (10-16): the weekly-market repair at the fast draft's bounds (lead 200, five 600-character points,
+// gap 300). Its patterns began with optional whitespace and comma padding and took 0.5-1.4 s on a whitespace-padded draft.
+const windows = [{ start: '2026-10-17', end: '2026-12-12', next: '2026-10-17', refs: ['e1'], titles: ['Oakland Grand Lake 周六农夫市集'] }, { start: '2026-10-18', end: '2026-12-13', next: '2026-10-18', refs: ['e2'], titles: ['Fremont Irvington 周日农夫市集'] }];
+for (const pad of [' ', '\t', '　', ', '])
+  for (const head of ['farmers market from', '农夫市集从10月17日'])
+    cases['listingWindowRepair ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad)] = () => listingWindowRepair({ lead: fill(head, pad, 200, ' 市集'), points: Array.from({ length: 5 }, () => ({ text: fill(head, pad, 600, ' [[e1]]'), cardIds: ['e1'] })), gap: fill(head, pad, 300, ' farmers market') }, { windows, asked: { start: '2026-10-17', end: '2026-10-18' } });
+// Review round 2: an uncited segment finds each phrase's nearest subject once per string, not once per phrase (five
+// 6,000-character uncited points of back-to-back market and exhibit phrases, 30 other records).
+const others = Array.from({ length: 30 }, (_, n) => ({ titles: ['Museum Exhibit ' + n + ' 新展特展庆典' + n] }));
+for (const pump of ['农夫市集10月17日起，OMCA 新展10月17日起，', 'farmers market starting Oct 17, then the OMCA show starting Oct 17, '])
+  cases['listingWindowRepair uncited ' + JSON.stringify(pump.slice(0, 12))] = () => listingWindowRepair({ lead: fill('', pump, 200), points: Array.from({ length: 5 }, () => point(fill('', pump, 6000))), gap: fill('', pump, 300) }, { windows, others, asked: { start: '2026-10-17', end: '2026-10-18' } });
 for (const fn of Object.values(cases)) fn(); // warm up
 for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
-  assert.equal(timings.length, 17 * 11 + 5);
+  assert.equal(timings.length, 17 * 11 + 5 + 8 + 2);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
 

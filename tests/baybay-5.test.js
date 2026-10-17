@@ -318,12 +318,16 @@ function anthropicFixture({ respond, config = {} } = {}) {
   const run = (text, extra = {}) => assistant.run({ message: text, locale: 'zh-Hans', currentPath: '/', history: [], searchMode: 'site', webAccess: { allowed: false }, pageContext: page('zh-Hans'), ...extra });
   return { assistant, sent, run };
 }
-// The plan's first stop's own evidence ref, so the answer cites the plan as the plan guard requires.
+// The plan's first stop's own evidence ref, so the answer cites the plan as the plan guard requires. The agent rounds
+// send the plan in a final '{"researchComplete"' turn (stops[].sourceIds); the single call (API-BB-6) in its one user
+// turn as planView() (stops[].refs).
 const planAnswer = body => {
   const text = body.messages.map(row => (row.content || []).map(part => part.text || '').join('\n')).join('\n');
   const start = text.lastIndexOf('{"researchComplete"'), end = text.indexOf('\n', start);
   const plan = start >= 0 ? JSON.parse(text.slice(start, end > 0 ? end : undefined)) : {};
-  const ref = plan.currentPlan?.stops?.[0]?.sourceIds?.[0] || 'e1';
+  let view = null;
+  try { view = JSON.parse(body.messages[0].content[0].text).currentPlan; } catch { view = null; }
+  const ref = plan.currentPlan?.stops?.[0]?.sourceIds?.[0] || view?.stops?.[0]?.refs?.[0] || 'e1';
   return { lead: '周六半天先逛唐人街，再去华埠分馆。', points: [{ text: `唐人街 [[${ref}]]`, cardIds: [] }, { text: `华埠分馆 [[${ref}]]`, cardIds: [] }], candidateIds: [], followups: [], coverage: [], gap: '' };
 };
 
@@ -333,7 +337,8 @@ test('live L07: a new site day plan is one streamed call around the plan engine\
   const result = await single.run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程', { onDraft: event => drafts.push(event) });
   assert.equal(result.route.path, 'agent');
   assert.equal(single.sent.length, 1, 'one model call');
-  assert.equal(single.sent[0].tool_choice?.type, 'none');
+  // API-BB-6: the fast path's request shape: no tools, no top-level cache breakpoint, one user turn and the rules.
+  assert.equal(single.sent[0].tools, undefined); assert.equal(single.sent[0].tool_choice, undefined); assert.equal(single.sent[0].cache_control, undefined);
   assert.equal(single.sent[0].stream, true, 'the call streams its lead');
   assert.ok(result.research.warnings.includes('day_plan_single_call'));
   assert.ok(result.assistantPlan?.stops?.length >= 2, JSON.stringify(result.assistantPlan?.stops));
@@ -381,8 +386,9 @@ test('live L07: a connection that closed under the request ("fetch failed") is r
   const recovered = await busy.run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程');
   assert.equal(busy.sent.length, 2);
   assert.ok(recovered.research.warnings.includes('model_unavailable') && recovered.research.warnings.includes('final_synthesis_recovered'), JSON.stringify(recovered.research.warnings));
-  // The recovery sends the final turn once, not twice.
-  assert.equal(busy.sent[1].messages.filter(row => (row.content || []).some(part => /researchComplete/.test(part.text || ''))).length, 1);
+  // The recovery sends the same turn again: one user turn with the plan and the rules (API-BB-6: no final-round turn).
+  assert.deepEqual(busy.sent[1].messages, busy.sent[0].messages);
+  assert.equal(busy.sent[1].messages.filter(row => (row.content || []).some(part => /researchComplete/.test(part.text || ''))).length, 0);
 });
 
 test('live D2: the 12月5日 East Bay family ask sees the day\'s parade, book sale and storytimes', () => {

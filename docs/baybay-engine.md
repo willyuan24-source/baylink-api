@@ -196,3 +196,64 @@ instance it decides how soon the first sentence can start. Keep it small:
   (仅周三, "Wednesdays:"), one whose title or date label lists or ranges other weekdays (周二、周三 / 周一、三、五 /
   周二至周日 / Fridays and Saturdays / Thursday–Monday) and one closed on every asked day (周二、周三闭馆, Closed
   Mondays) is not an option for that ask (`offerOnAskedDays` in `lib/baybayEvidence.js`).
+
+## API-BB-6: the one-call day plan, listed dates, rainy days and block N
+
+Live check after API-BB-5 (10-15) and the 40 unseen questions of eval block N. Tests: `tests/baybay-6.test.js`.
+
+- **One-call site day plan, fast-path request shape** (live L07: 20,028 input tokens, all written to the prompt
+  cache; first text 5.6 s, done 9.4 s). `research.js` `singleCall` (a new site day plan, not a plan edit or
+  follow-up, `BAYBAY_DAY_PLAN_FAST` not `off`) runs the plan engine first, then sends one call: the frozen system
+  block with its own breakpoint (the prefix every fast-path answer shares, so a cache read when the fast path is
+  warm), **no tools**, **no top-level cache breakpoint** (no later call of the run would read the rest), one user
+  turn with the evidence and `planView()` (`evidence.js`), and the plan-call rules (`V2_PLAN_CALL_RULES`,
+  `prompt.js`) in place of the agent's research rules and final-round instruction. `planView()` sends each stop once
+  with the refs to cite, its admission facts without source plumbing and its unconfirmed checks by code (`open`
+  keeps only what no stop carries); a stop's record goes in full less the lines that repeat its own when and cost,
+  and at most 8 other items (a guide's second section is not one) as a 120-character excerpt (`planItems`).
+  Estimated input for seven day-plan asks on the final tip: 6.1k–7.8k tokens (base 15.3k–21.9k; the Oakland family
+  ask is the largest at 7,766, so ≤ 8,000 holds on the estimate with about 3 % margin); the estimator,
+  1.449 × CJK characters + 0.3596 × other characters of the request body, is fitted to the 11 live calls of 10-15
+  (−5 % … +8 %; the eval harness's dry-run characters/3 reads the L07 call as 13.7k). A citation retry resends the
+  turn with the first answer and a reminder that names `currentPlan.stops[].refs` (about 300 tokens more, so a
+  retried plan costs about twice the stated $/ask); a 429/529/connection recovery resends the same turn. Plan edits, follow-ups on a plan and
+  `BAYBAY_DAY_PLAN_FAST=off` keep the agent rounds, the site tools and the top-level cache.
+- **One card per plan stop**: a plan answer's cards are its stops in visiting order (an event's page, a place's
+  BAYLINK guide; a place without a guide page has no card), then the other cited cards, at most six
+  (`planStopCards`, `answer.js`).
+- **Listed dates are not a season** (live L06, L08). A weekly farmers market, or a record whose own text says it
+  runs all year, is listed for a window of dates (Grand Lake 10/17–12/12) that is BAYLINK's calendar, not its season.
+  `weeklyListing()` / `weeklySchedule()` (`lib/baybayEvidence.js`) give the model its weekly schedule from the
+  sessions ("每周六 9:00–14:00", "Every Saturday 9:00–14:00"), 全年 / year-round only when its own text says so,
+  and the next listed date from the asked day, never the window, with a note; its date line in the text is
+  replaced the same way; a record whose sessions have different hours shows none. As a net,
+  `listingWindowRepair()` (`lib/baybayQuality.js`, in `resolveDraft`) removes a "starting …", "from … through …",
+  "…起", "从…开始" or "… 至 …" phrase with a weekly record's first or next listed date (or a range from it to the
+  last) only in a point that cites the record (or, citing nothing, names it) and in a lead or gap sentence that
+  does; another record's own dates stay, and a range inside the asked dates (the asked weekend) stays (warning
+  `answer_listing_window_repaired`). In a segment that cites nothing, the phrase must also belong to the market:
+  the nearest subject before it (with none before, the first after it) is the market's name or the market noun,
+  not another subject (an evidence record that is not a weekly market, named by a title word; an exhibit /
+  festival / show noun; another Latin name in Chinese prose that is not a city, weekday, month or market), so
+  "先逛农夫市集，再去 OMCA 看10月17日起开放的新展" keeps the exhibit's date. A sentence that calls the dates the
+  listed dates (列出的日期, "listed dates") stays; "Oct." / "Sat." does not end a lead sentence. A dated ask outside
+  the listing window (the Grand Lake market in January) still drops the weekly record in retrieval: open for a
+  later lane.
+- **The asked day's own session first** (live X1): on a dated ask a multi-date event's view starts with its
+  occurrence on the asked day and that session's hours, then the dates it is listed for ("12月5日（周六）
+  10:30–11:00（列出的日期：…）").
+- **Rainy-day / indoor family asks** (live L09). A mixed record (part indoor, part outdoor: The Tech and Japantown,
+  the Egyptian Museum and its garden) fits an indoor or an outdoor ask, in retrieval and in the plan engine. A
+  family ask's recall takes family events (free ones on a free-only ask) and never adults-only records (仅限成人 /
+  adults only, or an adult audience with no children's or family audience beside it: the Xiangqi invitational's
+  成人 + 亲子家庭 is a family event); with a
+  city, family events and attractions rank before other events. An indoor family ask in a city with fewer than
+  three indoor family records adds the same region's nearest indoor attractions and family events, each with a
+  note naming its city (`nearbyFamilyRecords`). An offer whose sessions vary by store reaches the model as one to
+  check and book, never a sure session.
+- **Block N dev findings**: sudden vision loss with stumbling, staggering or lost balance (走路摇晃, 踉跄, 站不住)
+  is the BE-FAST stroke pair (911 template); a landlord who changes the locks, locks a tenant out or cuts the
+  utilities is a legal question (业主 / owner / property manager changing locks only in a tenant's message: a
+  homeowner changing their own locks is not; 出租, 租车 and "help me out" are not a tenant's message, and re-keying
+  between tenants is not a lockout unless the message has a dispute such as 不交房租, "won't pay" or evict);
+  帮我排行程 / 排个一天的行程 is a day plan.
