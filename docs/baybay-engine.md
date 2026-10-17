@@ -317,3 +317,13 @@ Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/bayb
   周六 11:00–18:00 / Saturday 11am–6pm), and on an evening ask a place that closes within an hour of the window is
   closed for it like an event. The plan's stop `path`, `external`, `openingWindows` and `handoff` are payload fields:
   the web plan card does not read them yet (web follow-up).
+- **Review round 2 (10-17)**. A cue alone no longer carries the guard: an ask that names a day, a date or a part of the
+  day (周六 / 明天 / 这周末 / on Saturday / this morning) or an outing place (图书馆 / 故事会 / 市集 / 爬山 / 带她去 /
+  library / storytime / farmers market / go to) is an outing unless it also names a professional action (申请 / 办 / 续 /
+  预约 / office / apply / renew / appointment / appeal), and the cues are narrow (还能怎么办 / 还能找谁 / 还能申请, not a
+  bare 还能; "can she still apply / qualify / keep / wait", not a bare "still"; 还有什么地方 only before 申请 / 办; "what
+  else" only as the whole question). After a Medi-Cal turn, "What else can she do on Saturday in San Jose?",
+  她周六还能去图书馆吗？ and "Instead, can we go to the library on Sunday?" are site answers again. When a message names a
+  city, the city parse reads it without its neighbourhood, so "Richmond District" / "Outer Richmond" beside 旧金山 /
+  San Francisco / SF is San Francisco and not also the East Bay city of Richmond. "9:00 a.m" (no final dot) stays as
+  written, and "she" / "he" count as a child word for "almost N" only as "she is" / "he turns" / "she's".

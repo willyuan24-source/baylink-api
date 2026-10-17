@@ -130,11 +130,11 @@ node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --set bb
 | dev (23 turns) | 21/23 (N-21 lockout without the legal guard; N-33 English vision loss + stumbling not routed to 911) | 23/23 |
 | held-out (23 turns) | 16/23 | 16/23 (no regression; the 7 misses are listed in the PR for the next lane) |
 
-**API-BB-7 book (set `bb7`, block O, pinned Fri 2026-10-16 10:00 PT).** Fresh dev and held-out cases for each of block N's seven held-out failure types (N-02, N-06, N-10, N-18, N-22, N-36-2, N-40-2), written before any API-BB-7 code change and without copying block N: age said as "X, almost Y" / 快N岁; a dated city ask with an age (including an event name with a weekday word beside the full date, cases 37–40, added before any code change once the base showed cases 5–8 pass); a neighbourhood that names its city; Social Security credits and retirement; a withheld deposit (and a skate or laptop deposit that is not one); an admission budget changed to zero (two turns); a follow-up that does not repeat its topic noun (two turns, and one that changes topic). Plus two English rainy-day paraphrases the API-BB-6 review asked for (dev) and one zh-Hans held-out rainy ask, with `state.family`. 40 cases, 50 turns: 21 dev cases (26 turns), 19 held-out cases (24 turns). The base dry run is frozen as `o-dry-0`; block N on the base is `n7-dry-0`. Tune only on dev; block N stays as it is (reported, never tuned on).
-
 ```
 node --env-file=<private env file> scripts/baybay-eval-local.mjs --live --set bb6 --now 2026-10-16T10:00:00-07:00 --budget-usd 1.5 --concurrency 2 --out <folder outside the repo> --run-id bb6-N
 ```
+
+**API-BB-7 book (set `bb7`, block O, pinned Fri 2026-10-16 10:00 PT).** Fresh dev and held-out cases for each of block N's seven held-out failure types (N-02, N-06, N-10, N-18, N-22, N-36-2, N-40-2), written before any API-BB-7 code change and without copying block N: age said as "X, almost Y" / 快N岁; a dated city ask with an age (including an event name with a weekday word beside the full date, cases 37–40, added before any code change once the base showed cases 5–8 pass); a neighbourhood that names its city; Social Security credits and retirement; a withheld deposit (and a skate or laptop deposit that is not one); an admission budget changed to zero (two turns); a follow-up that does not repeat its topic noun (two turns, and one that changes topic). Plus two English rainy-day paraphrases the API-BB-6 review asked for (dev) and one zh-Hans held-out rainy ask, with `state.family`. 40 cases, 50 turns: 21 dev cases (26 turns), 19 held-out cases (24 turns). The base dry run is frozen as `o-dry-0`; block N on the base is `n7-dry-0`. Tune only on dev; block N stays as it is (reported, never tuned on).
 
 ## Metrics
 
