@@ -328,3 +328,61 @@ test('review X1 / L07 in zh-Hant and en: the storytime is in the top five; the p
     assert.deepEqual(plan.handoff.stops.map(stop => stop.id), stops.map(stop => stop.entityId), message);
   }
 });
+
+// ---- Review round 2 (10-17) ----
+
+const MEDI = { 'zh-Hans': '我住 San Jose，想帮妈妈申请 Medi-Cal。', 'zh-Hant': '我住 San Jose，想幫媽媽申請 Medi-Cal。', en: 'I want to help my mom apply for Medi-Cal in San Jose.' };
+const GREEN = { 'zh-Hans': '我爸的绿卡快过期了，怎么续？', 'zh-Hant': '我爸的綠卡快過期了，怎麼續？', en: 'My dad\'s green card expires soon. How do we renew it?' };
+const OUTING_AFTER_PROFESSIONAL = [
+  [MEDI, { en: 'What else can she do on Saturday in San Jose?', 'zh-Hans': '她周六在 San Jose 还能做什么？', 'zh-Hant': '她週六在 San Jose 還能做什麼？' }],
+  [MEDI, { en: 'Is the farmers market still open on Saturday?', 'zh-Hans': '周六农夫市集还开吗？', 'zh-Hant': '週六農夫市集還開嗎？' }],
+  [MEDI, { 'zh-Hans': '她周六还能去图书馆吗？', 'zh-Hant': '她週六還能去圖書館嗎？', en: 'Can she still go to the library on Saturday?' }],
+  [MEDI, { 'zh-Hans': '她还能去图书馆参加故事会吗？', 'zh-Hant': '她還能去圖書館參加故事會嗎？', en: 'Can she still go to the library for storytime?' }],
+  [MEDI, { 'zh-Hans': '还有什么地方可以带她去？', 'zh-Hant': '還有什麼地方可以帶她去？', en: 'Where else can we take her?' }],
+  [MEDI, { en: 'Instead, can we go to the library on Sunday?', 'zh-Hans': '那改成周日去图书馆可以吗？', 'zh-Hant': '那改成週日去圖書館可以嗎？' }],
+  [GREEN, { en: 'Can he still go hiking on Sunday?', 'zh-Hans': '他周日还能去爬山吗？', 'zh-Hant': '他週日還能去爬山嗎？' }],
+];
+
+test('review 2: an outing follow-up with a day, a date or an outing place does not take the turn before\'s professional guard (zh-Hans, zh-Hant, en)', () => {
+  const history = message => [{ role: 'user', content: message }, { role: 'assistant', content: '…' }];
+  for (const [before, asks] of OUTING_AFTER_PROFESSIONAL) for (const locale of ['zh-Hans', 'zh-Hant', 'en'])
+    assert.equal(professionalFollowup(asks[locale], history(before[locale])), null, asks[locale]);
+  for (const message of ['What else can she do in San Jose this weekend?', 'Can he still go to the beach tomorrow?', '她明天还能去市场买菜吗？', '南瓜灯怎么做？', 'Is it still open on December 5?'])
+    assert.equal(professionalFollowup(message, history(MEDI.en)), null, message);
+  // Professional follow-ups still carry, with a day when they name a professional action.
+  for (const [message, before, topic] of [
+    ['她不会用电脑，也不想开网上账号，还有什么办法？', MEDI['zh-Hans'], 'insurance'], ['他還能怎麼辦？', '我爸想申請 Medicare', 'medicare'],
+    ['What now?', MEDI.en, 'insurance'], ['He says he will mail a list of charges next month. Can he wait that long?', 'My landlord in Oakland kept my whole security deposit.', 'legal'],
+    ['她还能申请吗？', MEDI['zh-Hans'], 'insurance'], ['她還能申請嗎？', MEDI['zh-Hant'], 'insurance'], ['Can she still apply?', MEDI.en, 'insurance'],
+    ['她周六还能去办公室申请吗？', MEDI['zh-Hans'], 'insurance'], ['她週六還能去辦公室申請嗎？', MEDI['zh-Hant'], 'insurance'], ['Can she still apply on Saturday?', MEDI.en, 'insurance'],
+    ['What else can I do?', MEDI.en, 'insurance'], ['还有什么地方可以申请？', MEDI['zh-Hans'], 'insurance'], ['我该怎么做？', MEDI['zh-Hans'], 'insurance'], ['他还能等吗？', GREEN['zh-Hans'], 'immigration'],
+  ]) assert.deepEqual(professionalFollowup(message, history(before))?.topics, [topic], message);
+});
+
+test('review 2: end to end, the outing follow-up is a site answer and the professional follow-up keeps its guard', async () => {
+  for (const [before, ask, locale, professional] of [[MEDI.en, 'What else can she do on Saturday in San Jose?', 'en', false], [MEDI['zh-Hans'], '她周六还能去图书馆吗？', 'zh-Hans', false],
+    [MEDI['zh-Hant'], '她不會用電腦，還有什麼辦法？', 'zh-Hant', true]]) {
+    const result = await fixture().run(ask, { locale, history: [{ role: 'user', content: before }, { role: 'assistant', content: '…' }] });
+    assert.equal(result.safetyRoute === 'professional', professional, `${ask}: ${result.safetyRoute} ${result.route?.reason}`);
+  }
+});
+
+test('review 2: a neighbourhood beside its own city is that city, not a second one (Richmond District / Outer Richmond and San Francisco)', () => {
+  for (const message of ['周六旧金山 Richmond District 有什么亲子活动？', 'Outer Richmond, San Francisco: anything for kids on Sunday?', 'Richmond District SF events Saturday?',
+    'Kids storytime at the Richmond District library in San Francisco this Saturday?']) {
+    const result = resolveTaskState({ message, today: '2026-10-16', carry: true, catalog: planner });
+    assert.equal(result.state.city, 'San Francisco', `${message}: ${result.state.city} ${result.clarification || ''}`);
+    assert.ok(!result.clarification, `${message}: ${result.clarification}`);
+  }
+  const home = stateOf('我住旧金山 Richmond District，周日附近图书馆有中文活动吗？');
+  assert.equal(home.city, 'San Francisco');
+  assert.equal(stateOf('Richmond events this Saturday?').city, 'Richmond', 'Richmond alone is the East Bay city');
+  assert.equal(stateOf('Any events at Parkside Hall in San Jose this Saturday?').city, 'San Jose');
+});
+
+test('review 2: "9:00 a.m" without its final dot stays as written; "she says it is almost 3" is not an age', () => {
+  for (const text of ['Open 9:00 a.m', 'Open 9:00 a.m.', 'Closes 4:30 p.m']) assert.equal(englishClock(text), text);
+  assert.deepEqual(stateOf('She says it is almost 3 already, any cafes in Fremont?').childAges, []);
+  assert.deepEqual(stateOf('She is almost 3. Any storytime in Fremont on Saturday?').childAges, [2]);
+  assert.deepEqual(stateOf('She\'s almost 3, any storytime in Fremont on Saturday?').childAges, [2]);
+});
