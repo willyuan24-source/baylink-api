@@ -1,0 +1,232 @@
+// API-BB-7: the follow-ups of the API-BB-6 live check (10-16) and eval block O. Shipped data with a fixed day; a fixture
+// provider, no network.
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { createBayBayAssistant } = require('../lib/baybayAgent');
+const { loadPlannerCatalog } = require('../lib/planner');
+const { createPublicContext, loadDiscoveryCatalog } = require('../lib/publicContext');
+const { resolveTaskState } = require('../lib/baybayState');
+const { buildFastEvidence, modelItems } = require('../lib/baybayEvidence');
+const { normalizeGuideQuery } = require('../lib/guideLocale');
+const { englishClock } = require('../lib/baybayQuality');
+const { professionalTopics, professionalFollowup, professionalResponse } = require('../lib/safetyRouting');
+const { buildItinerary } = require('../lib/baybayPlan');
+const { sseFor, sseResponse } = require('./support/anthropic-sse');
+const guides = require('../data/guide-catalog.json');
+const guidesEn = require('../data/guide-catalog.en.json');
+
+const planner = loadPlannerCatalog();
+const discoveries = { ...loadDiscoveryCatalog(), english: loadDiscoveryCatalog(undefined, true) };
+const LIVE = '2026-10-16T21:02:00-07:00';
+
+// The fixture model: plan stops when there is a plan, else the first four event / place / offer items in evidence order.
+function fixtureAnswer(body) {
+  const user = JSON.parse(body.messages[0].content[0].text);
+  const stops = user.currentPlan?.stops || [];
+  if (stops.length) return { lead: '可以这样走。', points: stops.map(stop => ({ text: `${stop.title} [[${stop.refs[0]}]]`, cardIds: [] })), candidateIds: stops.map(stop => stop.id), followups: [], coverage: [], gap: '' };
+  const items = (user.evidence || []).filter(item => ['event', 'place', 'offer', 'opening'].includes(item.kind)).slice(0, 4);
+  return { lead: items[0] ? `先看 ${items[0].title}。` : '有这些选择。', points: items.map(item => ({ text: `${item.title} [[${item.ref}]]`, cardIds: [item.ref] })), candidateIds: [], followups: [], coverage: [], gap: '' };
+}
+function fixture({ now = LIVE, respond = fixtureAnswer } = {}) {
+  const sent = [];
+  const message = text => ({ type: 'message', id: 'msg-fixture', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', content: [{ type: 'text', text }], usage: { input_tokens: 40, output_tokens: 60 } });
+  const reply = value => ({ ok: true, status: 200, json: async () => value, clone() { return this; }, text: async () => JSON.stringify(value) });
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Los_Angeles' }).format(new Date(now));
+  const assistant = createBayBayAssistant({ config: { BAYBAY_AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'fixture-anthropic-only', BAYBAY_STATE_SECRET: 'api-bb-7-isolated-secret-0123456789', BAYBAY_DAILY_RUN_LIMIT: '1000' },
+    guideCatalog: guides, englishGuideCatalog: guidesEn, catalog: planner, now: () => Date.parse(now), isTest: false, Quota: { findOneAndUpdate: async () => ({ count: 1 }), updateOne: async () => ({}) },
+    fetchImpl: async (url, init) => {
+      sent.push(init.body);
+      const body = JSON.parse(init.body);
+      const answer = message(JSON.stringify(await respond(body, sent.length)));
+      return body.stream ? sseResponse(sseFor(answer)) : reply(answer);
+    } });
+  const run = (text, { locale = /[㐀-鿿]/.test(text) ? 'zh-Hans' : 'en', ...extra } = {}) => assistant.run({ message: text, locale, currentPath: locale === 'en' ? '/en' : '/', history: [], searchMode: 'site', webAccess: { allowed: false },
+    pageContext: createPublicContext({ guideCatalog: guides }).resolve({ context: { currentPath: '/' }, currentPath: '/', today, locale }), ...extra });
+  const evidence = () => JSON.parse(JSON.parse(sent[0]).messages[0].content[0].text).evidence || [];
+  return { sent, run, evidence };
+}
+const stateOf = (message, previous, today = '2026-10-16') => resolveTaskState({ message, previous, today, carry: true, catalog: planner }).state;
+const fast = (message, locale, today = '2026-10-16') => {
+  const state = stateOf(message, undefined, today);
+  const site = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state, guideCatalog: locale === 'en' ? guidesEn : guides, catalog: planner, discoveries, today, locale, audience: true });
+  return { state, items: site.items, model: modelItems(site.items) };
+};
+
+// ---- L09: the family signal and indoor family options ----
+test('亲子 / 带娃 / 孩子 / 小朋友 / with kids / family is a family signal in task state, kept by a follow-up; no kids clears it', () => {
+  for (const message of ['这周末如果下雨，San Jose 有什么室内亲子活动？', '這週末下雨，San Jose 有什麼室內親子活動？', '周六带娃去哪', '小朋友周日能去哪玩', 'It might rain this weekend. Any indoor things to do with kids in San Jose?', 'Family things to do in Oakland on Saturday?', '周六带 5 岁孩子去 Oakland'])
+    assert.equal(stateOf(message).family, true, message);
+  for (const message of ['周六 Oakland 有什么好玩的？', 'I need a family doctor in Fremont', 'Any farmers markets in the East Bay on Saturday morning?']) assert.equal(stateOf(message).family, undefined, message);
+  const first = stateOf('12月5号带娃去哪');
+  assert.equal(stateOf('那周日呢', first).family, true, 'a follow-up keeps it');
+  assert.equal(stateOf('这次不带孩子，周六 Oakland 有什么？', first).family, undefined, 'no kids clears it');
+});
+
+test('live L09: a rainy San Jose family ask leads with fully indoor family places, notes part-outdoor ones, and never takes the adults\' dinner theatre (zh-Hans, zh-Hant, en)', async () => {
+  for (const [message, locale] of [['这周末如果下雨，San Jose 有什么室内亲子活动？', 'zh-Hans'], ['這週末下雨，San Jose 有什麼室內親子活動？', 'zh-Hant'], ['It might rain this weekend. Any indoor things to do with kids in San Jose?', 'en'], ['Rainy weekend in San Jose with kids, indoor ideas?', 'en']]) {
+    const { run, evidence } = fixture();
+    const result = await run(message, { locale });
+    assert.equal(result.taskState.family, true, message);
+    assert.equal(result.taskState.setting, 'indoor', message);
+    const items = evidence();
+    const rowOf = item => planner.places.find(row => row.title === item.title || (row.aliases || []).includes(item.title)) || planner.events.find(row => row.title === item.title || (row.aliases || []).includes(item.title));
+    const entities = items.filter(item => ['event', 'place'].includes(item.kind));
+    // The first entity is a fully indoor place, and at least three indoor or part-indoor family options are in the evidence.
+    assert.equal(rowOf(entities[0])?.planning?.setting, 'indoor', `${message}: ${entities.map(item => item.title).join(' | ')}`);
+    const indoor = entities.filter(item => ['indoor', 'mixed'].includes(rowOf(item)?.planning?.setting));
+    assert.ok(indoor.length >= 3, `${message}: ${indoor.map(item => item.title).join(' | ')}`);
+    for (const item of entities.filter(row => rowOf(row)?.planning?.setting === 'mixed')) assert.match(item.note || '', /Part outdoors/, item.title);
+    // The fixture answer's first point is an indoor place; no adults' evening record anywhere in the payload.
+    assert.ok(result.points.length >= 3, message);
+    assert.ok(!(result.evidence || []).some(row => /Funeral For a Gangster|悬疑晚餐|懸疑晚餐/.test(row.title)), `${message}: ${(result.evidence || []).map(row => row.title).join(' | ')}`);
+  }
+});
+
+// ---- X1: the day's storytime on a dated family ask ----
+test('live X1: 12月5日东湾 family ask has the Oakland Main storytime in the top five evidence and in the answer\'s points (zh-Hans, en)', async () => {
+  for (const [message, locale] of [['12月5日东湾有什么适合孩子的活动', 'zh-Hans'], ['What can kids do in the East Bay on December 5?', 'en']]) {
+    const { run } = fixture();
+    const result = await run(message, { locale });
+    const story = title => /奥克兰总馆周六亲子故事时间|family storytime at Oakland/i.test(title || '');
+    const rank = (result.evidence || []).findIndex(row => story(row.title));
+    assert.ok(rank >= 0 && rank < 5, `${message}: rank ${rank + 1}: ${(result.evidence || []).slice(0, 8).map(row => row.title).join(' | ')}`);
+    assert.ok(result.points.some(point => story(point.text)), `${message}: ${result.points.map(point => point.text).join(' | ')}`);
+  }
+  // Before (base a976e0c): 9th of 10 model items, 11th of 40 in the payload evidence.
+  const { model } = fast('12月5日东湾有什么适合孩子的活动', 'zh-Hans', '2026-10-16');
+  assert.ok(model.slice(0, 5).some(item => /奥克兰总馆周六亲子故事时间/.test(item.title)), model.map(item => item.title).join(' | '));
+  assert.ok(model.some(item => /Pleasanton/.test(item.title)) && model.some(item => /Danville/.test(item.title)), 'the one-off parade and book sale stay');
+});
+
+// ---- L06: the asked part of the day and closing times ----
+test('live L06: an afternoon walk ask does not lead with (or see) a market that closes at 14:00; a market ask keeps it with a closing note (zh-Hans, zh-Hant, en)', async () => {
+  for (const [message, locale] of [['周日下午想在 Fremont 带爸妈散散步，有什么好去处？', 'zh-Hans'], ['週日下午想在 Fremont 帶爸媽散散步，有什麼好去處？', 'zh-Hant'], ['Where can I take my parents for a walk in Fremont on Sunday afternoon?', 'en']]) {
+    const { run, evidence } = fixture();
+    const result = await run(message, { locale });
+    assert.ok(!evidence().some(item => /Irvington/.test(item.title)), `${message}: ${evidence().map(item => item.title).join(' | ')}`);
+    assert.doesNotMatch(result.lead, /Irvington|市集|market/i, message);
+  }
+  // The market named: kept, with its closing time.
+  const { model } = fast('周日下午 Fremont 有农夫市集吗？', 'zh-Hans');
+  const market = model.find(item => /Irvington/.test(item.title));
+  assert.ok(market, model.map(item => item.title).join(' | '));
+  assert.match(market.note, /^Closes at 14:00, before the asked part of the day/);
+  // A morning ask is not narrowed.
+  assert.ok(fast('周日上午 Fremont 有农夫市集吗？', 'zh-Hans').model.some(item => /Irvington/.test(item.title) && !/Closes at/.test(item.note || '')));
+});
+
+// ---- L07: plan stop times, links, flags and route ----
+test('live L07: the day plan uses a record\'s own session times, links event stops to their page, flags official-site links as external, and keeps stops on one route', async () => {
+  const { run, sent } = fixture();
+  const result = await run('周六想带爸妈在旧金山玩半天，坐公交，帮我排个行程');
+  const stops = result.assistantPlan.stops;
+  assert.ok(stops.length >= 3, stops.map(stop => stop.title).join(' | '));
+  for (const stop of stops) {
+    if (stop.kind === 'event') assert.match(stop.path || '', /^\/events\/[a-z0-9-]+$/, `${stop.title}: an event stop links to its BAYLINK page`);
+    assert.equal(stop.external, /^https?:\/\//.test(stop.path || ''), `${stop.title}: ${stop.path} external ${stop.external}`);
+  }
+  // No stop more than 3 km from every other stop when the stops have locations (the Mission Bay festival was 不顺路).
+  const located = stops.filter(stop => Number.isFinite(stop.location?.lat));
+  const km = (a, b) => Math.hypot((a.lat - b.lat) * 111, (a.lng - b.lng) * 111 * Math.cos(a.lat * Math.PI / 180));
+  for (const stop of located) assert.ok(located.some(other => other !== stop && km(stop.location, other.location) <= 3), stop.title);
+  assert.ok(stops.every(stop => stop.location), 'every chosen stop has a known location');
+  assert.equal(sent.length, 1);
+  // A record whose only times are its sessions: the science festival's 11:00–16:00 is an opening window, not "missing hours".
+  const festival = planner.events.find(row => row.id === 'sf-bay-area-science-festival-2026');
+  const plan = buildItinerary({ state: { date: '2026-10-17', city: 'San Francisco' }, candidates: [{ ...festival, kind: 'event' }], selectedIds: [`event:${festival.id}`], now: Date.parse(LIVE) });
+  assert.deepEqual(plan.stops[0].openingWindows, [{ open: '11:00', close: '16:00' }]);
+  assert.ok(!plan.checks.some(check => check.code === 'opening_hours'), JSON.stringify(plan.checks.map(check => check.code)));
+  // The planner hand-off keeps catalog places whose link is their official site.
+  assert.ok(result.assistantPlan.handoff?.stops?.length === stops.length || !result.assistantPlan.handoff, JSON.stringify(result.assistantPlan.handoff));
+});
+
+test('a day plan puts a stop that closes by 15:00 first and keeps same-spot stops together', () => {
+  const market = planner.events.find(row => row.id === 'ferry-plaza-farmers-market-2026-autumn');
+  const ferry = planner.places.find(row => row.id === 'venue-ferry-building');
+  const chinatown = planner.places.find(row => row.id === 'chinatown');
+  const plan = buildItinerary({ state: { date: '2026-10-17', city: 'San Francisco' }, candidates: [{ ...chinatown, kind: 'place' }, { ...ferry, kind: 'place' }, { ...market, kind: 'event' }], now: Date.parse(LIVE) });
+  assert.deepEqual(plan.stops.map(stop => stop.entityId), ['ferry-plaza-farmers-market-2026-autumn', 'venue-ferry-building', 'chinatown']);
+});
+
+// ---- English times ----
+test('English readers get 12-hour times: weekly schedules, the asked day\'s session and a net on the answer', () => {
+  const { model } = fast('Any farmers markets in the East Bay on Saturday morning?', 'en');
+  const grand = model.find(item => /Grand Lake/.test(item.title));
+  assert.equal(grand.when, 'Every Saturday 9am–2pm · next listed: Sat, Oct 17');
+  const story = fast('What can kids do in the East Bay on December 5?', 'en').model.find(item => /family storytime at Oakland/i.test(item.title));
+  assert.match(story.when, /^Sat, Dec 5 10:30–11am /);
+  for (const [text, want] of [['Grand Lake runs Saturdays 9:00-14:00 at Splash Pad Park.', 'Grand Lake runs Saturdays 9am–2pm at Splash Pad Park.'], ['Doors 18:30, show 19:00 to 21:30.', 'Doors 6:30pm, show 7–9:30pm.'],
+    ['Storytime 10:30–11:00 [[e2]]', 'Storytime 10:30–11am [[e2]]'], ['Open 12:00-17:00', 'Open 12–5pm'], ['Already 9am–2pm and 10:30 am.', 'Already 9am–2pm and 10:30 am.'], ['Score 3:1, ratio 16:9 at 2:30pm', 'Score 3:1, ratio 16:9 at 2:30pm']]) assert.equal(englishClock(text), want);
+  // Chinese answers keep 24-hour times.
+  const { englishClockRepair } = require('../lib/baybayQuality');
+  assert.equal(englishClockRepair({ lead: '周六 9:00–14:00', points: [], gap: '' }, { locale: 'zh-Hans' }).repaired, false);
+});
+
+test('an English answer that copies 24-hour times reaches the reader in 12-hour times (L08)', async () => {
+  const { run } = fixture({ respond: body => {
+    const items = JSON.parse(body.messages[0].content[0].text).evidence;
+    const ref = items.find(item => /Grand Lake/.test(item.title))?.ref || 'e1';
+    return { lead: 'Yes, Grand Lake in Oakland runs Saturdays 9:00-14:00.', points: [{ text: `Grand Lake runs Saturdays 9:00-14:00 at Splash Pad Park [[${ref}]]`, cardIds: [ref] }], candidateIds: [], followups: [], coverage: [], gap: '' };
+  } });
+  const result = await run('Any farmers markets in the East Bay on Saturday morning?', { locale: 'en' });
+  assert.equal(result.lead, 'Yes, Grand Lake in Oakland runs Saturdays 9am–2pm.');
+  assert.doesNotMatch(result.answer, /\b\d{1,2}:00-\d{1,2}:00\b/);
+  assert.ok(result.research.warnings.includes('answer_english_clock_repaired'));
+});
+
+// ---- Block O dev types (state and guard) ----
+test('block O dev: ages said as "almost N" and 快N岁, a weekday inside an event name, neighbourhoods, a zero budget', () => {
+  assert.deepEqual(stateOf('My son is two, almost three. Is there a toddler storytime in Fremont this Saturday?').childAges, [2]);
+  assert.deepEqual(stateOf('女儿三岁多，快四岁了，这周六 Oakland 有什么适合她的活动？').childAges, [3]);
+  assert.deepEqual(stateOf('孩子快五岁了，周六 Fremont 去哪？').childAges, [4]);
+  assert.deepEqual(stateOf('孩子快滿五歲，週六 Fremont 去哪？').childAges, [4]);
+  assert.deepEqual(stateOf('She is 7, almost 8 hours of sleep is enough, any events Saturday in Oakland?').childAges, [], 'almost 8 hours is not an age');
+  for (const [message, date, ages, city] of [['Oakland的2026年12月12日Family Saturday活动，我带6岁的孩子去，门票写5美元，能只带10美元吗？', '2026-12-12', [6], 'Oakland'],
+    ['On December 12, 2026 at the Berkeley Super Sunday craft fair with my 9-year-old; parking is 8 dollars, is 10 enough?', '2026-12-12', [9], 'Berkeley']]) {
+    const state = stateOf(message);
+    assert.deepEqual([state.date, state.childAges, state.city], [date, ages, city], message);
+  }
+  // A real second date is still two dates.
+  assert.equal(stateOf('12月12日或12月13日 Oakland 有什么亲子活动？').date, null);
+  for (const [message, city] of [['周六想带孩子去 Mission District 逛逛，有什么活动？', 'San Francisco'], ['我住Richmond District，週日附近圖書館有中文活動嗎？', 'San Francisco'], ['Anything fun for kids in Willow Glen this weekend?', 'San Jose'],
+    ['Richmond 周六有什么活动？', 'Richmond'], ['Inner Sunset 周日有什么亲子活动？', 'San Francisco']]) assert.equal(stateOf(message).city, city, message);
+  const zh = stateOf('预算改成0了，城市和孩子都不变，还有哪些能去？', stateOf('周六带6岁孩子在 San Jose 玩，门票预算100美元，有什么推荐？'));
+  assert.deepEqual([zh.budget, zh.freeOnly, zh.childAges, zh.city], [0, true, [6], 'San Jose']);
+  const en = stateOf('Actually we have no money for tickets now. Same city and kid.', stateOf('Saturday in Oakland with my 7-year-old. We can pay for tickets. Ideas?'));
+  assert.deepEqual([en.budget, en.freeOnly, en.childAges, en.city], [0, true, [7], 'Oakland']);
+});
+
+test('block O dev: Social Security credits are SSA; a withheld deposit is legal; a follow-up without its topic noun keeps the guard', () => {
+  for (const message of ['我在 Oakland 打工三年了，社安积分够不够领退休金？', '社會安全退休金要幾個積分？', 'How many Social Security credits do I need to get retirement benefits?']) assert.deepEqual(professionalTopics(message), ['ssa'], message);
+  const credits = professionalResponse('How many Social Security credits do I need to get retirement benefits?', 'en', { guideCatalog: guides, englishGuideCatalog: guidesEn });
+  assert.deepEqual(credits.safety.resources.map(row => row.id), ['ssa-benefits']);
+  assert.deepEqual(credits.safety.guides.map(row => row.slug), ['bay-area-social-security-retirement-preparation-guide']);
+  assert.deepEqual(professionalResponse('我想办社安卡', 'zh-Hans', { guideCatalog: guides }).safety.resources.map(row => row.id), ['ssa'], 'an SSN question keeps the card resource');
+  for (const message of ['我在 Fremont 退租了，房东扣了我一大半押金说是清洁费，也没给收据，正常吗？', '房東把押金都扣了', 'I moved out a month ago and the landlord still has not sent back the security deposit.', 'The landlord is taking money out of my deposit for cleaning.'])
+    assert.ok(professionalTopics(message).includes('legal'), message);
+  for (const message of ['去 San Mateo On Ice 租冰鞋要交押金吗？', 'Do I need a deposit to rent skates?']) assert.ok(!professionalTopics(message).includes('legal'), message);
+  const history = text => [{ role: 'user', content: text }, { role: 'assistant', content: '…' }];
+  assert.deepEqual(professionalFollowup('她不会用电脑，也不想开网上账号，还有什么办法？', history('我住 San Jose，想帮妈妈申请 Medi-Cal。'))?.topics, ['insurance']);
+  assert.deepEqual(professionalFollowup('He says he will mail a list of charges next month. Can he wait that long?', history('My landlord in Oakland kept my whole security deposit.'))?.topics, ['legal']);
+  assert.deepEqual(professionalFollowup('他還能怎麼辦？', history('我爸想申請 Medicare'))?.topics, ['medicare']);
+  for (const message of ['这周末带孩子去 San Jose 哪里玩？', 'Any free museums in San Francisco this Sunday?']) assert.equal(professionalFollowup(message, history('想帮爸爸在线申请 Medi-Cal。')), null, message);
+});
+
+test('eval block O: 40 cases in 50 turns, dev and held-out fixed before any code change, with golds the catalog can meet', async () => {
+  const { pathToFileURL } = require('node:url');
+  const { validateCases } = await import(pathToFileURL(path.join(__dirname, '..', 'scripts', 'eval', 'gold.mjs')).href);
+  const book = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'eval', 'cases-O-bb7.json'), 'utf8'));
+  assert.equal(book.block, 'O'); assert.equal(book.pinnedNow, '2026-10-16T10:00:00-07:00');
+  assert.equal(validateCases(book.cases), 50);
+  assert.equal(book.cases.length, 40);
+  assert.equal(book.cases.filter(item => item.split === 'dev').length, 21);
+  // Each of block N's seven held-out failure types has dev and held-out cases.
+  for (const tag of ['age_almost', 'dated_city_age', 'neighbourhood_city', 'ssa_benefits', 'deposit', 'budget_zero', 'followup_topic'])
+    for (const split of ['dev', 'held-out']) assert.ok(book.cases.some(item => item.split === split && item.tags.includes(tag)), `${tag} ${split}`);
+  const corpus = ['guide-catalog.json', 'guide-catalog.en.json', 'planner-catalog.json'].map(file => fs.readFileSync(path.join(__dirname, '..', 'data', file), 'utf8')).join('\n');
+  for (const turn of book.cases.flatMap(item => item.turns)) for (const rule of turn.gold.evidenceIncludes || []) assert.ok([].concat(rule).some(source => new RegExp(source, 'iu').test(corpus)), `${turn.id}: ${rule}`);
+  const arms = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'eval', 'arms.json'), 'utf8'));
+  assert.deepEqual(arms.sets.bb7, { blocks: ['O'], arms: ['v2-code-defaults'], baselineArm: 'v2-code-defaults' });
+});
