@@ -215,6 +215,45 @@ test('weekly markets: an answer that still reads a listed date as the season is 
   assert.ok(result.research.warnings.includes('answer_listing_window_repaired'));
 });
 
+test('weekly markets: in a sentence that cites nothing, a date belongs to the nearest subject; listed dates said as such stay (review round 2)', () => {
+  const message = '这周末东湾有什么农夫市集';
+  const state = resolveTaskState({ message, today: '2026-10-15', carry: true }).state;
+  const site = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state, guideCatalog: guides, catalog: planner, discoveries, today: '2026-10-15', locale: 'zh-Hans', audience: true });
+  const windows = site.items.filter(item => item.weekly && item.row).map(item => ({ start: item.row.startDate, end: item.row.endDate, next: item.nextListed, refs: [item.ref], titles: [item.title, item.row.title] }));
+  assert.deepEqual(windows.map(row => row.next).sort(), ['2026-10-17', '2026-10-17', '2026-10-18']);
+  const others = [{ titles: ['Lake Merritt 与 OMCA'] }, { titles: ['Disney On Ice：Find Your Hero 冰上演出'] }];
+  const repair = (text, extra = {}) => listingWindowRepair({ lead: text, points: [{ text, cardIds: [] }], gap: text }, { windows, asked: state.dateRange, ...extra });
+  // Another subject (an exhibit, a festival, a show, another Latin name in Chinese prose) sits between the market and the
+  // date: the date is that subject's own, in the lead, the gap and an uncited point.
+  for (const text of ['这周六可以先逛农夫市集，再去 OMCA 看10月17日起开放的新展。', '这周末可以逛农夫市集，Ardenwood 南瓜节 10月17日起至10月31日也开放。',
+    'Saturday: hit the Grand Lake farmers market, then the OMCA show starting Oct 17.', '上午逛市集，下午去 OMCA，新展10月17日起开放。',
+    '10月17日起开放的 OMCA 新展，和每周六的农夫市集。', 'Grand Lake 市集列出的日期是 10月17日 至 12月12日。', 'The Grand Lake farmers market is listed on Oct 17 through Dec 12.']) {
+    const result = repair(text);
+    assert.equal(result.repaired, false, text);
+    assert.equal(result.draft.lead, text); assert.equal(result.draft.points[0].text, text);
+  }
+  // A record of the evidence named by its own title word is another subject too (no exhibit or show noun needed).
+  for (const text of ['Saturday: the Grand Lake farmers market, then OMCA starting Oct 17.', 'Saturday morning: Grand Lake farmers market, then Disney On Ice from Oct 17.']) {
+    assert.equal(repair(text, { others }).repaired, false, text);
+    assert.equal(repair(text).repaired, true, text);
+  }
+  // The market itself is still the nearest subject in the live defects and their variants, including a period after a
+  // month or weekday abbreviation in the lead.
+  for (const [text, want] of [
+    ['Yes, Oakland and Berkeley both have Saturday morning farmers markets starting Sat, Oct 17.', 'Yes, Oakland and Berkeley both have Saturday morning farmers markets.'],
+    ['Farmers markets in Oakland and Berkeley, starting Sat, Oct 17.', 'Farmers markets in Oakland and Berkeley.'],
+    ['Grand Lake farmers market runs from Oct. 17 through Dec. 12.', 'Grand Lake farmers market runs.'],
+    ['Oakland has a farmers market starting Sat. Oct 17.', 'Oakland has a farmers market.'],
+    ['周日 Fremont 有 Irvington 农夫市集，从10月18日（周日）开始，每周日 9:00–14:00。', '周日 Fremont 有 Irvington 农夫市集，每周日 9:00–14:00。'],
+    ['坐 BART 去 Grand Lake 农夫市集，从10月17日起每周六开。', '坐 BART 去 Grand Lake 农夫市集，每周六开。'],
+    ['Grand Lake 农夫市集10月17日起每周六开，离 Lake Merritt 很近。', 'Grand Lake 农夫市集每周六开，离 Lake Merritt 很近。'],
+  ]) {
+    const result = repair(text, { others });
+    assert.equal(result.repaired, true, text);
+    assert.equal(result.draft.lead, want); assert.equal(result.draft.gap, want); assert.equal(result.draft.points[0].text, want);
+  }
+});
+
 // ---- Line 3: a rainy-day / indoor family ask (live 10-15, L09) ----
 const indoorItems = (message, locale) => {
   const today = '2026-10-15';
@@ -307,6 +346,12 @@ test('block N dev: sudden vision loss with stumbling is a 911 stroke emergency; 
   for (const message of ['我想给新家换锁，推荐锁匠', 'How much does it cost to change the locks after moving in?', 'I\'m a new home owner, should I change the locks after moving in?',
     '我是业主，搬进新家要不要换锁？', '業主想換鎖要找誰？', 'Our HOA property manager is changing the locks on the pool gate, who do I ask for a key?', '我是业主，想换锁，推荐个锁匠', '刚买房当了业主，要不要换锁？',
     'I am a new home owner and want to change the locks, any locksmith?', 'As the owner of a small shop, should I change the locks after firing an employee?']) assert.ok(!professionalTopics(message).includes('legal'), message);
+  // Review round 2: 出租 (letting the home out), 租车, "help me out" and re-keying between tenants are not a tenant's
+  // lockout; an owner changing the locks on a tenant who has not left (不交房租, "won't pay") still is.
+  for (const message of ['我是业主，房子出租前要不要换锁？', 'As the owner of a rental property, should I change the locks between tenants?', '我是业主，换租客前要不要换锁？',
+    'I am a new home owner and want to change the locks, can you help me out?', '我想租车，车主换了锁怎么办']) assert.ok(!professionalTopics(message).includes('legal'), message);
+  for (const message of ['房租交了，业主还是换锁了', '我是业主，租客不交房租，我能换锁吗？', 'As the owner, can I change the locks if my tenant won\'t pay rent?',
+    'The owner wants to change the locks between tenants but my lease runs to June and I have not moved out, he says he will evict me']) assert.ok(professionalTopics(message).includes('legal'), message);
 });
 
 test('帮我排行程 and 排个一天的行程 are day plans; a ranking (排行榜) is not', () => {

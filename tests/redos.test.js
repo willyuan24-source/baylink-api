@@ -214,9 +214,14 @@ const windows = [{ start: '2026-10-17', end: '2026-12-12', next: '2026-10-17', r
 for (const pad of [' ', '\t', '　', ', '])
   for (const head of ['farmers market from', '农夫市集从10月17日'])
     cases['listingWindowRepair ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad)] = () => listingWindowRepair({ lead: fill(head, pad, 200, ' 市集'), points: Array.from({ length: 5 }, () => ({ text: fill(head, pad, 600, ' [[e1]]'), cardIds: ['e1'] })), gap: fill(head, pad, 300, ' farmers market') }, { windows, asked: { start: '2026-10-17', end: '2026-10-18' } });
+// Review round 2: an uncited segment finds each phrase's nearest subject once per string, not once per phrase (five
+// 6,000-character uncited points of back-to-back market and exhibit phrases, 30 other records).
+const others = Array.from({ length: 30 }, (_, n) => ({ titles: ['Museum Exhibit ' + n + ' 新展特展庆典' + n] }));
+for (const pump of ['农夫市集10月17日起，OMCA 新展10月17日起，', 'farmers market starting Oct 17, then the OMCA show starting Oct 17, '])
+  cases['listingWindowRepair uncited ' + JSON.stringify(pump.slice(0, 12))] = () => listingWindowRepair({ lead: fill('', pump, 200), points: Array.from({ length: 5 }, () => point(fill('', pump, 6000))), gap: fill('', pump, 300) }, { windows, others, asked: { start: '2026-10-17', end: '2026-10-18' } });
 for (const fn of Object.values(cases)) fn(); // warm up
 for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
-  assert.equal(timings.length, 17 * 11 + 5 + 8);
+  assert.equal(timings.length, 17 * 11 + 5 + 8 + 2);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });
 
