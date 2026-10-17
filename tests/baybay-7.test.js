@@ -1,6 +1,7 @@
 // API-BB-7: the follow-ups of the API-BB-6 live check (10-16) and eval block O. Shipped data with a fixed day; a fixture
 // provider, no network.
 const test = require('node:test');
+const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -385,4 +386,119 @@ test('review 2: "9:00 a.m" without its final dot stays as written; "she says it 
   assert.deepEqual(stateOf('She says it is almost 3 already, any cafes in Fremont?').childAges, []);
   assert.deepEqual(stateOf('She is almost 3. Any storytime in Fremont on Saturday?').childAges, [2]);
   assert.deepEqual(stateOf('She\'s almost 3, any storytime in Fremont on Saturday?').childAges, [2]);
+});
+
+// ---- Review round 3 (10-17): the follow-up carry is decided by signals, not cue phrases ----
+// The independent check's probe rows of tip a06e0d8, both directions, three locales (the turn before each one is its
+// Medi-Cal, SSA or deposit question in the same locale).
+const R3_BEFORE = {
+  medi: { 'zh-Hans': '我住 Fremont，想帮我妈申请 Medi-Cal，她刚来美国两年。', 'zh-Hant': '我住 Fremont，想幫我媽申請 Medi-Cal，她剛來美國兩年。', en: 'My mom just moved here two years ago. Can she apply for Medi-Cal in Fremont?' },
+  ssa: { 'zh-Hans': '我爸62岁能领社安退休金吗？', 'zh-Hant': '我爸62歲能領社安退休金嗎？', en: 'How many Social Security credits does my dad need to retire?' },
+  legal: { 'zh-Hans': '房东把我的押金全部扣了，说要修地毯。', 'zh-Hant': '房東把我的押金全部扣了，說要修地毯。', en: 'My landlord in San Jose kept my entire deposit for carpet cleaning.' },
+};
+// [follow-up, the turn before, locale]: an outing or a leisure subject keeps no professional guard.
+const R3_OUTINGS = [
+  ['那周末带她去哪玩？', 'medi', 'zh-Hans'], ['那附近有什么吃的？', 'medi', 'zh-Hans'], ['周六下午呢？', 'medi', 'zh-Hans'], ['那他周末想出去走走，有什么推荐？', 'ssa', 'zh-Hans'],
+  ['那她想学英文，找谁？', 'medi', 'zh-Hans'], ['她一个人在家太闷了，怎么办？', 'medi', 'zh-Hans'], ['她想找人一起打麻将，找谁？', 'medi', 'zh-Hans'], ['那还有什么办法让她周末不无聊？', 'medi', 'zh-Hans'],
+  ['押金的事先放一放，那附近有什么好吃的？', 'legal', 'zh-Hans'], ['他退休以后还能做些什么打发时间？', 'ssa', 'zh-Hans'], ['她喜欢唱歌，还有什么选择？', 'medi', 'zh-Hans'], ['他退休了想认识新朋友，找谁？', 'ssa', 'zh-Hans'],
+  ['那週末帶她去哪玩？', 'medi', 'zh-Hant'], ['那附近有什麼好吃的？', 'medi', 'zh-Hant'], ['週六下午呢？', 'legal', 'zh-Hant'], ['那她想學英文，找誰？', 'medi', 'zh-Hant'],
+  ['她一個人在家很悶，怎麼辦？', 'medi', 'zh-Hant'], ['他退休後想找點事做，怎麼辦？', 'ssa', 'zh-Hant'], ['她喜歡唱歌，還有什麼選擇？', 'medi', 'zh-Hant'],
+  ['What about Sunday with the kids?', 'medi', 'en'], ['Anything good to eat around there?', 'medi', 'en'], ['Instead, anything nice for her to see around Santa Clara?', 'medi', 'en'],
+  ['Instead, something relaxing for seniors nearby?', 'medi', 'en'], ['Other ways to keep her busy while she waits?', 'medi', 'en'], ['Can she keep busy somewhere indoors?', 'medi', 'en'],
+  ['She is bored at home. What now?', 'medi', 'en'], ['What about Saturday afternoon with the grandkids?', 'ssa', 'en'], ['OK, forget the deposit. Where can I take my kids this weekend?', 'legal', 'en'],
+  ['He wants to volunteer somewhere after he retires. Who do I ask?', 'ssa', 'en'], ['Instead, any good places for seniors to hang out in Fremont?', 'medi', 'en'],
+  ['She loves gardening. What else could she try?', 'medi', 'en'], ['What now? It is raining.', 'medi', 'en'],
+];
+// [follow-up, the turn before, locale, topic]: a professional follow-up keeps the guard (two name their own topic).
+const R3_PROFESSIONAL = [
+  ['那她要带什么证件？', 'medi', 'zh-Hans', 'insurance'], ['要多久才批下来？', 'medi', 'zh-Hans', 'insurance'], ['她要去哪个办公室？', 'medi', 'zh-Hans', 'insurance'],
+  ['那她周一去办公室要预约吗？', 'medi', 'zh-Hans', 'insurance'], ['被拒了怎么办？', 'medi', 'zh-Hans', 'insurance'], ['需要准备什么材料？', 'medi', 'zh-Hans', 'insurance'],
+  ['他今年63岁，现在领会少多少？', 'ssa', 'zh-Hans', 'ssa'], ['房东说下个月才寄清单，我能等吗？', 'legal', 'zh-Hans', 'legal'], ['我该怎么要回来？', 'legal', 'zh-Hans', 'legal'],
+  ['那她要帶什麼證件？', 'medi', 'zh-Hant', 'insurance'], ['要多久才會批下來？', 'medi', 'zh-Hant', 'insurance'], ['被拒絕了怎麼辦？', 'medi', 'zh-Hant', 'insurance'],
+  ['他明天去辦公室要帶什麼？', 'ssa', 'zh-Hant', 'ssa'], ['我可以去小額法庭告他嗎？', 'legal', 'zh-Hant', 'legal'],
+  ['What documents do I need?', 'medi', 'en', 'insurance'], ['How long does approval take?', 'medi', 'en', 'insurance'], ['What if she gets denied?', 'medi', 'en', 'insurance'],
+  ['Where is the nearest office?', 'medi', 'en', 'insurance'], ['Can she still apply if she owns a house?', 'medi', 'en', 'insurance'], ['Does she need an appointment on Monday?', 'medi', 'en', 'insurance'],
+  ['What if he retires at 62 instead?', 'ssa', 'en', 'ssa'], ['Can I take him to small claims court?', 'legal', 'en', 'legal'], ['How do I get it back?', 'legal', 'en', 'legal'],
+];
+const turnsBefore = (...messages) => messages.flatMap(content => [{ role: 'user', content }, { role: 'assistant', content: '…' }]);
+
+describe('review round 3', () => {
+  it('an outing or leisure follow-up after a Medi-Cal, SSA or deposit turn keeps no professional guard, even with 找谁 / 怎么办 / instead / what now (32 rows, zh-Hans, zh-Hant, en)', () => {
+    assert.equal(R3_OUTINGS.length, 32);
+    for (const [message, before, locale] of R3_OUTINGS) {
+      assert.deepEqual(professionalTopics(message), [], message);
+      assert.equal(professionalFollowup(message, turnsBefore(R3_BEFORE[before][locale])), null, message);
+    }
+  });
+
+  it('a professional follow-up keeps the turn before\'s guard: documents, approval time, a denial, the office, an appointment, an amount, getting a deposit back (23 rows)', () => {
+    assert.equal(R3_PROFESSIONAL.length, 23);
+    for (const [message, before, locale, topic] of R3_PROFESSIONAL) {
+      const own = professionalTopics(message);
+      const carried = professionalFollowup(message, turnsBefore(R3_BEFORE[before][locale]));
+      assert.deepEqual(own.length ? own : carried?.topics, [topic], message);
+      if (!own.length) assert.equal(carried.priorMessage, R3_BEFORE[before][locale], message);
+    }
+  });
+
+  it('end to end, every probe row: the outing is a site answer, the professional follow-up a guarded one with its topic', async () => {
+    const { run } = fixture();
+    for (const [message, before, locale] of R3_OUTINGS) {
+      const result = await run(message, { locale, history: turnsBefore(R3_BEFORE[before][locale]) });
+      assert.notEqual(result.safetyRoute, 'professional', `${message}: ${result.safetyTopic}`);
+    }
+    for (const [message, before, locale, topic] of R3_PROFESSIONAL) {
+      const result = await run(message, { locale, history: turnsBefore(R3_BEFORE[before][locale]) });
+      assert.deepEqual([result.safetyRoute, result.safetyTopic], ['professional', topic], message);
+    }
+  });
+
+  it('a message that follows no professional turn keeps its own route (no history, or an outing turn before it)', () => {
+    for (const [message] of [...R3_OUTINGS, ...R3_PROFESSIONAL]) {
+      assert.equal(professionalFollowup(message, []), null, message);
+      assert.equal(professionalFollowup(message, turnsBefore('周六带6岁孩子在 San Jose 玩，有什么推荐？')), null, message);
+      assert.equal(professionalFollowup(message, turnsBefore('Any free museums in San Francisco this Sunday?')), null, message);
+    }
+  });
+
+  it('a chain of professional follow-ups keeps the topic it started from (up to three user turns back); an outing in the chain ends it', () => {
+    const medi = R3_BEFORE.medi;
+    assert.deepEqual(professionalFollowup('要多久才批下来？', turnsBefore(medi['zh-Hans'], '那她要带什么证件？')), { topics: ['insurance'], priorMessage: medi['zh-Hans'] });
+    assert.deepEqual(professionalFollowup('被拒絕了怎麼辦？', turnsBefore(R3_BEFORE.ssa['zh-Hant'], '他明天去辦公室要帶什麼？'))?.topics, ['ssa']);
+    assert.deepEqual(professionalFollowup('What if she gets denied?', turnsBefore(medi.en, 'What documents do I need?', 'How long does approval take?'))?.topics, ['insurance']);
+    assert.equal(professionalFollowup('怎么办？', turnsBefore(medi['zh-Hans'], '那周末带她去哪玩？')), null, 'an outing turn ends the chain');
+    assert.equal(professionalFollowup('What now?', turnsBefore(medi.en, 'Anything good to eat around there?')), null);
+    assert.equal(professionalFollowup('What now?', turnsBefore(medi.en, 'What documents do I need?', 'How long does approval take?', 'Where is the nearest office?')), null, 'four user turns back is too far');
+    // A turn before with two topics: a follow-up keeps the ones whose domain it names; a shared signal keeps both.
+    const both = turnsBefore('My green card interview is next month, and my mom also needs Medi-Cal.');
+    assert.deepEqual(professionalFollowup('Does he need to bring his passport?', both)?.topics, ['immigration']);
+    assert.deepEqual(professionalFollowup('What about the premium?', both)?.topics, ['insurance']);
+    assert.deepEqual(professionalFollowup('What documents do I need?', both)?.topics, ['immigration', 'insurance']);
+    // A domain word of another topic does not carry: a landlord after a Medi-Cal turn, a premium after a deposit turn.
+    assert.equal(professionalFollowup('房东说下个月才寄清单，我能等吗？', turnsBefore(medi['zh-Hans'])), null);
+    assert.equal(professionalFollowup('Where is the court?', turnsBefore(medi.en)), null);
+    // Its own domain word comes first: income after a Medi-Cal turn keeps the Medi-Cal guard beside Social Security.
+    assert.deepEqual(professionalFollowup('Does Social Security count as income?', turnsBefore(medi.en))?.topics, ['insurance']);
+    assert.equal(professionalFollowup('What about the premium?', turnsBefore(R3_BEFORE.legal.en)), null);
+  });
+
+  it('a bare cue carries only with a pronoun and filler around it', () => {
+    for (const [message, locale] of [['怎么办？', 'zh-Hans'], ['那现在怎么办？', 'zh-Hans'], ['然后呢？', 'zh-Hans'], ['还有什么办法？', 'zh-Hans'], ['她还能怎么办？', 'zh-Hans'],
+      ['怎麼辦？', 'zh-Hant'], ['然後呢？', 'zh-Hant'], ['還有什麼辦法？', 'zh-Hant'], ['What now?', 'en'], ['OK, what else?', 'en'], ['Then what?', 'en'], ['What else can I do?', 'en'], ['So what should she do now?', 'en']])
+      assert.deepEqual(professionalFollowup(message, turnsBefore(R3_BEFORE.medi[locale]))?.topics, ['insurance'], message);
+    for (const message of ['周六下午呢？', '南瓜灯怎么做？', '她周六在 San Jose 还能做什么？', 'What else can she do on Saturday in San Jose?', 'Where else can we take her?', 'Instead?'])
+      assert.equal(professionalFollowup(message, turnsBefore(R3_BEFORE.medi[/[㐀-鿿]/.test(message) ? 'zh-Hans' : 'en'])), null, message);
+  });
+
+  it('Social Security work credits said as points are SSA, with the retirement resource (社安工作点数 / 社會安全工作點數 / 社安点数 / Social Security 退休金)', () => {
+    for (const message of ['我爸想知道他的社安工作点数够不够领退休金。', '社會安全工作點數要多少才夠？', '社安工作点数怎么算？', '我爸的社安点数够40个吗？', '我爸想问 Social Security 退休金够不够点数'])
+      assert.deepEqual(professionalTopics(message), ['ssa'], message);
+    assert.deepEqual(professionalResponse('社安工作点数怎么算？', 'zh-Hans', { guideCatalog: guides }).safety.resources.map(row => row.id), ['ssa-benefits']);
+    assert.deepEqual(professionalResponse('社會安全工作點數要多少才夠？', 'zh-Hant', { guideCatalog: guides }).safety.resources.map(row => row.id), ['ssa-benefits']);
+    // A Medicare question that names Social Security retirement stays Medicare; the English name with no credits word stays a
+    // site answer (G12 must-not-route); the card is still the SSN resource.
+    assert.deepEqual(professionalTopics('我爸还没领社安退休金，65岁时 Medicare 会自动生效吗？'), ['medicare']);
+    assert.deepEqual(professionalTopics('Social Security 退休金怎么申请'), []);
+    assert.deepEqual(professionalResponse('我想办社安卡', 'zh-Hans', { guideCatalog: guides }).safety.resources.map(row => row.id), ['ssa']);
+  });
 });

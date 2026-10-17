@@ -270,3 +270,24 @@ test('the linearised API-BB-QUALITY citation patterns keep their matches', () =>
   const repeat = leadConsistency({ lead: '可以去。', points: [{ text: '入园免费，以官方页面为准。', cardIds: [] }, { text: '乙', cardIds: [] }], gap: '入园免费 [[e1]]，以官方页面为准 [[ e2 ]]。' });
   assert.deepEqual(repeat.repairs, ['gap_repeat']);
 });
+
+// API-BB-7 review round 3: the follow-up signals (leisure subjects, professional signals, the bare-cue check with its filler
+// strip) on 300-character follow-ups after a chain of three turns, and the SSA credit pattern on 5,000-character messages.
+// A first draft's "social security\s*的?\s*…" took ~40 ms on 5,000 U+3000 (two runs of \s* around an optional word).
+test('API-BB-7: professionalFollowup and the SSA credit pattern stay under 50 ms at their input bounds', () => {
+  const timings = timeInChild(`
+const { professionalFollowup, professionalTopics } = require(require('path').join(ROOT, 'lib', 'safetyRouting'));
+const fill = (head, pump, size, tail) => head + pump.repeat(Math.ceil((size - head.length - tail.length) / pump.length)).slice(0, size - head.length - tail.length) + tail;
+const history = [{ role: 'user', content: '我住 San Jose，想帮妈妈申请 Medi-Cal。' }, { role: 'assistant', content: '…' }, { role: 'user', content: '要带什么证件？' }, { role: 'assistant', content: '…' }, { role: 'user', content: 'How long does approval take?' }];
+const cases = {};
+for (const pad of [' ', '\\t', '\\u3000', '那', '还', '的话', 'what else ', '怎么', '还有什么', 'with the ', 'how long ', '带她', '车要', 'um', 'if that does not work ', '社安的'])
+  for (const head of ['', '那', 'what else', 'how long', '带', 'social security'])
+    for (const tail of ['?', '怎么办？', ' what now?']) {
+      cases['follow-up ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad) + ' + ' + JSON.stringify(tail)] = () => professionalFollowup(fill(head, pad, 300, tail), history);
+      if (tail === '?') cases['topics ' + JSON.stringify(head) + ' + ' + JSON.stringify(pad)] = () => professionalTopics(fill(head, pad, 5000, tail));
+    }
+for (const fn of Object.values(cases)) fn(); // warm up
+for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
+  assert.equal(timings.length, 16 * 6 * 4);
+  for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
+});
