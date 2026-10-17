@@ -348,3 +348,55 @@ Follow-ups of the API-BB-6 live check (10-16, api `a976e0c`). Tests: `tests/bayb
   turn it started from, up to three user turns back, while every turn in it carries. Social Security credits said as
   points are SSA: 社安工作点数 / 社會安全工作點數 / 社安点数 / 工作点数 / "Social Security 退休金够不够点数" ("Social Security
   退休金怎么申请", with no credits word, stays a site answer as the G12 regression requires).
+
+## API-BB-8: sources kept, honest counts, family hours, guide card type, evidence fit, plan lead order
+
+Fixes from the API-BB-7 live check (10-17, api `bc0ee27`) and its independent read. Tests: `tests/baybay-8.test.js`
+(the live L08 and L07 answers replayed as the model wrote them); `tests/redos.test.js` (API-BB-8 block).
+
+- **A point keeps its source** (live L08: 0 sources; L07: the market point had no [n]). The cause was not a repair
+  step: the model's L08 output (698 characters) is its draft without a single `[[ref]]`; both points named their market
+  only in `cardIds`. In L07 the market stop's only ref was a store id (`s-…`), as the market is not an evidence item.
+  `pointRepairs()` (`lib/baybayQuality.js`), the last of `resolveDraft`'s repairs, gives a point that cites nothing the
+  refs it lists in `cardIds` (refs that resolve to a source), or the first ref of the one plan stop it names; appended at
+  the point's end (zh with no space, en after a space), so the streamed point stays a prefix of the result. Warning
+  `answer_point_citation_restored`. The count, listing-window, 12-hour-clock and area repairs keep a point's markers
+  (tested end to end).
+- **A catalog count names its scope** (live L08 "Yes, two East Bay farmers markets run on Saturday mornings" read as
+  every market). In `countRepaired` (`leadConsistency` and the streamed lead's `leadDraftText`), a plain count that
+  matches the listed options and says that many exist (zh after 有, en as the subject, after "Yes," / "There are" /
+  "has") says they are BAYLINK's: zh "有 BAYLINK 收录的两个农夫市集" (zh-Hant 收錄; inserted where the count starts), en "two
+  East Bay farmers markets listed on BAYLINK run …" (after the option noun). Both points are at or after where the
+  streamed lead is held, so the streamed lead stays a prefix. A lead that already names its scope (BAYLINK, 收录, listed,
+  站内) and a count that refers back (这两个 / 两场…都 / Here are three) are unchanged; a count that differs from the points
+  still loses its number. markets, museums, libraries, parks, venues, storytimes, programmes, classes, shows, fairs and
+  parades (en) and 农夫市集 / 图书馆 / 美术馆 (zh) count as option nouns. Repair `lead_scope`.
+- **Hours that matter** (`lib/baybayEvidence.js`). On a family ask a place's recorded hours lead with the children's
+  area when its hours note gives that area's opening times (`childAreaOpens`, King Library: "周六 儿童区 10:00 起（全馆
+  8:00–18:00）", en "Saturday children's area from 10am (building 8am–6pm)"); only the opening time is recorded, so no
+  closing time is made up, and a day the area opens with the building is unchanged. A place or opening without recorded
+  hours whose Chinese record says when it usually opens on an asked day gives that as its `when` (`usualDayHours`,
+  Sucré: "记录：周日通常中午开门", "On record: Sunday, usually opens at noon"); a range ("周二至周日 16:00–22:00") is not
+  read as one time, and events are left alone (their sessions are their hours).
+- **Guide card type**. A place shown as its BAYLINK guide (`quickRef`) is a leisure guide in the web's guide category
+  `city` (all 29 place guides are): the card carries `guideType: 'leisure'`, `guideCategory: 'city'` and `typeLabel`
+  (城市指南 / City guide), in the preview cards and the final cards. A guide card from the page context carries none.
+  The web currently labels every guide card 办事指南 (`src/features/baybay/BayBayCards.tsx`): reading these fields (or
+  the web's own `guide.category`) is a web follow-up.
+- **Evidence fit**. A one-venue offer whose record names no city or region but gives a street address (Randall
+  Museum, the Cable Car Museum, Happy Hollow, Poppy & Claro) is left out of a city or area ask after scoring, unless the
+  ask names its venue in Latin letters; on a family ask that is not about the evening, an event whose stated audience
+  names no children, families, all ages or public and whose every session starts at 18:00 or later (Rush's concerts) is
+  not a candidate. Both run after scoring, so the other records keep their scores: over the 244 first turns of blocks
+  A–O only those records (and King Library's hours) changed. SF asks lose the two SF offers until their records get a
+  region (data follow-up). Guide reference sources (Presidio Field Station is a source of the October freebies guide)
+  are not filtered.
+- **Plan lead and points** (live L07). On the one-call new day plan the lead names the stops in visiting order
+  (`leadStopOrder`: each stop's one mention moves into the slots the mentions take, "逛渡轮大厦、农夫市集" → "逛农夫市集、
+  渡轮大厦"; warning `answer_lead_order_repaired`); a lead that compares or swaps stops, names a stop twice or names fewer
+  than two is unchanged. A point that names a stop gets the stop's card in `cardIds` and, when it gives no clock time,
+  the stop's time (a timed session, else the record's opening window that day: "开放时段 8:00–14:00" / "Open 8am–2pm";
+  warning `answer_plan_point_time_added`). `planView` gives an untimed stop its `hours`, and the plan-call rules ask for
+  the stop order in the lead and each stop's time or hours in its point. Stop names: the title's and aliases' parts,
+  their Latin names, a few Chinese names of Latin venues (Ferry Building / 渡轮大厦, Chinatown / 唐人街 / 华埠); a name two
+  stops share names neither.
