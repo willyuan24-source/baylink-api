@@ -195,6 +195,18 @@ test('BayBay: holiday hours and 2027 figure asks reach the new guide and the 202
   assert.match(en, /From January 4, 2027: \$1\.50 single ride on Clipper/);
 });
 
+// Not met by this sync (no lib/ change; fails on the api base data too, which has no 2027 fares). The senior transit guide
+// carries Muni's 2027 senior fares (pinned above), but at the end of the long "Fares for 65+" / "65 岁及以上的各家票价"
+// section, past the 400-character excerpt, so a senior 2027 Muni ask never sees them: the English ask gets no 2027 line and
+// the Chinese ask only the commute guide's adult $3.00 line (10th item). With the 2026–27 / 2027 lines in a paragraph of
+// their own (measured, not shipped) both asks get the $1.50 line. The acceptance check for the next BayBay or content lane.
+test('BayBay: senior 2027 Muni asks see the senior transit guide\'s 2027 senior fare', { todo: 'API-SYNC-3h follow-up: CNT-YEAREND\'s 2027 senior Muni fares sit past the excerpt of the long fares section; a senior 2027 ask should see them (next BayBay lane, or a content split of the 2026–27 / 2027 lines)' }, () => {
+  for (const message of ['What will Muni cost for seniors in 2027?', '2027 年 Muni 长者票价多少']) {
+    const result = evidence(message);
+    assert.ok(modelItems(result.items).some(view => view.kind === 'guide' && /January 4, 2027: \$1\.50 single ride on Clipper|2027 年 1 月 4 日起：Clipper 单程 \$1\.50/.test(view.text)), `${message}: ${itemIds(result).join(', ')}`);
+  }
+});
+
 // Before this sync the 2027 parade and flower market asks had no Lunar New Year record at all.
 test('BayBay: 2027 Lunar New Year asks get the dated 2027 events', () => {
   const parade = evidence('2027 旧金山春节游行是哪天？');
