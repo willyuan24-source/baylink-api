@@ -341,16 +341,20 @@ const today = '2026-10-17';
 const cost = '市府页列 0–3 岁免费、4–14 岁 $5、18+ $8；15–17 岁费用未注明，待核实。';
 const cases = {};
 for (const pad of [' ', '\t', '\u00a0', '\u3000'])
-  for (const head of ['10月24', '10月24日', '10/24', 'Oct 24', '周末', '这周末 10/24', '这周末（10/24', '10/24 还是', 'weekend (10/24', '4–14 岁 $5'])
+  for (const head of ['10月24', '10月24日', '10/24', 'Oct 24', '周末', '这周末 10/24', '这周末（10/24', '10/24 还是', 'weekend (10/24', '4–14 岁 $5',
+    // Review round 2: the weekday label beside the date and beside a paired day, and an adult "起" (from) price.
+    '这周末 10/24（周六', '10/24 或 10/25（周日', '成人 $32 起，5–17 岁 $20'])
     cases[JSON.stringify(head) + ' + ' + JSON.stringify(pad) + ' (499)'] = () => {
       const message = fill(head, pad, 499, '去哪');
       askedDateRange(message, today);
       askedDateRange(fill(head, pad, 499, '周末'), today);
+      askedDateRange(fill(head, pad, 499, '（周六）'), today);
       resolveTaskState({ message, today, carry: true });
-      adultTierRepair({ points: Array.from({ length: 5 }, () => ({ text: fill(head, pad, 600, ' $5。[[e7]]'), cardIds: [] })) }, { costOf: () => cost, locale: 'zh-Hans' });
+      for (const costLine of [cost, '成人 $32 起，5–17 岁 $20 起，4 岁及以下免费'])
+        adultTierRepair({ points: Array.from({ length: 5 }, () => ({ text: fill(head, pad, 600, ' $5，$20 起。[[e7]]'), cardIds: [] })) }, { costOf: () => costLine, locale: 'zh-Hans' });
     };
 for (const fn of Object.values(cases)) fn(); // warm up
 for (const [name, fn] of Object.entries(cases)) out.push({ name, ms: time(fn) });`);
-  assert.equal(timings.length, 4 * 10);
+  assert.equal(timings.length, 4 * 13);
   for (const { name, ms } of timings) assert.ok(ms < BUDGET_MS, `${name}: ${ms.toFixed(1)} ms`);
 });

@@ -134,6 +134,33 @@ test('review round 1: full-width separators, a second date and a time of day bes
   for (const message of ['这周末 10/24 下午3点有什么', '周末 10/24 晚上有什么演出']) assert.equal(stateOf(message).state.date, '2026-10-24', message);
 });
 
+test('review round 2: a weekday written beside the date is part of the span, never this week\'s Saturday or Sunday', () => {
+  // "10月24日（周六）" is how Chinese dates are often written; the weekday left over was read as this Saturday (10/17).
+  for (const message of ['这周末 10月24日（周六）带娃去哪', '这周末 10/24（周六）带娃去哪', '这周末 10/24 周六 带娃去哪', '这周末 10月24日 星期六 带娃去哪',
+    '這週末 10/24（週六）帶娃去哪', 'This weekend (10/24, Saturday), where to go?', 'weekend 10/24 (Sat) kids', '这周末 10/25（周日）带娃去哪', '这周末 10/25 星期天去哪',
+    '这周末 10/24（六）带娃去哪', '这周末 10/24（周六）或 10/25（周日）带娃', '10/24（周六）还是 10/25 周末去哪', 'weekend Oct 24, Sat., kids']) {
+    const { state } = stateOf(message);
+    assert.deepEqual(state.dateRange, { start: '2026-10-24', end: '2026-10-25' }, message); assert.equal(state.date, null, message);
+  }
+  // A weekday that does not match the date still asks to confirm (as before this lane); a part of the day after the weekday,
+  // or a weekday written before the date, keeps the one written day.
+  for (const message of ['这周末 10/24（周日）去哪', 'weekend 10/24 (Sun) kids']) {
+    const result = stateOf(message);
+    assert.notEqual(result.state.date, '2026-10-18', message); assert.match(result.clarification || '', /星期不一致/, message);
+  }
+  for (const message of ['这周末 10/24 周六上午有什么', '这周末 10/24 (周六) 下午有什么', '这周末 周六 10/24 带娃去哪', '帮我安排这周末 10/24（周六）带娃一日游']) {
+    assert.equal(stateOf(message).state.date, '2026-10-24', message);
+  }
+  // A weekday, today or tomorrow elsewhere in the ask is not folded into the span: the ask reads as it did before this lane
+  // (the written-day span never hands the leftover word the whole date).
+  const before = { '这周末 10/24，周六或周日都行': undefined, '这周末 10/24 带娃去哪，周六有雨吗': /多个日期/, '这周末 10/24 还是明天': undefined, '这周末 10/24，周日去公园': /星期不一致/ };
+  for (const [message, clarification] of Object.entries(before)) {
+    const result = stateOf(message);
+    assert.equal(result.state.date, null, message);
+    if (clarification) assert.match(result.clarification || '', clarification, message);
+  }
+});
+
 // ---------------------------------------------------------------- 5. home city vs the service's city (live Q3)
 
 test('a library service asked from home keeps the home city as the origin and does not move the scope to the institution\'s city', () => {
