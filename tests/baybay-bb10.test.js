@@ -29,6 +29,8 @@ async function ask(question, draft, { locale = 'zh-Hans', history = [], assistan
 }
 const coverageItem = (response, id) => response.answerCoverage.items.find(item => item.id === id);
 const coverageSources = (response, id) => coverageItem(response, id).sourceIds.map(sourceId => response.evidence.find(row => row.id === sourceId));
+// The API-BB-10 fallback (review round 6) put features back to main 8eec008; their tests stay here as todo for follow-up lane API-BB-11.
+const HOME_CITY_TODO = 'API-BB-10 fallback: the home-city library reading is main 8eec008 again; follow-up lane API-BB-11';
 
 // ---------------------------------------------------------------- 1. SFPL card + Kanopy from Fremont (live Q3)
 
@@ -164,7 +166,7 @@ test('review round 2: a weekday written beside the date is part of the span, nev
 
 // ---------------------------------------------------------------- 5. home city vs the service's city (live Q3)
 
-test('a library service asked from home keeps the home city as the origin and does not move the scope to the institution\'s city', () => {
+test('a library service asked from home keeps the home city as the origin and does not move the scope to the institution\'s city', { todo: HOME_CITY_TODO }, () => {
   for (const message of [Q3['zh-Hans'].question, Q3['zh-Hant'].question, Q3.en.question]) {
     const { state, clarification } = stateOf(message);
     assert.equal(state.origin, 'Fremont', message);
@@ -176,7 +178,7 @@ test('a library service asked from home keeps the home city as the origin and do
   assert.equal(stateOf('SFPL 借书证怎么办？').state.city, 'San Francisco');
 });
 
-test('after the Fremont SFPL question, a follow-up is not scoped to San Francisco', async () => {
+test('after the Fremont SFPL question, a follow-up is not scoped to San Francisco', { todo: HOME_CITY_TODO }, async () => {
   const first = await ask(Q3['zh-Hans'].question, q3Draft(Q3['zh-Hans']));
   assert.equal(first.response.taskState.origin, 'Fremont');
   assert.equal(first.response.taskState.city, null);
@@ -432,7 +434,7 @@ test('review round 3: the adult tier is added only from a cost line with no cond
   assert.equal(tier(costOf('alameda-haunted-house-2026'), 'Ages 4–14 $5, everyone else $8.00 [[e7]]', 'en').repaired, false);
 });
 
-test('review round 3: a branch\'s hours or address asked from home stays on the library\'s city; a card or service ask does not', () => {
+test('review round 3: a branch\'s hours or address asked from home stays on the library\'s city; a card or service ask does not', { todo: HOME_CITY_TODO }, () => {
   for (const message of ['我住 Fremont，SFPL 总馆在哪里？', '我住 Fremont，SFPL 的 Mission Bay 分馆周末几点开门？', 'I live in Fremont. What time does SFPL Main Library open on Sunday?', 'I live in Fremont. Where is SFPL Main Library?',
     '我住 Fremont，旧金山图书馆有什么亲子活动', '我住 Fremont，想去 SFPL 总馆借书']) {
     const { state } = stateOf(message);
@@ -505,7 +507,7 @@ test('review round 4: more one-day wording keeps the one day, and a typed two-da
   }
 });
 
-test('review round 4: after a home-city card question, asking where a library is or when it opens is about the library\'s city again', () => {
+test('review round 4: after a home-city card question, asking where a library is or when it opens is about the library\'s city again', { todo: HOME_CITY_TODO }, () => {
   for (const [first, followups] of [[Q3['zh-Hans'].question, ['SFPL 总馆在哪里？', 'SFPL 总馆几点开门？', '那 SFPL 总馆周末开吗']],
     [Q3['zh-Hant'].question, ['SFPL 總館在哪裡？', '那 SFPL 總館週末開嗎']], [Q3.en.question, ['What time does SFPL Main Library open on Sunday?', 'Where is the SFPL Main Library?']]]) {
     const home = stateOf(first).state;
@@ -622,7 +624,7 @@ test('review round 5: a carried day the ask writes beside 周末 / weekend is ke
   assert.deepEqual(stateOn('10/24 那天有事，这周末呢', { previous: { goal: 'discover', date: '2026-10-24' } }).state.dateRange, { start: '2026-10-17', end: '2026-10-18' });
 });
 
-test('review round 5: after a home-city card question, any follow-up that names the library and is not a card or service ask is about the library\'s city', () => {
+test('review round 5: after a home-city card question, any follow-up that names the library and is not a card or service ask is about the library\'s city', { todo: HOME_CITY_TODO }, () => {
   const followups = ['SFPL 总馆怎么走？', 'SFPL 总馆什么时候开？', 'SFPL 总馆在什么地方', 'SFPL 总馆的位置', 'SFPL 总馆周末开放吗', 'SFPL 总馆离 BART 近吗', 'SFPL 总馆几号线', 'SFPL 总馆附近有什么吃的',
     'SFPL 總館附近有什麼好吃的', 'SFPL 總館怎麼走', 'SFPL Main Library location?', 'Any good food near SFPL Main Library?', 'What else is around SFPL Main?', 'SFPL 总馆在哪？能办卡吗'];
   for (const first of [Q3['zh-Hans'].question, Q3['zh-Hant'].question, Q3.en.question]) {
@@ -642,7 +644,7 @@ test('review round 5: after a home-city card question, any follow-up that names 
   }
 });
 
-test('review round 5: a first turn that asks the way or the hours beside the card question keeps the library\'s city', () => {
+test('review round 5: a first turn that asks the way or the hours beside the card question keeps the library\'s city', { todo: HOME_CITY_TODO }, () => {
   for (const message of ['我住 Fremont，SFPL 总馆怎么走？能办卡吗', '我住 Fremont，SFPL 总馆什么时候开，可以办借书证吗', '我住 Fremont，可以办 SFPL 卡吗？总馆在什么地方', '我住 Fremont，想办 SFPL 卡，总馆周末开放吗',
     '我住 Fremont，SFPL 总馆离 BART 近吗？能办卡吗', '我住 Fremont，SFPL 總館怎麼走？能辦卡嗎', 'I live in Oakland. SFPL Main Library location for a library card?', 'I live in Fremont. How do I get to SFPL Main to get a library card?',
     'I live in Fremont, can I get an SFPL card at the Main Library and where is it?']) {
@@ -655,7 +657,7 @@ test('review round 5: a first turn that asks the way or the hours beside the car
   }
 });
 
-test('review round 5: card question -> "SFPL 总馆怎么走？" -> "附近有什么吃的" stays in San Francisco on turns 2 and 3 (v2 fast path)', async () => {
+test('review round 5: card question -> "SFPL 总馆怎么走？" -> "附近有什么吃的" stays in San Francisco on turns 2 and 3 (v2 fast path)', { todo: HOME_CITY_TODO }, async () => {
   const first = await ask(Q3['zh-Hans'].question, q3Draft(Q3['zh-Hans']));
   assert.equal(first.response.taskState.city, null); assert.equal(first.response.taskState.origin, 'Fremont');
   const history = [{ role: 'user', content: Q3['zh-Hans'].question }, { role: 'assistant', content: first.response.answer || '好的。' }];
