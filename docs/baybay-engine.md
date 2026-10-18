@@ -427,60 +427,25 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   their Latin names, a few Chinese names of Latin venues (Ferry Building / 渡轮大厦, Chinatown / 唐人街 / 华埠); a name two
   stops share names neither.
 
-## API-BB-10: fixes from the #58 live check (degraded SFPL answer, record links)
+## API-BB-10: fixes from the #58 live check (record links; the rest moved to API-BB-11)
 
-- **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js` `scopeStatements`). The repair
-  reads each scope paragraph's statements to learn which service owns a restriction. Review round 7 keeps that reading
-  exactly as on main and changes only two things:
-  - Which service owns a rule is main's. `TOPICS` is main 8eec008's, and a sentence that states a restriction (a residence,
-    age or eCard rule) gets main's topic, from the sentence or from the heading fallback (`statementTopic`); the repair's
-    direct scopes use main's heading test too. So a card section headed "SMCL：半岛图书证" or "SJPL: Library cards" owns its
-    residence and age rules as on main, and a correct card claim is kept.
-  - Only a restriction-free sentence can lose the card topic (`scopeTopic`). It keeps it when the sentence or its heading
-    is about getting or holding the card (`CARD_RULE`: 办卡 / 办证 / 办理…借书证, 申请 / 获得 / 取得…图书证, 领卡, eCard,
-    实体卡, a card next to a residence, age or ID word, "get / getting / sign up for a … card", "library card(s)" next to
-    residents or an age, "cards are free / available to"; `CARD_HEADING`: a heading whose subject is the card, such as
-    "SMCL：半岛图书证"). A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector loan; the LinkedIn
-    login) is no longer quoted in a card repair. This changes what a repair cites, never the status: when no statement is
-    left, the repair cites exactly what main cites (main's statements, then main's direct scopes). A bare en "apply" /
-    "application" still keeps the card topic, as on main.
-  - One sentence of a named service (Kanopy, printing, Discover & Go) can also say, after a `；` / `;`, who can get the
-    library card. That clause is also a card rule of its own only when an allowlist grammar reads it whole
-    (`cardClause`): who (it must state a residence or age rule) + can + 办 / 办理 / 申请 / 领 / 获得 / get / apply for /
-    sign up for / qualify for + the LIBRARY card (图书证, 借书证, 办证, the scope's own acronym + 卡 or card, library
-    card(s); or "library cards are free / available for …" with who after it), then nothing but how to collect it (首次领卡,
-    到馆, 核验, 证件, 在线申请, at a branch, in person, with photo ID). A clause about another card (工具卡, a parking card,
-    LinkedIn), one that uses the card after getting it ("办卡后使用", "a library card and log in"), a negation, another
-    service's name, and a card the reader must already hold (持 / 须有 + a card noun, 须 / 需 / 已 / 先 + 办 / 领, "must
-    have a card", "who get a card first") are not card rules. "需持有效证件到馆办理" is how to collect the card.
-  - So "须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" stays a Kanopy
-    statement and adds the card statement "加州居民可免费办 SFPL 卡，…"; in the shipped data it is the only clause added
-    (3 instances). A card clause whose whole sentence is already a repair row adds nothing.
-  - Over the shipped guide catalogs: restriction ownership is the same as on main, and a borrowing probe of 312 claims
-    gives the same changed flag and status as main; 6 summaries differ, each a subset of main's sentences (the SFPL card one
-    also cites the Q3 clause).
-  - Live 10-17 Q3: the correct "加州居民可免费办 SFPL 卡" coverage claim looked borrowed from Kanopy. The repair replaced it
-    with the radon paragraph and its sources (October freebies guide, SFPL press release), and the answer came back
-    `degraded: true`. Now it stays answered, keeps the Kanopy record the model cited, and the answer is not degraded; the
-    same holds when the clause reads "需持有效证件到馆办理", "申请 SFPL 借书证", "均可免费办证" or "library cards are free for
-    California residents". A real error ("SFPL 要求旧金山居民才能办卡") is still repaired, from the card clause, never from the
-    radon paragraph.
 - **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
   `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
   inline-link form the web already renders (`plannerWebAnswerParts` with `linkify`). Any other URL the model writes is
   still removed by `renderCitations`, and an address no record gives stays plain text. `draftCorrected` reads a link as its
   label, so a streamed draft with the plain address is continued, not corrected. The href keeps the record's spelling of
-  the address, and `answer_lead_long` is measured before linking. Web follow-up: `bayBayReadableText` (朗读) and
-  `bayBayTextUnits` should read `[label](url)` as its label.
+  the address, and `answer_lead_long` is measured before linking. The model's address must equal a record's apart from
+  letter case, with a lowercase top-level domain: "LOVEBOATALUMNI.ORG/ROOTS2026" or an added trailing "/" stays plain
+  text. Web follow-up: `bayBayReadableText` (朗读) and `bayBayTextUnits` should read `[label](url)` as its label.
 - **Weekend picks** (a test only): with the synced picks file (fixture `tests/fixtures/weekend-picks-web.json`), "这周末
   10/24 带娃去哪" has at least 4 of the editor's 5 picks for 10/24–25 among its first 8 candidates, on main's date reading.
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
-- **Put back to main** (review round 6 fallback; `lib/entityAliases.js`, `lib/baybayState.js` and `lib/baybayQuality.js`
-  are exactly 8eec008's). Five review rounds kept finding everyday wordings that these three features read worse than main,
-  so they were reverted for the follow-up lane API-BB-11:
+- **Put back to main** (review round 6 and round 8 fallbacks; `lib/entityAliases.js`, `lib/baybayState.js`,
+  `lib/baybayQuality.js` and `lib/baybayBenefitScope.js` are exactly 8eec008's). Review rounds kept finding wordings that
+  these four features read worse than main, so they were reverted for the follow-up lane API-BB-11:
   - the weekend-day span ("这周末 10/24" as Sat 10/24 + Sun 10/25). It missed the busy other day in many wordings
     ("第2天要上课", "other day is busy", "其他时间没空"), widened one-day asks the planner does not parse ("周六晚", "周日上完中文
     课", "after church", "till 4"), and moved weekends four or more months back into next year. Main reads the written day
@@ -490,7 +455,17 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
     scopes the ask to the library's city;
   - the adult price tier repair (`adultTierRepair`). A free four-character lead before 页 / 网 / 官网 could drop a member,
     weekday or early-bird condition, and a point's other record (in `cardIds`, or text after a mid-point marker) could take
-    the adult price. Main adds no tier.
+    the adult price. Main adds no tier;
+  - the benefit-scope card clause (live 10-17 Q3, "SFPL answer degraded"). Root cause, still main's behaviour: the repair
+    learns which service owns a residence or age rule from each scope sentence's topic. "须有有效 SFPL 图书证并完成 Kanopy
+    账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" is one Kanopy statement, so the model's correct card claim
+    looks borrowed from Kanopy. The repair then quotes the radon-detector loan ("持 SFPL 图书证借用") as the card rule, and
+    the answer comes back `degraded: true` (zh-Hans and zh-Hant; en is not degraded). The lane read the clause after the
+    `；` as a card rule of its own, and in its last form through an allowlist grammar. Each verify still found made-up
+    clauses where it kept a false card claim that main repairs. Two shapes: a service clause with the service verb left
+    out ("年满 18 岁的旧金山居民办 SFPL 卡后到馆领取", "申请 SFPL 卡即可", "can get a library card, then pick up at any
+    branch"), and a bare 办证 under a parking-permit heading.
 - Tests: `tests/baybay-bb10.test.js` (live drafts through the v2 fast path and the reviewers' regression cases,
-  zh-Hans / zh-Hant / en). The tests of the reverted features stay there, and the round-1 timing test in
-  `tests/redos.test.js`, as `todo` naming API-BB-11.
+  zh-Hans / zh-Hant / en). The tests of the reverted features stay there as `todo` naming API-BB-11, and so does the
+  round-1 timing test in `tests/redos.test.js`. A todo test that passes holds main's behaviour, for example the round-8
+  rows where main repairs a false card claim.
