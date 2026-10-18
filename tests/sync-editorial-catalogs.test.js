@@ -139,7 +139,9 @@ const PICKS_FIXTURE = fs.readFileSync(path.join(__dirname, 'fixtures', 'weekend-
 test('the weekend picks file is optional: absent, nothing about picks; present, it is copied and reported', t => {
   const before = dataHashes();
   const without = JSON.parse(sync(t).out);
-  assert.equal(without.weekendPicks, null);
+  // Once API-SYNC-3H ships data/weekend-picks.json, an export without picks reports that copy as stale (test below).
+  if (fs.existsSync(path.join(root, 'data', 'weekend-picks.json'))) assert.deepEqual(without.weekendPicks, { staleLocalFile: 'data/weekend-picks.json', removed: false });
+  else assert.equal(without.weekendPicks, null);
   assert.ok(!without.files.some(row => row.destination.endsWith(`${path.sep}weekend-picks.json`)));
   const run = sync(t, files => { files['weekend-picks.json'] = PICKS_FIXTURE; });
   assert.equal(run.status, 0, run.err);
@@ -163,4 +165,27 @@ test('picks naming an event the catalog lacks, or a weekend that is not Saturday
   const outside = sync(t, files => { files['weekend-picks.json'] = json({ ...picks, weekends: [{ ...picks.weekends[1], picks: [{ ...picks.weekends[1].picks[0], dates: ['2026-10-31'] }] }] }); });
   assert.notEqual(outside.status, 0);
   assert.match(outside.err, /lists 2026-10-31, outside its weekend 2026-10-24/);
+});
+
+// Review of API-BB-9: a web main that stops exporting the picks leaves the API's older copy unvalidated. Run in a copy of
+// the script, lib/ and data/ (with a synced picks file) so the real data/ is never written.
+test('an API picks copy the web no longer exports is reported as stale, and --write removes it', t => {
+  const copy = fs.mkdtempSync(path.join(os.tmpdir(), 'baylink-sync-api-'));
+  t.after(() => fs.rmSync(copy, { recursive: true, force: true }));
+  for (const name of ['lib', 'data']) fs.cpSync(path.join(root, name), path.join(copy, name), { recursive: true });
+  fs.mkdirSync(path.join(copy, 'scripts'));
+  fs.copyFileSync(script, path.join(copy, 'scripts', 'sync-editorial-catalogs.js'));
+  const stale = path.join(copy, 'data', 'weekend-picks.json');
+  fs.writeFileSync(stale, PICKS_FIXTURE);
+  const { dir, registry } = webExport(t);
+  const run = write => spawnSync(process.execPath, [path.join(copy, 'scripts', 'sync-editorial-catalogs.js'), `--frontend=${dir}`, `--registry=${registry}`, ...(write ? ['--write'] : [])],
+    { encoding: 'utf8', timeout: 60000, env: { ...process.env, NODE_PATH: path.join(root, 'node_modules') } });
+  const validated = run(false);
+  assert.equal(validated.status, 0, validated.stderr);
+  assert.deepEqual(JSON.parse(validated.stdout).weekendPicks, { staleLocalFile: 'data/weekend-picks.json', removed: false });
+  assert.ok(fs.existsSync(stale), 'validation never removes it');
+  const written = run(true);
+  assert.equal(written.status, 0, written.stderr);
+  assert.deepEqual(JSON.parse(written.stdout).weekendPicks, { staleLocalFile: 'data/weekend-picks.json', removed: true });
+  assert.ok(!fs.existsSync(stale));
 });

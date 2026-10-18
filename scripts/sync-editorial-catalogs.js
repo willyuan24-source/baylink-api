@@ -112,6 +112,11 @@ if (picksSnapshot) {
   }
   weekendPicks = { weekends: Object.fromEntries([...picksFrom(raw)].map(([saturday, picks]) => [saturday, picks.map(pick => pick.id)])), notOnTheirDay };
 }
+// Review of API-BB-9: a web main that no longer exports the picks leaves an older data/weekend-picks.json that nothing
+// validates. It is reported (staleLocalFile), and --write removes it, so BayBay lifts only picks the web still publishes.
+const localPicks = path.join(root, 'data', PICKS);
+const stalePicks = !picksSnapshot && fs.existsSync(localPicks);
+if (stalePicks) weekendPicks = { staleLocalFile: `data/${PICKS}`, removed: args.includes('--write') };
 const identity = (rows, field) => { assert.ok(Array.isArray(rows)); const ids = rows.map(row => row[field]); assert.equal(new Set(ids).size, ids.length); return ids.sort(); };
 assert.deepEqual(identity(data('guide-catalog.json'), 'slug'), identity(data('guide-catalog.en.json'), 'slug'));
 assert.deepEqual(identity(data('guide-catalog.json'), 'slug'), identity(planner.guides, 'slug'));
@@ -145,6 +150,7 @@ for (const row of previous) {
 // Re-check sources immediately before writing to detect a concurrent generation.
 for (const row of [...snapshots, held]) assert.equal(hash(fs.readFileSync(row.source)), hash(row.bytes), `Source changed during validation: ${row.source}`);
 if (args.includes('--write')) for (const row of snapshots) fs.writeFileSync(row.destination, row.bytes);
+if (args.includes('--write') && stalePicks) { fs.rmSync(localPicks); assert.ok(!fs.existsSync(localPicks)); }
 const files = snapshots.map(row => ({ source: row.source, destination: row.destination, bytes: row.bytes.length,
   sha256: hash(row.bytes), destinationMatches: fs.existsSync(row.destination) && hash(fs.readFileSync(row.destination)) === hash(row.bytes) }));
 if (args.includes('--write')) assert.ok(files.every(row => row.destinationMatches));
