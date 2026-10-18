@@ -185,20 +185,45 @@ test('with the synced picks file, "这周末 10/24 带娃去哪" leads with the 
 
 test('a point with an event\'s child prices keeps the adult tier its record lists (zh-Hans, zh-Hant, en)', () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
-  const event = require('../data/planner-catalog.json').events.find(row => row.id === 'alameda-haunted-house-2026');
-  assert.match(event.costLabel, /18\+ \$8/);
+  const events = require('../data/planner-catalog.json').events;
+  const costOf = id => events.find(row => row.id === id).costLabel;
+  assert.match(costOf('alameda-haunted-house-2026'), /18\+ \$8/);
+  // Review round 1: the tier is its own sentence after the point's text, before the trailing marker, in the answer's locale,
+  // although the evidence cost is the Chinese planner label in every locale.
   const cases = [
-    ['zh-Hans', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。[[e7]]', event.costLabel, 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5、18+ $8。[[e7]]'],
-    ['zh-Hant', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5。[[e7]]', '市府頁列 0–3 歲免費、4–14 歲 $5、18+ $8；15–17 歲費用未註明，待核實。', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5、18+ $8。[[e7]]'],
-    ['en', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. [[e7]]', 'City page: free for ages 0–3, ages 4–14 $5, 18+ $8; ages 15–17 not listed.', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5, 18+ $8. [[e7]]'],
+    ['zh-Hans', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。[[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。18+ 成人 $8。[[e7]]'],
+    ['zh-Hant', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5 [[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5。18+ 成人 $8。 [[e7]]'],
+    ['en', 'alameda-haunted-house-2026', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. [[e7]]', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. Adults 18+: $8. [[e7]]'],
+    ['en', 'sfzoo-zoolights-2026', 'ZooLights runs nightly; kids $21. [[e7]]', 'ZooLights runs nightly; kids $21. Adults: $30. [[e7]]'],
+    ['en', 'pleasanton-pumpkins-after-dark-2026', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free [[e7]]', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free. Adults 18+: $28.80. [[e7]]'],
+    ['zh-Hans', 'pleasanton-pumpkins-after-dark-2026', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。[[e7]]', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。18+ 成人 $28.80。[[e7]]'],
   ];
-  for (const [locale, text, cost, expected] of cases) {
-    const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? cost : null, locale });
-    assert.equal(result.repaired, true, locale); assert.equal(result.draft.points[0].text, expected, locale);
+  for (const [locale, id, text, expected] of cases) {
+    const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? costOf(id) : null, locale });
+    assert.equal(result.repaired, true, `${locale} ${id}`); assert.equal(result.draft.points[0].text, expected, `${locale} ${id}`);
+    assert.doesNotMatch(locale === 'en' ? result.draft.points[0].text : '', /[成岁歲]/);
   }
-  // A point that already gives the range or the adult price, a point without child prices, and another record are left alone.
-  for (const text of ['门票 $5–$8 [[e7]]', '4–14 岁 $5，成人 $8 [[e7]]', 'Alameda 鬼屋周五至周日开放 [[e7]]', 'Michaels 免费手作 [[e1]]']) {
-    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? event.costLabel : null }).repaired, false, text);
+  // Left alone: a point that already gives the range or an adult price (not $80 for $8), a point without child prices, another
+  // record, and a cost line with two price periods (Dickens: early-bird adult $40 vs regular $50 from 11/1).
+  const alameda = costOf('alameda-haunted-house-2026');
+  for (const text of ['门票 $5–$8 [[e7]]', '4–14 岁 $5，成人 $8 [[e7]]', '4–14 岁 $5，18+ $9 [[e7]]', 'Alameda 鬼屋周五至周日开放 [[e7]]', 'Michaels 免费手作 [[e1]]']) {
+    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? alameda : null }).repaired, false, text);
+  }
+  assert.equal(adultTierRepair({ points: [{ text: '4–14 岁 $5，停车 $80 [[e7]]', cardIds: [] }] }, { costOf: () => alameda }).repaired, true);
+  for (const text of ['11/1 起普通票 5–12 岁 $30。[[e7]]', '早鸟票 5–12 岁 $25。[[e7]]', 'Regular tickets from Nov 1: ages 5–12 $30. [[e7]]']) {
+    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => costOf('dickens-christmas-fair-2026'), locale: /[a-z]/i.test(text[0]) ? 'en' : 'zh-Hans' }).repaired, false, text);
+  }
+});
+
+test('review round 1: a streamed point continued by the adult tier is not marked corrected', () => {
+  const { adultTierRepair } = require('../lib/baybayQuality');
+  const { draftCorrected } = require('../lib/baybayProgress');
+  const cost = require('../data/planner-catalog.json').events.find(row => row.id === 'alameda-haunted-house-2026').costLabel;
+  for (const [locale, streamed] of [['zh-Hans', 'Alameda 青少年鬼屋 0–3 岁免费，4–14 岁 $5。'], ['en', 'Alameda teen haunted house: free under 4, ages 4–14 $5.']]) {
+    const { draft } = adultTierRepair({ points: [{ text: `${streamed}[[e7]]`, cardIds: [] }] }, { costOf: () => cost, locale });
+    const final = draft.points[0].text.replace('[[e7]]', '[3]');
+    assert.notEqual(final, `${streamed}[3]`);
+    assert.equal(draftCorrected({ lead: '', points: [streamed] }, { lead: '', points: [{ text: final }] }), false, locale);
   }
 });
 
