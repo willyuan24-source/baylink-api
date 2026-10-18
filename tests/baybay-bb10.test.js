@@ -181,3 +181,33 @@ test('a point with an event\'s child prices keeps the adult tier its record list
     assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? event.costLabel : null }).repaired, false, text);
   }
 });
+
+// ---------------------------------------------------------------- 3. the CHSA registration page is a link (live Q2)
+
+const Q2 = {
+  'zh-Hant': ['11月15日 CHSA 台灣華人尋根講座怎麼報名？', '可依主辦方傳單的報名頁 LoveBoatAlumni.org/roots2026 報名，10月15日起已開放。', 'CHSA 活動頁上的報名短連結目前會跳到無關網頁，請改用傳單上的報名頁 LoveBoatAlumni.org/roots2026。'],
+  'zh-Hans': ['11月15日 CHSA 台湾华人寻根讲座怎么报名？', '可按主办方传单的报名页 LoveBoatAlumni.org/roots2026 报名，10月15日起已开放。', 'CHSA 活动页上的报名短链接现在会跳到无关网页，请改用传单上的报名页 LoveBoatAlumni.org/roots2026。'],
+  en: ['How do I register for the CHSA roots seminar on November 15?', 'Register on the flyer’s page, LoveBoatAlumni.org/roots2026; sign-up opened Oct 15.', 'The short link on CHSA’s event page goes to an unrelated page, so use LoveBoatAlumni.org/roots2026 from the flyer.'],
+};
+for (const locale of ['zh-Hant', 'zh-Hans', 'en']) {
+  test(`${locale}: the registration page the CHSA record writes out is a link in the lead and the point; an address no record gives stays text`, async () => {
+    const [question, lead, point] = Q2[locale];
+    const { response, sent } = await ask(question, (evidence, ref) => {
+      const chsa = ref(row => /chsa-taiwanese-chinese-roots-seminar-2026/.test(row.page || '') || /寻根|尋根|Roots/i.test(row.title || ''));
+      assert.ok(chsa, 'the CHSA record is in the evidence');
+      return { lead: `${lead}[[${chsa}]]`, points: [{ text: `${point}[[${chsa}]]`, cardIds: [chsa] }, { text: `也可看 example.org/roots 的介绍。[[${chsa}]]`, cardIds: [] }], candidateIds: [chsa] };
+    }, { locale });
+    assert.ok(sent[0].evidence.some(row => /LoveBoatAlumni\.org\/roots2026/.test(row.text || '')), 'the record text the model read has the page');
+    const link = '[LoveBoatAlumni.org/roots2026](https://LoveBoatAlumni.org/roots2026)';
+    assert.ok(response.lead.includes(link), response.lead);
+    assert.ok(response.points[0].text.includes(link), response.points[0].text);
+    assert.doesNotMatch(response.points[1].text, /\]\(https?:/);
+    assert.ok(response.points[1].text.includes('example.org/roots'));
+    assert.notEqual(response.corrected, true);
+  });
+}
+
+test('a streamed draft that showed the address as text is continued, not corrected, by the linked result', () => {
+  const { draftCorrected } = require('../lib/baybayProgress');
+  assert.equal(draftCorrected({ lead: '报名页是 LoveBoatAlumni.org/roots2026', points: [] }, { lead: '报名页是 [LoveBoatAlumni.org/roots2026](https://LoveBoatAlumni.org/roots2026)。[1]', points: [] }), false);
+});
