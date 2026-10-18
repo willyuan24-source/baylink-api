@@ -127,11 +127,17 @@ test('authenticated v2 members can use current web and source reading, without c
   assert.ok(result.data.evidence.some(source => source.verification === 'page-read' && source.url === 'https://sfpl.org/services/library-cards'));
 });
 
-test('a source the member\'s turn read stays in the public evidence even when the answer cites another one', { todo: 'API-SYNC-3g follow-up for the next BayBay lane: lib/baybayEngine/answer.js keeps 40 public evidence rows, cited and plan sources first, then insertion order; on web #48\'s catalog this library ask has more than 40 catalog sources, so an uncited page-read source is cut. Rank page-read sources above uncited catalog rows' }, async t => {
+// API-BB-9 (API-SYNC-3g follow-up): lib/baybayEngine/answer.js keeps 40 public evidence rows, cited and plan sources first,
+// then insertion order; on web #48's catalog this library ask has more than 40 catalog sources, so an uncited page-read
+// source was cut. Page-read sources now rank above uncited catalog rows.
+test('a source the member\'s turn read stays in the public evidence even when the answer cites another one', async t => {
   const f = await fixture(t, { ai: readThenAnswer({ citeRead: false }) });
   const result = await f.request('/ai/guide-chat', { message: query, assistantVersion: 2, searchMode: 'web', locale: 'en' }, f.token);
   assert.equal(f.calls.reads, 1);
-  assert.ok(result.data.evidence.some(source => source.verification === 'page-read'), result.data.evidence.length);
+  assert.equal(result.data.evidence.length, 40, 'the turn has more sources than the public list keeps');
+  assert.ok(result.data.evidence.some(source => source.verification === 'page-read' && source.url === 'https://sfpl.org/services/library-cards'), result.data.evidence.length);
+  // The cited source still leads.
+  assert.notEqual(result.data.evidence[0].verification, 'page-read');
 });
 
 test('member task-memory replay after logout cannot reintroduce web-only sources, facts or stops', async t => {
