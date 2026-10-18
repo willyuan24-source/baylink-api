@@ -93,8 +93,8 @@ test('BayBay: a 10/24 family ask on 10/22 or 10/23 offers the editor\'s 10/24 pi
   for (const today of ['2026-10-22', '2026-10-23']) {
     const result = evidence('10月24号周末带娃去哪玩', today);
     assert.deepEqual(candidateIds(result).slice(0, 4), FAMILY_1024, today);
-    // Among the model items: LumaFest 4th and Halloween Hoopla 8th; Cherryland and SJMA reach the model only as plan
-    // candidates (Cherryland was the 4th item before this sync: a TODO below).
+    // Among the model items (API-BB-12): the four family picks, in the editor's order, right after the records the ask names
+    // by its date (two craft offers on 10/24); with the old lib/ Cherryland and SJMA reached the model only as candidates.
     assert.ok(itemIds(result).slice(0, 5).includes('event:r2-petaluma-lumafest-20261024'), `${today}: ${itemIds(result).join(', ')}`);
     // "这个周末" on Thursday or Friday is 10/24–25: the first pick is among the first two candidates (none before this sync).
     const weekend = evidence('这个周末湾区有什么亲子活动？', today);
@@ -117,15 +117,15 @@ test('BayBay: a 10/24 family ask on 10/22 or 10/23 offers the editor\'s 10/24 pi
   assert.ok(!candidateIds(evidence('10月25号周日带娃去哪玩')).some(id => PICKS_1024.includes(id)));
 });
 
-// Not met by this sync (no lib/ change; see the PR's "Captain decision"). The pick lift is a fifth of the best text score,
-// so whether the picks surface depends on the ask's words, not on whether it has a date: on 10-22 the 带娃 asks above get
-// all four family picks first, "这周六有什么活动" two, "这个周末湾区有什么亲子活动？" only LumaFest, and the 带孩子 / 带小孩 /
-// English asks below none (nor does the 10/31 weekend asked on 10-29). The acceptance check for the next BayBay lane.
+// With the old lib/ the pick lift was a fifth of the best text score, so whether the picks surfaced depended on the ask's
+// words: on 10-22 the 带娃 asks above got all four family picks first, "这周六有什么活动" two, "这个周末湾区有什么亲子活动？"
+// only LumaFest, and the 带孩子 / 带小孩 / English asks below none (nor did the 10/31 weekend asked on 10-29). API-BB-12: on a
+// family outing ask (the planner's family flag or a child's age; goal discover or day-plan) the family picks come first.
 const GENERIC_1024 = [['这个周末湾区有什么亲子活动？', 'zh-Hans'], ['这周末带孩子去哪玩', 'zh-Hans'], ['周末带小孩去哪里玩', 'zh-Hans'], ['这周六带孩子去哪玩？', 'zh-Hans'],
   ['10月24号带孩子去哪玩', 'zh-Hans'], ['10月24号周末带孩子去哪玩', 'zh-Hans'], ['這個週末灣區有什麼親子活動？', 'zh-Hant'], ['週六帶小孩去哪裡玩？', 'zh-Hant'],
   ['Family things to do in the Bay Area this weekend', 'en'], ['What should we do with the kids this Saturday?', 'en'], ['Where to take the kids this Saturday?', 'en'],
   ['What can kids do on October 24?', 'en'], ['Things to do with kids on Saturday October 24', 'en']];
-test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers the editor\'s family picks first', { todo: 'API-SYNC-3h follow-up: picks rank first on family weekend asks whatever the wording (带孩子, 带小孩, 亲子, English), not only 带娃 (next BayBay lane, before 10/24)' }, () => {
+test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers the editor\'s family picks first', () => {
   const misses = [];
   for (const [message, locale] of GENERIC_1024) {
     const cands = candidateIds(evidence(message, TODAY, locale));
@@ -138,14 +138,50 @@ test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers th
   assert.deepEqual(misses, []);
 });
 
-// API-SYNC-3h loss: passes on the api base data (3faef61), fails on the Wave 7 A copy. With the picks first among the plan
-// candidates, the model items of the 10/24 family ask hold LumaFest (4th) and Halloween Hoopla (8th), and Cherryland's
-// Chinese-language storytimes (the 4th item before this sync) is only a plan candidate.
-test('BayBay: the 10/24 family ask keeps Cherryland\'s Chinese-language storytimes among the model items', { todo: 'API-SYNC-3h follow-up: the editor\'s family picks should all reach the model items of a dated family ask, not only the plan candidates (next BayBay lane)' }, () => {
+// API-SYNC-3h loss, fixed by API-BB-12 (it passed on the api base data 3faef61 and failed on the Wave 7 A copy with the old
+// lib/): with the picks first among the plan candidates, the model items of the 10/24 family ask held LumaFest (4th) and
+// Halloween Hoopla (8th), and Cherryland's Chinese-language storytimes (the 4th item before the sync) was only a candidate.
+test('BayBay: the 10/24 family ask keeps Cherryland\'s Chinese-language storytimes among the model items', () => {
   for (const today of ['2026-10-22', '2026-10-23']) {
     const result = evidence('10月24号周末带娃去哪玩', today);
     assert.ok(itemIds(result).includes('event:acl-cherryland-chinese-storytimes-oct24-2026'), `${today}: ${itemIds(result).join(', ')}`);
+    // All four family picks are model items, in the editor's order.
+    assert.deepEqual(itemIds(result).filter(id => FAMILY_1024.some(pick => id === `event:${pick}`)), FAMILY_1024.map(id => `event:${id}`), itemIds(result).join(', '));
   }
+});
+
+// API-BB-12: fresh wordings (zh-Hans, zh-Hant, English; 10-22, 10-23, 10-29) put the family picks first, and the rules
+// around them hold: an adults' pick is never offered on a family ask, a Saturday-only pick never on a Sunday, a month ask
+// lifts none, an ask that is not about children keeps its order, and a service or Chinese-language programme ask with a
+// child, or a stated home city, keeps its own order first.
+test('BayBay: the family picks lead in fresh wordings; the adults\' pick, Sunday, month, service and home-city rules hold', () => {
+  for (const [message, today] of [['周六带小朋友去哪里玩比较好', TODAY], ['周末有啥亲子活动推荐', TODAY], ['这周末适合儿童的活动', TODAY], ['周六遛娃去哪', TODAY],
+    ['這週末帶孩子去哪玩？', TODAY], ['這個週末有什麼親子活動', TODAY], ['What can we do with the kids this weekend?', TODAY], ['Kids activities this weekend?', TODAY],
+    ['Where should I take my kids on Saturday?', TODAY], ['这周末带孩子去哪玩', '2026-10-23'], ['明天带孩子去哪玩', '2026-10-23']]) {
+    assert.deepEqual(candidateIds(evidence(message, today)).slice(0, 4), FAMILY_1024, `${message} (${today})`);
+  }
+  for (const [message, today] of [['这周末带孩子去哪玩', '2026-10-29'], ['這週末帶小孩去哪', '2026-10-29'], ['Family things to do this weekend', '2026-10-29']]) {
+    assert.deepEqual(candidateIds(evidence(message, today)).slice(0, 3), FAMILY_1031, `${message} (${today})`);
+  }
+  // The adults' pick (华埠分馆周六午后, audience 成人) is neither a candidate nor an item on a family ask.
+  for (const message of ['这周六带娃去哪玩？', '周六带小朋友去哪里玩比较好', '这周六带孩子去旧金山玩', '周六遛娃去哪']) {
+    const result = evidence(message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), message);
+  }
+  // Sunday 10/25: the 10/24 picks run on Saturday only.
+  for (const message of ['这周日带孩子去哪玩', '週日帶小孩去哪裡玩？', 'What can kids do on Sunday October 25?']) {
+    const result = evidence(message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => PICKS_1024.some(pick => id.endsWith(pick))), message);
+  }
+  // A service ask with a child and a Chinese-language programme ask keep their own order (no pick leads, no pick item).
+  for (const message of ['这周六带孩子去哪里打疫苗', '这周末湾区有粤语或国语的亲子活动吗？']) {
+    const result = evidence(message);
+    assert.notDeepEqual(candidateIds(result).slice(0, 4), FAMILY_1024, message);
+  }
+  // A stated home city orders by nearness first: Fremont's own records lead.
+  assert.ok(!FAMILY_1024.includes(candidateIds(evidence('我们住 Fremont，这周末带孩子去哪玩'))[0]));
+  // A month ask lifts none.
+  assert.equal(picksForAsk(resolveTaskState({ message: '十月带孩子去哪玩', today: TODAY, catalog: planner, carry: true }).state).size, 0);
 });
 
 test('offer regions (CNT-REGION-4): Randall Museum and the Cable Car Museum are San Francisco, Happy Hollow and Poppy & Claro South Bay', () => {
@@ -195,16 +231,20 @@ test('BayBay: holiday hours and 2027 figure asks reach the new guide and the 202
   assert.match(en, /From January 4, 2027: \$1\.50 single ride on Clipper/);
 });
 
-// Not met by this sync (no lib/ change; fails on the api base data too, which has no 2027 fares). The senior transit guide
-// carries Muni's 2027 senior fares (pinned above), but at the end of the long "Fares for 65+" / "65 岁及以上的各家票价"
-// section, past the 400-character excerpt, so a senior 2027 Muni ask never sees them: the English ask gets no 2027 line and
-// the Chinese ask only the commute guide's adult $3.00 line (10th item). With the 2026–27 / 2027 lines in a paragraph of
-// their own (measured, not shipped) both asks get the $1.50 line. The acceptance check for the next BayBay or content lane.
-test('BayBay: senior 2027 Muni asks see the senior transit guide\'s 2027 senior fare', { todo: 'API-SYNC-3h follow-up: CNT-YEAREND\'s 2027 senior Muni fares sit past the excerpt of the long fares section; a senior 2027 ask should see them (next BayBay lane, or a content split of the 2026–27 / 2027 lines)' }, () => {
+// Not met by the sync alone (it fails on the api base data too, which has no 2027 fares). The senior transit guide carries
+// Muni's 2027 senior fares (pinned above) at the end of the long "Fares for 65+" / "65 岁及以上的各家票价" section, past the
+// 400-character excerpt, so with the old lib/ a senior 2027 Muni ask never saw them: the English ask got no 2027 line and
+// the Chinese ask only the commute guide's adult $3.00 line (10th item). API-BB-12: the excerpt keeps the asked agency's
+// row, 2027 line included. The adult 2027 Muni asks keep the commute guide's $3.00 line, and "BART 明年涨价吗 老人" keeps the
+// 2026–27 budget's no-increase line.
+test('BayBay: senior 2027 Muni asks see the senior transit guide\'s 2027 senior fare', () => {
   for (const message of ['What will Muni cost for seniors in 2027?', '2027 年 Muni 长者票价多少']) {
     const result = evidence(message);
     assert.ok(modelItems(result.items).some(view => view.kind === 'guide' && /January 4, 2027: \$1\.50 single ride on Clipper|2027 年 1 月 4 日起：Clipper 单程 \$1\.50/.test(view.text)), `${message}: ${itemIds(result).join(', ')}`);
   }
+  for (const message of ['Muni 2027 年票价', 'How much is Muni in 2027?']) assert.ok(modelItems(evidence(message).items).some(view => /\$3\.00/.test(view.text)), message);
+  assert.ok(modelItems(evidence('BART 明年涨价吗 老人').items).some(view => /不涨票价/.test(view.text)));
+  assert.ok(modelItems(evidence('Will BART fares go up next year for seniors?').items).some(view => /no fare increase/.test(view.text)));
 });
 
 // Before this sync the 2027 parade and flower market asks had no Lunar New Year record at all.
