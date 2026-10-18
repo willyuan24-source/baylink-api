@@ -75,7 +75,7 @@ for (const locale of ['zh-Hans', 'zh-Hant', 'en']) {
 }
 
 test('a real SFPL residency error is still repaired, and the repair never cites the radon-detector loan', () => {
-  // The scopes the live Q3 turn read (work/probe-q3.cjs), cut to the SFPL ones the repair groups.
+  // The scopes the live 10-17 Q3 turn read, cut to the SFPL ones the repair groups.
   const scopes = [
     { entity: 'SFPL', entityKey: 'sfpl', heading: 'SFPL · KANOPY：用 SFPL 图书证，在家免费看片', sourceIds: ['perks', 'kanopy-official'],
       text: '五区日常福利，按条件慢慢挑\nSFPL · KANOPY：用 SFPL 图书证，在家免费看片\n长期资源 · 片库与观看额度依账户显示\n须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。不是无限次观看。' },
@@ -301,7 +301,7 @@ test('a streamed draft that showed the address as text is continued, not correct
   assert.equal(draftCorrected({ lead: '报名页是 LoveBoatAlumni.org/roots2026', points: [] }, { lead: '报名页是 [LoveBoatAlumni.org/roots2026](https://LoveBoatAlumni.org/roots2026)。[1]', points: [] }), false);
 });
 
-// ---------------------------------------------------------------- review round 3 (review-1017d): the reviewers' regression cases
+// ---------------------------------------------------------------- review round 3: the reviewers' regression cases
 
 const stateOn = (message, { today = '2026-10-17', previous, searchContext } = {}) => resolveTaskState({ message, today, catalog, carry: true, ...(previous ? { previous } : {}), ...(searchContext ? { searchContext } : {}) });
 const askedDateRangeOf = message => require('../lib/entityAliases').askedDateRange(message, '2026-10-17');
@@ -433,6 +433,122 @@ test('review round 6: a pass, printing or Kanopy clause that needs a card first 
     assert.deepEqual(out.coverage.items[0].sourceIds, ['card'], `${locale} ${sentence}`);
   }
   // The live Q3 card clause after a Kanopy rule is still a card rule of its own (see "a real SFPL residency error is still repaired").
+});
+
+// ---------------------------------------------------------------- review round 7: never worse than main on made-up scope text
+// A sentence that states a restriction is classified exactly as on main 8eec008 (TOPICS, with its heading fallback); a ；-clause is
+// a card rule only when the allowlist grammar reads it whole (who + can + get the LIBRARY card + how to collect it).
+const r7Repair = (id, claim, scopes, locale) => repairBenefitCoverage({ status: 'complete', items: [{ id, status: 'answered', summary: claim, sourceIds: ['x'] }] }, scopes, locale);
+
+test('review round 7: a card section whose heading names the card, or an en plural "library cards", keeps a correct card claim (zh-Hans, zh-Hant, en)', () => {
+  for (const [locale, entity, heading, sentence, claim] of [
+    ['zh-Hans', 'SMCL', 'SMCL：半岛图书证', '限 San Mateo County 居民，年满 16 岁。线上申请后到馆领取。', 'SMCL 办卡限 San Mateo County 居民。'],
+    ['zh-Hans', 'SMCL', 'SMCL：半岛图书证', '限 San Mateo County 居民，年满 16 岁。线上申请后到馆领取。', 'SMCL 的图书证须年满 16 岁。'],
+    ['zh-Hans', 'ACL', 'AC Library：图书证', '仅限 Alameda County 居民；13 岁以下需家长陪同。', 'AC Library 办卡仅限 Alameda County 居民。'],
+    ['zh-Hant', 'SMCL', 'SMCL：半島圖書證', '限 San Mateo County 居民，年滿 16 歲。', 'SMCL 辦卡限 San Mateo County 居民。'],
+    ['zh-Hant', 'ACL', 'AC Library：圖書證', '僅限 Alameda County 居民。', 'AC Library 辦卡僅限 Alameda County 居民。'],
+    ['en', 'SMCL', 'SMCL: Library cards', 'Only San Mateo County residents age 16+ qualify.', 'SMCL library cards are only for San Mateo County residents.'],
+    ['en', 'ACL', 'AC Library: library cards', 'Library cards are only for Alameda County residents.', 'AC Library cards are only for Alameda County residents.'],
+    ['en', 'SJPL', 'SJPL: Library card', 'You must be a California resident age 13+.', 'SJPL library cards require California residents age 13+.'],
+    ['en', 'ACL', 'AC Library: cards', 'Library cards are free for Alameda County residents.', 'AC Library library cards are free for Alameda County residents.']]) {
+    const scopes = [{ id: 's1', heading, entity, entityKey: entity.toLowerCase(), text: `图书馆\n${heading}\n${sentence}`, sourceIds: ['src'] }];
+    const out = r7Repair('card_eligibility', claim, scopes, locale);
+    assert.equal(out.changed, false, `${locale} ${heading} :: ${claim}`);
+    assert.equal(out.coverage.items[0].status, 'answered', `${locale} ${heading} :: ${claim}`);
+    assert.equal(out.coverage.status, 'complete');
+  }
+  // A false Kanopy claim built from the same card section is still repaired from it.
+  const scopes = [{ id: 's1', heading: 'SMCL：半岛图书证', entity: 'SMCL', entityKey: 'smcl', text: '图书馆\nSMCL：半岛图书证\n限 San Mateo County 居民，年满 16 岁。', sourceIds: ['src'] }];
+  const out = r7Repair('kanopy', 'SMCL 的 Kanopy 限 San Mateo County 居民。', scopes, 'zh-Hans');
+  assert.equal(out.changed, true); assert.equal(out.coverage.items[0].status, 'unknown');
+  assert.match(out.coverage.items[0].summary, /限 San Mateo County 居民，年满 16 岁/);
+});
+
+test('review round 7: card-rule wordings (办证, 借书证, plural library cards, getting a card) keep a correct card claim, as on main (zh-Hans, zh-Hant, en)', () => {
+  const han = /[一-鿿]/;
+  const wordings = ['加州居民持有效证件即可到馆办证。', '加州居民可免费办理图书证。', '凡居住在加州者均可免费申请借书证。', '加州居民可免費辦理借書證。', '辦證需帶有照片的證件，加州居民免費。',
+    'Library cards are free for California residents.', 'Library cards are available to California residents age 13 and older.', 'Getting a card: bring photo ID; California residents only.',
+    'California residents qualify for a free library card.', 'Residents of California are eligible for library cards.'];
+  // Under a heading that is not about the card, main reads 办证 / 借書證 / "Getting a card" as no card rule; that stays main's reading.
+  const mainReadsCard = sentence => !/办证|辦證|借書證|Getting a card/.test(sentence);
+  for (const heading of ['SFPL · Library card', 'SFPL：图书证', 'SFPL：服务说明']) {
+    for (const sentence of wordings.filter(sentence => heading !== 'SFPL：服务说明' || mainReadsCard(sentence))) {
+      const scopes = [{ entity: 'SFPL', entityKey: 'sfpl', heading, text: `${heading}\n${sentence} 另有打印服务，每页 $0.15，仅限旧金山居民。`, sourceIds: ['g1'] }];
+      const claim = han.test(sentence) ? '加州居民可免费办 SFPL 卡。' : 'California residents can get a free SFPL card.';
+      const out = r7Repair('card_eligibility', claim, scopes, han.test(sentence) ? 'zh-Hans' : 'en');
+      assert.equal(out.changed, false, `${heading} :: ${sentence}`);
+      assert.equal(out.coverage.items[0].status, 'answered', `${heading} :: ${sentence}`);
+    }
+  }
+});
+
+test('review round 7: a clause about a tool card, a parking card or a LinkedIn card is never a library-card rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', () => {
+  for (const [locale, entity, heading, sentence, claim] of [
+    ['zh-Hans', 'BPL', 'BERKELEY PUBLIC LIBRARY：工具馆', '一次最多 10 件；Berkeley 居民到工具馆领卡后可借。', 'BPL 办卡仅限 Berkeley 居民。'],
+    ['zh-Hant', 'BPL', 'BERKELEY PUBLIC LIBRARY：工具館', '一次最多 10 件；Berkeley 居民到工具館領卡後可借。', 'BPL 辦卡僅限 Berkeley 居民。'],
+    ['en', 'OPL', 'OAKLAND PUBLIC LIBRARY: Tool lending', 'Tool loans are free; Oakland residents age 18+ can get a tool card at any branch.', 'OPL library cards are only for Oakland residents.'],
+    ['en', 'BPL', 'BERKELEY PUBLIC LIBRARY: Tool Library', 'Up to 10 items at a time; Berkeley residents sign up for a tool borrower card in person.', 'BPL library cards are only for Berkeley residents.'],
+    ['en', 'MCFL', 'MCFL: State park passes', 'Passes lend for 7 days; Marin County residents can get a parking card at a branch.', 'MCFL library cards are only for Marin County residents.'],
+    ['zh-Hans', 'SFPL', 'SFPL · LINKEDIN LEARNING', '课程免费；旧金山居民可申请 LinkedIn 卡。', 'SFPL 办卡仅限旧金山居民。']]) {
+    const key = entity.toLowerCase();
+    const scopes = [{ id: 's1', heading, entity, entityKey: key, text: `福利\n${heading}\n${sentence}`, sourceIds: ['src'] },
+      { id: 's2', heading: `${entity}：办卡`, entity, entityKey: key, text: `图书馆\n${entity}：办卡\n加州居民可免费办卡。`, sourceIds: ['card'] }];
+    const out = r7Repair('card_eligibility', claim, scopes, locale);
+    assert.equal(out.changed, true, `${locale} ${sentence}`);
+    assert.equal(out.coverage.items[0].status, 'unknown', `${locale} ${sentence}`);
+    assert.deepEqual(out.coverage.items[0].sourceIds, ['card'], `${locale} ${sentence}`);
+  }
+});
+
+test('review round 7: a Kanopy, printing or Discover & Go clause that uses the card after getting it is the service\'s rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', () => {
+  const cardScope = { id: 's2', heading: 'SFPL：办卡', entity: 'SFPL', entityKey: 'sfpl', text: '图书馆\nSFPL：办卡\n加州居民可免费办 SFPL 卡。', sourceIds: ['card'] };
+  for (const [locale, heading, sentence, claim] of [
+    ['zh-Hans', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；仅限旧金山居民办卡后使用。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；年满 18 岁的读者办卡后即可登录。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hans', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；旧金山居民办 SFPL 卡后即可登录。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL · 打印：每天免费打印', '每天免费打印 10 页；旧金山居民办卡后即可享有。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hant', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；僅限舊金山居民辦卡後使用。', 'SFPL 辦卡僅限舊金山居民。'],
+    ['en', 'SFPL · KANOPY: Stream at home', 'Kanopy gives 10 films a month; San Francisco residents can get a library card and log in.', 'SFPL library cards are only for San Francisco residents.'],
+    ['en', 'SFPL · Discover & Go', 'Two tickets per visit; residents age 18+ can sign up for a library card and reserve.', 'You must be 18+ to get an SFPL library card; age 18+ only.']]) {
+    const scopes = [{ id: 's1', heading, entity: 'SFPL', entityKey: 'sfpl', text: `福利\n${heading}\n${sentence}`, sourceIds: ['src'] }, cardScope];
+    const out = r7Repair('card_eligibility', claim, scopes, locale);
+    assert.equal(out.changed, true, `${locale} ${sentence}`);
+    assert.equal(out.coverage.items[0].status, 'unknown', `${locale} ${sentence}`);
+    assert.deepEqual(out.coverage.items[0].sourceIds, ['card'], `${locale} ${sentence}`);
+  }
+});
+
+test('review round 7: the live Q3 clause in other wordings (需持有效证件, 申请借书证, 办证, library cards) is a card rule, so the correct claim is not degraded (zh-Hans, zh-Hant, en)', () => {
+  const kanopyHead = 'SFPL · KANOPY：用 SFPL 图书证，在家免费看片';
+  const radon = { entity: 'SAN FRANCISCO PUBLIC LIBRARY', entityKey: 'sfpl', heading: 'SAN FRANCISCO PUBLIC LIBRARY：SFPL 图书证可免费借氡探测器',
+    text: 'SAN FRANCISCO PUBLIC LIBRARY：SFPL 图书证可免费借氡探测器\n持 SFPL 图书证借用，可在线预约；设备先到先得，最长借期 21 天，用后须归还。', sourceIds: ['radon'] };
+  // The pass rule that owns the San Francisco residence the false claims borrow (the live Q3 turn's Discover & Go paragraph).
+  const passes = { entity: 'SFPL', entityKey: 'sfpl', heading: '旧金山 · SFPL Discover & Go：旧金山市县居民用借书证号和 PIN 登录', sourceIds: ['starter'],
+    text: '用图书馆卡借博物馆票和公园通行证\n旧金山 · SFPL Discover & Go：旧金山市县居民用借书证号和 PIN 登录 sfpl.discoverandgo.net，预约博物馆门票；同时最多 2 个预约。' };
+  for (const [locale, rule, tail, good, bad] of [
+    ['zh-Hans', '须有有效 SFPL 图书证并完成 Kanopy 账户绑定', '加州居民可免费办 SFPL 卡，需持有效证件到馆办理。', '加州居民可免费办 SFPL 卡。', 'SFPL 要求旧金山居民才能办卡。'],
+    ['zh-Hans', '须有有效 SFPL 图书证并完成 Kanopy 账户绑定', '加州居民可免费申请 SFPL 借书证。', '加州居民可免费办 SFPL 卡。', 'SFPL 要求旧金山居民才能办卡。'],
+    ['zh-Hans', '须有有效 SFPL 图书证并完成 Kanopy 账户绑定', '加州居民均可免费办证。', '加州居民可免费办 SFPL 卡。', 'SFPL 要求旧金山居民才能办卡。'],
+    ['zh-Hans', '须有有效 SFPL 图书证并完成 Kanopy 账户绑定', '加州居民可免费办理图书证，须先在线申请再到馆领取。', '加州居民可免费办 SFPL 卡。', 'SFPL 要求旧金山居民才能办卡。'],
+    ['zh-Hant', '須有有效 SFPL 圖書證並完成 Kanopy 帳戶綁定', '加州居民可免費辦 SFPL 卡，需持有效證件到館辦理。', '加州居民可免費辦 SFPL 卡。', 'SFPL 要求舊金山居民才能辦卡。'],
+    ['zh-Hant', '須有有效 SFPL 圖書證並完成 Kanopy 帳戶綁定', '加州居民均可免費辦證。', '加州居民可免費辦 SFPL 卡。', 'SFPL 要求舊金山居民才能辦卡。'],
+    ['en', 'Requires a valid SFPL card linked to Kanopy', 'library cards are free for California residents.', 'California residents can get a free SFPL card.', 'SFPL cards are only for San Francisco residents.'],
+    ['en', 'Requires a valid SFPL card linked to Kanopy', 'California residents can get a free SFPL card with photo ID at a branch.', 'California residents can get a free SFPL card.', 'SFPL cards are only for San Francisco residents.']]) {
+    const kanopy = { entity: 'SFPL', entityKey: 'sfpl', heading: kanopyHead, text: `${kanopyHead}\n${rule}；${tail}`, sourceIds: ['kanopy'] };
+    const kept = r7Repair('card_eligibility', good, [radon, kanopy, passes], locale);
+    assert.equal(kept.changed, false, `${locale} ${tail}`);
+    assert.equal(kept.coverage.items[0].status, 'answered', `${locale} ${tail}`);
+    const repaired = r7Repair('card_eligibility', bad, [radon, kanopy, passes], locale).coverage.items[0];
+    assert.equal(repaired.status, 'unknown', `${locale} ${tail}`);
+    assert.ok(repaired.summary.includes(tail.replace(/[。.]$/, '')), `${locale} ${tail} :: ${repaired.summary}`);
+    assert.doesNotMatch(repaired.summary, /氡|设备/, `${locale} ${tail}`);
+    assert.deepEqual(repaired.sourceIds, ['kanopy'], `${locale} ${tail}`);
+  }
+  // A card the reader must already hold (持 + card) is still a prerequisite, never how to get one.
+  const held = { entity: 'SFPL', entityKey: 'sfpl', heading: kanopyHead, text: `${kanopyHead}\nKanopy 每月 10 部；旧金山居民持有效 SFPL 图书证即可登录。`, sourceIds: ['kanopy'] };
+  const card = { id: 'card', heading: 'SFPL：办卡', entity: 'SFPL', entityKey: 'sfpl', text: '图书馆\nSFPL：办卡\n加州居民可免费办 SFPL 卡。', sourceIds: ['card'] };
+  const out = r7Repair('card_eligibility', 'SFPL 办卡仅限旧金山居民。', [held, card], 'zh-Hans');
+  assert.equal(out.changed, true); assert.deepEqual(out.coverage.items[0].sourceIds, ['card']);
 });
 
 test('review round 3: the adult tier is added only from a cost line with no condition anywhere', { todo: ADULT_TIER_TODO }, () => {
