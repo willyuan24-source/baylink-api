@@ -500,3 +500,19 @@ test('review round 4: more one-day wording keeps the one day, and a typed two-da
     assert.equal(stateOn(message, { searchContext: { date } }).state.date, typed, message);
   }
 });
+
+test('review round 4: after a home-city card question, asking where a library is or when it opens is about the library\'s city again', () => {
+  for (const [first, followups] of [[Q3['zh-Hans'].question, ['SFPL 总馆在哪里？', 'SFPL 总馆几点开门？', '那 SFPL 总馆周末开吗']],
+    [Q3['zh-Hant'].question, ['SFPL 總館在哪裡？', '那 SFPL 總館週末開嗎']], [Q3.en.question, ['What time does SFPL Main Library open on Sunday?', 'Where is the SFPL Main Library?']]]) {
+    const home = stateOf(first).state;
+    assert.equal(home.city, null, first); assert.equal(home.origin, 'Fremont', first);
+    for (const followup of followups) {
+      const { state } = stateOf(followup, home);
+      assert.equal(state.city, 'San Francisco', `${first} -> ${followup}`); assert.equal(state.region, 'sf', `${first} -> ${followup}`); assert.equal(state.origin, 'Fremont', `${first} -> ${followup}`);
+      // …and the next general follow-up stays there, as on main.
+      assert.equal(stateOf('附近有什么吃的', state).state.city, 'San Francisco', `${followup} -> 附近有什么吃的`);
+    }
+    // A general follow-up after the card question is still not scoped to San Francisco.
+    assert.notEqual(stateOf('那这周末附近有什么免费亲子活动？', home).state.city, 'San Francisco', first);
+  }
+});
