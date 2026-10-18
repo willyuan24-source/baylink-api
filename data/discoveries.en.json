@@ -543,6 +543,7 @@
       "details": [
         "The $6 meal is for dogs, on the patio Fridays from 5 to 8 PM, weather permitting. Human food and drinks cost extra; confirm seating and availability with the restaurant."
       ],
+      "region": "south-bay",
       "endDate": "2026-10-30",
       "dateLabel": "Fridays in October · Patio, 5–8 PM · the last one is the Halloween costume contest night (before Oct 31)",
       "costLabel": "Purchase required",
@@ -579,6 +580,7 @@
       "details": [
         "For ages 50 and older. Senior Safari includes free admission and parking from 9 to 10 AM; enter before 10 AM to stay for the day."
       ],
+      "region": "south-bay",
       "startDate": "2026-10-22",
       "endDate": "2026-10-22",
       "dateLabel": "Thu, Oct 22 · Enter 9–10 AM",
@@ -631,6 +633,7 @@
       "details": [
         "General admission is free with no purchase required. Some classes and workshops cost extra; check the day’s calendar."
       ],
+      "region": "sf",
       "dateLabel": "Tuesday–Saturday · 10 AM–5 PM",
       "costLabel": "No purchase required",
       "status": "ongoing",
@@ -810,6 +813,7 @@
       "details": [
         "Museum admission is free with no cable-car ride or purchase required. Riding a cable car is charged separately under SFMTA fares."
       ],
+      "region": "sf",
       "dateLabel": "Tuesday–Sunday · Closed Mondays",
       "costLabel": "No purchase required",
       "status": "ongoing",
