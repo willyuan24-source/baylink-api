@@ -255,6 +255,62 @@ test('BayBay: a senior fare excerpt never offers another agency\'s figures witho
   }
 });
 
+// Review of API-BB-12, round 3: the row rules held only on senior fare asks, so a senior ask about a pass, the cable car or
+// what is free ("老人月票", "Senior cable car ticket", "长者免费") read Muni's "月票 $43" and VTA's "$30" with no name, right
+// after BART's row. Every excerpt of a priced table (priced rows for three or more names) now keeps them: a row's later
+// sentence comes only after the row's own name, in the guide's words. Checked from the published table itself: each row's
+// name and later sentences, read from the shipped guide catalogs.
+const LEAD = /^\s*([A-Za-z][A-Za-z0-9.&'’ -]{0,30}?|[^\s:：（(，,。；;]{1,12}?)\s*(?:[（(][^）)\n]{0,40}[）)])?\s*[:：]/;
+const tableRowsOf = (catalog, slug) => catalog.find(guide => guide.slug === slug).content.split(/\n\s*\n/).flatMap(paragraph => {
+  const rows = paragraph.split('\n').filter(line => /\$\s?\d|\d\s?%/.test(line) && LEAD.exec(line)?.[1].trim());
+  return new Set(rows.map(line => LEAD.exec(line)[1].trim())).size >= 3 ? rows.map(line => ({ name: LEAD.exec(line)[1].trim(),
+    later: line.replace(/[ \t]+/g, ' ').split(/(?<=[。！？；;!?\n])|(?<=\.)\s+/).map(value => value.trim()).filter(value => value.length >= 6).slice(1) })) : [];
+});
+test('BayBay: every excerpt of a priced table names a row before its later sentences, fare ask or not', () => {
+  const tables = { 'zh-Hans': [], en: [] };
+  for (const slug of ['bay-area-senior-transit-clipper-discounts-guide', 'bay-area-social-security-retirement-preparation-guide']) {
+    tables['zh-Hans'].push(...tableRowsOf(guides, slug).map(row => ({ ...row, slug })));
+    tables.en.push(...tableRowsOf(guidesEn, slug).map(row => ({ ...row, slug })));
+  }
+  assert.ok(tables['zh-Hans'].length >= 8 && tables.en.length >= 8);
+  let checked = 0;
+  for (const message of ['老人月票', '老人买月票多少钱', '老人日票多少钱', '長者月票幾錢', '老人坐缆车要钱吗', '长者缆车票价', '长者免费', '老人有什么免费的', '长者有什么免费午餐',
+    'Senior cable car ticket', 'Do seniors pay on the cable car?', 'Cable car price for seniors', 'Senior monthly pass', 'How much is the senior monthly pass?', 'Do seniors get a cheaper monthly pass?',
+    "What's free for seniors in SF?", 'How much will Social Security go up in 2027?', 'SSI payment 2027 amount', '2027 年社安金调整多少']) {
+    const locale = /[㐀-鿿]/.test(message) ? 'zh-Hans' : 'en';
+    const result = evidence(message, TODAY, locale);
+    for (const item of result.items.filter(entry => entry.kind === 'guide')) {
+      for (const row of tables[locale].filter(entry => entry.slug === item.id)) for (const sentence of row.later) {
+        const at = item.text.indexOf(sentence);
+        if (at < 0) continue;
+        checked++;
+        assert.ok(item.text.slice(0, at).includes(row.name), `${message}: "${sentence}" without "${row.name}" in: ${item.text}`);
+      }
+    }
+  }
+  assert.ok(checked >= 20, `only ${checked} later sentences offered`);
+  // The asks the review read: Muni's and VTA's passes come with their names.
+  for (const [message, figure] of [['老人月票', /月票 \$43/], ['Senior cable car ticket', /cable car \$4/], ['老人坐缆车要钱吗', /缆车在早上 7 点前或晚上 9 点后 \$4/]]) {
+    const text = modelItems(evidence(message).items).filter(view => view.kind === 'guide').map(view => view.text).find(value => figure.test(value)) || '';
+    assert.ok(text && text.slice(0, figure.exec(text).index).includes('Muni'), `${message}: ${text}`);
+  }
+});
+
+// Review of API-BB-12, round 3: "rides" (the plural noun) made "Senior rides to the grocery store" a senior fare ask, whose
+// rules dropped the senior transit guide's link to the without-car guide, its only paragraph on groceries; the guide was
+// gone. "rides" is a ride service, not a way of riding; "ride" and "riding" still are ("Senior price for a single ride").
+test('BayBay: "Senior rides to the grocery store" keeps the senior transit guide; a single ride is still a fare ask', () => {
+  for (const message of ['Senior rides to the grocery store in Oakland', 'Senior rides to grocery stores in San Jose']) {
+    const views = modelItems(evidence(message).items);
+    // The senior transit guide's paratransit section, with its link to the without-car guide ("… grocery runs").
+    assert.ok(views.some(view => /senior-transit-clipper-discounts-guide/.test(view.page) && /ADA paratransit/.test(view.text) && /without a car/.test(view.text)),
+      `${message}: ${views.map(view => view.page).join(', ')}`);
+  }
+  // A single ride and riding BART are still fare asks: the fares paragraph is offered.
+  assert.ok(modelItems(evidence('Senior price for a single ride').items).some(view => view.kind === 'guide' && /62\.5%/.test(view.text) && /\$1\.40/.test(view.text)));
+  assert.ok(modelItems(evidence('Can seniors ride BART for free?').items).some(view => view.kind === 'guide' && /62\.5%/.test(view.text)));
+});
+
 // Review of API-BB-12: an opening's startDate is the day it opened, so an open restaurant or shop is never labelled ended
 // (Yutori, the Oakland game parlour and Sergeant Ma read "已结束" before; the cards dropped them as past).
 test('BayBay: an open opening is never labelled ended', () => {
