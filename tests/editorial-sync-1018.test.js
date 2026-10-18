@@ -184,6 +184,85 @@ test('BayBay: the family picks lead in fresh wordings; the adults\' pick, Sunday
   assert.equal(picksForAsk(resolveTaskState({ message: '十月带孩子去哪玩', today: TODAY, catalog: planner, carry: true }).state).size, 0);
 });
 
+// Review of API-BB-12: "where to take" read as an outing phrase for any object made every "Where to take X in <city>" ask an
+// outing ask, so service asks lost the guides that answer them (the HHW, ESL, driver's license and naturalization guides) to
+// outing records. It is an outing only when what it takes is company and nothing but a day, a time or a place follows.
+const TAKE_SERVICE = ['Where to take old batteries in San Jose', 'Where to take e-waste in Oakland this Saturday', 'Where to take a COVID test in San Francisco',
+  'Where to take hazardous waste in Santa Clara County', 'Where to take English classes in Oakland', 'Where to take the DMV written test in Fremont',
+  'Where to take a sick child at night in San Jose', 'Where to take a toddler with a high fever tonight in Fremont', 'Where to take my toddler to see a pediatrician in Oakland',
+  'Where to take my grandma to the ER tonight in San Jose', 'Where to take a dog to the vet in Oakland', 'Where to take the citizenship test in San Francisco?',
+  'Where to take a free English class in Oakland?', 'Where to take hazardous waste in San Mateo?', 'Where to take donated clothes this Saturday?', 'Where to take a blood test this Saturday',
+  'Where to take my kids for flu shots this Saturday', 'Where to take the kids tonight with a fever', 'Where to take my son to the dentist in Fremont'];
+test('BayBay: "where to take" is an outing only with company as its object; service asks keep their reading and their guides', () => {
+  const goal = message => resolveTaskState({ message, today: TODAY, catalog: planner, carry: true }).state.goal;
+  for (const message of TAKE_SERVICE) {
+    assert.notEqual(goal(message), 'discover', message);
+    const result = evidence(message);
+    assert.ok(!result.familyPicks, `${message}: ${result.familyPicks}`);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => PICKS_1024.some(pick => id.endsWith(pick))), `${message}: ${itemIds(result).join(', ')}`);
+  }
+  for (const [message, slug] of [['Where to take hazardous waste in San Mateo?', 'bay-area-bulky-items-ewaste-hhw-guide'], ['Where to take the DMV written test in San Jose?', 'california-driver-license-id-preparation-guide'],
+    ['Where to take a free English class in Oakland?', 'bay-area-free-esl-adult-learning-guide'], ['Where to take the citizenship test in San Francisco?', 'bay-area-naturalization-official-path-guide']]) {
+    assert.ok(itemIds(evidence(message)).includes(`guide:${slug}`), message);
+  }
+  for (const message of ['Where to take the kids this Saturday?', 'Where to take my parents in Oakland?', 'Where to take my 4 year old this Saturday', 'Where to take out-of-town guests in the Bay Area?']) {
+    assert.equal(goal(message), 'discover', message);
+  }
+});
+
+// Review of API-BB-12: a setting (室内, indoor) or 附近 with no home city is a constraint the picks may not meet, so those
+// asks keep their own order (indoor storytimes and museums first) rather than the outdoor LumaFest and Halloween Hoopla.
+test('BayBay: indoor and 附近 family asks keep their own order; no outdoor pick leads them', () => {
+  for (const message of ['这周六带孩子去室内玩', 'Indoor activities for kids this Saturday', '这周末带孩子去哪玩？要室内的', '这周末带孩子去哪玩 附近的']) {
+    const result = evidence(message);
+    assert.ok(!result.familyPicks, `${message}: ${result.familyPicks}`);
+    assert.notEqual(candidateIds(result)[0], 'r2-petaluma-lumafest-20261024', message);
+    assert.ok(!itemIds(result).slice(0, 2).includes('event:menlo-park-halloween-hoopla-2026'), `${message}: ${itemIds(result).join(', ')}`);
+  }
+});
+
+// Review of API-BB-12: the first senior discount rule dropped every catalog record that did not speak to older people, the
+// asked venue's own records included. Only a members' or programme price (Fairy Winterland's "会员和 Fairyland for All 另有
+// 优惠价") on a plain senior discount ask is left out; an ask with its own subject keeps the records it is about.
+test('BayBay: a senior discount ask about a venue or a show keeps that venue\'s and show\'s records', () => {
+  const offered = result => [...itemIds(result), ...candidateIds(result).map(id => `event:${id}`)];
+  for (const [message, ids] of [['老人去 ZooLights 有优惠吗', ['sfzoo-zoolights-2026']], ['Does the SF Zoo have a senior discount?', ['sfzoo-zoolights-2026']],
+    ['老人去 Fairyland 有优惠吗', ['fairyland-fairy-winterland-2026']], ['Senior discount Fairyland Oakland', ['fairyland-fairy-winterland-2026']],
+    ['老人看胡桃夹子有优惠吗', ['berkeley-ballet-nutcracker-bird-2026', 'new-ballet-san-jose-nutcracker-2026', 'oakland-ballet-nutcracker-paramount-2026']],
+    ['老人去 Chase Center 看球有优惠吗', ['sf-warriors-grizzlies-2026']], ['Any senior discounts at the Oakland Zoo?', ['oakland-zoo-glowfari-2026']],
+    ['老年人去 Filoli 有优惠吗', ['filoli-holidays-from-nov14-2026']]]) {
+    const result = evidence(message);
+    for (const id of ids) assert.ok(offered(result).includes(`event:${id}`), `${message}: ${id} not in ${offered(result).join(', ')}`);
+  }
+  // A plain senior discount ask in other words still never offers the member price.
+  for (const message of ['老年人有什么优惠活动', '退休老人有什么折扣', 'Any deals for seniors this weekend?', '长者 12 月有什么优惠']) {
+    const result = evidence(message);
+    assert.ok(!offered(result).some(id => /fairyland-fairy-winterland-2026/.test(id)), `${message}: ${offered(result).join(', ')}`);
+  }
+});
+
+// Review of API-BB-12: on a named-agency fare ask the excerpt filled its space with other rows' later sentences, nameless
+// ("$1.50 cash; monthly pass $43; AC Transit (East Bay): …" put Muni's cash fare and monthly pass beside the asked row).
+// A row's later sentences now come only with the row's own name, and on a named ask only from the asked rows.
+test('BayBay: a senior fare excerpt never offers another agency\'s figures without its name', () => {
+  for (const [message, locale, stray] of [['How much is AC Transit for seniors?', 'en', /monthly pass \$43|\$1\.50 cash;/], ['AC Transit senior fare?', 'en', /monthly pass \$43/],
+    ['SamTrans fare for seniors', 'en', /monthly pass \$43/], ['Will BART fares go up next year for seniors?', 'en', /monthly pass \$43/], ['AC Transit 長者票價多少？', 'zh-Hant', /月票 \$43|这是 2026 年 10 月 17 日官网上的现行票价/]]) {
+    const views = modelItems(evidence(message, TODAY, locale).items);
+    assert.ok(views.some(view => /\$1\.37|\$1\.00 on Clipper|62\.5%|no fare increase/.test(view.text)), message);
+    assert.ok(!views.some(view => view.kind === 'guide' && stray.test(view.text)), `${message}: ${views.filter(view => stray.test(view.text)).map(view => view.text).join(' | ')}`);
+  }
+});
+
+// Review of API-BB-12: an opening's startDate is the day it opened, so an open restaurant or shop is never labelled ended
+// (Yutori, the Oakland game parlour and Sergeant Ma read "已结束" before; the cards dropped them as past).
+test('BayBay: an open opening is never labelled ended', () => {
+  for (const [message, today] of [['Senior discounts at restaurants', TODAY], ['这周末有适合小朋友的粤语或者国语故事会吗？', '2026-10-13'], ['周末有没有一家适合朋友聚会的地方 旧金山', TODAY]]) {
+    const result = evidence(message, today);
+    const openings = result.items.filter(item => item.kind === 'opening');
+    assert.ok(openings.every(item => !/已结束|已結束|ended/.test(item.status || '') && item.temporalStatus !== 'past'), `${message}: ${openings.map(item => `${item.id} ${item.status}`).join(', ')}`);
+  }
+});
+
 test('offer regions (CNT-REGION-4): Randall Museum and the Cable Car Museum are San Francisco, Happy Hollow and Poppy & Claro South Bay', () => {
   for (const english of [false, true]) {
     assert.equal(discovery('offer', 'randall-museum-free', english).region, 'sf');
