@@ -259,7 +259,8 @@ test('BayBay: a senior discount ask about a venue or a show keeps that venue\'s 
   }
   // Review round 4: nor on dated plain asks (the day and city recalls offered it) or with a day word.
   for (const [message, today] of [['这个月老人有什么优惠活动', '2026-12-08'], ['下个月老人有什么优惠活动', '2026-11-20'], ['下周末老人有什么优惠', '2026-12-11'], ['Discounts for seniors on Saturday', '2026-12-11'],
-    ['老人这周六有什么优惠', '2026-12-11'], ['這個月長者有什麼優惠活動', '2026-12-09'], ['senior discount activities in Oakland this month', '2026-12-08']]) {
+    ['老人这周六有什么优惠', '2026-12-11'], ['這個月長者有什麼優惠活動', '2026-12-09'], ['senior discount activities in Oakland this month', '2026-12-08'],
+    ['senior discount events in December in Oakland', '2026-12-08']]) {
     const result = evidence(message, today);
     assert.ok(!offered(result).some(id => /fairyland-fairy-winterland-2026/.test(id)), `${message} (${today}): ${offered(result).join(', ')}`);
   }
