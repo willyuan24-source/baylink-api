@@ -32,6 +32,7 @@ const coverageSources = (response, id) => coverageItem(response, id).sourceIds.m
 // The API-BB-10 fallback (review round 6) put features back to main 8eec008; their tests stay here as todo for follow-up lane API-BB-11.
 const HOME_CITY_TODO = 'API-BB-10 fallback: the home-city library reading is main 8eec008 again; follow-up lane API-BB-11';
 const WEEKEND_DAY_TODO = 'API-BB-10 fallback: the weekend-day span ("这周末 10/24" as Sat + Sun) is main 8eec008 again; follow-up lane API-BB-11';
+const ADULT_TIER_TODO = 'API-BB-10 fallback: the adult price tier repair is removed, as on main 8eec008; follow-up lane API-BB-11';
 
 // ---------------------------------------------------------------- 1. SFPL card + Kanopy from Fremont (live Q3)
 
@@ -214,7 +215,7 @@ test('with the synced picks file, "这周末 10/24 带娃去哪" leads with the 
   assert.ok(PICKS.filter(id => without.slice(0, 8).includes(id)).length < PICKS.filter(id => shown.includes(id)).length);
 });
 
-test('a point with an event\'s child prices keeps the adult tier its record lists (zh-Hans, zh-Hant, en)', () => {
+test('a point with an event\'s child prices keeps the adult tier its record lists (zh-Hans, zh-Hant, en)', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const events = require('../data/planner-catalog.json').events;
   const costOf = id => events.find(row => row.id === id).costLabel;
@@ -258,7 +259,7 @@ test('a point with an event\'s child prices keeps the adult tier its record list
   }
 });
 
-test('review round 1: a streamed point continued by the adult tier is not marked corrected', () => {
+test('review round 1: a streamed point continued by the adult tier is not marked corrected', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const { draftCorrected } = require('../lib/baybayProgress');
   const cost = require('../data/planner-catalog.json').events.find(row => row.id === 'alameda-haunted-house-2026').costLabel;
@@ -413,7 +414,7 @@ test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (s
   assert.doesNotMatch(out.coverage.items[0].summary, /同时最多 2 个预约|Bay Area Discovery Museum/);
 });
 
-test('review round 3: the adult tier is added only from a cost line with no condition anywhere', () => {
+test('review round 3: the adult tier is added only from a cost line with no condition anywhere', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const events = require('../data/planner-catalog.json').events;
   const costOf = id => events.find(row => row.id === id).costLabel;
@@ -524,7 +525,7 @@ test('review round 4: after a home-city card question, asking where a library is
   }
 });
 
-test('review round 4: the adult tier is never added to a point that cites two records, talks about the parents, or has a date, tax or overlapping-band note', () => {
+test('review round 4: the adult tier is never added to a point that cites two records, talks about the parents, or has a date, tax or overlapping-band note', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const events = require('../data/planner-catalog.json').events;
   const alameda = events.find(row => row.id === 'alameda-haunted-house-2026').costLabel;
@@ -671,7 +672,7 @@ test('review round 5: card question -> "SFPL 总馆怎么走？" -> "附近有�
   assert.ok(!third.sent[0].evidence.some(row => /@(?:Emeryville|Santa Clara|Oakland)\b/.test(`${row.title}@${row.city || ''}`)), 'no East Bay or South Bay evidence on turn 3');
 });
 
-test('review round 5: the adult tier comes only from a cost line the allowlist grammar reads whole (zh-Hans, zh-Hant, en)', () => {
+test('review round 5: the adult tier comes only from a cost line the allowlist grammar reads whole (zh-Hans, zh-Hant, en)', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const tier = (cost, text, locale = 'zh-Hans') => { const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => cost, locale }); return result.repaired ? result.draft.points[0].text : null; };
   // Every segment an age band with a price, a free band, or a below-18 unlisted note (optionally after a source lead).
