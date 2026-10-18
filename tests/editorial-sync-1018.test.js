@@ -334,6 +334,24 @@ test('BayBay: senior cable car fare asks with no agency keep Muni\'s cable car f
   }
 });
 
+// Review round 4 of API-BB-12: production English asks search server.js's merged catalog (each guide's English and Chinese
+// text), where the fare lift took the Chinese fares paragraph first ("Senior discounts on BART and Muni" opened with "BART：持
+// Senior Clipper 卡…"). An English ask lifts only an English paragraph. The catalog is built here as server.js builds it.
+const englishSearchCatalog = () => {
+  const english = new Map(guidesEn.filter(guide => guides.some(source => source.slug === guide.slug)).map(guide => [guide.slug, guide]));
+  return guides.map(guide => { const en = english.get(guide.slug); return en ? { ...guide, title: `${guide.title} ${en.title}`, summary: `${guide.summary || ''} ${en.summary || ''}`, keywords: [...(guide.keywords || []), ...(en.keywords || [])], content: `${en.content || ''}\n${guide.content || ''}` } : guide; });
+};
+test('BayBay: with the production English catalog an English senior fare ask opens with the English fares paragraph', () => {
+  const merged = englishSearchCatalog();
+  for (const [message, fact] of [['Senior discounts on BART and Muni', /62\.5%[\s\S]*\$1\.40/], ['How much is VTA for seniors?', /VTA \(South Bay\): single ride \$1;/],
+    ['Is there a senior discount on BART?', /BART: 62\.5% off/], ['Senior cable car fare', /cable car \$4 before 7 a\.m\. or after 9 p\.m\./]]) {
+    const result = buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state: resolveTaskState({ message, today: TODAY, catalog: planner, carry: true }).state,
+      guideCatalog: merged, catalog: planner, discoveries, today: TODAY, locale: 'en', audience: true });
+    const first = modelItems(result.items)[0];
+    assert.ok(first.kind === 'guide' && !CJK.test(first.text) && fact.test(first.text), `${message}: ${first.text}`);
+  }
+});
+
 // Review of API-BB-12, round 3: "rides" (the plural noun) made "Senior rides to the grocery store" a senior fare ask, whose
 // rules dropped the senior transit guide's link to the without-car guide, its only paragraph on groceries; the guide was
 // gone. "rides" is a ride service, not a way of riding; "ride" and "riding" still are ("Senior price for a single ride").
