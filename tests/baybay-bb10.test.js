@@ -222,8 +222,6 @@ test('a point with an event\'s child prices keeps the adult tier its record list
     ['zh-Hans', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。[[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。18+ 成人 $8。[[e7]]'],
     ['zh-Hant', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5 [[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5。18+ 成人 $8。 [[e7]]'],
     ['en', 'alameda-haunted-house-2026', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. [[e7]]', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. Adults 18+: $8. [[e7]]'],
-    ['en', 'pleasanton-pumpkins-after-dark-2026', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free [[e7]]', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free. Adults 18+: $28.80. [[e7]]'],
-    ['zh-Hans', 'pleasanton-pumpkins-after-dark-2026', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。[[e7]]', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。18+ 成人 $28.80。[[e7]]'],
     // Review round 2: a floor price keeps its 起 / from.
     ['zh-Hans', 'sf-botanical-lightscape-2026', '植物园灯光夜：5–17 岁 $20 起，4 岁及以下免费。[[e7]]', '植物园灯光夜：5–17 岁 $20 起，4 岁及以下免费。成人 $32 起。[[e7]]'],
     ['en', 'sf-botanical-lightscape-2026', 'Botanical Garden Lightscape: ages 5–17 from $20, under 5 free. [[e7]]', 'Botanical Garden Lightscape: ages 5–17 from $20, under 5 free. Adults: from $32. [[e7]]'],
@@ -240,6 +238,12 @@ test('a point with an event\'s child prices keeps the adult tier its record list
     assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? alameda : null }).repaired, false, text);
   }
   assert.equal(adultTierRepair({ points: [{ text: '4–14 岁 $5，停车 $80 [[e7]]', cardIds: [] }] }, { costOf: () => alameda }).repaired, true);
+  // Review round 5 (allowlist grammar): Pumpkins After Dark's line ends in a parking fee with a payment condition ("停车 $15（只收
+  // 刷卡和手机支付）"), a segment that is not an age band, so its points are left alone.
+  assert.match(costOf('pleasanton-pumpkins-after-dark-2026'), /停车 \$15（只收刷卡和手机支付）/);
+  for (const [locale, text] of [['en', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free [[e7]]'], ['zh-Hans', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。[[e7]]']]) {
+    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => costOf('pleasanton-pumpkins-after-dark-2026'), locale }).repaired, false, text);
+  }
   for (const text of ['11/1 起普通票 5–12 岁 $30。[[e7]]', '早鸟票 5–12 岁 $25。[[e7]]', 'Regular tickets from Nov 1: ages 5–12 $30. [[e7]]']) {
     assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => costOf('dickens-christmas-fair-2026'), locale: /[a-z]/i.test(text[0]) ? 'en' : 'zh-Hans' }).repaired, false, text);
   }
