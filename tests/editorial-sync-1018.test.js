@@ -251,8 +251,8 @@ test('BayBay: indoor and 附近 family asks keep their own order; no outdoor pic
 });
 
 // Review of API-BB-12: the first senior discount rule dropped every catalog record that did not speak to older people, the
-// asked venue's own records included. Only a members' or programme price (Fairy Winterland's "会员和 Fairyland for All 另有
-// 优惠价") on a plain senior discount ask is left out; an ask with its own subject keeps the records it is about.
+// asked venue's own records included. An ask with its own subject keeps the records it is about (as on the sync; pinned for
+// API-BB-13's members'-price rule).
 test('BayBay: a senior discount ask about a venue or a show keeps that venue\'s and show\'s records', () => {
   const offered = result => [...itemIds(result), ...candidateIds(result).map(id => `event:${id}`)];
   for (const [message, ids] of [['老人去 ZooLights 有优惠吗', ['sfzoo-zoolights-2026']], ['Does the SF Zoo have a senior discount?', ['sfzoo-zoolights-2026']],
@@ -263,9 +263,14 @@ test('BayBay: a senior discount ask about a venue or a show keeps that venue\'s 
     const result = evidence(message);
     for (const id of ids) assert.ok(offered(result).includes(`event:${id}`), `${message}: ${id} not in ${offered(result).join(', ')}`);
   }
-  // A plain senior discount ask in other words still never offers the member price.
-  for (const message of ['老年人有什么优惠活动', '退休老人有什么折扣', 'Any deals for seniors this weekend?', '长者 12 月有什么优惠']) {
-    const result = evidence(message);
+});
+// Review round 4 of API-BB-12: dated plain asks (这个月 / 下个月 on 11-20 to 12-17) and asks with a day word (下周末, 这周六,
+// Saturday) still offered the member price through the day and city recalls; the rule was reverted, and these are API-BB-13's.
+test('BayBay: plain senior discount asks never offer the member price, dated or not', { todo: 'API-BB-13 follow-up: a members\' or programme price is not a senior discount, on every recall path and with day words (API-SYNC-3h loss)' }, () => {
+  const offered = result => [...itemIds(result), ...candidateIds(result).map(id => `event:${id}`)];
+  for (const [message, today] of [['老年人有什么优惠活动', TODAY], ['退休老人有什么折扣', TODAY], ['Any deals for seniors this weekend?', TODAY], ['长者 12 月有什么优惠', TODAY],
+    ['这个月老人有什么优惠活动', '2026-12-08'], ['下个月老人有什么优惠活动', '2026-11-20'], ['下周末老人有什么优惠', '2026-12-11'], ['Discounts for seniors on Saturday', '2026-12-11']]) {
+    const result = evidence(message, today);
     assert.ok(!offered(result).some(id => /fairyland-fairy-winterland-2026/.test(id)), `${message}: ${offered(result).join(', ')}`);
   }
 });
@@ -354,7 +359,7 @@ test('BayBay: an open opening is never labelled ended', () => {
 // Review of API-BB-12: which asks are senior fare asks. A senior ask about riding with no price word had the fares on the api
 // base data and lost them with the sync ("长者坐车", "老人坐地铁", "Senior transit in the Bay Area"); an ask about rides to the
 // doctor keeps the paratransit paragraph first, as on the base data; a discount word on an ask with its own subject and
-// 圣诞老人 (Santa Claus) do not make a fare ask.
+// 圣诞老人 (Santa Claus) do not make a fare ask (pinned for API-BB-13's fare rules; they hold on the sync's behaviour).
 test('BayBay: senior riding asks keep the fares', { todo: 'API-BB-13 follow-up: senior riding asks with no price word lost the fares with the sync (API-SYNC-3h loss; API-BB-12\'s fix reverted in review round 4)' }, () => {
   for (const message of ['长者坐车', '老人坐公交需要什么卡', '老人坐地铁', 'Senior transit in the Bay Area', 'Seniors riding the bus in Oakland']) {
     const views = modelItems(evidence(message).items);
