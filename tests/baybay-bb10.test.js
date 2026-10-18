@@ -414,6 +414,27 @@ test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (s
   assert.doesNotMatch(out.coverage.items[0].summary, /同时最多 2 个预约|Bay Area Discovery Museum/);
 });
 
+test('review round 6: a pass, printing or Kanopy clause that needs a card first is not a card rule, so a false card claim is still repaired (zh-Hans, zh-Hant, en)', () => {
+  // The verify's made-up scopes: each clause names another service and only requires holding the card. Main repairs the false card
+  // claim from the card scope; round 5 added the clause as a card rule with the service's residence or age rule and kept the claim.
+  const cardScope = { id: 'card', heading: 'SFPL：办卡', entity: 'SFPL', entityKey: 'sfpl', text: '图书馆\nSFPL：办卡\n加州居民可免费办 SFPL 卡。', sourceIds: ['card'] };
+  for (const [locale, heading, sentence, claim] of [
+    ['zh-Hans', 'SFPL · Discover & Go：用借书证预约博物馆门票', 'SFPL Discover & Go：限旧金山市县居民，须年满 18 岁并已办 SFPL 卡；每次最多 2 张票。', 'SFPL 办卡需旧金山居民。'],
+    ['zh-Hans', 'SFPL · Discover & Go：用借书证预约博物馆门票', 'SFPL Discover & Go：限旧金山市县居民，须年满 18 岁并已办 SFPL 卡；每次最多 2 张票。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hans', 'SFPL · 打印：每天免费打印', '免费打印仅限旧金山居民，需先办理图书证；每天 10 页。', 'SFPL 办卡需旧金山居民。'],
+    ['zh-Hans', 'SFPL · KANOPY：在家看片', 'Kanopy 仅限年满 18 岁的旧金山居民，需先领卡；每月 10 部。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hant', 'SFPL · Discover & Go：用借書證預約博物館門票', 'SFPL Discover & Go：限舊金山市縣居民，須年滿 18 歲並已辦 SFPL 卡；每次最多 2 張票。', 'SFPL 辦卡須年滿 18 歲。'],
+    ['zh-Hant', 'SFPL · KANOPY：在家看片', 'Kanopy 僅限年滿 18 歲的居民，需先領卡；每月 10 部。', 'SFPL 辦卡須年滿 18 歲。'],
+    ['en', 'SFPL · Discover & Go: museum passes', 'SFPL Discover & Go is for San Francisco residents age 18+ who get a library card first; two tickets per visit.', 'SFPL cards are only for San Francisco residents.']]) {
+    const scopes = [{ id: 's1', heading, entity: 'SFPL', entityKey: 'sfpl', text: `福利\n${heading}\n${sentence}`, sourceIds: ['src'] }, cardScope];
+    const out = repairBenefitCoverage({ status: 'complete', items: [{ id: 'card_eligibility', status: 'answered', summary: claim, sourceIds: ['x'] }] }, scopes, locale);
+    assert.equal(out.changed, true, `${locale} ${sentence} :: ${claim}`);
+    assert.equal(out.coverage.items[0].status, 'unknown', `${locale} ${sentence}`);
+    assert.deepEqual(out.coverage.items[0].sourceIds, ['card'], `${locale} ${sentence}`);
+  }
+  // The live Q3 card clause after a Kanopy rule is still a card rule of its own (see "a real SFPL residency error is still repaired").
+});
+
 test('review round 3: the adult tier is added only from a cost line with no condition anywhere', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const events = require('../data/planner-catalog.json').events;
