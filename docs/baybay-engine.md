@@ -430,8 +430,8 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
 ## API-BB-10: fixes from the #58 live check (degraded SFPL answer, weekend span, home city, record links, adult prices)
 
 - **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js` `scopeStatements`). The repair
-  reads each scope paragraph's statements to learn which service owns a restriction. Every sentence is classified whole,
-  as before this lane; a clause of it (split at `；` / `;`) that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡,
+  reads each scope paragraph's statements to learn which service owns a restriction. Each sentence is still classified
+  whole and keeps its restrictions (card-benefit sentences without restrictions no longer get the card topic); a clause of it (split at `；` / `;`) that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡,
   申请…卡, 领卡, apply for / sign up for / get a … card) is also a card rule of its own. So "须有有效 SFPL 图书证并完成 Kanopy
   账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" stays a Kanopy statement and adds the card statement
   "加州居民可免费办 SFPL 卡，…". Review round 1: 办/办理 directly before the card noun, at most a library name or 一张 between,
@@ -485,8 +485,24 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
     10/25 都行"), leaves the ask to main's reading, so the leftover day (possibly the busy one) never becomes the only date;
   - more one-day wording keeps one day (那天, 晚饭前 / 天黑前, 早去早回, 几个小时, hours, sunrise, before dark);
   - `blankSpan` is used only for a weekend-day span; other spans blank as on main ("12月5日，6日都可以" beats the date bar).
-  The base-vs-tip date suites (the round-3 suite of 276 phrasings × 8 contexts × 2 days, and the round-4 reviewer's 225 +
-  249 phrasings in up to 10 contexts) have no row that is worse than main.
+  Review round 5 inverted the rule, because each round's word list leaked:
+  - the span holds only when the rest of the ask, with the span blanked as `resolveTaskState` blanks it, carries no other
+    time in the planner's own reading: `spanFor` passes `askedDateRange` an `otherTemporal` check (`plannerTimeIn`) that
+    runs `inferFilters` (a date, weekday, today / tomorrow / yesterday, or several dates), `timesIn` (a start or finish
+    time), `timeOfDay` and `preferencePhrases` (an outing length, after lunch) on that text. A day written alone (25号,
+    25號, the 25th) and the day after or before (第二天, 隔天, 次日, the next day, 明日, tmrw) count too. Any of them leaves the
+    ask to main's one-date reading; `ONE_DAY_ASK` stays only as an extra guard (it gains 当晚, 一大早, 夜间, meals, 一点钟,
+    midnight, dawn, sundown, "for the day", "from 2 to 5", and no longer reads the Sunset District as a sunset);
+  - a written day that has passed is read as on main, with main's past-date clarification ("这周末 10/24 带娃去哪" asked on
+    Sunday 10/25), and a weekend already under way starts today: on its Sunday the written Sunday is one day, main's
+    reading; on its Saturday the span is still Saturday and Sunday;
+  - a carried day that the ask itself writes beside 周末 / weekend ("这周末 10/24 室内去哪" after 10/24, also after a day
+    plan, whose re-read keeps it as `writtenDay`) is not cleared by the round-5 "span does not hold the carried day" rule,
+    so it no longer becomes this weekend's 10/17-18; a carried day the ask mentions apart ("10/24 那天有事，这周末呢") still
+    gives way to this weekend, as on main.
+  The base-vs-tip date suites (the round-3 suite of 276 phrasings × 8 contexts × 2 days, the round-4 reviewer's 225 + 249
+  phrasings, and the round-5 verifiers' 226-phrasing suite in 11 contexts, 137 new phrasings and Sunday-today shapes) have no
+  row that is worse than main.
 - **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
   借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
   longer sets the institution's city as the destination: city and region stay empty and the home city stays the
@@ -494,10 +510,16 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   dropped: the region filter then removed the SFPL Kanopy record from the evidence. Review round 3: only a card or
   service ask (`LIBRARY_SERVICE_ASK`: 办卡 / 借书证 / Kanopy / eCard / Discover & Go / 打印 / "can I use"); a branch's hours or
   address ("我住 Fremont，SFPL 总馆在哪里？", "What time does SFPL Main Library open on Sunday?"), an events ask, or a trip to
-  the library (`LIBRARY_VISIT_ASK`: 想去 / 要去 …) still scopes to San Francisco, as on main. Review round 4: after the
-  home-city turn (no city carried, origin Fremont), a follow-up that names the library and asks where it is or when it opens
-  ("SFPL 总馆在哪里？", "那 SFPL 总馆周末开吗") sets the library's city again (`visitAfterHome`), so the next "附近有什么吃的"
-  stays in San Francisco as on main; a general follow-up ("那这周末附近有什么免费亲子活动？") is still not scoped to SF.
+  the library (`LIBRARY_VISIT_ASK`: 想去 / 要去 …) still scopes to San Francisco, as on main. Review round 5: the home
+  reading applies only when the service is the ask's only question (`libraryServiceOnly`): every clause (split at ，。？！；)
+  is a card or service ask, the home statement, or no question at all ("谢谢"), so "我住 Fremont，SFPL 总馆怎么走？能办卡吗"
+  and "可以办 SFPL 卡吗？总馆在什么地方" keep San Francisco; `LIBRARY_VISIT_ASK` stays a first-turn guard (怎么走, 什么时候,
+  什么地方, 位置, 开放, 离…近, 几号线, 附近, location, how far, get to). The follow-up rule is the inverse of the service rule,
+  with no visit word list (`visitAfterHome`): after a turn that carried no city and only an origin, a follow-up that names a
+  library and is not only a card or service ask ("SFPL 总馆怎么走？", "SFPL 总馆附近有什么吃的", "SFPL Main Library
+  location?", "How far is SFPL Main from BART?") sets that library's city, so it and the next "附近有什么吃的" are San
+  Francisco as on main. A card or service follow-up ("SFPL 借书证怎么办？") stays home, a general one ("附近有什么吃的",
+  "那这周末附近有什么免费亲子活动？") is ordered by nearness to home, and "那 Fremont 图书馆呢" is Fremont (main kept SF).
 - **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
   `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
@@ -523,8 +545,14 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   do not. Review round 4: a point whose markers name more than one record is left alone (the tier would sit beside the other
   record's citation: "Alameda 鬼屋 4–14 岁 $5 [[e7]]；Emeryville 艺术展免费 [[e6]]"), and so is a point that talks about the
   accompanying adults (家长 / 父母 / 陪同 / parents / guardians); date or tax wording (而定 / 调整 / 含税 / tax) conditions the
-  cost line, and the unlisted-band note exempts only a band wholly below 18. `PRICE_CONDITION` is still a denylist; an
-  allowlist grammar for cost lines is a follow-up.
+  cost line, and the unlisted-band note exempts only a band wholly below 18. Review round 5 replaced the denylist with an
+  allowlist grammar (`costSegments`): the tier is added only when every `；` / `，` / `、` segment of the cost line is an
+  age band (or 成人 / 18+) with "$N" (optional 起 / from), a free age band, or a note that another band's price is not listed
+  whose range stays below 18; the first segment may name its source ("市府页列"). Anything else in the line (parking, a
+  member or resident note, an early-bird or online price, a band above the children that is not the adult band, two adult
+  prices, free adults) leaves the point alone. In the shipped data two rows get a tier (Alameda "18+ 成人 $8", the live Q5
+  row, and Lightscape "成人 $32 起"); Pumpkins After Dark no longer does, because its line ends in "停车 $15（只收刷卡和手机
+  支付）".
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
