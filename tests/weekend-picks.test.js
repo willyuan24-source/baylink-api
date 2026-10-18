@@ -33,7 +33,7 @@ test('the picks file is optional: absent, malformed or empty files give no picks
   assert.equal(loadWeekendPicks(fixture('broken.json', '{ not json')).size, 0);
   assert.equal(loadWeekendPicks(fixture('empty.json', { generatedAt: TODAY, weekends: [] })).size, 0);
   // The shipped data has no picks file yet (WEB-PICKS-EXPORT, then API-SYNC-3H): the default load is empty too.
-  if (!fs.existsSync(path.join(__dirname, '..', 'data', 'weekend-picks.json'))) assert.deepEqual(withPicks(absent, () => candidateIds(ASK)), candidateIds(ASK));
+  if (!process.env.BAYLINK_WEEKEND_PICKS_FILE && !fs.existsSync(path.join(__dirname, '..', 'data', 'weekend-picks.json'))) assert.deepEqual(withPicks(absent, () => candidateIds(ASK)), candidateIds(ASK));
 });
 
 test('the web export is read by its Saturday, in rank order, with each pick on the days it runs', () => {
@@ -49,6 +49,10 @@ test('the web export is read by its Saturday, in rank order, with each pick on t
   assert.deepEqual(Object.fromEntries(picksForAsk({ dateRange: { start: '2026-10-31', end: '2026-11-01' } }, picks)), { 'mcm-halloween-spectacular-20261031': 0,
     'nov2026-fruitvale-dia-muertos': 1, 'sfpl-chinatown-creative-saturdays-fall-2026': 2, 'san-jose-avenida-altares-2026': 3, 'smcl-foster-city-nidhi-chanani-2026': 4 });
   assert.equal(picksForAsk({ date: '2026-10-22' }, picks).size, 0);
+  // Review of API-BB-9: Friday to Sunday is still a weekend; a longer span (a week, a month) takes no picks.
+  assert.deepEqual([...picksForAsk({ dateRange: { start: '2026-10-23', end: '2026-10-25' } }, picks).keys()], picks.get('2026-10-24').map(pick => pick.id));
+  assert.equal(picksForAsk({ dateRange: { start: '2026-10-22', end: '2026-10-25' } }, picks).size, 0);
+  assert.equal(picksForAsk({ dateRange: { start: '2026-10-01', end: '2026-10-31' } }, picks).size, 0);
 });
 
 test('a map of id lists is read too; invalid, repeated or non-event picks are dropped', () => {
@@ -61,8 +65,10 @@ test('a map of id lists is read too; invalid, repeated or non-event picks are dr
   assert.equal(off.size, 0);
 });
 
+// Review of API-BB-9: the baselines are computed with no picks file, so these tests still hold once API-SYNC-3H ships
+// data/weekend-picks.json (with it, the default load already has the picks).
 test('on its own weekend a pick ranks higher for a generic family weekend ask, and nowhere else', () => {
-  const base = candidateIds(ASK);
+  const base = withPicks(absent, () => candidateIds(ASK));
   const boosted = withPicks(WEB_FIXTURE, () => candidateIds(ASK));
   // Before: the day's family records in id order (Cherryland storytime first). With the picks: Petaluma's LumaFest,
   // Menlo Park's Halloween Hoopla, Cherryland and SJMA lead, in the editor's order.
@@ -73,12 +79,15 @@ test('on its own weekend a pick ranks higher for a generic family weekend ask, a
   assert.deepEqual(withPicks(elsewhere, () => candidateIds(ASK)), base);
   // A topic ask is not a generic weekend ask: no boost.
   const topicAsk = '10月24号周末旧金山有什么音乐会';
-  assert.deepEqual(withPicks(WEB_FIXTURE, () => candidateIds(topicAsk)), candidateIds(topicAsk));
+  assert.deepEqual(withPicks(WEB_FIXTURE, () => candidateIds(topicAsk)), withPicks(absent, () => candidateIds(topicAsk)));
+  // Nor is a month ask: its span is longer than a weekend.
+  const monthAsk = '10月带娃去哪玩';
+  assert.deepEqual(withPicks(WEB_FIXTURE, () => candidateIds(monthAsk)), withPicks(absent, () => candidateIds(monthAsk)));
 });
 
 test('a city family ask takes the weekend\'s pick first among records of equal fit, and only on the day it runs', () => {
   const ask = '10月24号周末 San Jose 带娃去哪玩';
-  const base = candidateIds(ask);
+  const base = withPicks(absent, () => candidateIds(ask));
   const boosted = withPicks(WEB_FIXTURE, () => candidateIds(ask));
   assert.ok(base.indexOf('san-jose-sjma-dia-muertos-community-2026') > 0, base.join(', '));
   assert.equal(boosted[0], 'san-jose-sjma-dia-muertos-community-2026', boosted.join(', '));
