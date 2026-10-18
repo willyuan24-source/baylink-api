@@ -551,6 +551,20 @@ test('review round 7: the live Q3 clause in other wordings (需持有效证件, 
   assert.equal(out.changed, true); assert.deepEqual(out.coverage.items[0].sourceIds, ['card']);
 });
 
+test('review round 7: a card repair left with no card statement cites what main cites, never the pass rule it repairs (shipped SCL sections)', () => {
+  // The shipped Sonoma County Library parking-pass and Discover & Go paragraphs. On main the parking-pass line is the card's only
+  // statement; it is restriction-free and not a card rule, so the repair falls back to main's statements rather than the
+  // direct scopes (the Discover & Go heading names 图书证, and its Sonoma residence and age 15 rule is what the claim borrowed).
+  const paragraphs = require('../data/guide-catalog.json').find(row => row.slug === 'bay-area-freebies-deals-2026-11').content.split(/\n\n+/)
+    .filter(part => /^SONOMA COUNTY LIBRARY：(?:Sonoma 图书馆借停车证|北湾图书证也能借)/.test(part));
+  assert.equal(paragraphs.length, 2);
+  const scopes = paragraphs.map((text, index) => ({ id: `scl-${index}`, heading: text.split('\n')[0], entity: 'SONOMA COUNTY LIBRARY', entityKey: 'scl', text: `福利\n${text}`, sourceIds: [`scl-${index}`] }));
+  const out = r7Repair('card_eligibility', 'SONOMA COUNTY LIBRARY 的图书证：Sonoma County 居民、年满 15 岁，持正式图书证和 PIN。', scopes, 'zh-Hans');
+  assert.equal(out.changed, true); assert.equal(out.coverage.items[0].status, 'unknown');
+  assert.match(out.coverage.items[0].summary, /区域公园日间停车证/);
+  assert.doesNotMatch(out.coverage.items[0].summary, /年满 15 岁|Discover & Go/);
+});
+
 test('review round 3: the adult tier is added only from a cost line with no condition anywhere', { todo: ADULT_TIER_TODO }, () => {
   const { adultTierRepair } = require('../lib/baybayQuality');
   const events = require('../data/planner-catalog.json').events;
