@@ -265,3 +265,48 @@ test('a dated one-day event\'s when gives its session hours', () => {
   const english = evidence('Is there a Mandarin storytime on December 5?', 'en').items.find(row => row.id === SAN_LEANDRO);
   assert.match(modelItems([english])[0].when, /10:30–11am$/);
 });
+
+// Review of API-BB-9: the when gave the day's first session only, so a Mandarin ask for Cherryland's 10/24 storytimes got
+// the Cantonese 10:30–11:00 (Mandarin is 11:30–12:00) and a mahjong-club ask for 11/28 got the beginners' class. Every
+// session of the day is listed, in time order; a multi-date event's listed day does the same (API-BB-7's first-session lookup).
+test('a day with two or more sessions lists every session, never only the first', () => {
+  const when = (message, id, locale) => modelItems([evidence(message, locale).items.find(row => row.id === id)])[0].when;
+  assert.equal(when('10月24号 Cherryland 国语故事会几点？', 'acl-cherryland-chinese-storytimes-oct24-2026'), '10月24日（周六） 10:30–11:00、11:30–12:00');
+  assert.equal(when('Is there a Mandarin storytime on October 24 in Cherryland?', 'acl-cherryland-chinese-storytimes-oct24-2026', 'en'), 'Sat, Oct 24 10:30–11am, 11:30am–12pm');
+  assert.equal(when('11月28日 Sunset 图书馆麻将俱乐部几点开始？', 'sfpl-sunset-mahjong-nov28-2026'), '11月28日（周六） 10:30–12:00、13:30–15:00');
+  assert.equal(when('10月22日 Orinda Trunk & Treat 几点？', 'orinda-trunk-and-treat-october-2026'), '10月22日（周四） 16:30–17:15、17:15–18:00、18:00–18:45');
+  assert.match(when('11月14日 Mountain View 绿野仙踪音乐剧几点？', 'octnov-pyt-wizard-oz-2026'), /^11月14日（周六） 14:00、19:30（列出的日期：/);
+});
+
+// Review of API-BB-9: the status recall keeps to the asked city or region. Oakland's Jack London Square and an SF After
+// Dark ask are not about Glen Ellen's sold-out author talk or Napa's sold-out After Dark dinner; a Napa ask still is.
+test('a statused event is recalled by its name words only inside the asked city or region', () => {
+  for (const message of ['11月15日 Jack London Square 有什么活动？', '11月15日周日奥克兰 Jack London Square 带娃去哪', 'What is happening at Jack London Square on November 15?']) {
+    assert.ok(!itemIds(evidence(message)).includes(`event:${JACK_LONDON}`), message);
+  }
+  assert.ok(!itemIds(evidence('10月30日周五晚上 San Francisco 有什么 After Dark 夜场？')).includes('event:napa-harvest-after-dark-2026'));
+  const napa = evidence('10月30日 Napa Harvest After Dark 还有票吗？').items.find(row => row.id === 'napa-harvest-after-dark-2026');
+  assert.equal(napa?.mismatch, 'sold_out');
+  assert.ok(!evidence('10月30日 Napa Harvest After Dark 还有票吗？').candidates.some(row => row.id === 'napa-harvest-after-dark-2026'));
+});
+
+// Review of API-BB-9: the registration-page boost is for an event's or offer's own text; a guide paragraph keeps its
+// sentence choice (block M, M-EN-1 and M-DATE-2: the autumn-offers guide had dropped "Free, no purchase needed." for the
+// Home Depot workshop's sign-up line).
+test('a guide paragraph keeps its cost sentence over a sign-up link line', () => {
+  for (const message of ['Is there a tree lighting in Pleasanton in early December?', 'What\'s on for families in the East Bay the weekend of December 12?']) {
+    const guide = modelItems(evidence(message, 'en', '2026-10-14').items).find(row => row.kind === 'guide' && /THE HOME DEPOT/i.test(row.text));
+    assert.ok(guide, message);
+    assert.match(guide.text, /Free, no purchase needed\./, message);
+    assert.doesNotMatch(guide.text, /homedepot\.com\/c\/kids-workshop/, message);
+  }
+});
+
+// Review of API-BB-9: the first-word name rule skips a neighbourhood that names its city ("Excelsior", the SF district)
+// and city words; a distinctive name still finds its opening in any asked city.
+test('the one-word opening name is never a neighbourhood or city word', () => {
+  const { namesNeighbourhood } = require('../lib/baybayState');
+  assert.equal(namesNeighbourhood('excelsior'), true);
+  assert.equal(namesNeighbourhood('florecita'), false);
+  for (const message of ['San Jose 的 Florecita 开了吗？', '旧金山 Florecita 开了吗？']) assert.ok(itemIds(evidence(message)).includes('opening:florecita-mission'), message);
+});
