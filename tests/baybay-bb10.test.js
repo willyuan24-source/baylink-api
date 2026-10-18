@@ -162,3 +162,22 @@ test('with the synced picks file, "这周末 10/24 带娃去哪" leads with the 
   assert.ok(PICKS.filter(id => shown.includes(id)).length >= 4, shown.join());
   assert.ok(PICKS.filter(id => without.slice(0, 8).includes(id)).length < PICKS.filter(id => shown.includes(id)).length);
 });
+
+test('a point with an event\'s child prices keeps the adult tier its record lists (zh-Hans, zh-Hant, en)', () => {
+  const { adultTierRepair } = require('../lib/baybayQuality');
+  const event = require('../data/planner-catalog.json').events.find(row => row.id === 'alameda-haunted-house-2026');
+  assert.match(event.costLabel, /18\+ \$8/);
+  const cases = [
+    ['zh-Hans', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。[[e7]]', event.costLabel, 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5、18+ $8。[[e7]]'],
+    ['zh-Hant', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5。[[e7]]', '市府頁列 0–3 歲免費、4–14 歲 $5、18+ $8；15–17 歲費用未註明，待核實。', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5、18+ $8。[[e7]]'],
+    ['en', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. [[e7]]', 'City page: free for ages 0–3, ages 4–14 $5, 18+ $8; ages 15–17 not listed.', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5, 18+ $8. [[e7]]'],
+  ];
+  for (const [locale, text, cost, expected] of cases) {
+    const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? cost : null, locale });
+    assert.equal(result.repaired, true, locale); assert.equal(result.draft.points[0].text, expected, locale);
+  }
+  // A point that already gives the range or the adult price, a point without child prices, and another record are left alone.
+  for (const text of ['门票 $5–$8 [[e7]]', '4–14 岁 $5，成人 $8 [[e7]]', 'Alameda 鬼屋周五至周日开放 [[e7]]', 'Michaels 免费手作 [[e1]]']) {
+    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? event.costLabel : null }).repaired, false, text);
+  }
+});
