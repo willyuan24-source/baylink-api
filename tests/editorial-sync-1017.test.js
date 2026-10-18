@@ -146,17 +146,18 @@ test('BayBay: an AC Transit senior fare ask cites the $1.37 Clipper fare, never 
     assert.ok(!views.some(view => AC_OLD.test(view.text)), message);
   }
   // API-SYNC-3h: web Wave 7 A (CNT-YEAREND) lengthens the English "Fares for 65+" section (BART's 2026–27 budget line, Muni's
-  // 2027 fares, the "as of 10/17" notes; 777 → 1,442 characters). With the old lib/ it scored below the guide's intro,
-  // paratransit and holiday-transit link paragraphs, so the English ask got none of its fare lines. The English ask leads
-  // with the senior transit guide and never gets the old half-price line.
+  // 2027 fares, the "as of 10/17" notes; 777 → 1,442 characters). It now scores below the guide's intro, paratransit and
+  // holiday-transit link paragraphs, so the English ask gets none of its fare lines (the base section text brings $1.37
+  // back; removing the link paragraph alone does not). The zh asks still reach the zh section. The English ask still leads
+  // with the senior transit guide and never gets the old half-price line. $1.37 in English is the TODO below.
   const english = evidence('How much is AC Transit for seniors?', 'en');
   assert.equal(itemIds(english)[0], 'guide:bay-area-senior-transit-clipper-discounts-guide', itemIds(english).join(', '));
   assert.ok(!modelItems(english.items).some(view => AC_OLD.test(view.text)));
 });
 
-// API-SYNC-3h loss, fixed by API-BB-12 (a senior fare ask keeps the paragraph with the asked agency's row first in its guide,
-// and the excerpt keeps that row; see editorial-sync-1015).
-test('BayBay: the English AC Transit senior fare ask keeps the $1.37 Clipper fare in the evidence', () => {
+// API-SYNC-3h loss: passes on the api base data (3faef61), fails on the Wave 7 A copy. API-BB-12 fixed it; its fare rules were
+// reverted in review round 4 (see editorial-sync-1015), so it is a TODO again for API-BB-13.
+test('BayBay: the English AC Transit senior fare ask keeps the $1.37 Clipper fare in the evidence', { todo: 'API-BB-13 follow-up: CNT-YEAREND\'s longer English "Fares for 65+" section loses its paragraph slot in the senior transit guide (API-SYNC-3h loss; see editorial-sync-1015)' }, () => {
   const views = modelItems(evidence('How much is AC Transit for seniors?', 'en').items);
   assert.ok(views.some(view => view.kind === 'guide' && /senior local single ride is \$1\.37 on Clipper/.test(view.text)));
 });

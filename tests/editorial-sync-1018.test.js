@@ -270,10 +270,12 @@ test('BayBay: a senior discount ask about a venue or a show keeps that venue\'s 
   }
 });
 
+// API-BB-12's fare pins (review rounds 2 and 3), TODO again since its fare rules were reverted in review round 4.
+const FARE_RULES = 'API-BB-13 follow-up: senior fare excerpts that name their rows (API-BB-12\'s fare rules, reverted in review round 4)';
 // Review of API-BB-12: on a named-agency fare ask the excerpt filled its space with other rows' later sentences, nameless
 // ("$1.50 cash; monthly pass $43; AC Transit (East Bay): …" put Muni's cash fare and monthly pass beside the asked row).
-// A row's later sentences now come only with the row's own name, and on a named ask only from the asked rows.
-test('BayBay: a senior fare excerpt never offers another agency\'s figures without its name', () => {
+// A row's later sentences should come only with the row's own name, and on a named ask only from the asked rows.
+test('BayBay: a senior fare excerpt never offers another agency\'s figures without its name', { todo: FARE_RULES }, () => {
   for (const [message, locale, stray] of [['How much is AC Transit for seniors?', 'en', /monthly pass \$43|\$1\.50 cash;/], ['AC Transit senior fare?', 'en', /monthly pass \$43/],
     ['SamTrans fare for seniors', 'en', /monthly pass \$43/], ['Will BART fares go up next year for seniors?', 'en', /monthly pass \$43/], ['AC Transit 長者票價多少？', 'zh-Hant', /月票 \$43|这是 2026 年 10 月 17 日官网上的现行票价/]]) {
     const views = modelItems(evidence(message, TODAY, locale).items);
@@ -284,16 +286,16 @@ test('BayBay: a senior fare excerpt never offers another agency\'s figures witho
 
 // Review of API-BB-12, round 3: the row rules held only on senior fare asks, so a senior ask about a pass, the cable car or
 // what is free ("老人月票", "Senior cable car ticket", "长者免费") read Muni's "月票 $43" and VTA's "$30" with no name, right
-// after BART's row. Every excerpt of a priced table (priced rows for three or more names) now keeps them: a row's later
-// sentence comes only after the row's own name, in the guide's words. Checked from the published table itself: each row's
-// name and later sentences, read from the shipped guide catalogs.
+// after BART's row (the sync's excerpts do the same). Every excerpt of a priced table (priced rows for three or more names)
+// should keep them: a row's later sentence only after the row's own name, in the guide's words. Checked from the published
+// table itself: each row's name and later sentences, read from the shipped guide catalogs.
 const LEAD = /^\s*([A-Za-z][A-Za-z0-9.&'’ -]{0,30}?|[^\s:：（(，,。；;]{1,12}?)\s*(?:[（(][^）)\n]{0,40}[）)])?\s*[:：]/;
 const tableRowsOf = (catalog, slug) => catalog.find(guide => guide.slug === slug).content.split(/\n\s*\n/).flatMap(paragraph => {
   const rows = paragraph.split('\n').filter(line => /\$\s?\d|\d\s?%/.test(line) && LEAD.exec(line)?.[1].trim());
   return new Set(rows.map(line => LEAD.exec(line)[1].trim())).size >= 3 ? rows.map(line => ({ name: LEAD.exec(line)[1].trim(),
     later: line.replace(/[ \t]+/g, ' ').split(/(?<=[。！？；;!?\n])|(?<=\.)\s+/).map(value => value.trim()).filter(value => value.length >= 6).slice(1) })) : [];
 });
-test('BayBay: every excerpt of a priced table names a row before its later sentences, fare ask or not', () => {
+test('BayBay: every excerpt of a priced table names a row before its later sentences, fare ask or not', { todo: FARE_RULES }, () => {
   const tables = { 'zh-Hans': [], en: [] };
   for (const slug of ['bay-area-senior-transit-clipper-discounts-guide', 'bay-area-social-security-retirement-preparation-guide']) {
     tables['zh-Hans'].push(...tableRowsOf(guides, slug).map(row => ({ ...row, slug })));
@@ -325,15 +327,16 @@ test('BayBay: every excerpt of a priced table names a row before its later sente
 
 // Review of API-BB-12, round 3: "rides" (the plural noun) made "Senior rides to the grocery store" a senior fare ask, whose
 // rules dropped the senior transit guide's link to the without-car guide, its only paragraph on groceries; the guide was
-// gone. "rides" is a ride service, not a way of riding; "ride" and "riding" still are ("Senior price for a single ride").
-test('BayBay: "Senior rides to the grocery store" keeps the senior transit guide; a single ride is still a fare ask', () => {
+// gone. It keeps it, as on base and the sync.
+test('BayBay: "Senior rides to the grocery store" keeps the senior transit guide', () => {
   for (const message of ['Senior rides to the grocery store in Oakland', 'Senior rides to grocery stores in San Jose']) {
     const views = modelItems(evidence(message).items);
     // The senior transit guide's paratransit section, with its link to the without-car guide ("… grocery runs").
     assert.ok(views.some(view => /senior-transit-clipper-discounts-guide/.test(view.page) && /ADA paratransit/.test(view.text) && /without a car/.test(view.text)),
       `${message}: ${views.map(view => view.page).join(', ')}`);
   }
-  // A single ride and riding BART are still fare asks: the fares paragraph is offered.
+});
+test('BayBay: a single ride and riding BART are senior fare asks: the fares paragraph is offered', { todo: FARE_RULES }, () => {
   assert.ok(modelItems(evidence('Senior price for a single ride').items).some(view => view.kind === 'guide' && /62\.5%/.test(view.text) && /\$1\.40/.test(view.text)));
   assert.ok(modelItems(evidence('Can seniors ride BART for free?').items).some(view => view.kind === 'guide' && /62\.5%/.test(view.text)));
 });
@@ -352,11 +355,13 @@ test('BayBay: an open opening is never labelled ended', () => {
 // base data and lost them with the sync ("长者坐车", "老人坐地铁", "Senior transit in the Bay Area"); an ask about rides to the
 // doctor keeps the paratransit paragraph first, as on the base data; a discount word on an ask with its own subject and
 // 圣诞老人 (Santa Claus) do not make a fare ask.
-test('BayBay: senior riding asks keep the fares; ride-service, own-subject and Santa asks keep their own first items', () => {
+test('BayBay: senior riding asks keep the fares', { todo: 'API-BB-13 follow-up: senior riding asks with no price word lost the fares with the sync (API-SYNC-3h loss; API-BB-12\'s fix reverted in review round 4)' }, () => {
   for (const message of ['长者坐车', '老人坐公交需要什么卡', '老人坐地铁', 'Senior transit in the Bay Area', 'Seniors riding the bus in Oakland']) {
     const views = modelItems(evidence(message).items);
     assert.ok(views.some(view => view.kind === 'guide' && /62\.5%|\$1\.40|\$1\.37/.test(view.text)), `${message}: ${itemIds(evidence(message)).join(', ')}`);
   }
+});
+test('BayBay: ride-service, own-subject and Santa asks keep their own first items', () => {
   const rides = modelItems(evidence('老人坐公交去医院有接送吗').items);
   assert.match(rides[0].text, /辅助交通（paratransit）/);
   // A Santa photo ask is not a senior ask: the autumn freebies guide stays its 10th item, as before the sync.
@@ -412,17 +417,20 @@ test('BayBay: holiday hours and 2027 figure asks reach the new guide and the 202
   assert.match(en, /From January 4, 2027: \$1\.50 single ride on Clipper/);
 });
 
-// Not met by the sync alone (it fails on the api base data too, which has no 2027 fares). The senior transit guide carries
-// Muni's 2027 senior fares (pinned above) at the end of the long "Fares for 65+" / "65 岁及以上的各家票价" section, past the
-// 400-character excerpt, so with the old lib/ a senior 2027 Muni ask never saw them: the English ask got no 2027 line and
-// the Chinese ask only the commute guide's adult $3.00 line (10th item). API-BB-12: the excerpt keeps the asked agency's
-// row, 2027 line included. The adult 2027 Muni asks keep the commute guide's $3.00 line, and "BART 明年涨价吗 老人" keeps the
-// 2026–27 budget's no-increase line.
-test('BayBay: senior 2027 Muni asks see the senior transit guide\'s 2027 senior fare', () => {
+// Not met by this sync (fails on the api base data too, which has no 2027 fares). The senior transit guide carries Muni's
+// 2027 senior fares (pinned above), but at the end of the long "Fares for 65+" / "65 岁及以上的各家票价" section, past the
+// 400-character excerpt, so a senior 2027 Muni ask never sees them: the English ask gets no 2027 line and the Chinese ask
+// only the commute guide's adult $3.00 line (10th item). With the 2026–27 / 2027 lines in a paragraph of their own
+// (measured, not shipped) both asks get the $1.50 line. API-BB-12's excerpt rule (the asked agency's row, 2027 line
+// included) was reverted with its fare rules in review round 4.
+test('BayBay: senior 2027 Muni asks see the senior transit guide\'s 2027 senior fare', { todo: 'API-BB-13 follow-up: CNT-YEAREND\'s 2027 senior Muni fares sit past the excerpt of the long fares section (or a content split of the 2026–27 / 2027 lines)' }, () => {
   for (const message of ['What will Muni cost for seniors in 2027?', '2027 年 Muni 长者票价多少']) {
     const result = evidence(message);
     assert.ok(modelItems(result.items).some(view => view.kind === 'guide' && /January 4, 2027: \$1\.50 single ride on Clipper|2027 年 1 月 4 日起：Clipper 单程 \$1\.50/.test(view.text)), `${message}: ${itemIds(result).join(', ')}`);
   }
+});
+// The adult 2027 Muni asks keep the commute guide's $3.00 line, and "BART 明年涨价吗 老人" the 2026–27 budget's no-increase line.
+test('BayBay: adult 2027 Muni and BART no-increase asks see the 2027 lines', () => {
   for (const message of ['Muni 2027 年票价', 'How much is Muni in 2027?']) assert.ok(modelItems(evidence(message).items).some(view => /\$3\.00/.test(view.text)), message);
   assert.ok(modelItems(evidence('BART 明年涨价吗 老人').items).some(view => /不涨票价/.test(view.text)));
   assert.ok(modelItems(evidence('Will BART fares go up next year for seniors?').items).some(view => /no fare increase/.test(view.text)));
