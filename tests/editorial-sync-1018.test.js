@@ -263,6 +263,23 @@ test('BayBay: an open opening is never labelled ended', () => {
   }
 });
 
+// Review of API-BB-12: which asks are senior fare asks. A senior ask about riding with no price word had the fares on the api
+// base data and lost them with the sync ("长者坐车", "老人坐地铁", "Senior transit in the Bay Area"); an ask about rides to the
+// doctor keeps the paratransit paragraph first, as on the base data; a discount word on an ask with its own subject and
+// 圣诞老人 (Santa Claus) do not make a fare ask.
+test('BayBay: senior riding asks keep the fares; ride-service, own-subject and Santa asks keep their own first items', () => {
+  for (const message of ['长者坐车', '老人坐公交需要什么卡', '老人坐地铁', 'Senior transit in the Bay Area', 'Seniors riding the bus in Oakland']) {
+    const views = modelItems(evidence(message).items);
+    assert.ok(views.some(view => view.kind === 'guide' && /62\.5%|\$1\.40|\$1\.37/.test(view.text)), `${message}: ${itemIds(evidence(message)).join(', ')}`);
+  }
+  const rides = modelItems(evidence('老人坐公交去医院有接送吗').items);
+  assert.match(rides[0].text, /辅助交通（paratransit）/);
+  // A Santa photo ask is not a senior ask: the autumn freebies guide stays its 10th item, as before the sync.
+  assert.ok(itemIds(evidence('哪里可以和圣诞老人拍照，门票多少钱')).includes('guide:bay-area-freebies-deals-2026-10'));
+  // A discount ask about a show or a venue: no fares row takes a place of the show's own records.
+  assert.ok(itemIds(evidence('老人看胡桃夹子有优惠吗')).includes('event:oakland-ballet-nutcracker-paramount-2026'));
+});
+
 test('offer regions (CNT-REGION-4): Randall Museum and the Cable Car Museum are San Francisco, Happy Hollow and Poppy & Claro South Bay', () => {
   for (const english of [false, true]) {
     assert.equal(discovery('offer', 'randall-museum-free', english).region, 'sf');
