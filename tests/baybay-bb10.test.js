@@ -31,6 +31,7 @@ const coverageItem = (response, id) => response.answerCoverage.items.find(item =
 const coverageSources = (response, id) => coverageItem(response, id).sourceIds.map(sourceId => response.evidence.find(row => row.id === sourceId));
 // The API-BB-10 fallback (review round 6) put features back to main 8eec008; their tests stay here as todo for follow-up lane API-BB-11.
 const HOME_CITY_TODO = 'API-BB-10 fallback: the home-city library reading is main 8eec008 again; follow-up lane API-BB-11';
+const WEEKEND_DAY_TODO = 'API-BB-10 fallback: the weekend-day span ("这周末 10/24" as Sat + Sun) is main 8eec008 again; follow-up lane API-BB-11';
 
 // ---------------------------------------------------------------- 1. SFPL card + Kanopy from Fremont (live Q3)
 
@@ -100,7 +101,7 @@ test('a real SFPL residency error is still repaired, and the repair never cites 
 const { resolveTaskState } = require('../lib/baybayState');
 const stateOf = (message, previous) => resolveTaskState({ message, today: '2026-10-17', catalog, carry: true, ...(previous ? { previous } : {}) });
 
-test('a weekend word beside a written Saturday or Sunday is that whole weekend, in zh-Hans, zh-Hant and en', () => {
+test('a weekend word beside a written Saturday or Sunday is that whole weekend, in zh-Hans, zh-Hant and en', { todo: WEEKEND_DAY_TODO }, () => {
   for (const message of ['这周末 10/24 带娃去哪', '這週末 10/24 帶娃去哪', '这周末10月24日带娃去哪', '10/24 这个周末带孩子去哪玩', '10月24号周末带娃去哪玩', '周末 10/25 带娃去哪',
     'This weekend (10/24), where can we go with the kids?', 'Oct 24 weekend events for kids']) {
     const { state } = stateOf(message);
@@ -116,7 +117,7 @@ test('a weekend word beside a written Saturday or Sunday is that whole weekend, 
   assert.equal(plan.goal, 'day-plan'); assert.equal(plan.date, '2026-10-24');
 });
 
-test('review round 1: full-width separators, a second date and a time of day beside "周末 10/24"', () => {
+test('review round 1: full-width separators, a second date and a time of day beside "周末 10/24"', { todo: WEEKEND_DAY_TODO }, () => {
   // Chinese keyboards type full-width punctuation: the span still covers the written day.
   for (const message of ['这周末（10/24）带娃去哪', '周末（10/24）有什么活动', '这周末，10/24，带娃去哪', '这周末：10/24 带娃去哪',
     // The weekend's other day offered beside it is the same span.
@@ -137,7 +138,7 @@ test('review round 1: full-width separators, a second date and a time of day bes
   for (const message of ['这周末 10/24 下午3点有什么', '周末 10/24 晚上有什么演出']) assert.equal(stateOf(message).state.date, '2026-10-24', message);
 });
 
-test('review round 2: a weekday written beside the date is part of the span, never this week\'s Saturday or Sunday', () => {
+test('review round 2: a weekday written beside the date is part of the span, never this week\'s Saturday or Sunday', { todo: WEEKEND_DAY_TODO }, () => {
   // "10月24日（周六）" is how Chinese dates are often written; the weekday left over was read as this Saturday (10/17).
   for (const message of ['这周末 10月24日（周六）带娃去哪', '这周末 10/24（周六）带娃去哪', '这周末 10/24 周六 带娃去哪', '这周末 10月24日 星期六 带娃去哪',
     '這週末 10/24（週六）帶娃去哪', 'This weekend (10/24, Saturday), where to go?', 'weekend 10/24 (Sat) kids', '这周末 10/25（周日）带娃去哪', '这周末 10/25 星期天去哪',
@@ -305,7 +306,7 @@ const stateOn = (message, { today = '2026-10-17', previous, searchContext } = {}
 const askedDateRangeOf = message => require('../lib/entityAliases').askedDateRange(message, '2026-10-17');
 const WEEKEND_1024 = { start: '2026-10-24', end: '2026-10-25' };
 
-test('review round 3: a typed weekend day beats the web date bar\'s day and a carried day outside it, in zh-Hans, zh-Hant and en', () => {
+test('review round 3: a typed weekend day beats the web date bar\'s day and a carried day outside it, in zh-Hans, zh-Hant and en', { todo: WEEKEND_DAY_TODO }, () => {
   for (const today of ['2026-10-17', '2026-10-22']) {
     for (const [message, date] of [['这周末 10/25 周日带娃去哪', '2026-10-24'], ['weekend 10/25 (Sun) with kids', '2026-10-24'], ['这周末 10/24 带娃去哪', '2026-10-25'], ['這週末 10/24 帶娃去哪', '2026-10-24']]) {
       const { state } = stateOn(message, { today, searchContext: { date } });
@@ -316,7 +317,7 @@ test('review round 3: a typed weekend day beats the web date bar\'s day and a ca
   }
 });
 
-test('review round 3: a follow-up inside the weekend it carries keeps the day the user typed, and both written days are the weekend', () => {
+test('review round 3: a follow-up inside the weekend it carries keeps the day the user typed, and both written days are the weekend', { todo: WEEKEND_DAY_TODO }, () => {
   const day = date => ({ goal: 'discover', date });
   for (const today of ['2026-10-17', '2026-10-22']) {
     for (const [message, previous, date] of [['这个周末 10/25 周日带娃去哪', day('2026-10-24'), '2026-10-25'], ['這個週末 10/25 週日帶娃去哪', day('2026-10-24'), '2026-10-25'],
@@ -333,7 +334,7 @@ test('review round 3: a follow-up inside the weekend it carries keeps the day th
   }
 });
 
-test('review round 3: a date labelled last / past / previous weekend or 上周末 never becomes the asked weekend', () => {
+test('review round 3: a date labelled last / past / previous weekend or 上周末 never becomes the asked weekend', { todo: WEEKEND_DAY_TODO }, () => {
   for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
     for (const message of ['Last weekend (Oct 10) we went to the zoo, what about this weekend?', 'last weekend, Oct 10, was rainy; what about this weekend?', 'Past weekend (Oct 10) was busy, this weekend free',
       'previous weekend (Oct 10) was fun; this weekend?']) {
@@ -348,7 +349,7 @@ test('review round 3: a date labelled last / past / previous weekend or 上周�
   }
 });
 
-test('review round 3: one-day wording and times keep one day; a written year is honoured', () => {
+test('review round 3: one-day wording and times keep one day; a written year is honoured', { todo: WEEKEND_DAY_TODO }, () => {
   for (const message of ['这周末 10/24 周六有空，去哪玩', '这周末 10/24 周六一天，带娃去哪', '这周末 10/24 当天往返去哪', '这周末 10/24 一整天带娃去哪', '这周末 10/24，周六只有半天', '這週末 10/24 週六有空',
     '這週末 10/24 週六一天就好', 'weekend 10/24, Saturday only', 'weekend 10/24 Saturday only, kids', 'weekend 10/24, one day only', 'this weekend 10/24, the whole day',
     '这周末 10/24 早晨去爬山', '这周末 10/24 午后去哪', '这周末 10/24 凌晨看流星', '周末 10/24 半夜有什么', '周末 10/24 下班后去哪', 'weekend 10/24 at noon', 'weekend 10/24 for dinner',
@@ -372,7 +373,7 @@ test('review round 3: one-day wording and times keep one day; a written year is 
   assert.equal(stateOn('报名截止 10/24 周末前').state.date, '2026-10-24');
 });
 
-test('review round 3: weekday words inside ordinary words do not reject the span, and a rejected span never falls back to this weekend', () => {
+test('review round 3: weekday words inside ordinary words do not reject the span, and a rejected span never falls back to this weekend', { todo: WEEKEND_DAY_TODO }, () => {
   for (const today of ['2026-10-17', '2026-10-22']) {
     for (const message of ['the sun is out this weekend 10/24', '这周末 10/24 每周一次的亲子课', '这周末 10/24 每周三次的游泳课停了，去哪', 'we sat at home last time; weekend 10/24 ideas?', 'weekend 10/24 sat or sun']) {
       const { state } = stateOn(message, { today });
@@ -448,7 +449,7 @@ test('review round 3: a branch\'s hours or address asked from home stays on the 
 
 // ---------------------------------------------------------------- review round 4 (verify of 4fccff6): narrowed to main's reading
 
-test('review round 4: a follow-up that drops the carried weekend for this or next weekend replaces the carried day (zh-Hans, zh-Hant, en)', () => {
+test('review round 4: a follow-up that drops the carried weekend for this or next weekend replaces the carried day (zh-Hans, zh-Hant, en)', { todo: WEEKEND_DAY_TODO }, () => {
   const day = date => ({ goal: 'discover', date });
   for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
     for (const message of ['10/31 那个周末有事了，这周末呢', '10/31 那個週末沒空了，這週末有什麼', 'The 10/31 weekend is out, what about this weekend?', 'weekend 10/31 no longer works, this weekend instead',
@@ -466,7 +467,7 @@ test('review round 4: a follow-up that drops the carried weekend for this or nex
   assert.deepEqual(askedDateRange('10/31 那个周末有事了，这周末呢', '2026-10-17', { weekendDay: false }), { start: '2026-10-17', end: '2026-10-18', kind: 'weekend' });
 });
 
-test('review round 4: a past weekend\'s date beside 周末 / weekend is a side remark when the ask names this weekend', () => {
+test('review round 4: a past weekend\'s date beside 周末 / weekend is a side remark when the ask names this weekend', { todo: WEEKEND_DAY_TODO }, () => {
   for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
     for (const message of ['That weekend, Oct 10, was rainy. What about this weekend?', 'The prior weekend (Oct 10) we hiked; this weekend?', 'We went to the zoo on the weekend, Oct 10. This weekend?',
       'Weekend (Oct 10) was rainy, so this weekend?', 'Our weekend, Oct 10, was busy; this weekend?']) {
@@ -479,7 +480,7 @@ test('review round 4: a past weekend\'s date beside 周末 / weekend is a side r
   }
 });
 
-test('review round 4: the weekend\'s other day written apart is read as on main, never as the only (busy) day', () => {
+test('review round 4: the weekend\'s other day written apart is read as on main, never as the only (busy) day', { todo: WEEKEND_DAY_TODO }, () => {
   for (const message of ['这周末 10/24，10/25 都行', '這週末 10/24，10/25 都可以', '这周末 10/24 / 10/25 都行', '这周末 10/24 10/25 都可以',
     '这周末 10/24 有空，10/25 要加班', '这周末 10/24 带娃，10/25 休息', '這週末 10/24 帶娃，10/25 要上班', 'This weekend 10/24, but 10/25 we are busy', '这周末 10/25 带娃，10/24 有事']) {
     const { state } = stateOn(message, { today: '2026-10-22' });
@@ -494,7 +495,7 @@ test('review round 4: the weekend\'s other day written apart is read as on main,
   assert.equal(hinted.state.date, '2026-10-24'); assert.match(hinted.clarification || '', /多个日期/);
 });
 
-test('review round 4: more one-day wording keeps the one day, and a typed two-day span still beats the date bar as on main', () => {
+test('review round 4: more one-day wording keeps the one day, and a typed two-day span still beats the date bar as on main', { todo: WEEKEND_DAY_TODO }, () => {
   for (const message of ['这周末 10/24 周六那天去哪', '这周末 10/24 带娃，晚饭前回来', '这周末 10/24 带娃去哪，天黑前回家', '这周末 10/24 早去早回', '这周末 10/24 出去玩几个小时',
     '這週末 10/24 帶娃，晚飯前回來', 'weekend 10/24, just a few hours out', 'weekend 10/24, sunrise hike?', 'weekend 10/24, back before dark']) {
     for (const today of ['2026-10-17', '2026-10-22']) {
@@ -551,7 +552,7 @@ test('review round 4: the adult tier is never added to a point that cites two re
 });
 // ---------------------------------------------------------------- review round 5 (verify2 of 34927987e): inverted rules
 
-test('review round 5: a written day that has passed, or a weekend already under way, is read as on main (zh-Hans, zh-Hant, en)', () => {
+test('review round 5: a written day that has passed, or a weekend already under way, is read as on main (zh-Hans, zh-Hant, en)', { todo: WEEKEND_DAY_TODO }, () => {
   // Asked on Sunday 10/25: Saturday 10/24 has passed. Main's reading, with main's past-date clarification (no Sat..Sun range
   // that starts yesterday, and the live Q5 ask never answers with yesterday's offers).
   for (const message of ['这周末 10/24 带娃去哪', '这周末 10/24 周六去哪', '這週末 10/24 有什麼活動', 'weekend 10/24 events']) {
@@ -573,7 +574,7 @@ test('review round 5: a written day that has passed, or a weekend already under 
   }
 });
 
-test('review round 5: the weekend\'s other day written as a day of the month or as the next day keeps main\'s one day', () => {
+test('review round 5: the weekend\'s other day written as a day of the month or as the next day keeps main\'s one day', { todo: WEEKEND_DAY_TODO }, () => {
   for (const today of ['2026-10-17', '2026-10-22']) {
     for (const [message, date] of [['这周末 10/24 出去玩，25号在家休息', '2026-10-24'], ['这周末 10/24 带娃，第二天要上中文课', '2026-10-24'], ['这周末 10/24 去玩，隔天休息', '2026-10-24'],
       ['这周末 10/24 出门，次日在家', '2026-10-24'], ['這週末 10/24 出去，25號要上班', '2026-10-24'], ['這週末 10/24 帶娃，隔天在家', '2026-10-24'], ['weekend 10/24 out with kids, the 25th we rest', '2026-10-24'],
@@ -588,7 +589,7 @@ test('review round 5: the weekend\'s other day written as a day of the month or 
   for (const message of ['這週末 10/24 還是明日比較好', 'weekend 10/24, or tmrw?']) assert.equal(stateOn(message).state.dateRange, undefined, message);
 });
 
-test('review round 5: whatever the planner itself reads as a time keeps the one day, with or without a word list entry', () => {
+test('review round 5: whatever the planner itself reads as a time keeps the one day, with or without a word list entry', { todo: WEEKEND_DAY_TODO }, () => {
   for (const message of ['这周末 10/24 当晚有什么演出', '这周末 10/24 一大早出发去海边', '这周末 10/24 一点钟出发，带娃去哪', '这周末 10/24 晚饭去哪吃', '这周末 10/24 夜间有什么活动', '这周末 10/24 午饭后去哪',
     '这周末 10/24 早饭吃什么', '这周末 10/24 宵夜去哪', '这周末 10/24 晚间有烟火吗', '這週末 10/24 晚餐去哪吃', '這週末 10/24 當晚去哪', '這週末 10/24 一大早去爬山', '這週末 10/24 早餐去哪吃',
     'weekend 10/24 midnight movie?', 'weekend 10/24 at dawn, birdwatching spots', 'weekend 10/24, just for the day, where to go', 'weekend 10/24, out from 2 to 5', 'this weekend 10/24, sundown hikes?',
@@ -612,7 +613,7 @@ test('review round 5: whatever the planner itself reads as a time keeps the one 
   }
 });
 
-test('review round 5: a carried day the ask writes beside 周末 / weekend is kept, never this weekend\'s 10/17-18', () => {
+test('review round 5: a carried day the ask writes beside 周末 / weekend is kept, never this weekend\'s 10/17-18', { todo: WEEKEND_DAY_TODO }, () => {
   for (const previous of [{ goal: 'discover', date: '2026-10-24' }, { goal: 'information', date: '2026-10-24', city: 'San Francisco' }, { goal: 'day-plan', date: '2026-10-24' }]) {
     for (const message of ['这周末 10/24 周六带娃去哪', '这周末 10/24 室内去哪', '這週末 10/24 有什麼免費活動', 'This weekend: 10/24. Ideas?', 'this weekend Oct 24 (Sat) with kids']) {
       const { state } = stateOn(message, { previous });
