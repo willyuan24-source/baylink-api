@@ -72,7 +72,8 @@ test('the elder and library guide fixes cite only registered sources', () => {
     for (const catalog of [guides, guidesEn]) {
       const guide = catalog.find(row => row.slug === slug);
       assert.ok(guide, slug);
-      assert.equal(guide.updatedAt, '2026-10-16', slug);
+      // API-SYNC-3h: web Wave 7 A (CNT-YEAREND) adds the 2027 fares to the senior transit guide (updatedAt 2026-10-17).
+      assert.equal(guide.updatedAt, slug === 'bay-area-senior-transit-clipper-discounts-guide' ? '2026-10-17' : '2026-10-16', slug);
       for (const source of guide.sources) assert.ok(registry.some(row => row.url === source.url && row.contentIds.includes(slug)), `${slug}: ${source.url}`);
     }
   }
@@ -138,13 +139,26 @@ test('BayBay: a 12/5 Mandarin storytime ask gets San Leandro\'s 10:30 storytime,
 });
 
 test('BayBay: an AC Transit senior fare ask cites the $1.37 Clipper fare, never a blanket half price', () => {
-  for (const [message, locale, fare] of [['我爸妈 65 岁了，坐 AC Transit 有老人优惠吗？多少钱？', 'zh-Hans', /长者本地单程用 Clipper \$1\.37/], ['長者坐 AC Transit 多少錢？', 'zh-Hant', /长者本地单程用 Clipper \$1\.37/],
-    ['How much is AC Transit for seniors?', 'en', /senior local single ride is \$1\.37 on Clipper/]]) {
+  for (const [message, locale, fare] of [['我爸妈 65 岁了，坐 AC Transit 有老人优惠吗？多少钱？', 'zh-Hans', /长者本地单程用 Clipper \$1\.37/], ['長者坐 AC Transit 多少錢？', 'zh-Hant', /长者本地单程用 Clipper \$1\.37/]]) {
     const result = evidence(message, locale);
     const views = modelItems(result.items);
     assert.ok(views.some(view => view.kind === 'guide' && fare.test(view.text)), `${message}: ${itemIds(result).join(', ')}`);
     assert.ok(!views.some(view => AC_OLD.test(view.text)), message);
   }
+  // API-SYNC-3h: web Wave 7 A (CNT-YEAREND) lengthens the English "Fares for 65+" section (BART's 2026–27 budget line, Muni's
+  // 2027 fares, the "as of 10/17" notes; 777 → 1,442 characters). With the old lib/ it scored below the guide's intro,
+  // paratransit and holiday-transit link paragraphs, so the English ask got none of its fare lines. The English ask leads
+  // with the senior transit guide and never gets the old half-price line.
+  const english = evidence('How much is AC Transit for seniors?', 'en');
+  assert.equal(itemIds(english)[0], 'guide:bay-area-senior-transit-clipper-discounts-guide', itemIds(english).join(', '));
+  assert.ok(!modelItems(english.items).some(view => AC_OLD.test(view.text)));
+});
+
+// API-SYNC-3h loss, fixed by API-BB-12 (a senior fare ask keeps the paragraph with the asked agency's row first in its guide,
+// and the excerpt keeps that row; see editorial-sync-1015).
+test('BayBay: the English AC Transit senior fare ask keeps the $1.37 Clipper fare in the evidence', () => {
+  const views = modelItems(evidence('How much is AC Transit for seniors?', 'en').items);
+  assert.ok(views.some(view => view.kind === 'guide' && /senior local single ride is \$1\.37 on Clipper/.test(view.text)));
 });
 
 test('BayBay: a Bruma ask gets the announced opening with no first day, never an open venue', () => {

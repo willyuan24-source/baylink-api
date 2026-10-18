@@ -3733,6 +3733,17 @@
     ]
   },
   {
+    "id": "smcl-portola-valley-sewing-machine-basics-2026",
+    "title": "Portola Valley 图书馆缝纫机基础课：零基础学设置和使用",
+    "startDate": "2026-11-07",
+    "endDate": "2027-01-02",
+    "occurrenceDates": [
+      "2026-11-07",
+      "2026-12-05",
+      "2027-01-02"
+    ]
+  },
+  {
     "id": "ssf-senior-holiday-boutique-nov7-2026",
     "title": "South San Francisco 节日手作市集",
     "startDate": "2026-11-07",
@@ -4973,14 +4984,12 @@
   },
   {
     "id": "smcl-portola-valley-sewing-beginners-2026",
-    "title": "Portola Valley 图书馆缝纫机入门：7 岁以上可以和大人一起学",
+    "title": "Portola Valley 图书馆缝纫入门手作课：7 岁以上可以和大人一起做",
     "startDate": "2026-11-21",
-    "endDate": "2027-01-02",
+    "endDate": "2026-12-19",
     "occurrenceDates": [
       "2026-11-21",
-      "2026-12-05",
-      "2026-12-19",
-      "2027-01-02"
+      "2026-12-19"
     ]
   },
   {
@@ -6232,6 +6241,116 @@
     "endDate": "2027-01-02",
     "occurrenceDates": [
       "2027-01-02"
+    ]
+  },
+  {
+    "id": "sunnyvale-library-aimusic-lunar-new-year-2027",
+    "title": "Aimusic 农历新年演出：Sunnyvale 公共图书馆",
+    "startDate": "2027-01-23",
+    "endDate": "2027-01-23",
+    "occurrenceDates": [
+      "2027-01-23"
+    ]
+  },
+  {
+    "id": "milpitas-civic-center-aimusic-lunar-new-year-2027",
+    "title": "Aimusic 农历新年演出：Milpitas 市政中心",
+    "startDate": "2027-01-29",
+    "endDate": "2027-01-29",
+    "occurrenceDates": [
+      "2027-01-29"
+    ]
+  },
+  {
+    "id": "sf-chinese-new-year-flower-market-2027",
+    "title": "2027 旧金山华埠春节花市",
+    "startDate": "2027-01-30",
+    "endDate": "2027-01-31",
+    "occurrenceDates": [
+      "2027-01-30",
+      "2027-01-31"
+    ]
+  },
+  {
+    "id": "sf-choy-sun-doe-day-2027",
+    "title": "2027 旧金山华埠财神日：财神派利是",
+    "startDate": "2027-02-06",
+    "endDate": "2027-02-06",
+    "occurrenceDates": [
+      "2027-02-06"
+    ]
+  },
+  {
+    "id": "sf-symphony-lunar-new-year-2027",
+    "title": "旧金山交响乐团 2027 农历新年音乐会",
+    "startDate": "2027-02-06",
+    "endDate": "2027-02-06",
+    "occurrenceDates": [
+      "2027-02-06"
+    ]
+  },
+  {
+    "id": "paloalto-community-threads-felt-goat-2027",
+    "title": "Palo Alto 图书馆手缝工作坊：农历新年做一只毛毡小羊",
+    "startDate": "2027-02-13",
+    "endDate": "2027-02-13",
+    "occurrenceDates": [
+      "2027-02-13"
+    ]
+  },
+  {
+    "id": "sf-lunar-new-year-basketball-jamboree-2027",
+    "title": "2027 春节篮球联欢赛：华埠的青少年篮球",
+    "startDate": "2027-02-13",
+    "endDate": "2027-02-13",
+    "occurrenceDates": [
+      "2027-02-13"
+    ]
+  },
+  {
+    "id": "sunnyvale-lakewood-aimusic-lunar-new-year-2027",
+    "title": "Aimusic 农历新年演出：Sunnyvale Lakewood 分馆",
+    "startDate": "2027-02-13",
+    "endDate": "2027-02-13",
+    "occurrenceDates": [
+      "2027-02-13"
+    ]
+  },
+  {
+    "id": "sj-cpaa-spring-festival-gala-2027",
+    "title": "心无界 · 爱相随：第十八届飞扬硅谷春晚暨第四届硅谷多元文化艺术节",
+    "startDate": "2027-02-14",
+    "endDate": "2027-02-14",
+    "occurrenceDates": [
+      "2027-02-14"
+    ]
+  },
+  {
+    "id": "sf-miss-chinatown-usa-pageant-2027",
+    "title": "2027 华埠小姐选美及加冕舞会",
+    "startDate": "2027-02-19",
+    "endDate": "2027-02-19",
+    "occurrenceDates": [
+      "2027-02-19"
+    ]
+  },
+  {
+    "id": "sf-chinese-new-year-community-fair-2027",
+    "title": "2027 旧金山华埠春节社区街市",
+    "startDate": "2027-02-20",
+    "endDate": "2027-02-21",
+    "occurrenceDates": [
+      "2027-02-20",
+      "2027-02-21"
+    ]
+  },
+  {
+    "id": "sf-chinese-new-year-parade-2027",
+    "title": "2027 旧金山春节游行：羊年夜间大巡游",
+    "startDate": "2027-02-20",
+    "endDate": "2027-02-20",
+    "occurrenceDates": [
+      "2027-02-20"
     ]
   }
 ]

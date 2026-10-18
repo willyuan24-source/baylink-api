@@ -51,6 +51,15 @@
     ]
   },
   {
+    "id": "source-0111e69c41f58272",
+    "title": "在湾区找兼职：先问清工作，再识别押金、刷单和假支票骗局",
+    "url": "https://www.dir.ca.gov/dlse/faq_minimumwage.htm",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-part-time-job-safety-guide"
+    ]
+  },
+  {
     "id": "source-0131203b43d03050",
     "title": "渔人码头与 PIER 39：看海狮、走海滨，把付费项目留作选择",
     "url": "https://www.pier39.com/frequently-asked-questions/",
@@ -183,11 +192,21 @@
     "endDate": "2026-10-31"
   },
   {
+    "id": "source-0284b03f64204d30",
+    "title": "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
+    "url": "https://www.cdss.ca.gov/inforesources/ssi-ssp",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-social-security-retirement-preparation-guide"
+    ]
+  },
+  {
     "id": "source-029c9395be53aae3",
     "title": "5–18 岁乘 Caltrain，全线单程 $1、日票 $2",
     "url": "https://www.caltrain.com/fares",
     "kind": "offer",
     "contentIds": [
+      "bay-area-commute-guide",
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "caltrain-youth-dollar-fare"
@@ -425,6 +444,16 @@
     ]
   },
   {
+    "id": "source-05b0ba9817f0a235",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://sfpl.org/about-us/days-closed",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-05feb69f179692f1",
     "title": "Exploratorium After Dark：Death and Life 生与死",
     "url": "https://www.exploratorium.edu/visit/calendar/after-dark-death-and-life",
@@ -433,6 +462,16 @@
       "sf-exploratorium-after-dark-22-oct2026"
     ],
     "endDate": "2026-10-22"
+  },
+  {
+    "id": "source-0622e244b765f99a",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.smcgov.org/revenueservices/human-services-agency-hsa",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-0634fc8942f0c650",
@@ -787,6 +826,16 @@
     "contentIds": [
       "bay-area-outlets-malls-shopping-guide"
     ]
+  },
+  {
+    "id": "source-0b7ec05a02a34ac6",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.vta.org/faq/does-vta-bus-and-light-rail-service-operate-holidays",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-0bb01753562965bc",
@@ -1491,6 +1540,16 @@
     ]
   },
   {
+    "id": "source-15cc652940da3300",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.santaclaracounty.gov/county-holidays",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-15cde118e0aa68e2",
     "title": "Oakley 图书馆周六乐高俱乐部",
     "url": "https://ccclib.bibliocommons.com/events/693b45024be11d3d00d7a427",
@@ -1967,6 +2026,16 @@
     ]
   },
   {
+    "id": "source-1d24dbbd9bc45c68",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.solanocounty.gov/government/human-resources/county-holidays",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-1d2ab1e83f89c51b",
     "title": "湾区街边停车入门：先读路牌，再付停车费",
     "url": "https://www.sfmta.com/getting-around/drive-park/how-avoid-parking-tickets",
@@ -1996,6 +2065,16 @@
     "endDate": "2026-10-02"
   },
   {
+    "id": "source-1dcbb4d83c5b9d8e",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.sjpl.org/holidays/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-1df4001a4da2d82f",
     "title": "10/23 教育工作者免费报名 Teachers & Tacos",
     "url": "https://outreach-foundation.org/programs/teachers-tacos/",
@@ -2018,6 +2097,16 @@
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals"
     ]
+  },
+  {
+    "id": "source-1e560ae7578a79e3",
+    "title": "十月坐 Muni 怎么付款：单程票已退出 MuniMobile，换乘先选对卡",
+    "url": "https://www.sfmta.com/fares/lifeline-pass",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-october-muni-clipper-payment-update-2026"
+    ],
+    "endDate": "2026-10-31"
   },
   {
     "id": "source-1e7e3fdafb8d07eb",
@@ -2910,6 +2999,16 @@
     "contentIds": [
       "roundup-jersey-mikes-birthday-points-2026"
     ]
+  },
+  {
+    "id": "source-29ff7bc5abff2cea",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.dmv.ca.gov/portal/holidays/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-2a60f4fe1e241d99",
@@ -4020,6 +4119,16 @@
     ]
   },
   {
+    "id": "source-3c9e521530570d13",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://data.sf.gov/City-Management-and-Ethics/City-Holidays/enxz-fysj",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-3ca9271976d9ed2b",
     "title": "10 月 22 日 CPR 与 AED 基础体验课",
     "url": "https://www.montesereno.org/m/newsflash/home/detail/703",
@@ -4329,6 +4438,16 @@
       "fremont-irvington-farmers-market-2026"
     ],
     "endDate": "2026-12-13"
+  },
+  {
+    "id": "source-41f5cd002dc91dec",
+    "title": "Dublin 图书馆感恩节前后的周日亲子电影：《精灵旅社》一、二",
+    "url": "https://aclibrary.bibliocommons.com/events/6ace576afee2d21deb22f1bc",
+    "kind": "event",
+    "contentIds": [
+      "acl-dublin-family-movies-thanksgiving-2026"
+    ],
+    "endDate": "2026-11-29"
   },
   {
     "id": "source-41f905d40e6afa1f",
@@ -4975,6 +5094,16 @@
     "endDate": "2026-10-24"
   },
   {
+    "id": "source-4ddf8b88f514ab09",
+    "title": "旧金山交响乐团 2027 农历新年音乐会",
+    "url": "https://www.sfsymphony.org/Buy-Tickets/2026-27/Lunar-New-Year",
+    "kind": "event",
+    "contentIds": [
+      "sf-symphony-lunar-new-year-2027"
+    ],
+    "endDate": "2027-02-06"
+  },
+  {
     "id": "source-4de9f752b37eed61",
     "title": "湾区华人资源地图",
     "url": "https://www.caccusa.org/",
@@ -5219,6 +5348,15 @@
     ]
   },
   {
+    "id": "source-51193fb8b3411497",
+    "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始",
+    "url": "https://www.ftb.ca.gov/tax-pros/efile/e-file-calendars.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-free-tax-help-vita-calfile-guide"
+    ]
+  },
+  {
     "id": "source-5141bf74604ef63f",
     "title": "从校园钟楼到山中植物园：Berkeley 的两种慢生活",
     "url": "https://visit.berkeley.edu/sites/default/files/berkeley-self-guided-tour-map-2021.pdf",
@@ -5457,6 +5595,16 @@
     ]
   },
   {
+    "id": "source-54d7498d139d1bc8",
+    "title": "Palo Alto 图书馆手缝工作坊：农历新年做一只毛毡小羊",
+    "url": "https://paloalto.bibliocommons.com/events/6aceffd4ebad220045453a87",
+    "kind": "event",
+    "contentIds": [
+      "paloalto-community-threads-felt-goat-2027"
+    ],
+    "endDate": "2027-02-13"
+  },
+  {
     "id": "source-54ea0d9c1d3d9ab5",
     "title": "Hero Shop：Anteros × Cecilia 两日品牌展售",
     "url": "https://marincountrymart.com/events/the-anteros-amp-cecilia-trunk-show",
@@ -5585,6 +5733,26 @@
       "november-north-sugarloaf-public-star-party-2026"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-56d35953d00202cd",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.berkeleypubliclibrary.org/sites/default/files/2025-11/2026-schedule-holidays-early-closings-late-openings_0.pdf",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
+    "id": "source-57046c6cee311c34",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://sonomacounty.gov/county-holiday-calendar",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-5746c85b4c163e02",
@@ -5784,6 +5952,15 @@
       "bay-area-freebies-deals-2026-10",
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals"
+    ]
+  },
+  {
+    "id": "source-5b3a143c78d80aa6",
+    "title": "在湾区找兼职：先问清工作，再识别押金、刷单和假支票骗局",
+    "url": "https://www.dir.ca.gov/DIRNews/2026/2026-66.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-part-time-job-safety-guide"
     ]
   },
   {
@@ -6029,6 +6206,16 @@
     "endDate": "2026-10-25"
   },
   {
+    "id": "source-5f62ad6de85954d2",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.alamedacountyca.gov/government/holidays.htm",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-5f9f5a52acef9d54",
     "title": "Marufuku Ramen · Burlingame",
     "url": "https://www.marufukuramen.com/burlingame",
@@ -6047,6 +6234,16 @@
       "bay-area-new-openings-2026-09",
       "florecita-mission"
     ]
+  },
+  {
+    "id": "source-600fd81ccaf8c42d",
+    "title": "2027 旧金山华埠春节花市",
+    "url": "https://chineseparade.com/flowermarketfair/",
+    "kind": "event",
+    "contentIds": [
+      "sf-chinese-new-year-flower-market-2027"
+    ],
+    "endDate": "2027-01-31"
   },
   {
     "id": "source-603bd8418bbaa142",
@@ -6908,6 +7105,16 @@
     ]
   },
   {
+    "id": "source-6caeb9d4de6cb26f",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.marincounty.gov/departments/board/board-supervisors-meetings/board-supervisors-meeting-calendar-2026",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-6cbe36fd002fa928",
     "title": "离开屏幕两小时：带孩子去 Palo Alto Baylands 找鸟的三种动作",
     "url": "https://www.paloalto.gov/Departments/Community-Services/Parks-Open-Space-Golf-Division/Neighborhood-Parks/Baylands-Nature-Preserve",
@@ -6963,6 +7170,26 @@
     "endDate": "2026-10-25"
   },
   {
+    "id": "source-6d73dc85561f2d72",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://smcl.org/wp-content/uploads/sites/22/2025/10/Library-JPA-GB-Agenda-Packet-November-3-2025.pdf",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
+    "id": "source-6d88bb3c2390a956",
+    "title": "2027 春节篮球联欢赛：华埠的青少年篮球",
+    "url": "https://chineseparade.com/basketballjamboree/",
+    "kind": "event",
+    "contentIds": [
+      "sf-lunar-new-year-basketball-jamboree-2027"
+    ],
+    "endDate": "2027-02-13"
+  },
+  {
     "id": "source-6dbcfb648808c95b",
     "title": "湾区看牙与牙科费用：保险网络、Medi-Cal Dental 和低费入口",
     "url": "https://www.dental.dhcs.ca.gov/Members/Medi-Cal_Dental/Find_A_Dentist/",
@@ -6982,6 +7209,16 @@
       "bay-area-retail-freebies-family-deals",
       "ikes-love-welcome-sandwich"
     ]
+  },
+  {
+    "id": "source-6de30534dfaa1e78",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://smcl.org/locations/1s/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-6df0bb84b1e35243",
@@ -7033,6 +7270,16 @@
       "bay-area-freebies-deals-2026-11",
       "san-jose-tech-military-admission-ongoing"
     ]
+  },
+  {
+    "id": "source-6ef38b36c091955f",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://sccld.org/closed/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-6ef71277b8f47d69",
@@ -7244,6 +7491,15 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "walnut-creek-vici-new-store-2026"
+    ]
+  },
+  {
+    "id": "source-72e2c8c1088fcb7f",
+    "title": "湾区遇到问题找谁：311 报修、211 转介与紧急求助",
+    "url": "https://cdss.ca.gov/Portals/9/Additional-Resources/Letters-and-Notices/ACINs/2026/I-40_26.pdf?ver=H4zUIA8n2Aca6xBYlObOUg%3D%3D",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-311-211-local-help-guide"
     ]
   },
   {
@@ -7829,6 +8085,16 @@
     ]
   },
   {
+    "id": "source-7c835f34b195b711",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://oaklandlibrary.org/holiday-closures/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-7c995900d4c379aa",
     "title": "10/10 Santa Rosa 博物馆免费家庭日",
     "url": "https://museumsc.org/visit/",
@@ -7995,6 +8261,16 @@
     ]
   },
   {
+    "id": "source-7f74628b2b02ff76",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://smcl.org/locations/1B/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-7f79b0ec037dd2ee",
     "title": "Clayton Hay Day 车尾箱讨糖",
     "url": "https://members.claytoncbca.org/cbca-events/Details/hay-day-trunk-or-treat-in-downtown-clayton-1910733?sourceTypeId=Website",
@@ -8132,6 +8408,16 @@
     "contentIds": [
       "bay-area-new-openings-2026-09",
       "oakland-delage-reopening-2026"
+    ]
+  },
+  {
+    "id": "source-817cca1a09af034a",
+    "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+    "url": "https://www.bart.gov/news/articles/2026/news20260611",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide",
+      "bay-area-senior-transit-clipper-discounts-guide"
     ]
   },
   {
@@ -8489,6 +8775,15 @@
     "endDate": "2026-10-01"
   },
   {
+    "id": "source-86c60e5574134405",
+    "title": "湾区通勤方式全对比：BART、Caltrain、开车、拼车怎么选",
+    "url": "https://www.bart.gov/news/articles/2026/news20260226-0",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide"
+    ]
+  },
+  {
     "id": "source-86cef636b476ce43",
     "title": "湾区街边停车入门：先读路牌，再付停车费",
     "url": "https://www.sfmta.com/getting-around/drive-park/parking-meters",
@@ -8594,6 +8889,16 @@
       "bay-area-retail-freebies-family-deals",
       "roundup-wendys-weekly-app-offers-2026"
     ]
+  },
+  {
+    "id": "source-87f818378de8e91d",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://ehsd.org/overview/contact/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-881e75733fcf2a92",
@@ -9395,6 +9700,18 @@
     ]
   },
   {
+    "id": "source-94217f8aa859d014",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.sfmta.com/media/44859/download?inline=",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-commute-guide",
+      "bay-area-holiday-hours-thanksgiving-new-year-2026",
+      "bay-area-october-muni-clipper-payment-update-2026",
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
+  },
+  {
     "id": "source-943a124ec970de8e",
     "title": "在湾区找兼职：先问清工作，再识别押金、刷单和假支票骗局",
     "url": "https://consumer.ftc.gov/consumer-alerts/2024/11/task-scams-create-illusion-making-money",
@@ -9504,6 +9821,16 @@
       "bay-area-freebies-deals-2026-11",
       "smart-youth-senior-fare-free"
     ]
+  },
+  {
+    "id": "source-95e458d19d19407d",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.caltrain.com/schedules/holiday-service-schedules?agency=Caltrain",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-95e93e438da5ec05",
@@ -9967,6 +10294,16 @@
     ]
   },
   {
+    "id": "source-9bf899de6de52dbf",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.sfhsa.org/about/announcements/san-francisco-human-services-agency-opens-new-service-center-expand-access-critical-support-and-services",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-9c1b776289f68d75",
     "title": "Almaden 图书馆 20 周年暨丰收节：乐团、泡泡派对和南瓜园",
     "url": "https://sjpl.bibliocommons.com/events/69cd448ae2a2952aed0bf2ba",
@@ -10272,6 +10609,16 @@
     "endDate": "2026-11-30"
   },
   {
+    "id": "source-a2610fd159b22f77",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.ssa.gov/agency/holidays.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-a28d321cf2a3e09e",
     "title": "Thrive City 免费万圣节亲子庆典",
     "url": "https://www.chasecenter.com/events/thrill-o-ween-20261024/",
@@ -10367,6 +10714,16 @@
       "bay-area-new-openings-2026-09",
       "millbrae-cafe-announced-2026"
     ]
+  },
+  {
+    "id": "source-a43b1e79d297ba50",
+    "title": "Portola Valley 图书馆缝纫机基础课：零基础学设置和使用",
+    "url": "https://smcl.bibliocommons.com/events/6a3eee270e851028002d771d",
+    "kind": "event",
+    "contentIds": [
+      "smcl-portola-valley-sewing-machine-basics-2026"
+    ],
+    "endDate": "2027-01-02"
   },
   {
     "id": "source-a467eb66ac44db73",
@@ -10828,6 +11185,16 @@
     ]
   },
   {
+    "id": "source-a9a0aeaf8884e3b6",
+    "title": "2027 华埠小姐选美及加冕舞会",
+    "url": "https://chineseparade.com/misschinatownpageant/",
+    "kind": "event",
+    "contentIds": [
+      "sf-miss-chinatown-usa-pageant-2027"
+    ],
+    "endDate": "2027-02-19"
+  },
+  {
     "id": "source-a9d9c553eefede5a",
     "title": "Berryessa 分馆排灯节：故事、手工、舞蹈和小点心",
     "url": "https://sjpl.bibliocommons.com/events/6a7cfa34b204780029928736",
@@ -10846,6 +11213,16 @@
       "sanleandro-main-mandarin-storytime-dec5-2026"
     ],
     "endDate": "2026-12-05"
+  },
+  {
+    "id": "source-aa65c9981600e63b",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://ssa.santaclaracounty.gov/apply-public-benefits",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-aa6c4a383f250c79",
@@ -11492,6 +11869,16 @@
     "endDate": "2026-10-08"
   },
   {
+    "id": "source-b263fb30d95d5359",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.bart.gov/guide/holidays",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-b2746eb0dbdeec3a",
     "title": "Martinez 图书馆周六故事时间：讲故事、唱儿歌，之后留下来玩",
     "url": "https://ccclib.bibliocommons.com/events/6a4426b786636e3d0051c80c",
@@ -11762,6 +12149,16 @@
       "berkeley-borp-adaptive-sports-expo-oct17-2026"
     ],
     "endDate": "2026-10-17"
+  },
+  {
+    "id": "source-b6b4662d9147fbc5",
+    "title": "2027 旧金山华埠春节社区街市",
+    "url": "https://chineseparade.com/communityfair/",
+    "kind": "event",
+    "contentIds": [
+      "sf-chinese-new-year-community-fair-2027"
+    ],
+    "endDate": "2027-02-21"
   },
   {
     "id": "source-b70ebb68a60c4afc",
@@ -12488,6 +12885,26 @@
       "sfpl-potrero-pinecone-owls-dec12-2026"
     ],
     "endDate": "2026-12-12"
+  },
+  {
+    "id": "source-c218294789517106",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.actransit.org/maps-schedules",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
+    "id": "source-c21c22a7fe6e4c44",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://ccclib.org/holidays-and-closures/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-c21d2fefd83805b9",
@@ -13651,9 +14068,10 @@
     "url": "https://smcl.org/locations/1W/",
     "kind": "bulletin",
     "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026",
       "woodside-library-october-closures-2026"
     ],
-    "endDate": "2026-10-12"
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-d339d78c92d17f22",
@@ -13665,6 +14083,16 @@
       "san-mateo-downtown-market-nov5-2026"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-d3996f69b31b9b97",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.napacounty.gov/Directory.aspx?DID=175",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-d3a2c7de576540c8",
@@ -13709,6 +14137,7 @@
     "url": "https://www.clipperstartcard.com/s/",
     "kind": "offer",
     "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide",
       "clipper-start-half-fares"
     ]
   },
@@ -13799,6 +14228,15 @@
     "contentIds": [
       "bay-area-borrow-tools-repair-before-buying-2026",
       "oakland-tool-library"
+    ]
+  },
+  {
+    "id": "source-d61aeb0c1440a28d",
+    "title": "在湾区准备社会保障退休金：先查工作记录，再选领取月份",
+    "url": "https://www.ssa.gov/news/en/cola/factsheets/2027.html",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-social-security-retirement-preparation-guide"
     ]
   },
   {
@@ -14093,6 +14531,16 @@
     ]
   },
   {
+    "id": "source-da9af314e2953a7b",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.smcgov.org/media/151762/download?inline=",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-daafc7a34545d9d2",
     "title": "湾区中文长者服务：餐食、日间照护、陪伴与县级转介",
     "url": "https://sjpl.bibliocommons.com/v2/events?series=6a0792ea3246e7b84b4f6443",
@@ -14150,6 +14598,16 @@
       "nov2026-martinez-monday-birding"
     ],
     "endDate": "2026-11-15"
+  },
+  {
+    "id": "source-dbb63bf13eda933f",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.ssa.gov/agency/emergency/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-dbbb0d14273449e1",
@@ -14373,6 +14831,16 @@
     ]
   },
   {
+    "id": "source-df3eba955bd679ca",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.sfmta.com/getting-around/muni/fares/muni-holiday-schedules",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-df70e0f366423479",
     "title": "在湾区住了几年，怎样认识固定见面的人：六周社区参与计划",
     "url": "https://parks.marincounty.gov/discoverlearn/volunteer",
@@ -14550,7 +15018,7 @@
     "contentIds": [
       "smcl-portola-valley-sewing-beginners-2026"
     ],
-    "endDate": "2027-01-02"
+    "endDate": "2026-12-19"
   },
   {
     "id": "source-e1925cf5984cb8db",
@@ -14659,6 +15127,16 @@
       "union-square-holiday-ice-rink-2026"
     ],
     "endDate": "2027-01-18"
+  },
+  {
+    "id": "source-e38802a06d0b0ab2",
+    "title": "心无界 · 爱相随：第十八届飞扬硅谷春晚暨第四届硅谷多元文化艺术节",
+    "url": "https://www.cpaasv.org/",
+    "kind": "event",
+    "contentIds": [
+      "sj-cpaa-spring-festival-gala-2027"
+    ],
+    "endDate": "2027-02-14"
   },
   {
     "id": "source-e3a393522a7eabf1",
@@ -14831,6 +15309,16 @@
       "sf-mission-elevator-oct2026"
     ],
     "endDate": "2026-10-31"
+  },
+  {
+    "id": "source-e7fe5cd016c2a768",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
   },
   {
     "id": "source-e821f7cbc051007b",
@@ -15037,6 +15525,16 @@
       "bay-area-new-openings-2026-09",
       "berkeley-cere-tea-opening-2026"
     ]
+  },
+  {
+    "id": "source-eb23e8e46ffa3d32",
+    "title": "2027 旧金山春节游行：羊年夜间大巡游",
+    "url": "https://chineseparade.com/faq/",
+    "kind": "event",
+    "contentIds": [
+      "sf-chinese-new-year-parade-2027"
+    ],
+    "endDate": "2027-02-20"
   },
   {
     "id": "source-ebdf3086daaa3663",
@@ -15414,6 +15912,15 @@
     ]
   },
   {
+    "id": "source-f2357a5e5b2190a6",
+    "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始",
+    "url": "https://www.ftb.ca.gov/help/free-tax-help/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-free-tax-help-vita-calfile-guide"
+    ]
+  },
+  {
     "id": "source-f2444200236f2770",
     "title": "Kennedy Youth Center 免费课后活动",
     "url": "https://www.unioncityca.gov/288/Kennedy-Youth-Center",
@@ -15473,6 +15980,16 @@
     ]
   },
   {
+    "id": "source-f2f09b27b8b4d044",
+    "title": "感恩节到元旦：政府办公室、图书馆和公交时间",
+    "url": "https://aclibrary.org/holidays-closures/",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-holiday-hours-thanksgiving-new-year-2026"
+    ],
+    "endDate": "2027-01-01"
+  },
+  {
     "id": "source-f2f1dfb00f32a6c2",
     "title": "Petaluma 秋季古董集市：把周日留给旧物寻宝",
     "url": "https://petalumadowntown.com/antique-show",
@@ -15512,6 +16029,15 @@
       "bay-area-freebies-deals-2026-11",
       "bay-area-retail-freebies-family-deals",
       "crumbl-silver-birthday-2026"
+    ]
+  },
+  {
+    "id": "source-f431a8fd324835d3",
+    "title": "在湾区找免费报税帮助：VITA、TCE 与 CalFile 从哪里开始",
+    "url": "https://www.irs.gov/newsroom/irs-announces-first-day-of-2026-filing-season-online-tools-and-resources-help-with-tax-filing",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-free-tax-help-vita-calfile-guide"
     ]
   },
   {
@@ -16062,6 +16588,28 @@
       "circus-bella-bravura-2026"
     ],
     "endDate": "2027-01-03"
+  },
+  {
+    "id": "source-fd3014c9848d5b6c",
+    "title": "2027 旧金山华埠财神日：财神派利是",
+    "url": "https://chineseparade.com/choysundoe/",
+    "kind": "event",
+    "contentIds": [
+      "sf-choy-sun-doe-day-2027"
+    ],
+    "endDate": "2027-02-06"
+  },
+  {
+    "id": "source-fd3af9642b091234",
+    "title": "Aimusic 农历新年演出：Milpitas 市政中心",
+    "url": "https://aimusic.us/upcoming.php",
+    "kind": "event",
+    "contentIds": [
+      "milpitas-civic-center-aimusic-lunar-new-year-2027",
+      "sunnyvale-lakewood-aimusic-lunar-new-year-2027",
+      "sunnyvale-library-aimusic-lunar-new-year-2027"
+    ],
+    "endDate": "2027-02-13"
   },
   {
     "id": "source-fd42e409bd6b5b49",

@@ -21074,7 +21074,7 @@
       ],
       "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/McClellan-Events/Baer-Blacksmith-Shop-Demonstrations",
       "sourceLabel": "City of Cupertino",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-cupertino-baer-blacksmith-fall-2026",
       "occurrenceDates": [
         "2026-10-31",
@@ -25033,6 +25033,98 @@
       }
     },
     {
+      "id": "smcl-portola-valley-sewing-machine-basics-2026",
+      "kind": "event",
+      "startDate": "2026-11-07",
+      "endDate": "2027-01-02",
+      "occurrenceDates": [
+        "2026-11-07",
+        "2026-12-05",
+        "2027-01-02"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "family",
+      "cost": "free",
+      "costLabel": "图书馆活动免费；要报名",
+      "sourceLabel": "圣马刁县图书馆活动页（Portola Valley 分馆，12/5 场）",
+      "title": "Portola Valley 图书馆缝纫机基础课：零基础学设置和使用",
+      "dateLabel": "11/7、12/5、1/2 · 周六 14:00–16:00，分两段各一小时",
+      "city": "Portola Valley",
+      "venue": "Portola Valley 图书馆 · 765 Portola Road, Portola Valley, CA 94028",
+      "summary": "圣马刁县图书馆 Portola Valley 分馆的缝纫机基础课，教完全没用过或很少用过缝纫机的人怎么设置和使用机器；7 岁以上的孩子可以在负责照顾的大人陪同下参加。",
+      "plan": [
+        "两个小时分成两段，每段一小时，每人只报一段；机器有限，一家报一个名、合用一台。",
+        "报名：11/7 那场 10/17 起、12/5 那场 11/14 起，到 Portola Valley 图书馆现场报名；1/2 那场用活动页上的网上表格报名。"
+      ],
+      "audience": [
+        "大人和由大人陪同的孩子",
+        "想学用缝纫机的初学者"
+      ],
+      "officialUrl": "https://smcl.bibliocommons.com/events/6a3eee270e851028002d771d",
+      "shortTitle": "Portola Valley 缝纫机基础",
+      "dek": "零基础学设置和使用缝纫机，一小时一段",
+      "sessions": [
+        {
+          "date": "2026-11-07",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2026-12-05",
+          "start": "14:00",
+          "end": "16:00"
+        },
+        {
+          "date": "2027-01-02",
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "ageChip": "7 岁以上",
+      "dateNote": "14:00–16:00 分成两段，每段一小时，每人只报一段",
+      "venueShort": "Portola Valley 图书馆",
+      "address": "765 Portola Road, Portola Valley, CA 94028",
+      "aliases": [
+        "Portola Valley 图书馆缝纫机基础课：零基础学设置和使用",
+        "Sewing Machine Basics at Portola Valley Library: set up and use a machine from scratch",
+        "Portola Valley 圖書館縫紉機基礎課：零基礎學設定和使用"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": 7,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://smcl.bibliocommons.com/events/6a3eee270e851028002d771d",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2026-11-07",
+          "validThrough": "2027-01-02",
+          "sessions": [
+            {
+              "date": "2026-11-07",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2026-12-05",
+              "start": "14:00",
+              "end": "16:00"
+            },
+            {
+              "date": "2027-01-02",
+              "start": "14:00",
+              "end": "16:00"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "ssf-senior-holiday-boutique-nov7-2026",
       "city": "South San Francisco",
       "region": "peninsula",
@@ -26951,7 +27043,7 @@
         "2027-01-23",
         "2027-01-24"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -29795,7 +29887,7 @@
         "2027-01-23",
         "2027-01-24"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -29923,7 +30015,7 @@
         "2026-12-22",
         "2026-12-23"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -32219,7 +32311,7 @@
         "2026-12-29",
         "2026-12-30"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -34193,12 +34285,10 @@
       "id": "smcl-portola-valley-sewing-beginners-2026",
       "kind": "event",
       "startDate": "2026-11-21",
-      "endDate": "2027-01-02",
+      "endDate": "2026-12-19",
       "occurrenceDates": [
         "2026-11-21",
-        "2026-12-05",
-        "2026-12-19",
-        "2027-01-02"
+        "2026-12-19"
       ],
       "verifiedAt": "2026-10-16",
       "imageKey": "",
@@ -34207,20 +34297,22 @@
       "cost": "free",
       "costLabel": "图书馆活动免费；要报名",
       "sourceLabel": "圣马刁县图书馆活动页（Portola Valley 分馆）",
-      "title": "Portola Valley 图书馆缝纫机入门：7 岁以上可以和大人一起学",
-      "dateLabel": "11/21、12/5、12/19、1/2 · 周六 14:00–16:00",
+      "title": "Portola Valley 图书馆缝纫入门手作课：7 岁以上可以和大人一起做",
+      "dateLabel": "11/21、12/19 · 周六 14:00–16:00",
       "city": "Portola Valley",
       "venue": "Portola Valley 图书馆 · 765 Portola Road, Portola Valley, CA 94028",
       "summary": "圣马刁县图书馆 Portola Valley 分馆的缝纫机入门课，给完全没用过或很少用过缝纫机的人做一个简单的小作品；7 岁以上的孩子可以在大人陪同下参加。",
       "plan": [
-        "机器有限，一家报一个名、合用一台；四个周六：11/21、12/5、12/19、1/2。"
+        "机器有限，一家报一个名、合用一台机器。",
+        "报名：11/21 那场 10/31 起、12/19 那场 11/28 起，到 Portola Valley 图书馆现场报名。",
+        "12/5 和 1/2 是另一门「缝纫机基础」课，另列一条。"
       ],
       "audience": [
         "7 岁以上的孩子和大人",
         "长者"
       ],
       "officialUrl": "https://smcl.bibliocommons.com/events/6a3c6a55cf21930366acade9",
-      "shortTitle": "Portola Valley 缝纫入门",
+      "shortTitle": "Portola Valley 缝纫入门手作",
       "dek": "零基础用缝纫机做一个小作品",
       "sessions": [
         {
@@ -34229,17 +34321,7 @@
           "end": "16:00"
         },
         {
-          "date": "2026-12-05",
-          "start": "14:00",
-          "end": "16:00"
-        },
-        {
           "date": "2026-12-19",
-          "start": "14:00",
-          "end": "16:00"
-        },
-        {
-          "date": "2027-01-02",
           "start": "14:00",
           "end": "16:00"
         }
@@ -34251,9 +34333,9 @@
       "venueShort": "Portola Valley 图书馆",
       "address": "765 Portola Road, Portola Valley, CA 94028",
       "aliases": [
-        "Portola Valley 图书馆缝纫机入门：7 岁以上可以和大人一起学",
-        "Sewing-machine basics for beginners at the Portola Valley Library, ages 7+ with an adult",
-        "Portola Valley 圖書館縫紉機入門：7 歲以上可以和大人一起學"
+        "Portola Valley 图书馆缝纫入门手作课：7 岁以上可以和大人一起做",
+        "Sewing craft class for beginners at Portola Valley Library: ages 7+ with an adult",
+        "Portola Valley 圖書館縫紉入門手作課：7 歲以上可以和大人一起做"
       ],
       "location": {
         "lat": 37.381853,
@@ -34271,7 +34353,7 @@
           "sourceUrl": "https://smcl.bibliocommons.com/events/6a3c6a55cf21930366acade9",
           "verifiedAt": "2026-10-15",
           "validFrom": "2026-11-21",
-          "validThrough": "2027-01-02",
+          "validThrough": "2026-12-19",
           "sessions": [
             {
               "date": "2026-11-21",
@@ -34279,17 +34361,7 @@
               "end": "16:00"
             },
             {
-              "date": "2026-12-05",
-              "start": "14:00",
-              "end": "16:00"
-            },
-            {
               "date": "2026-12-19",
-              "start": "14:00",
-              "end": "16:00"
-            },
-            {
-              "date": "2027-01-02",
               "start": "14:00",
               "end": "16:00"
             }
@@ -34319,15 +34391,16 @@
       "venue": "Dublin 图书馆 · 200 Civic Plaza, Dublin, CA 94568",
       "summary": "Alameda County Library Dublin 分馆的周日亲子电影：11/22 放动画喜剧《精灵旅社》（Hotel Transylvania），11/29 放续集《精灵旅社 2》，大人孩子都可以来看。",
       "plan": [
-        "需要手语翻译或字幕的，至少提前 7 天向图书馆申请。"
+        "11/22 放《精灵旅社》，11/29 放《精灵旅社 2》，两场都在 Virginia Bennett Room；可以带毯子坐在地上看。",
+        "图书馆每场有单独的活动页；需要手语翻译或字幕的，至少提前 7 天申请。"
       ],
       "audience": [
         "亲子家庭",
         "各年龄"
       ],
-      "officialUrl": "https://aclibrary.bibliocommons.com/events/6ace5790fee2d21deb22f1c0",
+      "officialUrl": "https://aclibrary.bibliocommons.com/events/6ace576afee2d21deb22f1bc",
       "shortTitle": "Dublin 周日亲子电影",
-      "dek": "两个周日下午放动画喜剧《精灵旅社》",
+      "dek": "两个周日下午放《精灵旅社》一、二",
       "sessions": [
         {
           "date": "2026-11-22",
@@ -35961,7 +36034,7 @@
         "2026-12-31",
         "2027-01-01"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -36165,7 +36238,7 @@
         "2027-01-02",
         "2027-01-03"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "title": "Marin Center 免费节日灯光步道",
       "dateLabel": "11/27–2027/1/3 · 每晚 17:00–21:00（节假日也开）",
@@ -36370,7 +36443,7 @@
         "2026-12-30",
         "2026-12-31"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -36522,7 +36595,7 @@
         "2026-12-22",
         "2026-12-23"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -36684,7 +36757,7 @@
     },
     {
       "kind": "event",
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "id": "nov2026-redwood-saturday-stroll",
       "title": "Redwood 周六山林环线：4英里含陡坡",
       "occurrenceDates": [
@@ -36762,7 +36835,7 @@
       "occurrenceDates": [
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-healdsburg-tech",
       "title": "Healdsburg 一对一数字生活帮助",
       "dateLabel": "11/28 · 16:00–16:30",
@@ -36836,7 +36909,7 @@
       "occurrenceDates": [
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-monte-bello-context",
       "region": "peninsula",
       "category": "outdoors",
@@ -36909,7 +36982,7 @@
       "occurrenceDates": [
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-07",
+      "verifiedAt": "2026-10-16",
       "imageKey": "octnov-petaluma-instruments",
       "title": "Petaluma 儿童音乐体验：中美洲古老乐器",
       "dateLabel": "11/28 · 11:00–12:00",
@@ -36983,7 +37056,7 @@
         "2026-11-28",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -37163,7 +37236,7 @@
       "occurrenceDates": [
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-14",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -37230,7 +37303,7 @@
         "2026-11-28",
         "2026-11-29"
       ],
-      "verifiedAt": "2026-10-14",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -37429,16 +37502,17 @@
       "verifiedAt": "2026-10-07",
       "imageKey": "octnov-los-altos-context",
       "title": "Los Altos 第50届节日灯光游行",
-      "dateLabel": "11/29 · 开始时间待主办方更新",
+      "dateLabel": "11/29（周日）· 18:00 从 First St 与 State St 路口出发",
       "region": "south-bay",
       "city": "Los Altos",
       "venue": "Downtown Los Altos · 具体观赏路段见主办方地图",
       "category": "family",
       "cost": "unknown",
-      "costLabel": "已公布日期；官网未单列票价或预约要求",
+      "costLabel": "沿街观看；官网没写观众要付费或预约",
       "summary": "主办方已确认2026年11月29日的第50届灯光游行，社区花车与行进乐队将点亮市中心。",
       "plan": [
-        "先收藏日期；出发前重查2026开始时间、路线与交通安排。",
+        "主办方时间表标明都是估计：18:20–18:30 头车到 First/Main，18:45–19:00 头车到终点，19:20–19:45 最后一辆花车到终点。",
+        "市中心三角区（San Antonio Rd、Edith Ave、First St 之间）当天 16:00 起封路；残障停车在 Plaza North（3rd 与 4th St 之间），从 Edith Ave 的 Third St 口进。",
         "如预报有雨，主办方会在当日中午前公告是否举行；取消不设补办日。",
         "主办方请观众把宠物留在家中。"
       ],
@@ -37450,6 +37524,12 @@
       "sourceLabel": "Los Altos Festival of Lights Association",
       "shortTitle": "Los Altos 节日灯光游行",
       "dek": "第 50 届：社区花车和乐队点亮市中心",
+      "sessions": [
+        {
+          "date": "2026-11-29",
+          "start": "18:00"
+        }
+      ],
       "venueShort": "Downtown Los Altos",
       "aliases": [
         "Los Altos 第50届节日灯光游行",
@@ -37461,13 +37541,18 @@
         "minAge": null,
         "reservation": "unknown",
         "setting": "outdoor",
-        "programTimeUnconfirmed": true,
         "schedule": {
           "sourceUrl": "https://www.losaltosparade.org/welcome",
-          "verifiedAt": "2026-10-07",
+          "verifiedAt": "2026-10-17",
           "validFrom": "2026-11-29",
           "validThrough": "2026-11-29",
-          "note": "只确认2026年11月29日日期；2026开始/结束时间、票价、预约要求均未明确，不能套用2025的时间或队列。暂无可排入时间轴的已核实时段；如预报有雨，主办方当日中午前宣布是否举行，取消不设补办日。"
+          "sessions": [
+            {
+              "date": "2026-11-29",
+              "start": "18:00"
+            }
+          ],
+          "note": "主办方 welcome 页写 18:00 从 First St 与 State St 路口出发；整张时间表标明是估计，最后一辆花车约 19:20–19:45 到终点。如预报有雨，主办方当日中午前宣布是否举行，取消不设补办日。"
         }
       }
     },
@@ -38156,7 +38241,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -38229,7 +38314,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -38429,7 +38514,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -38507,8 +38592,8 @@
       "imageKey": "",
       "region": "north-bay",
       "category": "culture",
-      "cost": "free",
-      "costLabel": "免费入场；花环、书和点心按价购买",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；花环、书和点心按价购买",
       "sourceLabel": "索诺马县图书馆活动页（Guerneville）",
       "title": "Guerneville 图书馆冬季花环、旧书和烘焙义卖",
       "dateLabel": "12/5（周六）· 10:00–17:30",
@@ -38539,7 +38624,7 @@
         "Guerneville 圖書館冬季花環、舊書和烘焙義賣"
       ],
       "planning": {
-        "admissionUsd": 0,
+        "admissionUsd": null,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -38566,7 +38651,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -38745,7 +38830,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -38845,7 +38930,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -38944,7 +39029,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -39010,7 +39095,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -39079,7 +39164,7 @@
       "occurrenceDates": [
         "2026-12-05"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -39246,7 +39331,7 @@
         "2026-12-05",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -39333,8 +39418,8 @@
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
-      "cost": "free",
-      "costLabel": "免费入场；书按价购买",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；书按价购买",
       "sourceLabel": "圣何塞公共图书馆活动页（Tully 分馆）",
       "title": "Tully 分馆之友旧书义卖",
       "dateLabel": "12/5（周六）· 10:00–14:00",
@@ -39372,7 +39457,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": 0,
+        "admissionUsd": null,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -39414,7 +39499,7 @@
       "venue": "Alviso 分馆社区室 · 5050 North First St., San Jose, CA 95002",
       "summary": "圣何塞公共图书馆 Alviso 分馆每月第一和第三个周日的 STEM 活动，每次一个动手做的科学、科技、工程或数学小项目，有的在馆里分组做，有的是可以带回家的材料包。",
       "plan": [
-        "每场 15 个名额，开始前 30 分钟在服务台报名；建议 5–12 岁。"
+        "名额有限，开始前 30 分钟在服务台现场报名，一次报一位；建议 5–12 岁。"
       ],
       "audience": [
         "5–12 岁"
@@ -39663,6 +39748,7 @@
       "summary": "旧金山本地马戏团 Circus Bella 的全新冬季节目，12/11 到 2027/1/3 在 East Cut 的大帐篷里演：杂技、空中表演、抛接和滑稽表演围成一圈近距离上演，现场乐队伴奏；帐篷有暖气，下雨天还送热茶和热可可。",
       "plan": [
         "场次：12/11、12/18 晚上 7 点；12/12、12/19、12/26、12/27、1/2、1/3 下午 1 点和 4 点；12/13、12/20、12/21、12/28、12/31 下午 1 点；12/22、12/23、12/29、12/30 下午 4 点。",
+        "主办方大帐篷页写演到 2027/1/4，逐场时间表的最后一场是 1/3（标为闭幕场），两处不一致；1/4 有没有演出，以售票页为准。",
         "适合全家，现场有爆米花和甜点卖。"
       ],
       "audience": [
@@ -39799,8 +39885,8 @@
       "imageKey": "",
       "region": "north-bay",
       "category": "culture",
-      "cost": "free",
-      "costLabel": "免费入场；书按价购买",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；书按价购买",
       "sourceLabel": "索诺马县图书馆活动页（Santa Rosa 中央图书馆）",
       "title": "Santa Rosa 图书馆之友旧书义卖",
       "dateLabel": "12/11（周五）12:00–17:30；12/12（周六）10:00–17:30；12/13（周日）13:00–16:30",
@@ -39841,7 +39927,7 @@
         "Santa Rosa 圖書館之友舊書義賣"
       ],
       "planning": {
-        "admissionUsd": 0,
+        "admissionUsd": null,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -40032,7 +40118,7 @@
       "region": "east-bay",
       "category": "family",
       "cost": "paid",
-      "costLabel": "需购票，11/1 开卖；票价看售票页",
+      "costLabel": "成人 $23、儿童 $21，会员和 Fairyland for All 另有优惠价；11/1 开卖",
       "sourceLabel": "Children’s Fairyland 官网（冬季活动）",
       "title": "儿童童话乐园 Fairy Winterland：三个周末的冬日灯饰和故事",
       "dateLabel": "12/12–13、12/19–20、12/26–27 · 12:00–19:00",
@@ -40040,7 +40126,8 @@
       "venue": "Children’s Fairyland · 699 Bellevue Avenue, Oakland, CA 94610",
       "summary": "奥克兰 Lake Merritt 边的儿童童话乐园办了 20 年的冬季活动，12 月三个周末中午到晚上 7 点：节日展、来自世界各地的冬天故事、节日手工、每天的表演和木偶戏、各国节日音乐，免费热可可和苹果汁，还有黑人圣诞老人来访，天黑后园里亮灯。",
       "plan": [
-        "12/19 是童话乐园会员免费日。",
+        "门票 11/1 起在官网卖：成人 $23、儿童 $21；会员成人 $11.50、儿童 $10.50；符合 Fairyland for All 资格的每人 $5。",
+        "12/19（周六）是会员免费日，只限这一天；12/12–13 和其他日子会员按会员价买票。",
         "12/11 晚上另有 21 岁以上的成人夜场，不适合带孩子。"
       ],
       "audience": [
@@ -40081,6 +40168,11 @@
           "end": "19:00"
         }
       ],
+      "price": {
+        "min": 21,
+        "max": 23,
+        "note": "会员和 Fairyland for All 另有优惠价"
+      },
       "venueShort": "Children’s Fairyland",
       "address": "699 Bellevue Avenue, Oakland, CA 94610",
       "aliases": [
@@ -40089,7 +40181,7 @@
         "兒童童話樂園 Fairy Winterland：三個週末的冬日燈飾和故事"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 23,
         "minAge": null,
         "reservation": "required",
         "setting": "outdoor",
@@ -40150,12 +40242,13 @@
       "costLabel": "活动页没有写入场费；书按价购买",
       "sourceLabel": "Palo Alto 市立图书馆活动页（FOPAL 义卖）",
       "title": "Palo Alto 图书馆之友月度旧书义卖：三个房间七万多本书",
-      "dateLabel": "12/12（周六）9:30–16:00；12/13（周日）13:00–16:00",
+      "dateLabel": "12/12（周六）9:30 起各房间陆续开门，到 16:00；12/13（周日）13:00–16:00",
       "city": "Palo Alto",
       "venue": "Cubberley 社区中心 · 4000 Middlefield Road, Palo Alto, CA 94303",
       "summary": "Palo Alto 图书馆之友（FOPAL）每月的旧书义卖，三个房间七万多本新旧书，还有 CD、DVD 和拼图，分类摆好、价格实惠；收入支持 Palo Alto 的图书馆。",
       "plan": [
-        "周六特价室 9:30 开，童书室 10:00 开，主厅 11:00 开，都到 16:00；周日三个房间都是 13:00–16:00。"
+        "周六特价室 9:30 开，童书室 10:00 开，主厅 11:00 开，都到 16:00；周日三个房间都是 13:00–16:00。",
+        "特价室平装书 $1、精装书 $2，周日特价室半价或一袋 $5；这些价格只在特价室。"
       ],
       "audience": [
         "各年龄"
@@ -40229,8 +40322,8 @@
       "imageKey": "",
       "region": "sf",
       "category": "family",
-      "cost": "unknown",
-      "costLabel": "活动页没有写票价，去之前看官网",
+      "cost": "paid",
+      "costLabel": "$18–$35，票价已含全部手续费",
       "sourceLabel": "Grace 座堂官网",
       "title": "Grace 座堂《Sing You a Merry Christmas》：全家一起唱的圣诞演出",
       "dateLabel": "12/12、12/19 11:00–12:00；12/22、12/23 15:00–16:00",
@@ -40238,7 +40331,9 @@
       "venue": "Grace 座堂 · 1100 California Street, San Francisco, CA 94108",
       "summary": "诺布山 Grace 座堂的节日互动演出：跟着圣尼古拉工坊里的玩具一起寻找圣诞节的意义，一路解线索、唱熟悉的圣诞歌，观众可以跟着唱，全家都适合。演出一小时，没有中场休息。",
       "plan": [
-        "演出一小时，没有中场休息；官网活动页没有写票价，去之前先看官网。"
+        "演出一小时，没有中场休息；开演前一小时开门入座。",
+        "票在 City Box Office 卖，10 人以上团体九折，GraceArts 会员 15–20% 折扣；售出不退，活动取消或改期才退款。",
+        "无障碍入口是 Taylor Street 的玻璃门；需要无障碍座位，先打 415-749-6355 说明人数。"
       ],
       "audience": [
         "全家"
@@ -40268,6 +40363,11 @@
           "end": "16:00"
         }
       ],
+      "price": {
+        "min": 18,
+        "max": 35,
+        "note": "票价已含全部手续费"
+      },
       "venueShort": "Grace 座堂",
       "address": "1100 California Street, San Francisco, CA 94108",
       "aliases": [
@@ -40276,9 +40376,9 @@
         "Grace 座堂《Sing You a Merry Christmas》：全家一起唱的聖誕演出"
       ],
       "planning": {
-        "admissionUsd": null,
+        "admissionUsd": 18,
         "minAge": null,
-        "reservation": "unknown",
+        "reservation": "required",
         "setting": "indoor",
         "schedule": {
           "sourceUrl": "https://gracecathedral.org/series/sing-you-a-merry-christmas-2/",
@@ -40318,7 +40418,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "official-opl-piedmont-ave-mug-swap-dec12-2026",
       "region": "east-bay",
       "category": "family",
@@ -40393,8 +40493,8 @@
       "imageKey": "official-sccl-gilroy-big-book-sale-dec12-2026",
       "region": "south-bay",
       "category": "culture",
-      "cost": "free",
-      "costLabel": "免费入场；平装书 50 美分起，一袋 $5（会员）或 $8",
+      "cost": "unknown",
+      "costLabel": "活动页没有写入场费；平装书 50 美分起，一袋 $5（会员）或 $8",
       "sourceLabel": "Santa Clara County Library District 活动页（Gilroy 图书馆）",
       "title": "Gilroy 图书馆之友每月大型旧书义卖：平装书 50 美分起",
       "dateLabel": "12/12（周六）· 10:00–13:00",
@@ -40417,10 +40517,6 @@
           "end": "13:00"
         }
       ],
-      "price": {
-        "free": true,
-        "note": "平装书 50 美分起"
-      },
       "venueShort": "Gilroy 图书馆",
       "address": "350 W. Sixth Street, Gilroy, CA 95020",
       "aliases": [
@@ -40436,7 +40532,7 @@
         "precision": "venue"
       },
       "planning": {
-        "admissionUsd": 0,
+        "admissionUsd": null,
         "minAge": null,
         "reservation": "unknown",
         "setting": "indoor",
@@ -40463,7 +40559,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -40537,7 +40633,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -40601,7 +40697,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -40735,7 +40831,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -40803,7 +40899,7 @@
       "occurrenceDates": [
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "sf",
       "category": "family",
@@ -41056,7 +41152,7 @@
       "occurrenceDates": [
         "2026-12-13"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -41126,7 +41222,7 @@
       "occurrenceDates": [
         "2026-12-13"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -41201,7 +41297,7 @@
       "occurrenceDates": [
         "2026-12-13"
       ],
-      "verifiedAt": "2026-10-13",
+      "verifiedAt": "2026-10-16",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -44009,6 +44105,773 @@
               "date": "2027-01-02",
               "start": "10:00",
               "end": "10:30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sunnyvale-library-aimusic-lunar-new-year-2027",
+      "kind": "performance",
+      "startDate": "2027-01-23",
+      "endDate": "2027-01-23",
+      "occurrenceDates": [
+        "2027-01-23"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；要不要预约没写",
+      "sourceLabel": "Aimusic 演出日程（演出机构官网）",
+      "title": "Aimusic 农历新年演出：Sunnyvale 公共图书馆",
+      "dateLabel": "1/23（周六）· 14:00",
+      "city": "Sunnyvale",
+      "venue": "Sunnyvale Public Library · 665 W Olive Ave, Sunnyvale, CA 94086",
+      "summary": "Aimusic 是教中国乐器、办 Firebird 青少年中乐团的音乐机构，它的演出日程把这场列为 2027 农历新年庆祝演出，写明免费入场。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "日期和时间来自演出机构自己的日程，场地方的活动页还没列出；去之前再看一眼两边的更新。"
+      ],
+      "audience": [
+        "全家",
+        "喜欢中国乐器的人"
+      ],
+      "officialUrl": "https://aimusic.us/upcoming.php",
+      "shortTitle": "Sunnyvale 图书馆新年演出",
+      "dek": "中乐团体的农历新年演出，免费入场",
+      "sessions": [
+        {
+          "date": "2027-01-23",
+          "start": "14:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "dateNote": "演出机构只写了开始时间。",
+      "venueShort": "Sunnyvale 公共图书馆",
+      "address": "665 W Olive Ave, Sunnyvale, CA 94086",
+      "aliases": [
+        "Aimusic 农历新年演出：Sunnyvale 公共图书馆",
+        "Aimusic Lunar New Year performance at Sunnyvale Public Library",
+        "Aimusic 農曆新年演出：Sunnyvale 公共圖書館"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://aimusic.us/upcoming.php",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-01-23",
+          "validThrough": "2027-01-23",
+          "sessions": [
+            {
+              "date": "2027-01-23",
+              "start": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "milpitas-civic-center-aimusic-lunar-new-year-2027",
+      "kind": "performance",
+      "startDate": "2027-01-29",
+      "endDate": "2027-01-29",
+      "occurrenceDates": [
+        "2027-01-29"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；要不要预约没写",
+      "sourceLabel": "Aimusic 演出日程（演出机构官网）",
+      "title": "Aimusic 农历新年演出：Milpitas 市政中心",
+      "dateLabel": "1/29（周五）· 18:00",
+      "city": "Milpitas",
+      "venue": "Milpitas Civic Center · 455 E. Calaveras Blvd, Milpitas, CA 95035",
+      "summary": "Aimusic 是教中国乐器、办 Firebird 青少年中乐团的音乐机构，它的演出日程把这场列为 2027 农历新年庆祝演出，写明免费入场。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "日期和时间来自演出机构自己的日程，场地方的活动页还没列出；去之前再看一眼两边的更新。",
+        "这一场是 Aimusic 的演出时段，不一定是 Milpitas 市庆典的完整时间；不是在 Milpitas 图书馆。"
+      ],
+      "audience": [
+        "全家",
+        "喜欢中国乐器的人"
+      ],
+      "officialUrl": "https://aimusic.us/upcoming.php",
+      "shortTitle": "Milpitas 市政中心新年演出",
+      "dek": "中乐团体的农历新年演出，免费入场",
+      "sessions": [
+        {
+          "date": "2027-01-29",
+          "start": "18:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "dateNote": "演出机构只写了开始时间。",
+      "venueShort": "Milpitas 市政中心",
+      "address": "455 E. Calaveras Blvd, Milpitas, CA 95035",
+      "aliases": [
+        "Aimusic 农历新年演出：Milpitas 市政中心",
+        "Aimusic Lunar New Year performance at Milpitas Civic Center",
+        "Aimusic 農曆新年演出：Milpitas 市政中心"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "schedule": {
+          "sourceUrl": "https://aimusic.us/upcoming.php",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-01-29",
+          "validThrough": "2027-01-29",
+          "sessions": [
+            {
+              "date": "2027-01-29",
+              "start": "18:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sf-chinese-new-year-flower-market-2027",
+      "kind": "event",
+      "startDate": "2027-01-30",
+      "endDate": "2027-01-31",
+      "occurrenceDates": [
+        "2027-01-30",
+        "2027-01-31"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "官网没写入场费；年花、水果和糖果在摊位买",
+      "sourceLabel": "旧金山中华总商会春节活动官网（花市页与 2027 街市公告）",
+      "title": "2027 旧金山华埠春节花市",
+      "dateLabel": "1/30（周六）10:00–18:00；1/31（周日）9:00–18:00",
+      "city": "San Francisco",
+      "venue": "华埠 Grant Ave（Clay St 到 Broadway 之间）",
+      "summary": "春节前一个周末的华埠花市：Grant Ave 上有 120 多个摊位，卖鲜花、年桔水果、糖果和新年家用品。主办方介绍里有传统魔术、杂技、民族舞和戏曲表演，2027 年的节目单还没公布。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "花市不准吸烟；摊位和表演以现场为准。"
+      ],
+      "audience": [
+        "全家",
+        "想买年花年货的人"
+      ],
+      "officialUrl": "https://chineseparade.com/flowermarketfair/",
+      "shortTitle": "华埠春节花市",
+      "dek": "120 多个摊位卖年花、年桔和糖果",
+      "sessions": [
+        {
+          "date": "2027-01-30",
+          "start": "10:00",
+          "end": "18:00"
+        },
+        {
+          "date": "2027-01-31",
+          "start": "09:00",
+          "end": "18:00"
+        }
+      ],
+      "venueShort": "华埠 Grant Ave",
+      "aliases": [
+        "2027 旧金山华埠春节花市",
+        "Chinese New Year Flower Market Fair 2027 in San Francisco Chinatown",
+        "2027 舊金山華埠春節花市"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/flowermarketfair/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-01-30",
+          "validThrough": "2027-01-31",
+          "sessions": [
+            {
+              "date": "2027-01-30",
+              "start": "10:00",
+              "end": "18:00"
+            },
+            {
+              "date": "2027-01-31",
+              "start": "09:00",
+              "end": "18:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sf-choy-sun-doe-day-2027",
+      "kind": "event",
+      "startDate": "2027-02-06",
+      "endDate": "2027-02-06",
+      "occurrenceDates": [
+        "2027-02-06"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "官网没写费用",
+      "sourceLabel": "旧金山中华总商会春节活动官网（财神日页）",
+      "title": "2027 旧金山华埠财神日：财神派利是",
+      "dateLabel": "2/6（周六）· 时间和集合地点待主办方公布",
+      "city": "San Francisco",
+      "venue": "旧金山华埠（2027 集合地点待公布）",
+      "summary": "旧金山中华总商会的春节活动：扮成财神的人在华埠给等候的孩子派利是（红包），主办方介绍说利是里有巧克力金币，有的还有钱或可以换玩具的礼券。2027 年定在 2/6（周六）。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "官网上旧的横幅还是往年的日期和地点，2027 的时间和集合地点以官网后续公布为准。"
+      ],
+      "audience": [
+        "孩子和家人"
+      ],
+      "officialUrl": "https://chineseparade.com/choysundoe/",
+      "shortTitle": "华埠财神日",
+      "dek": "财神在华埠给孩子派利是",
+      "dateNote": "2027 年的时间和集合地点主办方还没公布。",
+      "venueShort": "旧金山华埠",
+      "aliases": [
+        "2027 旧金山华埠财神日：财神派利是",
+        "Choy Sun Doe Day 2027 in San Francisco Chinatown: the god of wealth hands out red envelopes",
+        "2027 舊金山華埠財神日：財神派利是"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/choysundoe/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-06",
+          "validThrough": "2027-02-06"
+        }
+      }
+    },
+    {
+      "id": "sf-symphony-lunar-new-year-2027",
+      "kind": "performance",
+      "startDate": "2027-02-06",
+      "endDate": "2027-02-06",
+      "occurrenceDates": [
+        "2027-02-06"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "要买票；票价看旧金山交响乐团售票页",
+      "sourceLabel": "旧金山交响乐团官网（农历新年音乐会）",
+      "title": "旧金山交响乐团 2027 农历新年音乐会",
+      "dateLabel": "2/6（周六）· 17:00",
+      "city": "San Francisco",
+      "venue": "Davies Symphony Hall · 201 Van Ness Avenue, San Francisco, CA 94102",
+      "summary": "旧金山交响乐团每年的农历新年音乐会，2027 年在大年初一（2/6）傍晚演出，指挥 Naomi Woo。乐团说这场音乐会取材亚洲新旧传统，曲目还没公布。",
+      "plan": [
+        "农历新年主题：乐团写取材亚洲新旧传统，曲目待公布；不是中文课程。",
+        "农历新年晚宴的资料要另外写信 lny@sfsymphony.org 问。"
+      ],
+      "audience": [
+        "喜欢古典音乐的大人和家庭"
+      ],
+      "officialUrl": "https://www.sfsymphony.org/Buy-Tickets/2026-27/Lunar-New-Year",
+      "shortTitle": "交响乐团农历新年音乐会",
+      "dek": "大年初一傍晚的新年音乐会，Naomi Woo 指挥",
+      "sessions": [
+        {
+          "date": "2027-02-06",
+          "start": "17:00"
+        }
+      ],
+      "venueShort": "Davies Symphony Hall",
+      "address": "201 Van Ness Avenue, San Francisco, CA 94102",
+      "aliases": [
+        "旧金山交响乐团 2027 农历新年音乐会",
+        "San Francisco Symphony Lunar New Year concert 2027",
+        "舊金山交響樂團 2027 農曆新年音樂會"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://www.sfsymphony.org/Buy-Tickets/2026-27/Lunar-New-Year",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-06",
+          "validThrough": "2027-02-06",
+          "sessions": [
+            {
+              "date": "2027-02-06",
+              "start": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "paloalto-community-threads-felt-goat-2027",
+      "kind": "event",
+      "startDate": "2027-02-13",
+      "endDate": "2027-02-13",
+      "occurrenceDates": [
+        "2027-02-13"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "peninsula",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "活动页没写费用；1/30 12:00 起在图书馆网站报名",
+      "sourceLabel": "Palo Alto 市立图书馆活动页（Mitchell Park）",
+      "title": "Palo Alto 图书馆手缝工作坊：农历新年做一只毛毡小羊",
+      "dateLabel": "2/13（周六）· 15:00–17:00",
+      "city": "Palo Alto",
+      "venue": "Mitchell Park 图书馆 Midtown Room · 3700 Middlefield Rd, Palo Alto, CA 94303",
+      "summary": "Palo Alto 市立图书馆的 Community Threads 手缝工作坊：羊年用毛毡手缝一只小羊，只用手缝。只限青少年和成人，适合已经会一点缝纫的人（要会穿线、绕底线、回针）。",
+      "plan": [
+        "农历新年生肖手作主题：不是中文课程，也不是儿童亲子场。",
+        "1/30 12:00 起在图书馆网站报名，名额有限。"
+      ],
+      "audience": [
+        "有一点缝纫基础的人"
+      ],
+      "officialUrl": "https://paloalto.bibliocommons.com/events/6aceffd4ebad220045453a87",
+      "shortTitle": "图书馆毛毡小羊手作",
+      "dek": "羊年手缝一只毛毡小羊，限青少年和成人",
+      "sessions": [
+        {
+          "date": "2027-02-13",
+          "start": "15:00",
+          "end": "17:00"
+        }
+      ],
+      "ageChip": "青少年和成人",
+      "venueShort": "Mitchell Park 图书馆",
+      "address": "3700 Middlefield Rd, Palo Alto, CA 94303",
+      "aliases": [
+        "Palo Alto 图书馆手缝工作坊：农历新年做一只毛毡小羊",
+        "Community Threads at Palo Alto library: hand-sew a felt goat for Lunar New Year",
+        "Palo Alto 圖書館手縫工作坊：農曆新年做一隻毛氈小羊"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://paloalto.bibliocommons.com/events/6aceffd4ebad220045453a87",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-13",
+          "validThrough": "2027-02-13",
+          "sessions": [
+            {
+              "date": "2027-02-13",
+              "start": "15:00",
+              "end": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sf-lunar-new-year-basketball-jamboree-2027",
+      "kind": "sports",
+      "startDate": "2027-02-13",
+      "endDate": "2027-02-13",
+      "occurrenceDates": [
+        "2027-02-13"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "family",
+      "cost": "unknown",
+      "costLabel": "官网没写费用",
+      "sourceLabel": "旧金山中华总商会春节活动官网（篮球联欢页）",
+      "title": "2027 春节篮球联欢赛：华埠的青少年篮球",
+      "dateLabel": "2/13（周六）· 时间待主办方公布",
+      "city": "San Francisco",
+      "venue": "Betty Ann Ong Recreation Center · 1199 Mason Street, San Francisco, CA 94108",
+      "summary": "华埠的春节篮球赛，由退休的 Francisco 中学校长 Kenny Lee 发起，让年轻一代打一场像他小时候在华埠那样的比赛；成年校友来当裁判和义工。主办方欢迎亲友到场加油。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "2027 的比赛时间还没公布；官网旧横幅上的是往年时间。参赛报名条件官网没写，联系方式见官网。"
+      ],
+      "audience": [
+        "青少年球员和家人"
+      ],
+      "officialUrl": "https://chineseparade.com/basketballjamboree/",
+      "shortTitle": "春节篮球联欢赛",
+      "dek": "华埠青少年篮球赛，欢迎亲友加油",
+      "dateNote": "2027 年的比赛时间主办方还没公布。",
+      "venueShort": "Betty Ann Ong Recreation Center",
+      "address": "1199 Mason Street, San Francisco, CA 94108",
+      "aliases": [
+        "2027 春节篮球联欢赛：华埠的青少年篮球",
+        "Lunar New Year Basketball Jamboree 2027: youth basketball in Chinatown",
+        "2027 春節籃球聯歡賽：華埠的青少年籃球"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/basketballjamboree/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-13",
+          "validThrough": "2027-02-13"
+        }
+      }
+    },
+    {
+      "id": "sunnyvale-lakewood-aimusic-lunar-new-year-2027",
+      "kind": "performance",
+      "startDate": "2027-02-13",
+      "endDate": "2027-02-13",
+      "occurrenceDates": [
+        "2027-02-13"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "free",
+      "costLabel": "免费入场；要不要预约没写",
+      "sourceLabel": "Aimusic 演出日程（演出机构官网）",
+      "title": "Aimusic 农历新年演出：Sunnyvale Lakewood 分馆",
+      "dateLabel": "2/13（周六）· 14:00",
+      "city": "Sunnyvale",
+      "venue": "Lakewood 分馆 · Lakechime Dr, Sunnyvale, CA 94089",
+      "summary": "Aimusic 是教中国乐器、办 Firebird 青少年中乐团的音乐机构，它的演出日程把这场列为 2027 农历新年庆祝演出，写明免费入场。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "日期和时间来自演出机构自己的日程，场地方的活动页还没列出；去之前再看一眼两边的更新。",
+        "演出机构只写了 Lakechime Dr，没写门牌号；它是 Sunnyvale 的另一个分馆，不是 Olive Ave 的主馆。"
+      ],
+      "audience": [
+        "全家",
+        "喜欢中国乐器的人"
+      ],
+      "officialUrl": "https://aimusic.us/upcoming.php",
+      "shortTitle": "Lakewood 分馆新年演出",
+      "dek": "中乐团体的农历新年演出，免费入场",
+      "sessions": [
+        {
+          "date": "2027-02-13",
+          "start": "14:00"
+        }
+      ],
+      "price": {
+        "free": true
+      },
+      "dateNote": "演出机构只写了开始时间。",
+      "venueShort": "Sunnyvale Lakewood 分馆",
+      "address": "Lakechime Dr, Sunnyvale, CA 94089",
+      "aliases": [
+        "Aimusic 农历新年演出：Sunnyvale Lakewood 分馆",
+        "Aimusic Lunar New Year performance at Sunnyvale’s Lakewood Branch Library",
+        "Aimusic 農曆新年演出：Sunnyvale Lakewood 分館"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://aimusic.us/upcoming.php",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-13",
+          "validThrough": "2027-02-13",
+          "sessions": [
+            {
+              "date": "2027-02-13",
+              "start": "14:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sj-cpaa-spring-festival-gala-2027",
+      "kind": "performance",
+      "startDate": "2027-02-14",
+      "endDate": "2027-02-14",
+      "occurrenceDates": [
+        "2027-02-14"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "south-bay",
+      "category": "culture",
+      "cost": "paid",
+      "costLabel": "要买票，不退票；票价看 Eventbrite 售票页",
+      "sourceLabel": "CPAA（Chinese Performing Arts of America）官网与 Eventbrite 售票页",
+      "title": "心无界 · 爱相随：第十八届飞扬硅谷春晚暨第四届硅谷多元文化艺术节",
+      "dateLabel": "2/14（周日）· 19:00 开演，18:00 开门",
+      "city": "San Jose",
+      "venue": "圣何塞表演艺术中心 · 255 South Almaden Boulevard, San Jose, CA 95113",
+      "summary": "CPAA（Chinese Performing Arts of America）的硅谷春晚，2027 年正赶上情人节：一晚来自多种文化的音乐、舞蹈和武术。售票页写各年龄都可以来。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "结束时间两处写法不同：售票页标题写到 21:30，议程写到 21:00；以主办方后续公布为准。",
+        "停车要付费；票售出不退。"
+      ],
+      "audience": [
+        "全家"
+      ],
+      "officialUrl": "https://www.cpaasv.org/",
+      "shortTitle": "飞扬硅谷春晚 2027",
+      "dek": "情人节晚上的春晚：舞蹈、音乐和武术",
+      "sessions": [
+        {
+          "date": "2027-02-14",
+          "start": "19:00"
+        }
+      ],
+      "ageChip": "各年龄",
+      "dateNote": "18:00 开门；结束时间售票页有 21:00 和 21:30 两种写法。",
+      "venueShort": "圣何塞表演艺术中心",
+      "address": "255 South Almaden Boulevard, San Jose, CA 95113",
+      "aliases": [
+        "心无界 · 爱相随：第十八届飞扬硅谷春晚暨第四届硅谷多元文化艺术节",
+        "Love Beyond Boundaries: the 18th CPAA Spring Festival Silicon Valley and 4th Silicon Valley Multicultural Festival",
+        "心無界 · 愛相隨：第十八屆飛揚硅谷春晚暨第四屆硅谷多元文化藝術節"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "required",
+        "setting": "indoor",
+        "schedule": {
+          "sourceUrl": "https://www.cpaasv.org/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-14",
+          "validThrough": "2027-02-14",
+          "sessions": [
+            {
+              "date": "2027-02-14",
+              "start": "19:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sf-miss-chinatown-usa-pageant-2027",
+      "kind": "performance",
+      "startDate": "2027-02-19",
+      "endDate": "2027-02-19",
+      "occurrenceDates": [
+        "2027-02-19"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "官网没写观众票价和怎么买票",
+      "sourceLabel": "旧金山中华总商会春节活动官网（华埠小姐选美页）",
+      "title": "2027 华埠小姐选美及加冕舞会",
+      "dateLabel": "2/19（周五）· 时间待主办方公布",
+      "city": "San Francisco",
+      "venue": "The Masonic · 1111 California Street, San Francisco, CA",
+      "summary": "旧金山春节系列活动之一的华埠小姐选美和加冕舞会，2027 年在诺布山的 The Masonic 举行，在春节游行前一天。官网目前只写了日期和场地。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "开始时间、观众票价和买票方式官网都还没写；页面上的报名表是给参赛者的，不是观众票。"
+      ],
+      "audience": [
+        "想看选美和加冕的观众"
+      ],
+      "officialUrl": "https://chineseparade.com/misschinatownpageant/",
+      "shortTitle": "华埠小姐选美",
+      "dek": "游行前一天在 The Masonic 的选美和加冕",
+      "dateNote": "2027 年的开始时间主办方还没公布。",
+      "venueShort": "The Masonic",
+      "address": "1111 California Street, San Francisco, CA",
+      "aliases": [
+        "2027 华埠小姐选美及加冕舞会",
+        "Miss Chinatown USA Pageant & Coronation Ball 2027",
+        "2027 華埠小姐選美及加冕舞會"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "indoor",
+        "programTimeUnconfirmed": true,
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/misschinatownpageant/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-19",
+          "validThrough": "2027-02-19"
+        }
+      }
+    },
+    {
+      "id": "sf-chinese-new-year-community-fair-2027",
+      "kind": "event",
+      "startDate": "2027-02-20",
+      "endDate": "2027-02-21",
+      "occurrenceDates": [
+        "2027-02-20",
+        "2027-02-21"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "",
+      "region": "sf",
+      "category": "culture",
+      "cost": "unknown",
+      "costLabel": "官网没写入场费；摊位商品另买",
+      "sourceLabel": "旧金山中华总商会春节活动官网（社区街市页与 2027 街市公告）",
+      "title": "2027 旧金山华埠春节社区街市",
+      "dateLabel": "2/20（周六）10:00–16:30；2/21（周日）9:00–17:00",
+      "city": "San Francisco",
+      "venue": "华埠 Grant Ave（California St 到 Broadway 之间）",
+      "summary": "春节游行那个周末的华埠白天街市：Grant Ave 上有 120 多个摊位。主办方介绍里有给各年龄的活动和表演台上的民族舞、戏曲和鼓乐，2027 年的节目单还没公布。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "周六晚上同一天有春节游行（17:15 从 2nd St 与 Market St 出发），可以白天逛街市、晚上看游行。"
+      ],
+      "audience": [
+        "全家",
+        "各年龄"
+      ],
+      "officialUrl": "https://chineseparade.com/communityfair/",
+      "shortTitle": "华埠春节社区街市",
+      "dek": "游行周末的白天街市，120 多个摊位",
+      "sessions": [
+        {
+          "date": "2027-02-20",
+          "start": "10:00",
+          "end": "16:30"
+        },
+        {
+          "date": "2027-02-21",
+          "start": "09:00",
+          "end": "17:00"
+        }
+      ],
+      "venueShort": "华埠 Grant Ave",
+      "aliases": [
+        "2027 旧金山华埠春节社区街市",
+        "Chinese New Year Community Street Fair 2027 in San Francisco Chinatown",
+        "2027 舊金山華埠春節社區街市"
+      ],
+      "planning": {
+        "admissionUsd": null,
+        "minAge": null,
+        "reservation": "unknown",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/communityfair/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-20",
+          "validThrough": "2027-02-21",
+          "sessions": [
+            {
+              "date": "2027-02-20",
+              "start": "10:00",
+              "end": "16:30"
+            },
+            {
+              "date": "2027-02-21",
+              "start": "09:00",
+              "end": "17:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sf-chinese-new-year-parade-2027",
+      "kind": "event",
+      "startDate": "2027-02-20",
+      "endDate": "2027-02-20",
+      "occurrenceDates": [
+        "2027-02-20"
+      ],
+      "verifiedAt": "2026-10-17",
+      "imageKey": "official-sf-chinese-new-year-parade-2027",
+      "region": "sf",
+      "category": "culture",
+      "cost": "mixed",
+      "costLabel": "沿线站着看免费；看台座位要买票，票价看官网",
+      "sourceLabel": "旧金山春节游行官网（常见问题页）",
+      "title": "2027 旧金山春节游行：羊年夜间大巡游",
+      "dateLabel": "2/20（周六）· 17:15 从 2nd St 与 Market St 出发",
+      "city": "San Francisco",
+      "venue": "2nd St 与 Market St 出发，绕 Union Square，到 Kearny St 与 Columbus Ave 结束",
+      "summary": "旧金山一年一度的春节夜间大游行，2027 年是羊年：从 2nd St 与 Market St 出发，绕过 Union Square，沿 Kearny St 到 Columbus Ave，全程约 1.3 英里。主办方说游行大约两个半小时，下雨也照常举行。",
+      "plan": [
+        "华人文化主题：春节活动，不是中文课程；主办方没写有没有中文服务。",
+        "沿线隔离栏后面都可以站着看，越靠近华埠越挤；看台分 A、B、C 三区，要买票，主办方建议 16:00 前到看台区报到，警方约 15:00 开始封路。",
+        "沿线有免费的无障碍观看区；看台也有同价的无障碍票。2 岁及以下坐在大人腿上可以不买看台票。"
+      ],
+      "audience": [
+        "全家",
+        "想看春节游行的大人孩子"
+      ],
+      "officialUrl": "https://chineseparade.com/faq/",
+      "shortTitle": "旧金山春节游行",
+      "dek": "羊年夜间大巡游，从 Market St 走到华埠",
+      "sessions": [
+        {
+          "date": "2027-02-20",
+          "start": "17:15"
+        }
+      ],
+      "price": {
+        "free": true,
+        "note": "看台座位另外买票"
+      },
+      "dateNote": "主办方说游行约两个半小时，不写准确结束时间；下雨照常举行。",
+      "venueShort": "Market St 到华埠沿线",
+      "aliases": [
+        "2027 旧金山春节游行：羊年夜间大巡游",
+        "San Francisco Chinese New Year Parade 2027: the Year of the Ram night parade",
+        "2027 舊金山春節遊行：羊年夜間大巡遊"
+      ],
+      "planning": {
+        "admissionUsd": 0,
+        "minAge": null,
+        "reservation": "optional",
+        "setting": "outdoor",
+        "schedule": {
+          "sourceUrl": "https://chineseparade.com/faq/",
+          "verifiedAt": "2026-10-17",
+          "validFrom": "2027-02-20",
+          "validThrough": "2027-02-20",
+          "sessions": [
+            {
+              "date": "2027-02-20",
+              "start": "17:15"
             }
           ]
         }
@@ -48088,6 +48951,10 @@
     {
       "slug": "bay-area-november-resident-dates-2026",
       "title": "十一月居民日历：调时、投票与假日通勤"
+    },
+    {
+      "slug": "bay-area-holiday-hours-thanksgiving-new-year-2026",
+      "title": "感恩节到元旦：政府办公室、图书馆和公交时间"
     },
     {
       "slug": "sf-autumn-art-half-day-2026",
