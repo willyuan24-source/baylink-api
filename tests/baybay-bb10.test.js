@@ -603,8 +603,9 @@ test('review round 5: whatever the planner itself reads as a time keeps the one 
   const { askedDateRange } = require('../lib/entityAliases');
   assert.equal(askedDateRange('这周末 10/24 带娃去哪', '2026-10-17', { otherTemporal: () => false }).day, '2026-10-24');
   assert.equal(askedDateRange('这周末 10/24 带娃去哪', '2026-10-17', { otherTemporal: rest => /带娃/.test(rest) })?.day, undefined);
-  // Still the weekend: nothing else in the ask names a time (the Sunset District is a place, not a sunset).
-  for (const message of ['这周末 10/24 带娃去哪', '這週末 10/24 帶娃去哪', 'weekend 10/24 with kids', '这周末 10/24 去 Sunset District 带娃', 'weekend 10/24 kids, Outer Sunset?']) {
+  // Still the weekend: nothing else in the ask names a time (the Sunset District is a place, not a sunset; 1号公路 is a road).
+  for (const message of ['这周末 10/24 带娃去哪', '這週末 10/24 帶娃去哪', 'weekend 10/24 with kids', '这周末 10/24 去 Sunset District 带娃', 'weekend 10/24 kids, Outer Sunset?',
+    '这周末 10/24 走 1号公路 带娃去哪', '這週末 10/24 走一號公路去海邊']) {
     assert.deepEqual(stateOn(message).state.dateRange, WEEKEND_1024, message);
   }
 });
