@@ -429,42 +429,61 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
 
 ## API-BB-10: fixes from the #58 live check (degraded SFPL answer, weekend span, home city, record links, adult prices)
 
-- **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js`). The repair reads each scope
-  paragraph's statements to learn which service owns a restriction. Statements are now classified clause by clause
-  (split at `；` / `;`), so "须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡…" gives a Kanopy clause and a
-  card clause. A clause that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡, 申请…卡, 领卡, apply for / get a … card)
-  is a card rule even under a benefit's heading (review round 1: 办/办理 directly before the card noun, at most a library
-  name or 一张 between, so 举办卡通 is not). A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector
-  loan) is no longer a card rule: the card topic needs issuance, eCard / 实体卡, or a card next to a residence, age or ID
-  word. A Kanopy claim may carry the card's own rule (`CARD_BENEFITS`), as the repair rows already did. Live 10-17 Q3:
-  the correct "加州居民可免费办 SFPL 卡" coverage claim looked borrowed from Kanopy, the repair replaced it with the radon
-  paragraph and its sources (October freebies guide, SFPL press release), and the answer came back `degraded: true`. Now
-  it stays answered, cites the Kanopy record, and the answer is not degraded. A real error ("SFPL 要求旧金山居民才能办卡")
-  is still repaired, from the card clause, never from the radon paragraph.
+- **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js` `scopeStatements`). The repair
+  reads each scope paragraph's statements to learn which service owns a restriction. Every sentence is classified whole,
+  as before this lane; a clause of it (split at `；` / `;`) that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡,
+  申请…卡, 领卡, apply for / sign up for / get a … card) is also a card rule of its own. So "须有有效 SFPL 图书证并完成 Kanopy
+  账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" stays a Kanopy statement and adds the card statement
+  "加州居民可免费办 SFPL 卡，…". Review round 1: 办/办理 directly before the card noun, at most a library name or 一张 between,
+  so 举办卡通 is not. A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector loan) is no longer a card
+  rule: the card topic needs issuance, eCard / 实体卡, or a card next to a residence, age or ID word (zh 居民 / 年满 … 图书证,
+  en residents / age N … library card). Review round 3: the round-1 split moved clauses away from the service their
+  sentence names ("eCards are excluded …" after an SMCL Discover & Go rule became a card rule that a Kanopy claim could
+  borrow through `CARD_BENEFITS`; "最多同时保留两笔预约" became a Kanopy statement); now no clause leaves its sentence,
+  `CARD_BENEFITS` is gone, and restriction ownership across the shipped guide catalogs is the same as on main. A card clause
+  whose whole sentence is already a repair row adds nothing. Live 10-17 Q3: the correct "加州居民可免费办 SFPL 卡" coverage
+  claim looked borrowed from Kanopy, the repair replaced it with the radon paragraph and its sources (October freebies
+  guide, SFPL press release), and the answer came back `degraded: true`. Now it stays answered, cites the Kanopy record,
+  and the answer is not degraded. A real error ("SFPL 要求旧金山居民才能办卡") is still repaired, from the card clause, never
+  from the radon paragraph.
 - **A weekend word beside a written Saturday or Sunday is that weekend** (`lib/entityAliases.js` `RANGE_FORMS`, kind
   `weekend-of` with `weekendDay`). "这周末 10/24", "10月24号周末", "10/24 这个周末", "周末 10/25", "This weekend (10/24)",
   "Oct 24 weekend" give `dateRange` Sat 10/24 – Sun 10/25 and no single `date`, so Sunday's sessions and the editor's
-  picks for both days count. A weekday beside 周末 ("这周末 10/23") keeps its one day, a bare 这周末 is still this weekend,
-  and a one-day plan keeps the day it writes out (`spanFor`: `span.day` on a day-plan returns no span). Review round 1:
-  every gap in these forms is bounded (`s{0,3}`; unbounded `s*` around optional separators backtracked on U+3000 runs,
-  timed in `tests/redos.test.js`). The span gives way when another written date outside that weekend remains ("周末 10/24
-  或 10/31" asks to pick one day, as before) or a clock time / part of the day follows the date ("这周末 10/24 下午3点" is
-  10/24 only); the weekend's other day offered as an alternative is part of the span ("周末 10/24 还是 10/25", "10/24、
-  10/25"); "这周末 10/24 去 SJMA，10/25 去哪" asks about 10/25. Full-width separators ("这周末（10/24）", "，10/24", "：10/24")
-  work: `blankSpan` blanks the span in the normalized text through any separator run. The older "10月24日那个周末或 10/31"
-  form is unchanged (it still reads 10/31). Review round 2: a weekday label written beside the date ("这周末 10/24（周六）",
-  "10月24日 星期六", "10/24（六）", "This weekend (10/24, Saturday)", "weekend 10/24 (Sat)") or beside a paired day ("或
-  10/25（周日）") is part of the span when it matches the date; before, the leftover 周六 was read as this Saturday (10/17)
-  and replaced the span. A label that does not match ("10/24（周日）") leaves the ask to the one-date reading, which asks to
-  confirm; a part of the day after the label ("10/24 周六上午") keeps 10/24. A weekday, today or tomorrow anywhere else in
-  the ask ("这周末 10/24，周六或周日都行", "…还是明天") means the written-day span is not taken, so the ask reads exactly as on
-  main.
+  picks for both days count. A weekday beside 周末 ("这周末 10/23") keeps its one day and a bare 这周末 is still this weekend.
+  Review round 1: every gap in these forms is bounded (`s{0,3}`; unbounded `s*` around optional separators backtracked on
+  U+3000 runs, timed in `tests/redos.test.js`). The span gives way when another written date outside that weekend remains
+  ("周末 10/24 或 10/31" asks to pick one day, as before); the weekend's other day offered as an alternative is part of the
+  span ("周末 10/24 还是 10/25", "10/24、10/25"); "这周末 10/24 去 SJMA，10/25 去哪" asks about 10/25. Full-width separators
+  ("这周末（10/24）", "，10/24", "：10/24") work: `blankSpan` blanks the span in the normalized text through any separator
+  run. Review round 2: a weekday label written beside the date ("这周末 10/24（周六）", "10/24（六）", "weekend 10/24 (Sat)")
+  or beside a paired day is part of the span when it matches the date; one that does not ("10/24（周日）") leaves the ask to
+  the one-date reading, which asks to confirm; a weekday, today or tomorrow anywhere else in the ask means the span is not
+  taken. Review round 3:
+  - the typed weekend beats what came before: a web date-bar day (`searchContext.date`) or a carried day outside that
+    weekend is cleared, so the span applies as on a first turn; a follow-up that carries a day or a range of the same
+    weekend reads one written Saturday or Sunday as before this lane (`askedDateRange(…, { weekendDay: false })`): "那这
+    周末 10/25 呢" after 10/24 is 10/25, "这周末 10/25 周日呢" after the weekend is Sunday; both days written ("周末 10/24 跟
+    10/25 都行", "weekend Oct 24-25") are the span in any context;
+  - a date labelled last / past / previous weekend or 上(一)(个)周末 never starts the span (lookbehind in each form);
+  - one day stays one day: a part of the day, a clock or departure time or one-day wording anywhere in the ask (早晨 / 午后
+    / 凌晨 / 半夜 / 下班 / 一整天 / 当天往返 / 10:30 / 三点 / noon / dinner / back by 5pm / one day / whole day), "only" / 就好 in
+    the sentence, 有空 / free right after the weekday, and a weekday after a comma that starts a new clause ("这周末 10/24，
+    周六去公园") leave the ask to the one-date reading; so do a day plan and a holiday's own weekend ("感恩节周末 11/28"), and
+    "10/24 周末前" (before the weekend);
+  - a written year is honoured ("2027年10月24日周末" → 2027-10-23..24, "weekend Oct 24, 2027");
+  - 每周一次 / 每周三次 and a lower-case "sun" / "sat" elsewhere in the ask are not weekdays, in the span and in the analysis
+    (no Monday 10/19 from 每周一次, no Sunday 10/18 from "the sun is out");
+  - when the weekend-day reading steps aside, the ask never falls back to this weekend (10/17-18 on Saturday 10/17) for a
+    written day outside it: no span, so the written day or "pick one day" is read.
+  The base-vs-tip date suite (226 reviewer phrasings plus 50 more, 8 contexts, 2 days, 4,416 rows) has no regression.
 - **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
   借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
   longer sets the institution's city as the destination: city and region stay empty and the home city stays the
   origin, so H73's nearness order keeps this turn and its follow-ups near Fremont. Setting city = Fremont was tried and
-  dropped: the region filter then removed the SFPL Kanopy record from the evidence. "我住 Fremont，想去旧金山图书馆办卡"
-  (a trip) and a plain "SFPL 借书证怎么办？" still scope to San Francisco.
+  dropped: the region filter then removed the SFPL Kanopy record from the evidence. Review round 3: only a card or
+  service ask (`LIBRARY_SERVICE_ASK`: 办卡 / 借书证 / Kanopy / eCard / Discover & Go / 打印 / "can I use"); a branch's hours or
+  address ("我住 Fremont，SFPL 总馆在哪里？", "What time does SFPL Main Library open on Sunday?"), an events ask, or a trip to
+  the library (`LIBRARY_VISIT_ASK`: 想去 / 要去 …) still scopes to San Francisco, as on main.
 - **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
   `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
@@ -477,15 +496,19 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   that cites an event and gives one of its child prices gets the adult tier from the record's cost line when the point
   leaves it out: "0–3 岁免费，4–14 岁 $5。" → "…$5。18+ 成人 $8。" (en "… $5. Adults 18+: $8."); warning
   `answer_adult_price_added`. Review round 1: only from a cost line with one price period (no 早鸟 / 普通票 / "11/1 起" /
-  early / regular prices: Dickens' early-bird $40 vs regular $50 is skipped) and one adult price in the child price's
-  `；`-segment; the tier is written in the answer's locale (the evidence cost is the Chinese planner label in every locale)
-  as its own sentence after the point's text and before its trailing markers, so a streamed point stays a prefix and the
-  answer is not marked corrected. A point that already names an adult tier or price (`$8`, not `$80`), or a "$5–$8" range, is
-  left alone. Review round 2: a floor price keeps its 起 / from ("成人 $32 起" → "成人 $32 起。", en "Adults: from $32."),
-  and a price that holds only before a deadline ("11/15 中午前报名 … 成人 $130 起": 前报名 / 截止 / before / until) counts as
-  a price period, so it is left alone rather than losing the condition.
+  early / regular prices) and one adult price in the child price's `；`-segment; the tier is written in the answer's locale
+  as its own sentence after the point's text and before its trailing markers, so a streamed point stays a prefix. A point
+  that already names an adult tier or price (compared as amounts: `$8.00` gives `$8`, `$80` does not), or a "$5–$8" range,
+  is left alone. Review round 2: a floor price keeps its 起 / from ("成人 $32 起。", en "Adults: from $32."), and a price that
+  holds only before a deadline counts as a price period. Review round 3: the tier never states a price more strongly than
+  the label: any condition anywhere in the cost line (`PRICE_CONDITION`: 参考 / 以票页为准, 约 / 左右 / $30+, fees, member,
+  resident, online, weekday or weekend, group, student, senior, discount, varies) leaves the point alone, and only an age,
+  a separator or a segment start may come before the adult word ("钓鱼赛成人 $55" is the derby entry). A note that only
+  another age band's price is not listed ("15–17 岁费用未注明，待核实") is not a condition on the adult price. Over all 1,135
+  cost labels in `data/*.json`, three rows get a tier (Pumpkins After Dark, Alameda, Lightscape); Rio Vista and ZooLights
+  do not.
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
-- Tests: `tests/baybay-bb10.test.js` (live drafts through the v2 fast path, zh-Hans / zh-Hant / en). Replay of the six
-  live questions: lane API-BB-10 `work/replay-six.cjs`.
+- Tests: `tests/baybay-bb10.test.js` (live drafts through the v2 fast path and the reviewers' regression cases,
+  zh-Hans / zh-Hant / en).
