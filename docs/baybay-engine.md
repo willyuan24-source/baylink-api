@@ -433,7 +433,8 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   paragraph's statements to learn which service owns a restriction. Statements are now classified clause by clause
   (split at `；` / `;`), so "须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡…" gives a Kanopy clause and a
   card clause. A clause that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡, 申请…卡, 领卡, apply for / get a … card)
-  is a card rule even under a benefit's heading. A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector
+  is a card rule even under a benefit's heading (review round 1: 办/办理 directly before the card noun, at most a library
+  name or 一张 between, so 举办卡通 is not). A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector
   loan) is no longer a card rule: the card topic needs issuance, eCard / 实体卡, or a card next to a residence, age or ID
   word. A Kanopy claim may carry the card's own rule (`CARD_BENEFITS`), as the repair rows already did. Live 10-17 Q3:
   the correct "加州居民可免费办 SFPL 卡" coverage claim looked borrowed from Kanopy, the repair replaced it with the radon
@@ -444,7 +445,14 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   `weekend-of` with `weekendDay`). "这周末 10/24", "10月24号周末", "10/24 这个周末", "周末 10/25", "This weekend (10/24)",
   "Oct 24 weekend" give `dateRange` Sat 10/24 – Sun 10/25 and no single `date`, so Sunday's sessions and the editor's
   picks for both days count. A weekday beside 周末 ("这周末 10/23") keeps its one day, a bare 这周末 is still this weekend,
-  and a one-day plan keeps the day it writes out (`spanFor`: `span.day` on a day-plan returns no span).
+  and a one-day plan keeps the day it writes out (`spanFor`: `span.day` on a day-plan returns no span). Review round 1:
+  every gap in these forms is bounded (`s{0,3}`; unbounded `s*` around optional separators backtracked on U+3000 runs,
+  timed in `tests/redos.test.js`). The span gives way when another written date outside that weekend remains ("周末 10/24
+  或 10/31" asks to pick one day, as before) or a clock time / part of the day follows the date ("这周末 10/24 下午3点" is
+  10/24 only); the weekend's other day offered as an alternative is part of the span ("周末 10/24 还是 10/25", "10/24、
+  10/25"); "这周末 10/24 去 SJMA，10/25 去哪" asks about 10/25. Full-width separators ("这周末（10/24）", "，10/24", "：10/24")
+  work: `blankSpan` blanks the span in the normalized text through any separator run. The older "10月24日那个周末或 10/31"
+  form is unchanged (it still reads 10/31).
 - **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
   借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
   longer sets the institution's city as the destination: city and region stay empty and the home city stays the
@@ -456,11 +464,18 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
   inline-link form the web already renders (`plannerWebAnswerParts` with `linkify`). Any other URL the model writes is
   still removed by `renderCitations`, and an address no record gives stays plain text. `draftCorrected` reads a link as its
-  label, so a streamed draft with the plain address is continued, not corrected.
+  label, so a streamed draft with the plain address is continued, not corrected. The href keeps the record's spelling of
+  the address, and `answer_lead_long` is measured before linking. Web follow-up: `bayBayReadableText` (朗读) and
+  `bayBayTextUnits` should read `[label](url)` as its label.
 - **Adult price tier** (`lib/baybayQuality.js` `adultTierRepair`, run in `resolveDraft` after `pointRepairs`). A point
   that cites an event and gives one of its child prices gets the adult tier from the record's cost line when the point
-  leaves it out: "0–3 岁免费，4–14 岁 $5" → "…$5、18+ $8" (en ", 18+ $8"); warning `answer_adult_price_added`. A point with
-  the adult price or a "$5–$8" range is left alone.
+  leaves it out: "0–3 岁免费，4–14 岁 $5。" → "…$5。18+ 成人 $8。" (en "… $5. Adults 18+: $8."); warning
+  `answer_adult_price_added`. Review round 1: only from a cost line with one price period (no 早鸟 / 普通票 / "11/1 起" /
+  early / regular prices: Dickens' early-bird $40 vs regular $50 is skipped) and one adult price in the child price's
+  `；`-segment; the tier is written in the answer's locale (the evidence cost is the Chinese planner label in every locale)
+  as its own sentence after the point's text and before its trailing markers, so a streamed point stays a prefix and the
+  answer is not marked corrected. A point that already names an adult tier or price (`$8`, not `$80`), or a "$5–$8" range, is
+  left alone.
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
