@@ -426,3 +426,43 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   the stop order in the lead and each stop's time or hours in its point. Stop names: the title's and aliases' parts,
   their Latin names, a few Chinese names of Latin venues (Ferry Building / 渡轮大厦, Chinatown / 唐人街 / 华埠); a name two
   stops share names neither.
+
+## API-BB-10: fixes from the #58 live check (degraded SFPL answer, weekend span, home city, record links, adult prices)
+
+- **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js`). The repair reads each scope
+  paragraph's statements to learn which service owns a restriction. Statements are now classified clause by clause
+  (split at `；` / `;`), so "须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡…" gives a Kanopy clause and a
+  card clause. A clause that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡, 申请…卡, 领卡, apply for / get a … card)
+  is a card rule even under a benefit's heading. A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector
+  loan) is no longer a card rule: the card topic needs issuance, eCard / 实体卡, or a card next to a residence, age or ID
+  word. A Kanopy claim may carry the card's own rule (`CARD_BENEFITS`), as the repair rows already did. Live 10-17 Q3:
+  the correct "加州居民可免费办 SFPL 卡" coverage claim looked borrowed from Kanopy, the repair replaced it with the radon
+  paragraph and its sources (October freebies guide, SFPL press release), and the answer came back `degraded: true`. Now
+  it stays answered, cites the Kanopy record, and the answer is not degraded. A real error ("SFPL 要求旧金山居民才能办卡")
+  is still repaired, from the card clause, never from the radon paragraph.
+- **A weekend word beside a written Saturday or Sunday is that weekend** (`lib/entityAliases.js` `RANGE_FORMS`, kind
+  `weekend-of` with `weekendDay`). "这周末 10/24", "10月24号周末", "10/24 这个周末", "周末 10/25", "This weekend (10/24)",
+  "Oct 24 weekend" give `dateRange` Sat 10/24 – Sun 10/25 and no single `date`, so Sunday's sessions and the editor's
+  picks for both days count. A weekday beside 周末 ("这周末 10/23") keeps its one day, a bare 这周末 is still this weekend,
+  and a one-day plan keeps the day it writes out (`spanFor`: `span.day` on a day-plan returns no span).
+- **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
+  借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
+  longer sets the institution's city as the destination: city and region stay empty and the home city stays the
+  origin, so H73's nearness order keeps this turn and its follow-ups near Fremont. Setting city = Fremont was tried and
+  dropped: the region filter then removed the SFPL Kanopy record from the evidence. "我住 Fremont，想去旧金山图书馆办卡"
+  (a trip) and a plain "SFPL 借书证怎么办？" still scope to San Francisco.
+- **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
+  `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
+  ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
+  inline-link form the web already renders (`plannerWebAnswerParts` with `linkify`). Any other URL the model writes is
+  still removed by `renderCitations`, and an address no record gives stays plain text. `draftCorrected` reads a link as its
+  label, so a streamed draft with the plain address is continued, not corrected.
+- **Adult price tier** (`lib/baybayQuality.js` `adultTierRepair`, run in `resolveDraft` after `pointRepairs`). A point
+  that cites an event and gives one of its child prices gets the adult tier from the record's cost line when the point
+  leaves it out: "0–3 岁免费，4–14 岁 $5" → "…$5、18+ $8" (en ", 18+ $8"); warning `answer_adult_price_added`. A point with
+  the adult price or a "$5–$8" range is left alone.
+- **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
+  "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
+  (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
+- Tests: `tests/baybay-bb10.test.js` (live drafts through the v2 fast path, zh-Hans / zh-Hant / en). Replay of the six
+  live questions: lane API-BB-10 `work/replay-six.cjs`.
