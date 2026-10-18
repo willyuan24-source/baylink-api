@@ -224,6 +224,9 @@ test('a point with an event\'s child prices keeps the adult tier its record list
     ['en', 'sfzoo-zoolights-2026', 'ZooLights runs nightly; kids $21. [[e7]]', 'ZooLights runs nightly; kids $21. Adults: $30. [[e7]]'],
     ['en', 'pleasanton-pumpkins-after-dark-2026', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free [[e7]]', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free. Adults 18+: $28.80. [[e7]]'],
     ['zh-Hans', 'pleasanton-pumpkins-after-dark-2026', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。[[e7]]', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。18+ 成人 $28.80。[[e7]]'],
+    // Review round 2: a floor price keeps its 起 / from.
+    ['zh-Hans', 'sf-botanical-lightscape-2026', '植物园灯光夜：5–17 岁 $20 起，4 岁及以下免费。[[e7]]', '植物园灯光夜：5–17 岁 $20 起，4 岁及以下免费。成人 $32 起。[[e7]]'],
+    ['en', 'sf-botanical-lightscape-2026', 'Botanical Garden Lightscape: ages 5–17 from $20, under 5 free. [[e7]]', 'Botanical Garden Lightscape: ages 5–17 from $20, under 5 free. Adults: from $32. [[e7]]'],
   ];
   for (const [locale, id, text, expected] of cases) {
     const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: ref => ref === 'e7' ? costOf(id) : null, locale });
@@ -239,6 +242,12 @@ test('a point with an event\'s child prices keeps the adult tier its record list
   assert.equal(adultTierRepair({ points: [{ text: '4–14 岁 $5，停车 $80 [[e7]]', cardIds: [] }] }, { costOf: () => alameda }).repaired, true);
   for (const text of ['11/1 起普通票 5–12 岁 $30。[[e7]]', '早鸟票 5–12 岁 $25。[[e7]]', 'Regular tickets from Nov 1: ages 5–12 $30. [[e7]]']) {
     assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => costOf('dickens-christmas-fair-2026'), locale: /[a-z]/i.test(text[0]) ? 'en' : 'zh-Hans' }).repaired, false, text);
+  }
+  // Review round 2: a price that holds only before a deadline (camp harmony: "11/15 中午前报名 … 成人 $130 起") would lose the
+  // condition in a separate sentence, so it is left alone.
+  assert.match(costOf('sffmc-camp-harmony-2026-27'), /中午前报名.*成人 \$130 起/);
+  for (const [locale, text] of [['zh-Hans', '和谐营：11/15 中午前报名 3–12 岁 $65 起。[[e7]]'], ['en', 'Camp Harmony: register by Nov 15 noon, ages 3–12 from $65. [[e7]]']]) {
+    assert.equal(adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => costOf('sffmc-camp-harmony-2026-27'), locale }).repaired, false, text);
   }
 });
 
