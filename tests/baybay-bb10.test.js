@@ -92,3 +92,47 @@ test('a real SFPL residency error is still repaired, and the repair never cites 
   assert.ok(!item.sourceIds.includes('radon') && !item.sourceIds.includes('october'), item.sourceIds.join());
   assert.deepEqual(item.sourceIds, ['perks', 'kanopy-official']);
 });
+
+// ---------------------------------------------------------------- 4. "这周末 10/24" is Sat 10/24 and Sun 10/25 (live Q5)
+
+const { resolveTaskState } = require('../lib/baybayState');
+const stateOf = (message, previous) => resolveTaskState({ message, today: '2026-10-17', catalog, carry: true, ...(previous ? { previous } : {}) });
+
+test('a weekend word beside a written Saturday or Sunday is that whole weekend, in zh-Hans, zh-Hant and en', () => {
+  for (const message of ['这周末 10/24 带娃去哪', '這週末 10/24 帶娃去哪', '这周末10月24日带娃去哪', '10/24 这个周末带孩子去哪玩', '10月24号周末带娃去哪玩', '周末 10/25 带娃去哪',
+    'This weekend (10/24), where can we go with the kids?', 'Oct 24 weekend events for kids']) {
+    const { state } = stateOf(message);
+    assert.deepEqual(state.dateRange, { start: '2026-10-24', end: '2026-10-25' }, message);
+    assert.equal(state.date, null, message);
+  }
+  // A weekday beside 周末 and a date without 周末 keep their one day; a bare 这周末 is still this weekend.
+  assert.equal(stateOf('这周末 10/23 带娃去哪').state.date, '2026-10-23');
+  assert.equal(stateOf('10/24 带娃去哪').state.date, '2026-10-24');
+  assert.deepEqual(stateOf('这周末带娃去哪').state.dateRange, { start: '2026-10-17', end: '2026-10-18' });
+  // A one-day plan keeps the day it writes out.
+  const plan = stateOf('帮我安排这周末 10/24 带娃一日游').state;
+  assert.equal(plan.goal, 'day-plan'); assert.equal(plan.date, '2026-10-24');
+});
+
+// ---------------------------------------------------------------- 5. home city vs the service's city (live Q3)
+
+test('a library service asked from home keeps the home city as the origin and does not move the scope to the institution\'s city', () => {
+  for (const message of [Q3['zh-Hans'].question, Q3['zh-Hant'].question, Q3.en.question]) {
+    const { state, clarification } = stateOf(message);
+    assert.equal(state.origin, 'Fremont', message);
+    assert.equal(state.city, null, message); assert.equal(state.region, null, message);
+    assert.equal(clarification, undefined, message);
+  }
+  // A trip to the library's city is still a destination, and a plain SFPL question is still about SF.
+  assert.equal(stateOf('我住 Fremont，想去旧金山图书馆办卡').state.city, 'San Francisco');
+  assert.equal(stateOf('SFPL 借书证怎么办？').state.city, 'San Francisco');
+});
+
+test('after the Fremont SFPL question, a follow-up is not scoped to San Francisco', async () => {
+  const first = await ask(Q3['zh-Hans'].question, q3Draft(Q3['zh-Hans']));
+  assert.equal(first.response.taskState.origin, 'Fremont');
+  assert.equal(first.response.taskState.city, null);
+  const { state } = stateOf('那这周末附近有什么免费亲子活动？', first.response.taskState);
+  assert.notEqual(state.city, 'San Francisco'); assert.notEqual(state.region, 'sf');
+  assert.equal(state.origin, 'Fremont');
+});
