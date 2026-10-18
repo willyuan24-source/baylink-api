@@ -29,10 +29,12 @@ async function ask(question, draft, { locale = 'zh-Hans', history = [], assistan
 }
 const coverageItem = (response, id) => response.answerCoverage.items.find(item => item.id === id);
 const coverageSources = (response, id) => coverageItem(response, id).sourceIds.map(sourceId => response.evidence.find(row => row.id === sourceId));
-// The API-BB-10 fallback (review round 6) put features back to main 8eec008; their tests stay here as todo for follow-up lane API-BB-11.
+// The API-BB-10 fallbacks (review rounds 6 and 8) put features back to main 8eec008; their tests stay here as todo for follow-up
+// lane API-BB-11. A todo test that passes holds main's behaviour (a case the new design must not make worse).
 const HOME_CITY_TODO = 'API-BB-10 fallback: the home-city library reading is main 8eec008 again; follow-up lane API-BB-11';
 const WEEKEND_DAY_TODO = 'API-BB-10 fallback: the weekend-day span ("这周末 10/24" as Sat + Sun) is main 8eec008 again; follow-up lane API-BB-11';
 const ADULT_TIER_TODO = 'API-BB-10 fallback: the adult price tier repair is removed, as on main 8eec008; follow-up lane API-BB-11';
+const BENEFIT_SCOPE_TODO = 'API-BB-10 final fallback: the benefit-scope repair (card clause, card-rule topic) is main 8eec008 again; follow-up lane API-BB-11';
 
 // ---------------------------------------------------------------- 1. SFPL card + Kanopy from Fremont (live Q3)
 
@@ -56,7 +58,7 @@ const q3Draft = copy => (evidence, ref) => {
 };
 
 for (const locale of ['zh-Hans', 'zh-Hant', 'en']) {
-  test(`${locale}: a cited, correct SFPL card + Kanopy answer is not degraded and its card item cites the Kanopy record`, async () => {
+  test(`${locale}: a cited, correct SFPL card + Kanopy answer is not degraded and its card item cites the Kanopy record`, { todo: BENEFIT_SCOPE_TODO }, async () => {
     const { response } = await ask(Q3[locale].question, q3Draft(Q3[locale]), { locale });
     assert.equal(response.degraded, false);
     assert.ok(!response.research.warnings.includes('answer_benefit_scope_corrected'), response.research.warnings.join());
@@ -74,7 +76,7 @@ for (const locale of ['zh-Hans', 'zh-Hant', 'en']) {
   });
 }
 
-test('a real SFPL residency error is still repaired, and the repair never cites the radon-detector loan', () => {
+test('a real SFPL residency error is still repaired, and the repair never cites the radon-detector loan', { todo: BENEFIT_SCOPE_TODO }, () => {
   // The scopes the live 10-17 Q3 turn read, cut to the SFPL ones the repair groups.
   const scopes = [
     { entity: 'SFPL', entityKey: 'sfpl', heading: 'SFPL · KANOPY：用 SFPL 图书证，在家免费看片', sourceIds: ['perks', 'kanopy-official'],
@@ -389,7 +391,7 @@ test('review round 3: weekday words inside ordinary words do not reject the span
   }
 });
 
-test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (shipped SMCL and SFPL sections, zh + en)', () => {
+test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (shipped SMCL and SFPL sections, zh + en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   for (const [locale, file, marker, kanopyClaim, cardClaim, leak] of [
     ['en', 'guide-catalog.en.json', 'SMCL: Kanopy allowances', 'SMCL Kanopy gives 30 tickets a month, but eCards are excluded.', 'SMCL eCards are excluded; apply for a physical card.', /two active reservations/],
     ['zh-Hans', 'guide-catalog.json', 'SMCL：Kanopy 每月额度', 'SMCL 的 Kanopy 每月 30 tickets，但 eCard 不适用。', 'SMCL 的 eCard 不适用，需到馆申请图书证。', /最多同时保留两笔预约/]]) {
@@ -414,7 +416,7 @@ test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (s
   assert.doesNotMatch(out.coverage.items[0].summary, /同时最多 2 个预约|Bay Area Discovery Museum/);
 });
 
-test('review round 6: a pass, printing or Kanopy clause that needs a card first is not a card rule, so a false card claim is still repaired (zh-Hans, zh-Hant, en)', () => {
+test('review round 6: a pass, printing or Kanopy clause that needs a card first is not a card rule, so a false card claim is still repaired (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   // The verify's made-up scopes: each clause names another service and only requires holding the card. Main repairs the false card
   // claim from the card scope; round 5 added the clause as a card rule with the service's residence or age rule and kept the claim.
   const cardScope = { id: 'card', heading: 'SFPL：办卡', entity: 'SFPL', entityKey: 'sfpl', text: '图书馆\nSFPL：办卡\n加州居民可免费办 SFPL 卡。', sourceIds: ['card'] };
@@ -436,11 +438,12 @@ test('review round 6: a pass, printing or Kanopy clause that needs a card first 
 });
 
 // ---------------------------------------------------------------- review round 7: never worse than main on made-up scope text
-// A sentence that states a restriction is classified exactly as on main 8eec008 (TOPICS, with its heading fallback); a ；-clause is
-// a card rule only when the allowlist grammar reads it whole (who + can + get the LIBRARY card + how to collect it).
+// Round 7 classified a sentence that states a restriction exactly as on main 8eec008 and read a ；-clause as a card rule only
+// through an allowlist grammar. The round-8 verify still found false card claims it kept, so the final fallback put the whole
+// benefit-scope repair back to main; these tests (and round 8's cases below) are todo for API-BB-11.
 const r7Repair = (id, claim, scopes, locale) => repairBenefitCoverage({ status: 'complete', items: [{ id, status: 'answered', summary: claim, sourceIds: ['x'] }] }, scopes, locale);
 
-test('review round 7: a card section whose heading names the card, or an en plural "library cards", keeps a correct card claim (zh-Hans, zh-Hant, en)', () => {
+test('review round 7: a card section whose heading names the card, or an en plural "library cards", keeps a correct card claim (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   for (const [locale, entity, heading, sentence, claim] of [
     ['zh-Hans', 'SMCL', 'SMCL：半岛图书证', '限 San Mateo County 居民，年满 16 岁。线上申请后到馆领取。', 'SMCL 办卡限 San Mateo County 居民。'],
     ['zh-Hans', 'SMCL', 'SMCL：半岛图书证', '限 San Mateo County 居民，年满 16 岁。线上申请后到馆领取。', 'SMCL 的图书证须年满 16 岁。'],
@@ -464,7 +467,7 @@ test('review round 7: a card section whose heading names the card, or an en plur
   assert.match(out.coverage.items[0].summary, /限 San Mateo County 居民，年满 16 岁/);
 });
 
-test('review round 7: card-rule wordings (办证, 借书证, plural library cards, getting a card) keep a correct card claim, as on main (zh-Hans, zh-Hant, en)', () => {
+test('review round 7: card-rule wordings (办证, 借书证, plural library cards, getting a card) keep a correct card claim, as on main (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   const han = /[一-鿿]/;
   const wordings = ['加州居民持有效证件即可到馆办证。', '加州居民可免费办理图书证。', '凡居住在加州者均可免费申请借书证。', '加州居民可免費辦理借書證。', '辦證需帶有照片的證件，加州居民免費。',
     'Library cards are free for California residents.', 'Library cards are available to California residents age 13 and older.', 'Getting a card: bring photo ID; California residents only.',
@@ -482,7 +485,7 @@ test('review round 7: card-rule wordings (办证, 借书证, plural library card
   }
 });
 
-test('review round 7: a clause about a tool card, a parking card or a LinkedIn card is never a library-card rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', () => {
+test('review round 7: a clause about a tool card, a parking card or a LinkedIn card is never a library-card rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   for (const [locale, entity, heading, sentence, claim] of [
     ['zh-Hans', 'BPL', 'BERKELEY PUBLIC LIBRARY：工具馆', '一次最多 10 件；Berkeley 居民到工具馆领卡后可借。', 'BPL 办卡仅限 Berkeley 居民。'],
     ['zh-Hant', 'BPL', 'BERKELEY PUBLIC LIBRARY：工具館', '一次最多 10 件；Berkeley 居民到工具館領卡後可借。', 'BPL 辦卡僅限 Berkeley 居民。'],
@@ -500,7 +503,7 @@ test('review round 7: a clause about a tool card, a parking card or a LinkedIn c
   }
 });
 
-test('review round 7: a Kanopy, printing or Discover & Go clause that uses the card after getting it is the service\'s rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', () => {
+test('review round 7: a Kanopy, printing or Discover & Go clause that uses the card after getting it is the service\'s rule, so a false card claim is repaired (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   const cardScope = { id: 's2', heading: 'SFPL：办卡', entity: 'SFPL', entityKey: 'sfpl', text: '图书馆\nSFPL：办卡\n加州居民可免费办 SFPL 卡。', sourceIds: ['card'] };
   for (const [locale, heading, sentence, claim] of [
     ['zh-Hans', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；仅限旧金山居民办卡后使用。', 'SFPL 办卡仅限旧金山居民。'],
@@ -518,7 +521,7 @@ test('review round 7: a Kanopy, printing or Discover & Go clause that uses the c
   }
 });
 
-test('review round 7: the live Q3 clause in other wordings (需持有效证件, 申请借书证, 办证, library cards) is a card rule, so the correct claim is not degraded (zh-Hans, zh-Hant, en)', () => {
+test('review round 7: the live Q3 clause in other wordings (需持有效证件, 申请借书证, 办证, library cards) is a card rule, so the correct claim is not degraded (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
   const kanopyHead = 'SFPL · KANOPY：用 SFPL 图书证，在家免费看片';
   const radon = { entity: 'SAN FRANCISCO PUBLIC LIBRARY', entityKey: 'sfpl', heading: 'SAN FRANCISCO PUBLIC LIBRARY：SFPL 图书证可免费借氡探测器',
     text: 'SAN FRANCISCO PUBLIC LIBRARY：SFPL 图书证可免费借氡探测器\n持 SFPL 图书证借用，可在线预约；设备先到先得，最长借期 21 天，用后须归还。', sourceIds: ['radon'] };
@@ -551,7 +554,7 @@ test('review round 7: the live Q3 clause in other wordings (需持有效证件, 
   assert.equal(out.changed, true); assert.deepEqual(out.coverage.items[0].sourceIds, ['card']);
 });
 
-test('review round 7: a card repair left with no card statement cites what main cites, never the pass rule it repairs (shipped SCL sections)', () => {
+test('review round 7: a card repair left with no card statement cites what main cites, never the pass rule it repairs (shipped SCL sections)', { todo: BENEFIT_SCOPE_TODO }, () => {
   // The shipped Sonoma County Library parking-pass and Discover & Go paragraphs. On main the parking-pass line is the card's only
   // statement; it is restriction-free and not a card rule, so the repair falls back to main's statements rather than the
   // direct scopes (the Discover & Go heading names 图书证, and its Sonoma residence and age 15 rule is what the claim borrowed).
@@ -563,6 +566,38 @@ test('review round 7: a card repair left with no card statement cites what main 
   assert.equal(out.changed, true); assert.equal(out.coverage.items[0].status, 'unknown');
   assert.match(out.coverage.items[0].summary, /区域公园日间停车证/);
   assert.doesNotMatch(out.coverage.items[0].summary, /年满 15 岁|Discover & Go/);
+});
+
+test('review round 8: a service clause that leaves out the service verb, or 办证 under a parking-permit heading, is not a card rule, so main\'s repair of a false card claim holds (zh-Hans, zh-Hant, en)', { todo: BENEFIT_SCOPE_TODO }, () => {
+  // The round-8 verify's made-up scopes (none in the shipped data). Round 7's card-clause grammar kept each false claim; main
+  // repairs it from the card scope. Any API-BB-11 design must keep main's repair here.
+  const cardScope = (entity, locale) => locale === 'en'
+    ? { id: 's2', heading: `${entity}: Getting a card`, entity, entityKey: entity.toLowerCase(), text: `${entity}: Getting a card\nApply online, then visit a branch.`, sourceIds: ['card'] }
+    : { id: 's2', heading: `${entity}：办卡`, entity, entityKey: entity.toLowerCase(), text: `${entity}：办卡\n加州居民可免费办卡。`, sourceIds: ['card'] };
+  for (const [locale, entity, heading, sentence, claim] of [
+    // 到馆领取 / 并到…领取 / 即可 / 后即可 / 后到馆即可 right after the card noun: collecting the passes or using the service.
+    ['zh-Hans', 'SFPL', 'SFPL · Discover & Go：博物馆通票', '每户每月 2 张；年满 18 岁的旧金山居民办 SFPL 卡后到馆领取。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hans', 'SFPL', 'SFPL · Discover & Go：博物馆通票', '每户每月 2 张；旧金山居民申请 SFPL 卡并到任一分馆领取。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；旧金山居民申请 SFPL 卡即可。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；旧金山居民取得 SFPL 卡即可。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL', 'SFPL · 打印：每天免费打印', '每天 10 页免费；旧金山居民领取图书证即可。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL', 'SFPL · 打印：每天免费打印', '每天 10 页免费；旧金山居民办 SFPL 卡后到馆即可。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hans', 'SFPL', 'SFPL · Discover & Go：博物馆通票', '每户每月 2 张；年满 18 岁的旧金山居民办理 SFPL 卡即可。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hans', 'SFPL', 'SFPL · Discover & Go：博物馆通票', '每户每月 2 张；年满 18 岁的旧金山居民办理 SFPL 卡后即可。', 'SFPL 办卡须年满 18 岁。'],
+    ['zh-Hans', 'SFPL', 'SFPL · Discover & Go：博物馆通票', '每户每月 2 张；此福利限旧金山居民办理 SFPL 卡。', 'SFPL 办卡仅限旧金山居民。'],
+    ['zh-Hant', 'SFPL', 'SFPL · Discover & Go：博物館通票', '每戶每月 2 張；年滿 18 歲的舊金山居民辦理 SFPL 卡後到館領取。', 'SFPL 辦卡須年滿 18 歲。'],
+    ['zh-Hant', 'SFPL', 'SFPL · KANOPY：在家看片', 'Kanopy 每月 10 部；舊金山居民申請 SFPL 卡即可。', 'SFPL 辦卡僅限舊金山居民。'],
+    ['en', 'SFPL', 'SFPL · Discover & Go', 'Two passes per visit; residents age 18+ can get a library card, then pick up at any branch.', 'You must be 18+ to get an SFPL library card.'],
+    ['en', 'SFPL', 'SFPL · Discover & Go', 'Two passes a visit; residents age 18+ simply get a library card.', 'You must be 18+ to get an SFPL library card.'],
+    // A bare 办证 / 辦證 under a pass or permit heading is the parking permit, not the library card.
+    ['zh-Hans', 'MCFL', 'MCFL：门票与州立公园停车证', '停车证每次借 7 天；Marin 县居民可到馆办证。', 'MCFL 办卡仅限 Marin 县居民。'],
+    ['zh-Hans', 'MCFL', 'MCFL：门票与州立公园停车证', '每次借 7 天；Marin 县居民可办证。', 'MCFL 办卡仅限 Marin 县居民。'],
+    ['zh-Hant', 'MCFL', 'MCFL：門票與州立公園停車證', '停車證每次借 7 天；Marin 縣居民可到館辦證。', 'MCFL 辦卡僅限 Marin 縣居民。']]) {
+    const scopes = [{ id: 's1', heading, entity, entityKey: entity.toLowerCase(), text: `${heading}\n${sentence}`, sourceIds: ['src'] }, cardScope(entity, locale)];
+    const out = r7Repair('card_eligibility', claim, scopes, locale);
+    assert.equal(out.changed, true, `${locale} ${sentence} :: ${claim}`);
+    assert.equal(out.coverage.items[0].status, 'unknown', `${locale} ${sentence} :: ${claim}`);
+  }
 });
 
 test('review round 3: the adult tier is added only from a cost line with no condition anywhere', { todo: ADULT_TIER_TODO }, () => {
