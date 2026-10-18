@@ -320,6 +320,20 @@ test('BayBay: every excerpt of a priced table names a row before its later sente
   }
 });
 
+// Review round 4 of API-BB-12: a senior cable car fare ask that names no agency lost the asked "$4 before 7 a.m. or after
+// 9 p.m." (base and the sync gave it) to every row's opening sentence, and one excerpt left "or after 9 p.m." beside Muni's
+// $1.40. The cable car is Muni's row, the one priced row that names it; "a.m." and "p.m." end no sentence of a priced table.
+test('BayBay: senior cable car fare asks with no agency keep Muni\'s cable car fare, with Muni\'s name', () => {
+  for (const [message, locale, fare] of [['Senior cable car fare', 'en', /cable car \$4 before 7 a\.m\. or after 9 p\.m\./], ['Senior cable car fare at night', 'en', /cable car \$4 before 7 a\.m\. or after 9 p\.m\./],
+    ['cable car fare for seniors late at night', 'en', /cable car \$4 before 7 a\.m\. or after 9 p\.m\./], ['Senior fare on the cable car after 9 pm', 'en', /cable car \$4 before 7 a\.m\. or after 9 p\.m\./],
+    ['长者缆车票价', 'zh-Hans', /缆车在早上 7 点前或晚上 9 点后 \$4/], ['老人坐缆车多少钱', 'zh-Hans', /缆车在早上 7 点前或晚上 9 点后 \$4/]]) {
+    const texts = modelItems(evidence(message, TODAY, locale).items).filter(view => view.kind === 'guide').map(view => view.text);
+    const text = texts.find(value => fare.test(value)) || '';
+    assert.ok(text && text.slice(0, fare.exec(text).index).includes('Muni'), `${message}: ${texts.join(' | ')}`);
+    assert.ok(!texts.some(value => /(?<!7 a\.m\. )or after 9 p\.m\./.test(value)), `${message}: ${texts.join(' | ')}`);
+  }
+});
+
 // Review of API-BB-12, round 3: "rides" (the plural noun) made "Senior rides to the grocery store" a senior fare ask, whose
 // rules dropped the senior transit guide's link to the without-car guide, its only paragraph on groceries; the guide was
 // gone. "rides" is a ride service, not a way of riding; "ride" and "riding" still are ("Senior price for a single ride").
