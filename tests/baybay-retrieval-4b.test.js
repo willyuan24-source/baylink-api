@@ -72,11 +72,14 @@ test('the community lift is scoped (review 10-14): a Halloween or concert ask ke
 test('a planner place that mirrors an opening carries the opening\'s date line and details', () => {
   const zh = evidence('Burlingame Old Post Office 这周六有早午餐吗').items.find(item => item.id === 'old-post-office-burlingame');
   assert.ok(zh, 'the opening is an item');
-  assert.match(zh.text, /周末早午餐 11:00–14:00/);
-  assert.match(zh.text, /10\/17 周六是否供应未能确认/);
+  // API-SYNC-3g (web #48 freshness review, read 10-16): the opening's details were reworded; the same hours and the same
+  // "10/17 unconfirmed, call first".
+  assert.match(zh.text, /早午餐周六、周日 11:00–14:00/);
+  assert.match(zh.text, /10\/17 周六想去吃早午餐，先打 650-502-1000 问是否已开始供应/);
   const en = evidence('Does the Old Post Office in Burlingame serve brunch this Saturday?', 'en').items.find(item => item.id === 'old-post-office-burlingame');
   assert.ok(en);
-  assert.match(en.text, /weekend brunch runs 11 am–2 pm/);
+  assert.match(en.text, /brunch Sat–Sun 11am–2pm/);
+  assert.match(en.text, /for brunch on Saturday, Oct 17, call 650-502-1000 first/);
 });
 
 test('an event item offers all its plan lines: both BORP celebration times reach the model', () => {

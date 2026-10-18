@@ -288,7 +288,7 @@ test('budget checks read the overlay price before the planning amount and the co
     ['pleasanton-pumpkins-after-dark-2026', 22.8, null], // age tiers $28.80 / $22.80 / under 4 free
     ['stanford-halloween-concert-2026', 27, 32], // public $32; 65+ or other students $27
     ['fremont-fog-diwali-mela-2026', 5, 0.22], // the parser took the $0.22 fee for a ticket
-    ['half-moon-bay-pumpkin-festival-2026', 0, null], // free entry, extras paid
+    ['half-moon-bay-pumpkin-festival-2026', 0, 0], // free entry, extras paid (API-BB-9: the cost label alone now says so)
     ['nov2026-botanical-one-day-choir', 0, null], // Free–$75 tiers
     ['napa-tulocay-heritage-halloween-tour-2026', 45, 45], // NCHS members $30: a member price is not a general tier
     ['sausalito-goblin-jamboree-2026', 30, null], // members usually $5: same

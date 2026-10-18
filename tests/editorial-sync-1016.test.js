@@ -136,7 +136,9 @@ test('BayBay: the sold-out SJMA symposium is never a bookable option', () => {
 });
 
 // Follow-ups for the next BayBay lane (API-BB-6), measured on this sync's data. Each is a TODO until fixed.
-test('the English SJMA ask carries the symposium with its sold-out note', { todo: 'API-SYNC-3f follow-up: one case of the general English named-recall rule at the end of this file (the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José), so the model is not told it is sold out; this case matters until the 10/17 meeting' }, () => {
+// API-BB-9: the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José, so the ask named no
+// alias in full; the dated status recall (two Latin words in a row, "Climate Symposium") brings the sold-out row with its note.
+test('the English SJMA ask carries the symposium with its sold-out note', () => {
   const found = evidence('Can I still sign up for the San Jose Art and Climate Symposium on October 17?').items.find(row => row.id === SJMA);
   assert.equal(found?.mismatch, 'sold_out');
 });
@@ -160,8 +162,9 @@ test('an 11/14 San Francisco ask is not matched by the date\'s digits', () => {
   assert.equal(book[0], 'sfpl-chinese-book-club-nov14-2026', book.join(', '));
   assert.ok(!book.some(id => lights.includes(id)), book.join(', '));
   // An outing ask still lists every fitting event, but the Chinese programmes now come first (ZooLights and the rink led).
+  // API-SYNC-3g (web #48): Visitacion Valley's 11/14 calligraphy and chess afternoon is a fourth Chinese programme that day.
   const community = evidence('11月14日旧金山有什么华人活动').candidates.map(row => row.id);
-  assert.deepEqual(community.slice(0, 3).sort(), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026'], community.join(', '));
+  assert.deepEqual(community.slice(0, 4).sort(), ['sfpl-chinatown-creative-saturdays-fall-2026', 'sfpl-chinese-book-club-nov14-2026', 'sfpl-richmond-hk-film-hard-boiled-2026', 'sfpl-visitacion-valley-calligraphy-chess-nov14-2026'], community.join(', '));
   // A number that is not the date still counts: Pier 39 on a dated ask.
   const pier = itemIds(evidence('10月24日去 Pier 39 有什么好玩的'));
   assert.ok(pier.includes('guide:sf-fishermans-wharf-pier39-guide'), pier.join(', '));

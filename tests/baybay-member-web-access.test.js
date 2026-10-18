@@ -107,16 +107,37 @@ test('membership is revalidated before shared web cache/in-flight/quota, and val
   assert.equal(exhausted.data.retrieval.failureCode, 'web_daily_limit'); assert.equal(exhausted.data.retrieval.webAccess.allowed, true); assert.equal(f.calls.web, 1);
 });
 
-test('authenticated v2 members can use current web and source reading, without changing tool quotas', async t => {
-  let read = false;
-  const f = await fixture(t, { ai: async (_payload, context) => {
+// API-SYNC-3g: the fixture model cites the source it read, as a model that uses a read does. The first input message keeps
+// the turn's opening evidence, so the read never shows there as page-read; before, the answer cited evidence[0] and the
+// read was in the public evidence only while the turn had fewer than 40 sources (web #48's library rows pass 40; TODO below).
+const readThenAnswer = ({ citeRead }) => {
+  let readId = null;
+  return async (_payload, context) => {
     const source = context.evidence.find(item => item.verification === 'search-result');
-    if (!read && source) { read = true; return { status: 'completed', output: [invoke('read_source', { sourceId: source.id })] }; }
-    return final(`请参考已读取的官网条件。 [[${context.evidence.find(item => item.verification === 'page-read')?.id || context.evidence[0].id}]]`);
-  } });
+    if (!readId && source) { readId = source.id; return { status: 'completed', output: [invoke('read_source', { sourceId: source.id })] }; }
+    return final(`请参考已读取的官网条件。 [[${citeRead ? readId : context.evidence[0].id}]]`);
+  };
+};
+
+test('authenticated v2 members can use current web and source reading, without changing tool quotas', async t => {
+  const f = await fixture(t, { ai: readThenAnswer({ citeRead: true }) });
   const result = await f.request('/ai/guide-chat', { message: query, assistantVersion: 2, searchMode: 'web', locale: 'en' }, f.token);
   assert.equal(result.data.retrieval.webStatus, 'completed'); assert.equal(result.data.retrieval.effectiveMode, 'web');
-  assert.equal(f.calls.web, 1); assert.equal(f.calls.reads, 1); assert.ok(result.data.evidence.some(source => source.verification === 'page-read'));
+  assert.equal(f.calls.web, 1); assert.equal(f.calls.reads, 1);
+  assert.ok(result.data.evidence.some(source => source.verification === 'page-read' && source.url === 'https://sfpl.org/services/library-cards'));
+});
+
+// API-BB-9 (API-SYNC-3g follow-up): lib/baybayEngine/answer.js keeps 40 public evidence rows, cited and plan sources first,
+// then insertion order; on web #48's catalog this library ask has more than 40 catalog sources, so an uncited page-read
+// source was cut. Page-read sources now rank above uncited catalog rows.
+test('a source the member\'s turn read stays in the public evidence even when the answer cites another one', async t => {
+  const f = await fixture(t, { ai: readThenAnswer({ citeRead: false }) });
+  const result = await f.request('/ai/guide-chat', { message: query, assistantVersion: 2, searchMode: 'web', locale: 'en' }, f.token);
+  assert.equal(f.calls.reads, 1);
+  assert.equal(result.data.evidence.length, 40, 'the turn has more sources than the public list keeps');
+  assert.ok(result.data.evidence.some(source => source.verification === 'page-read' && source.url === 'https://sfpl.org/services/library-cards'), result.data.evidence.length);
+  // The cited source still leads.
+  assert.notEqual(result.data.evidence[0].verification, 'page-read');
 });
 
 test('member task-memory replay after logout cannot reintroduce web-only sources, facts or stops', async t => {

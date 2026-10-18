@@ -1215,7 +1215,7 @@
       "path": "/offers/sf-opera-dolby-figaro-offer-2026",
       "summary": "Dolby Opera for the Bay 为符合条件的湾区新观众按剧目分批发售 $10 票；《Manon》与《费加罗的婚礼》批次已售罄，下一批为《Tosca》。",
       "details": [
-        "每张 $10；每名合资格观众 2026–27 季最多两张 须过去三个演出季未买过 SF Opera 主舞台演出票；仅官网购买，限额两张，不能叠加优惠；先注册核验资格。"
+        "每张 $10；每名合资格观众 2026–27 季最多两张，只能用于一场演出。须住址邮编在 94000–95999 之间，且过去三个演出季没买过 SF Opera 主舞台演出票；仅官网购买，不能叠加优惠；先注册核验资格。"
       ],
       "region": "sf",
       "startDate": "2026-09-30",
@@ -1364,7 +1364,7 @@
       "id": "berkeley-cal-golden-bear-oct-sale-2026",
       "title": "UC Berkeley 学生 $10 演出票：10 月 8 日开售",
       "path": "/offers/berkeley-cal-golden-bear-oct-sale-2026",
-      "summary": "面向当前 UCB 学生，10/8 批次包含 10/23、24、25、28 和 11/1 的指定演出或讲座；截至 10/12，10/23、25、28 三场已售完，10/24 和 11/1 仍有票。每场最多买两张，可带非学生来宾。",
+      "summary": "面向当前 UCB 学生，10/8 批次包含 10/23、24、25、28 和 11/1 的指定演出或讲座；到 10/16，10/23、24、25、28 四场都已售完，只有 11/1 的场次还有购票按钮。下一批 10/22 开售，是 11/14 在 Oakland 的演出。每场最多买两张，可带非学生来宾。",
       "details": [
         "Golden Bear Circle 指定场次 $10／票；名额有限，服务费是否另收需结算确认。 须当前 UCB 学生身份；只在线出售，每场最多两张。应逐个查看场次与售票规则。"
       ],
@@ -2261,9 +2261,9 @@
       "id": "marine-mammal-center-free",
       "title": "免费预约海洋哺乳动物救护中心参观",
       "path": "/offers/marine-mammal-center-free",
-      "summary": "2000 Bunker Road。核验时官网正在更换票务系统：10/11 及以前仍从 Eventbrite 预约，10/12 起的票尚待开放。先在官网确认日期并拿到门票，再安排前往；额外导览另查说明。",
+      "summary": "2000 Bunker Road。官网首页可以直接预约免费门票，官网提醒名额很快会约满；先选好日期、拿到门票再出发。额外导览和 Marine Science Sunday 等活动另看官网说明。",
       "details": [
-        "普通参观门票免费，必须提前在线预约；这里是救护医院，能看到哪些动物依实际收治情况，不保证特定动物或近距离互动。"
+        "普通参观门票免费，必须提前在线预约；这里是救护医院，能看到哪些动物要看当时收治的情况，特定动物和近距离互动都没法事先约定。"
       ],
       "region": "north-bay",
       "dateLabel": "长期项目 · 必须先取得可预约时段",
@@ -2271,7 +2271,7 @@
       "status": "ongoing",
       "verifiedAt": "2026-10-04",
       "sourceUrl": "https://www.marinemammalcenter.org/",
-      "sourceLabel": "海洋哺乳动物中心免费门票与票务迁移公告"
+      "sourceLabel": "海洋哺乳动物中心官网免费门票预约"
     },
     {
       "kind": "offer",
@@ -2839,7 +2839,7 @@
       "id": "homedepot-monthly-kids-workshops",
       "title": "免费儿童木工：查下一场本店预约",
       "path": "/offers/homedepot-monthly-kids-workshops",
-      "summary": "带孩子动手搭建当场公布的木作项目。官网已公布 11/7 Dump Truck、11/21 Christmas Car Ornament 特别场和 12/5 Holiday Train，可在「免费与优惠」搜 Home Depot 看各场日期。",
+      "summary": "带孩子动手搭建当场公布的木作项目。官网已公布 11/7 Dump Truck、11/21 Christmas Car Ornament 特别场和 12/5 Holiday Train；11/21 和 12/5 两场要到 11/7 才开放报名。可在「免费与优惠」搜 Home Depot 看各场日期。",
       "details": [
         "官网列免费门店 Kids Workshops，材料数量有限；先选湾区门店并使用 Register Now 确认场次与报名。"
       ],
@@ -3449,15 +3449,15 @@
       "id": "mod-pizza-kids-sundays-2026",
       "title": "周日买常规披萨或沙拉，送儿童套餐",
       "path": "/offers/mod-pizza-kids-sundays-2026",
-      "summary": "可在店内、官网或 App 使用，不适用电话或第三方订单，不叠加；特殊饼底可能加价。San Jose Brokaw Plaza 有门店，出发前核对参与及结账优惠；活动可提前结束。",
+      "summary": "可在店内、官网或 App 使用，不适用电话或第三方订单，不叠加；特殊饼底可能加价。官网活动页还留着一句截至 2026/2/22 的旧说明，和 6/15 更新的条款、全年周日日历说法不一；到店先问本店是否参加。San Jose Brokaw Plaza 有门店；活动可提前结束。",
       "details": [
-        "每买一份 Regular-size 披萨或沙拉，可给 12 岁及以下儿童兑换一份 Kids Meal。官方页面列代码 KEF2026；限参与门店。"
+        "每买一份 Regular-size 披萨或沙拉，可给 12 岁及以下儿童兑换一份 Kids Meal；网上点单用官网给的代码 KEF2026，限参与门店。"
       ],
       "region": "south-bay",
       "weekdays": [
         0
       ],
-      "dateLabel": "每周日 · 10 月余下 11、18、25 日",
+      "dateLabel": "每周日 · 官网写全年每周日，条款未写截止日",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-10-05",
@@ -4268,7 +4268,7 @@
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页写 10/11 Grand Opening、10/12 起按常规时间营业；品牌首页和分店目录仍标 Coming Soon。",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening、10/12 起按常规时间营业，现在只列常规营业时间；品牌首页的分店目录仍标 Coming Soon，两处说法不一。",
       "details": [
         "平日 14:00–17:00 不营业；周末 11:00–21:00 中午不休息。",
         "225 Lorton Ave, Burlingame, CA 94010",
@@ -4290,14 +4290,14 @@
       "path": "/openings/old-post-office-burlingame",
       "summary": "旧邮局改成餐厅，保留历史建筑氛围，供应带法式影响的加州菜。官网确认地址是 222 Park Road，晚餐每日 17:00–22:00。",
       "details": [
-        "10/12 起周一至周五午餐 11:30–14:00；周末早午餐 11:00–14:00。官网此前写早午餐 10/18（周日）起，现在已不写日期，10/17 周六是否供应未能确认，去前先打 650-502-1000。午餐和早午餐都可在官网订位。",
+        "午餐周一至周五 11:30–14:00；早午餐周六、周日 11:00–14:00。官网此前写早午餐 10/18（周日）起，现在不再写起始日；10/17 周六想去吃早午餐，先打 650-502-1000 问是否已开始供应。午餐和早午餐都可在官网订位。",
         "222 Park Road, Burlingame, CA 94010",
         "历史建筑里的新餐厅"
       ],
       "region": "peninsula",
       "city": "Burlingame",
       "startDate": "2026-10-01",
-      "dateLabel": "10/1 已开业 · 午餐 10/12、早午餐 10/18 起",
+      "dateLabel": "10/1 已开业 · 午餐周一至五、早午餐周六日",
       "status": "open",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
@@ -4329,7 +4329,7 @@
       "path": "/openings/roundup-alesta-sebastopol-2026",
       "summary": "县旅游机构夏季新店文章记录其从餐车发展为固定餐厅，接手原 Piala 空间。菜式结合土耳其、希腊与巴尔干风味，是较早开业、此次补录的新选择。",
       "details": [
-        "店家官网确认7233 Healdsburg Avenue，周一休息，并建议晚餐预订。不要把夏季新店写成十月刚开业；按官网查看当天午晚餐安排。",
+        "官网写每天营业：秋季周一至周三只做晚餐 17:00–21:00，周四至周日 11:00–21:00 午餐晚餐都有。地址 7233 Healdsburg Avenue，官网可订位。",
         "7233 Healdsburg Avenue, Sebastopol, CA 95472",
         "地中海餐厅"
       ],
@@ -4637,15 +4637,15 @@
       "summary": "运动与日常服装品牌新店位于Valley Fair一层Bloomingdale’s附近，可作为零售探索补充。",
       "details": [
         "商品按标价；按商场营业时间到店。",
-        "完整地址待商家确认",
+        "2855 Stevens Creek Blvd Suite 1611, Santa Clara, CA 95050",
         "零售新店"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
-      "dateLabel": "商场官网 9/29 标注 Now Open",
+      "dateLabel": "已营业 · 每天 10:00–21:00",
       "status": "open",
       "verifiedAt": "2026-09-29",
-      "sourceUrl": "https://www.westfield.com/en/united-states/valleyfair/events/now-open-or-rhone/138806",
+      "sourceUrl": "https://www.rhone.com/locations/valley-fair/",
       "sourceLabel": "Rhone at Westfield Valley Fair · 官方入口"
     },
     {
@@ -4734,7 +4734,7 @@
       "path": "/openings/oakland-55-coffee-pop-up-2026",
       "summary": "咖啡、抹茶与越式三明治快闪。",
       "details": [
-        "快闪设在 The Saap Avenue 店内；也卖糕点。",
+        "快闪设在 The Saap Avenue 店内；也卖糕点。这是快闪店，目前找不到官方页面确认仍在营业，出发前先看商家社交账号的最新公告。",
         "4395 Piedmont Ave, Oakland, CA",
         "咖啡、茶与烘焙"
       ],
@@ -4829,13 +4829,13 @@
       "path": "/openings/oakland-delage-reopening-2026",
       "summary": "既有寿司店换团队后重新开业，属于重新开业而非全新品牌。",
       "details": [
-        "电话 341-213-7494，可打电话或发短信。官网没有列周日营业时间。报道列八道 omakase $150，点单菜单另计；报道没写是否含税和小费。商家提供预约入口。",
+        "电话 341-213-7494，可打电话或发短信。官网只列周一至周六的营业时间，周日没有列。报道列八道 omakase $150，点单菜单另计；报道没写是否含税和小费。商家提供预约入口。",
         "536 Ninth St, Oakland, CA",
         "餐饮新店"
       ],
       "region": "east-bay",
       "city": "Oakland",
-      "dateLabel": "官网写 Now open · 周一至周六 午餐 11:00–15:00、晚餐 17:00–21:00",
+      "dateLabel": "官网写 Now open · 周一至周六 午餐 11:30–14:30、晚餐 17:00–21:00",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.delagesushi.com/",
@@ -4848,13 +4848,13 @@
       "path": "/openings/ignite-san-pedro-square",
       "summary": "原 Sushi Confidential 空间换为供应烤串、汉堡、分享菜及鸡尾酒的餐厅，并设户外用餐区。",
       "details": [
-        "按餐饮菜单消费，未确认人均费用；不是固定门票价。 到访前查看营业与预约规则。 属于 9 月新店报道，具体开业月份/日期未完全核实；9/15 是报道日，不作为开业日。",
+        "官网写 2026 年 9 月开业，没写具体哪天；每个营业日从开门到 19:00 是 Happy Hour。按菜单点餐，人均价格官网没有写。",
         "26 N San Pedro Street, San Jose, CA 95113",
         "新餐厅 · 烧烤与露台聚餐"
       ],
       "region": "south-bay",
       "city": "San Jose",
-      "dateLabel": "营业时段请查商家官网；开业日期精度见说明。",
+      "dateLabel": "2026 年 9 月开业 · 周二至周日 16:00–22:00，暂无午餐",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.eatatignite.com/",
@@ -4900,21 +4900,40 @@
     },
     {
       "kind": "opening",
+      "id": "millbrae-cafe-announced-2026",
+      "title": "Millbrae’s Cafe",
+      "path": "/openings/millbrae-cafe-announced-2026",
+      "summary": "Millbrae 新开的咖啡馆，在 1663 El Camino Real，供应带拉丁风味的咖啡饮品和轻食；官网已列出每天的营业时间，也可以网上点单。",
+      "details": [
+        "按菜单点单；店家电话 (650) 534-6661。",
+        "1663 El Camino Real, Millbrae, CA",
+        "咖啡、茶与烘焙"
+      ],
+      "region": "peninsula",
+      "city": "Millbrae",
+      "dateLabel": "官网列每天 7:00–16:00 · 首日未公布",
+      "status": "open",
+      "verifiedAt": "2026-09-28",
+      "sourceUrl": "https://www.millbraescafe.com/",
+      "sourceLabel": "Millbrae’s Cafe · 官方入口"
+    },
+    {
+      "kind": "opening",
       "id": "pittsburg-nekter-opening-2026",
       "title": "Nékter Juice Bar",
       "path": "/openings/pittsburg-nekter-opening-2026",
       "summary": "新设果汁与 smoothie 分店。",
       "details": [
         "除果汁和 smoothie 也有果碗和华夫饼；Fremont、Danville 另有分店。",
-        "2261 West Leland Road, Pittsburg, CA",
+        "2261 W Leland Rd, B01, Pittsburg, CA 94565",
         "餐饮新店"
       ],
       "region": "east-bay",
       "city": "Pittsburg",
-      "dateLabel": "日常营业时间及未来安排需查商家最新公告。",
+      "dateLabel": "门店页写 Now Open · 周一至周五 6:00–20:00，周六日 6:00–19:00",
       "status": "open",
       "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.nekterjuicebar.com/",
+      "sourceUrl": "https://locations.nekterjuicebar.com/ll/us/ca/pittsburg/2261-w-leland-rd/",
       "sourceLabel": "Nékter Juice Bar · 官方入口"
     },
     {
@@ -5117,7 +5136,7 @@
       "path": "/openings/broken-dreams-oakland",
       "summary": "Oakland 市中心的新越南餐厅，以 cơm tấm 碎米饭、烤肉和米粉碗为主，也有越南咖啡、鲜榨果汁与甜品。位置就在 12th Street BART 出口旁。",
       "details": [
-        "官网仍公告周末暂休；联系页目前同时写有 11:30 与 12:00 两种开门时间，出发前致电 510-250-7701 确认，别专程安排周末。",
+        "官网仍公告周末暂休；联系页正文写中午 12:00 开门，同页时间表写 11:00，都是 19:00 关门。出发前致电 510-250-7701 确认，别专程安排周末。",
         "1312 Broadway, Oakland, CA 94612",
         "越南碎米饭"
       ],
@@ -5211,15 +5230,15 @@
       "id": "shinka-the-jay-announced",
       "title": "Shinka",
       "path": "/openings/shinka-the-jay-announced",
-      "summary": "The Jay 酒店官宣由主厨 Fumio Yonezawa 带来的日法料理新项目。官网仍写 Coming Soon，没有把酒店其他餐饮的营业时段当成 Shinka 的时间。",
+      "summary": "The Jay 酒店里由主厨 Fumio Yonezawa 主理的日法料理新餐厅。Shinka 自己的官网已列出营业时间（周二至周四 16:30–21:00，周五、周六 17:00–22:00）和订位入口；The Jay 酒店的餐饮页仍写 Coming Soon、2026 年 10 月开业，两处说法不一，首日也没有公布。",
       "details": [
-        "目前只适合关注开业消息。确认餐厅自己的订位入口、菜单和日期后再安排；酒店在营业不等于新餐厅已接客。",
+        "想去先在 Shinka 官网的订位入口看能不能订到；酒店其他餐厅的营业时间不是 Shinka 的。",
         "433 Clay Street, San Francisco, CA 94111",
         "开业预告 · 日法料理"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "官网预告 2026 年 10 月 · 具体开门日待公布",
+      "dateLabel": "餐厅官网已列营业时间 · 酒店页仍写 10 月开业",
       "status": "announced",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://jayhotelsf.com/eat-drink/shinka/",
@@ -5230,15 +5249,15 @@
       "id": "bruma-ritz-carlton-sf",
       "title": "Bruma",
       "path": "/openings/bruma-ritz-carlton-sf",
-      "summary": "The Ritz-Carlton, San Francisco 公布新的 Bruma 酒廊概念，计划10月12日在 Nob Hill 酒店内开门，主打鸡尾酒与社交空间。品牌新闻稿给出的是未来计划；核查时酒店官网仍写 Coming Soon。",
+      "summary": "The Ritz-Carlton, San Francisco 在 Nob Hill 酒店里的新酒廊 Bruma，以旧金山的雾为灵感，主打鸡尾酒和现代加州菜。品牌新闻稿写的计划开门日是 10/12；酒店官方页面显示开业信息，营业安排以官网为准（10/16 核对）。",
       "details": [
-        "把它列为开业关注项；前往前重新查看酒店餐饮页并确认是否已接受订位。新闻稿中的室内图是效果图，不能当作已经营业的现场照片。",
+        "出发前在酒店餐饮页看营业时间和订桌入口；秋季另有 Fall Harvest 下午茶，要预订。新闻稿里的室内图是效果图。",
         "The Ritz-Carlton, San Francisco, 600 Stockton Street, San Francisco, CA 94108",
         "鸡尾酒酒廊"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "计划10月12日开业；目前仍为预告",
+      "dateLabel": "首日未公布 · 以酒店官网为准（10/16 核对）",
       "status": "announced",
       "verifiedAt": "2026-10-02",
       "sourceUrl": "https://www.ritzcarlton.com/en/hotels/sforz-the-ritz-carlton-san-francisco/overview/",
@@ -5322,25 +5341,6 @@
     },
     {
       "kind": "opening",
-      "id": "millbrae-cafe-announced-2026",
-      "title": "Millbrae’s Cafe",
-      "path": "/openings/millbrae-cafe-announced-2026",
-      "summary": "计划供应带拉丁风味的咖啡饮品及轻食，当地媒体报道 10 月下旬开业。",
-      "details": [
-        "按菜单点单；去之前先看店家公告，确认已经开门。",
-        "1663 El Camino Real, Millbrae, CA",
-        "咖啡、茶与烘焙"
-      ],
-      "region": "peninsula",
-      "city": "Millbrae",
-      "dateLabel": "媒体报道 10 月下旬开业",
-      "status": "announced",
-      "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.millbraescafe.com/",
-      "sourceLabel": "Millbrae’s Cafe · 官方入口"
-    },
-    {
-      "kind": "opening",
       "id": "mountain-view-tong-sui-announced-2026",
       "title": "Tong Sui",
       "path": "/openings/mountain-view-tong-sui-announced-2026",
@@ -5363,15 +5363,15 @@
       "id": "florecita-mission",
       "title": "Florecita Panadería",
       "path": "/openings/florecita-mission",
-      "summary": "Florecita 将从 Bryant Street 微型烘焙坊迁到 Mission 区前 Shuggie’s 空间。品牌最近的 Instagram 公告确认已通过检查，仍在敲定试营业安排。",
+      "summary": "Florecita 的微型烘焙坊从 Bryant Street 迁址到 Mission 区 3349 23rd Street（前 Shuggie’s 空间）。官方页面显示搬迁信息，新址开业日期和营业时间以官网为准（10/16 核对）。",
       "details": [
-        "旧微型店已在 8/29 结束营业。新店虽已通过检查，9/23 核验时仍未发布最终试营业日期与时段；等品牌公布后再前往 3349 23rd Street。",
+        "旧微型店已在 8/29 结束营业；官网页脚还留着旧址 2050 Bryant St，新址是 3349 23rd Street。",
         "3349 23rd Street, San Francisco, CA 94110",
         "迁址预告 · 墨西哥烘焙"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "已通过检查 · 迁址试营业日期待公布",
+      "dateLabel": "新址开业日期未公布 · 以官网为准（10/16 核对）",
       "status": "announced",
       "verifiedAt": "2026-09-23",
       "sourceUrl": "https://www.florecitapanaderia.com/",

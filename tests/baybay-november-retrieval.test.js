@@ -39,13 +39,16 @@ test('public free admission with separately paid parking survives free-only, but
     makeEvent('structured-eligibility', { planning: { admissionUsd: 0, admissionEligibility: 'cardholder' } }),
     makeEvent('children', { costLabel: 'Free for children; adults pay $20.' }),
     makeEvent('gift', { costLabel: 'Free gift; admission conditions not published.' }),
+    // API-BB-9: free entry with only separately paid extras keeps an unpriced mixed row (SJMA's community day on web #48);
+    // a clause that is neither an extra nor free still does not.
     makeEvent('unpriced', { planning: {} }),
+    makeEvent('unpriced-ticketed', { costLabel: 'Free public admission; workshops are ticketed.', planning: {} }),
     makeEvent('wrong-day', { startDate: '2026-11-08', endDate: '2026-11-08' }),
     makeEvent('wrong-city', { city: 'Oakland', region: 'east-bay' }),
     makeEvent('older-children', { planning: { admissionUsd: 0, minAge: 8 } }),
   ] };
   const result = search('这周末有什么活动可以参加？', { ...sfFamily, freeOnly: true }, { catalog: fixture, guideCatalog: [] });
-  assert.deepEqual(result.candidates.map(row => row.id), ['public']);
+  assert.deepEqual(result.candidates.map(row => row.id), ['public', 'unpriced']);
   const topicQuestion = search('How do I open a utility account?', { ...sfFamily, childAges: [] }, { catalog: fixture, guideCatalog: [] });
   assert.deepEqual(topicQuestion.candidates, []);
 });

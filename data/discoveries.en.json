@@ -1215,7 +1215,7 @@
       "path": "/offers/sf-opera-dolby-figaro-offer-2026",
       "summary": "Dolby Opera for the Bay sells $10 tickets to eligible new Bay Area audiences in batches by production; the Manon and Figaro batches are sold out, and Tosca is next.",
       "details": [
-        "$10 per ticket; each eligible attendee may buy up to two tickets during the 2026–27 season. You must not have purchased SF Opera mainstage performance tickets in the previous three seasons. Online purchase only, maximum two tickets, and not combinable with other offers. Register first to verify eligibility."
+        "$10 each; up to two tickets per eligible patron in the 2026–27 season, for one performance only. Your home ZIP code must be between 94000 and 95999, and you must not have bought a ticket to an SF Opera mainstage performance in the past three seasons. Online only, not combinable with other offers; register first to confirm eligibility."
       ],
       "region": "sf",
       "startDate": "2026-09-30",
@@ -1305,7 +1305,7 @@
     {
       "kind": "offer",
       "id": "station-house-happy-hour-20261002",
-      "title": "Station House Cafe：Point Reyes Happy Hour",
+      "title": "Station House Cafe: Point Reyes Happy Hour",
       "path": "/offers/station-house-happy-hour-20261002",
       "summary": "A possible bar stop after a Point Reyes outing; the restaurant also accepts reservations.",
       "details": [
@@ -1343,7 +1343,7 @@
     {
       "kind": "offer",
       "id": "pacific-catch-aloha-corte-madera-20261005",
-      "title": "Pacific Catch Corte Madera：Aloha Hour",
+      "title": "Pacific Catch Corte Madera: Aloha Hour",
       "path": "/offers/pacific-catch-aloha-corte-madera-20261005",
       "summary": "The tourism office's October page lists Aloha Hour at this branch; confirm specific dishes and prices on the Corte Madera location's menu.",
       "details": [
@@ -1364,7 +1364,7 @@
       "id": "berkeley-cal-golden-bear-oct-sale-2026",
       "title": "UC Berkeley Student $10 Performance Tickets: On Sale October 8",
       "path": "/offers/berkeley-cal-golden-bear-oct-sale-2026",
-      "summary": "For current UCB students. The Oct 8 release covers selected performances or talks on Oct 23, 24, 25 and 28 and Nov 1; as of Oct 12 the Oct 23, 25 and 28 events are sold out and Oct 24 and Nov 1 still have tickets. Buy up to two tickets per event and bring a nonstudent guest.",
+      "summary": "For current UC Berkeley students. The Oct 8 batch covers selected performances or talks on Oct 23, 24, 25 and 28 and Nov 1; as of Oct 16 all four October dates are sold out and only Nov 1 still shows a Buy Tickets button. The next batch goes on sale Oct 22, for the Nov 14 show in Oakland. Up to two tickets per show; you can bring a non-student guest.",
       "details": [
         "Golden Bear Circle tickets are $10 for selected performances, with limited availability; check at checkout whether service fees apply. Current UC Berkeley student status required. Online sales only, with a maximum of two tickets per performance. Review each performance and its ticket rules separately."
       ],
@@ -2261,9 +2261,9 @@
       "id": "marine-mammal-center-free",
       "title": "Reserve free admission to The Marine Mammal Center",
       "path": "/offers/marine-mammal-center-free",
-      "summary": "At 2000 Bunker Road. When checked, the center was changing ticket systems: dates through October 11 were bookable through Eventbrite, while October 12 onward had not yet opened. Confirm a date and obtain tickets on the official site before traveling. Check separate details for additional tours.",
+      "summary": "2000 Bunker Road. Free tickets can be reserved from the center's homepage, which warns that spots fill up fast; pick a date and get your ticket before you go. Extra tours and events such as Marine Science Sunday have their own details on the site.",
       "details": [
-        "General admission is free and requires an advance online reservation. This is a rehabilitation hospital: animals on view depend on current patients, and specific animals or close interaction are not guaranteed."
+        "General admission is free but must be reserved online in advance. This is an animal hospital: which animals you see depends on the patients in care at the time, and no particular animal or close encounter can be arranged ahead."
       ],
       "region": "north-bay",
       "dateLabel": "Ongoing program · Secure an available time slot first",
@@ -2271,7 +2271,7 @@
       "status": "ongoing",
       "verifiedAt": "2026-10-04",
       "sourceUrl": "https://www.marinemammalcenter.org/",
-      "sourceLabel": "The Marine Mammal Center’s free tickets and ticket-system transition notice"
+      "sourceLabel": "The Marine Mammal Center’s official free ticket reservations"
     },
     {
       "kind": "offer",
@@ -2839,7 +2839,7 @@
       "id": "homedepot-monthly-kids-workshops",
       "title": "Free kids’ building workshop: Check the next local booking",
       "path": "/offers/homedepot-monthly-kids-workshops",
-      "summary": "Kids build a wood project announced for each session. Home Depot has posted a Dump Truck on Nov 7, a special Christmas Car Ornament session on Nov 21 and a Holiday Train on Dec 5; search Home Depot under Free & deals for each session’s date.",
+      "summary": "Kids build a wood project announced on the day. The site lists Nov 7 Dump Truck, an extra Nov 21 Christmas Car Ornament session and Dec 5 Holiday Train; registration for Nov 21 and Dec 5 opens on Nov 7. Search Home Depot under Free & deals to see each date.",
       "details": [
         "The official Kids Workshops program is free in store, while supplies last. Select a Bay Area store and use Register Now to confirm the session and register."
       ],
@@ -3449,15 +3449,15 @@
       "id": "mod-pizza-kids-sundays-2026",
       "title": "Sundays: Buy a regular pizza or salad, get a kids meal",
       "path": "/offers/mod-pizza-kids-sundays-2026",
-      "summary": "Use in restaurants or on the official website or app. No phone orders, third-party orders or stacking; alternative crusts may cost extra. Check participation and the discount at San Jose’s Brokaw Plaza location. The promotion may end early.",
+      "summary": "Use it in store, on the website or in the app; not for phone or third-party orders, and it does not combine with other offers. Specialty crusts may cost extra. The offer page still carries an old line saying it runs until Feb 22, 2026, which disagrees with the terms updated June 15 and its own calendar of Sundays all year; ask the store whether it takes part. There is a store at San Jose's Brokaw Plaza; the offer can end early.",
       "details": [
-        "Each regular-size pizza or salad purchased qualifies a child aged 12 or under for one Kids Meal. The official page lists code KEF2026; participating locations only."
+        "Each Regular-size pizza or salad you buy gets one free Kids Meal for a child 12 or under; online, use the code KEF2026 from the brand's site. Participating stores only."
       ],
       "region": "south-bay",
       "weekdays": [
         0
       ],
-      "dateLabel": "Every Sunday · October dates left: 11, 18 and 25",
+      "dateLabel": "Every Sunday · the site says every Sunday year round; the terms give no end date",
       "costLabel": "Purchase required",
       "status": "ongoing",
       "verifiedAt": "2026-10-05",
@@ -4268,7 +4268,7 @@
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku Ramen’s Burlingame branch at 225 Lorton Avenue. The store page lists a grand opening on Oct 11 and regular hours from Oct 12; the brand homepage and location list still say Coming Soon.",
+      "summary": "Marufuku Ramen's Burlingame location at 225 Lorton Avenue. The store page earlier announced a Oct 11 Grand Opening with regular hours from Oct 12 and now lists only the regular hours; the location list on the brand's homepage still says Coming Soon, so the two pages disagree.",
       "details": [
         "Closed 2–5 pm on weekdays; open straight through 11 am–9 pm on weekends.",
         "225 Lorton Ave, Burlingame, CA 94010",
@@ -4290,14 +4290,14 @@
       "path": "/openings/old-post-office-burlingame",
       "summary": "The former post office now serves French-influenced California cuisine. The official address is 222 Park Road, with dinner daily from 5–10 PM.",
       "details": [
-        "Weekday lunch runs 11:30 am–2 pm from Oct 12; weekend brunch runs 11 am–2 pm. The official site earlier said brunch starts on Sunday, Oct 18; it no longer gives a date, and brunch on Saturday, Oct 17 is unconfirmed, so call (650) 502-1000 before going. Lunch and brunch can be booked on the official site.",
+        "Lunch Mon–Fri 11:30am–2pm; brunch Sat–Sun 11am–2pm. The site earlier said brunch starts Sunday, Oct 18 and now gives no start date; for brunch on Saturday, Oct 17, call 650-502-1000 first to ask whether it has begun. Lunch and brunch can be booked on the website.",
         "222 Park Road, Burlingame, CA 94010",
         "New restaurant in a historic building"
       ],
       "region": "peninsula",
       "city": "Burlingame",
       "startDate": "2026-10-01",
-      "dateLabel": "Open since Oct 1 · lunch from Oct 12, brunch from Oct 18",
+      "dateLabel": "Open since Oct 1 · lunch Mon–Fri, brunch Sat–Sun",
       "status": "open",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://www.oldpostofficeburlingame.com/",
@@ -4329,7 +4329,7 @@
       "path": "/openings/roundup-alesta-sebastopol-2026",
       "summary": "The county tourism organization's summer update records its move from food truck to restaurant in the former Piala space. Its food draws on Turkish, Greek and Balkan influences. This is an earlier opening newly added to the guide.",
       "details": [
-        "The restaurant confirms 7233 Healdsburg Avenue, closes Mondays and recommends dinner reservations. It is a summer opening, not an October launch; check its website for the day's lunch and dinner schedule.",
+        "Open every day, says its site: fall hours are dinner only Mon–Wed 5–9pm, and lunch and dinner Thu–Sun 11am–9pm. 7233 Healdsburg Avenue; book on the website.",
         "7233 Healdsburg Avenue, Sebastopol, CA 95472",
         "Mediterranean restaurant"
       ],
@@ -4637,15 +4637,15 @@
       "summary": "A new activewear and everyday clothing store on Level 1 of Valley Fair near Bloomingdale's, included as an additional retail option to explore.",
       "details": [
         "Items are priced as marked; visit during mall hours.",
-        "Full address awaiting confirmation from the business",
+        "2855 Stevens Creek Blvd Suite 1611, Santa Clara, CA 95050",
         "New retail store"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
-      "dateLabel": "Marked Now Open on the mall site on Sept 29",
+      "dateLabel": "Open · daily 10am–9pm",
       "status": "open",
       "verifiedAt": "2026-09-29",
-      "sourceUrl": "https://www.westfield.com/en/united-states/valleyfair/events/now-open-or-rhone/138806",
+      "sourceUrl": "https://www.rhone.com/locations/valley-fair/",
       "sourceLabel": "Rhone at Westfield Valley Fair · Official website"
     },
     {
@@ -4734,7 +4734,7 @@
       "path": "/openings/oakland-55-coffee-pop-up-2026",
       "summary": "A pop-up for coffee, matcha and Vietnamese sandwiches.",
       "details": [
-        "The pop-up runs inside The Saap Avenue; it also sells pastries.",
+        "The pop-up runs inside The Saap Avenue; it also sells pastries. It is a pop-up and no current official page confirms it is still running, so check the business’s latest social posts before you go.",
         "4395 Piedmont Ave, Oakland, CA",
         "Coffee, tea and baked goods"
       ],
@@ -4829,13 +4829,13 @@
       "path": "/openings/oakland-delage-reopening-2026",
       "summary": "An existing sushi restaurant has reopened under a new team; this is a reopening, not an entirely new brand.",
       "details": [
-        "Phone 341-213-7494, call or text. The website lists no Sunday hours. Press reports an eight-course omakase at $150, with the à la carte menu priced separately; it does not say whether tax and tip are included. The restaurant offers a reservation link.",
+        "Phone 341-213-7494, call or text. The site lists hours for Monday to Saturday only; Sunday is not listed. Press reports list an eight-course omakase at $150, with an à la carte menu as well; they do not say whether tax and tip are included. Reservations are available.",
         "536 Ninth St, Oakland, CA",
         "New dining spot"
       ],
       "region": "east-bay",
       "city": "Oakland",
-      "dateLabel": "Website says Now open · Mon–Sat lunch 11am–3pm, dinner 5–9pm",
+      "dateLabel": "Site says Now open · Mon–Sat lunch 11:30am–2:30pm, dinner 5–9pm",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.delagesushi.com/",
@@ -4848,13 +4848,13 @@
       "path": "/openings/ignite-san-pedro-square",
       "summary": "The former Sushi Confidential space has become a restaurant serving skewers, burgers, shared plates, and cocktails, with outdoor dining.",
       "details": [
-        "Food and drink are charged by the menu; per-person spending has not been confirmed and this is not a fixed admission price. Check hours and reservation rules before visiting. This is a September new-restaurant report, but the exact opening month/date has not been fully verified; September 15 is the report date, not the opening date.",
+        "The site says it opened in September 2026 without naming the day; Happy Hour runs from opening until 7pm on open days. Order from the menu; the site gives no typical spend per person.",
         "26 N San Pedro Street, San Jose, CA 95113",
         "New restaurant · Grilled food and patio dining"
       ],
       "region": "south-bay",
       "city": "San Jose",
-      "dateLabel": "Check the business's official website for hours; see the notes for the precision of the opening date.",
+      "dateLabel": "Opened September 2026 · Tue–Sun 4–10pm, no lunch yet",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.eatatignite.com/",
@@ -4900,21 +4900,40 @@
     },
     {
       "kind": "opening",
+      "id": "millbrae-cafe-announced-2026",
+      "title": "Millbrae’s Cafe",
+      "path": "/openings/millbrae-cafe-announced-2026",
+      "summary": "A new café in Millbrae at 1663 El Camino Real with Latin-inspired coffee drinks and light bites; its site lists daily hours and takes online orders.",
+      "details": [
+        "Order from the menu; the café's phone is (650) 534-6661.",
+        "1663 El Camino Real, Millbrae, CA",
+        "Coffee, tea and baked goods"
+      ],
+      "region": "peninsula",
+      "city": "Millbrae",
+      "dateLabel": "Site lists daily 7am–4pm · first day not announced",
+      "status": "open",
+      "verifiedAt": "2026-09-28",
+      "sourceUrl": "https://www.millbraescafe.com/",
+      "sourceLabel": "Millbrae’s Cafe · Official website"
+    },
+    {
+      "kind": "opening",
       "id": "pittsburg-nekter-opening-2026",
       "title": "Nékter Juice Bar",
       "path": "/openings/pittsburg-nekter-opening-2026",
       "summary": "A new juice and smoothie branch.",
       "details": [
         "Besides juices and smoothies it serves bowls and waffles; there are also branches in Fremont and Danville.",
-        "2261 West Leland Road, Pittsburg, CA",
+        "2261 W Leland Rd, B01, Pittsburg, CA 94565",
         "New dining spot"
       ],
       "region": "east-bay",
       "city": "Pittsburg",
-      "dateLabel": "Check the business's latest announcements for regular hours and future plans.",
+      "dateLabel": "Store page says Now Open · Mon–Fri 6am–8pm, Sat–Sun 6am–7pm",
       "status": "open",
       "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.nekterjuicebar.com/",
+      "sourceUrl": "https://locations.nekterjuicebar.com/ll/us/ca/pittsburg/2261-w-leland-rd/",
       "sourceLabel": "Nékter Juice Bar · Official website"
     },
     {
@@ -5117,7 +5136,7 @@
       "path": "/openings/broken-dreams-oakland",
       "summary": "This new downtown Oakland restaurant focuses on cơm tấm broken rice, grilled meats and vermicelli bowls, plus Vietnamese coffee, fresh juices and desserts. It is beside the 12th Street BART exit.",
       "details": [
-        "The official site still says weekends are temporarily closed. Its contact page lists both 11:30 a.m. and noon opening times; call 510-250-7701 before visiting and avoid planning a weekend trip.",
+        "The site still says it is closed on weekends for now. The contact page text says it opens at noon while the hours table on the same page says 11am; both say it closes at 7pm. Call 510-250-7701 before you go, and do not plan a weekend trip.",
         "1312 Broadway, Oakland, CA 94612",
         "Vietnamese broken rice"
       ],
@@ -5211,15 +5230,15 @@
       "id": "shinka-the-jay-announced",
       "title": "Shinka",
       "path": "/openings/shinka-the-jay-announced",
-      "summary": "The Jay has announced a Japanese-French concept by chef Fumio Yonezawa. Its page still says Coming Soon; the hotel's other dining hours do not establish Shinka's hours.",
+      "summary": "A new Japanese-French restaurant by chef Fumio Yonezawa in The Jay hotel. Shinka's own site lists hours (Tue–Thu 4:30–9pm, Fri–Sat 5–10pm) and a reservations link, while The Jay's dining page still says Coming Soon, opening October 2026. The two disagree, and no first day has been announced.",
       "details": [
-        "Follow the announcement for now. Confirm this restaurant's own reservations, menu and date before planning a visit; an operating hotel does not prove its new restaurant is open.",
+        "If you want to go, check for a table through Shinka's own reservations link first; the hours of the hotel's other restaurants are not Shinka's.",
         "433 Clay Street, San Francisco, CA 94111",
         "Upcoming · Japanese-French dining"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "Officially planned for October 2026 · exact opening date pending",
+      "dateLabel": "Restaurant site lists hours · hotel page still says opening in October",
       "status": "announced",
       "verifiedAt": "2026-10-07",
       "sourceUrl": "https://jayhotelsf.com/eat-drink/shinka/",
@@ -5230,15 +5249,15 @@
       "id": "bruma-ritz-carlton-sf",
       "title": "Bruma",
       "path": "/openings/bruma-ritz-carlton-sf",
-      "summary": "The Ritz-Carlton, San Francisco announced Bruma, a new cocktail lounge and social space planned to open October 12 inside its Nob Hill hotel. The brand release states a future plan; the hotel website still says Coming Soon at the time of checking.",
+      "summary": "Bruma is the new lounge inside The Ritz-Carlton, San Francisco on Nob Hill, inspired by the city's fog, with cocktails and modern California food. The brand's press release gave Oct 12 as the planned opening day; the hotel's official page shows opening information, so go by its site for the schedule (checked Oct 16).",
       "details": [
-        "Treat this as an opening to follow. Recheck the hotel’s dining page and whether reservations are accepted before visiting. Interior images in the release are renderings, not evidence of an operating venue.",
+        "Before you go, check the hotel's dining page for hours and table bookings; there is also a Fall Harvest Afternoon Tea this autumn, booking required. The interior images in the press release are renderings.",
         "The Ritz-Carlton, San Francisco, 600 Stockton Street, San Francisco, CA 94108",
         "Cocktail lounge"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "Planned opening October 12; currently announced",
+      "dateLabel": "First day not announced · see the hotel's site (checked Oct 16)",
       "status": "announced",
       "verifiedAt": "2026-10-02",
       "sourceUrl": "https://www.ritzcarlton.com/en/hotels/sforz-the-ritz-carlton-san-francisco/overview/",
@@ -5322,25 +5341,6 @@
     },
     {
       "kind": "opening",
-      "id": "millbrae-cafe-announced-2026",
-      "title": "Millbrae’s Cafe",
-      "path": "/openings/millbrae-cafe-announced-2026",
-      "summary": "Plans Latin-inspired coffee drinks and light bites; local media report a late-October opening.",
-      "details": [
-        "Order from the menu; check the shop’s own posts to confirm it is open before you go.",
-        "1663 El Camino Real, Millbrae, CA",
-        "Coffee, tea and baked goods"
-      ],
-      "region": "peninsula",
-      "city": "Millbrae",
-      "dateLabel": "Media report a late-October opening",
-      "status": "announced",
-      "verifiedAt": "2026-09-28",
-      "sourceUrl": "https://www.millbraescafe.com/",
-      "sourceLabel": "Millbrae’s Cafe · Official website"
-    },
-    {
-      "kind": "opening",
       "id": "mountain-view-tong-sui-announced-2026",
       "title": "Tong Sui",
       "path": "/openings/mountain-view-tong-sui-announced-2026",
@@ -5363,15 +5363,15 @@
       "id": "florecita-mission",
       "title": "Florecita Panadería",
       "path": "/openings/florecita-mission",
-      "summary": "Florecita is moving from its Bryant Street microbakery into the former Shuggie's space in the Mission. A recent official Instagram post confirms its inspection passed while soft-opening details are still being finalized.",
+      "summary": "Florecita's micro-bakery is moving from Bryant Street to 3349 23rd Street in the Mission (the former Shuggie's space). The official page shows the move; go by the site for the opening day at the new address and its hours (checked Oct 16).",
       "details": [
-        "The old microbakery ended service on August 29. Although the new shop passed inspection, its final soft-opening date and hours remained unannounced when checked September 23. Wait for the brand's update before visiting 3349 23rd Street.",
+        "The old micro-bakery closed on Aug 29; the site's footer still shows the old 2050 Bryant St address, and the new one is 3349 23rd Street.",
         "3349 23rd Street, San Francisco, CA 94110",
         "Relocation preview · Mexican bakery"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "Inspection passed · Relocation soft-opening date pending",
+      "dateLabel": "Opening day at the new address not announced · see the official site (checked Oct 16)",
       "status": "announced",
       "verifiedAt": "2026-09-23",
       "sourceUrl": "https://www.florecitapanaderia.com/",

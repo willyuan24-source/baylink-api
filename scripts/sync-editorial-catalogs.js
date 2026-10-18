@@ -7,7 +7,8 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
 const { isDeepStrictEqual } = require('node:util');
-const { loadPlannerCatalog } = require('../lib/planner');
+const { loadPlannerCatalog, eventOccursOn } = require('../lib/planner');
+const { picksFrom } = require('../lib/weekendPicks');
 const { loadEventCatalog } = require('../lib/eventEngagement');
 const root = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
@@ -34,6 +35,10 @@ const pairs = [
   ['event-catalog.json', 'event-catalog.json'], [FULL_PLANNER, 'planner-catalog.json'],
   ['discovery-context.json', 'discoveries.json'], ['discovery-context.en.json', 'discoveries.en.json'],
 ];
+// API-BB-9: the editor's weekend picks (web public/weekend-picks.json from WEB-PICKS-EXPORT; lib/weekendPicks.js reads
+// the copy) are copied when the web exports them. A web main without the file is still synced: BayBay then has no picks.
+const PICKS = 'weekend-picks.json';
+if (fs.existsSync(path.resolve(frontend, 'public', PICKS))) pairs.push([PICKS, PICKS]);
 for (const name of [FULL_PLANNER, HELD_PLANNER]) {
   if (!fs.existsSync(path.resolve(frontend, 'public', name))) throw new Error(`public/${name} is missing in ${frontend}. The API copies the complete public/${FULL_PLANNER} and checks it against /opus-bay's public/${HELD_PLANNER}; a web main without both predates WEB-HOLDOUT. Sync from a web main that exports both; never copy the held file instead.`);
 }
@@ -82,6 +87,36 @@ for (const key of new Set([...Object.keys(full), ...Object.keys(held.data)])) {
   if (key !== 'events') assert.ok(isDeepStrictEqual(held.data[key], full[key]), `public/${HELD_PLANNER} ${key} must equal public/${FULL_PLANNER} ${key}`);
 }
 const heldOutOfOpusBay = full.events.filter(row => !heldIds.has(row.id)).map(row => row.id);
+// Every pick is an event of this catalog (the web exports only those), each weekend runs Saturday to Sunday and a pick's
+// days fall in it. A pick that no longer occurs on a listed day is reported, not refused (BayBay lifts it only on a day it runs).
+const picksSnapshot = snapshots.find(row => path.basename(row.destination) === PICKS);
+let weekendPicks = null;
+if (picksSnapshot) {
+  const raw = picksSnapshot.data;
+  assert.ok(raw && Array.isArray(raw.weekends), `public/${PICKS} must list weekends: { generatedAt, weekends: [{ start, end, picks }] }`);
+  const eventById = new Map(planner.events.map(row => [row.id, row]));
+  const nextDay = day => new Date(Date.parse(`${day}T12:00:00Z`) + 86400000).toISOString().slice(0, 10);
+  const notOnTheirDay = [];
+  for (const weekend of raw.weekends) {
+    assert.ok(typeof weekend?.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(weekend.start) && new Date(`${weekend.start}T12:00:00Z`).getUTCDay() === 6, `public/${PICKS}: weekend ${weekend?.start} must start on a Saturday`);
+    assert.equal(weekend.end, nextDay(weekend.start), `public/${PICKS}: weekend ${weekend.start} must end on the Sunday after it`);
+    assert.ok(Array.isArray(weekend.picks), `public/${PICKS}: weekend ${weekend.start} must list picks`);
+    for (const pick of weekend.picks) {
+      const event = eventById.get(pick?.id);
+      assert.ok(event, `public/${PICKS}: pick ${pick?.id} (${weekend.start}) is not in public/${FULL_PLANNER}: stale picks; regenerate both from one web build`);
+      for (const day of pick.dates || []) {
+        assert.ok(day === weekend.start || day === weekend.end, `public/${PICKS}: pick ${pick.id} lists ${day}, outside its weekend ${weekend.start}`);
+        if (!eventOccursOn(event, day)) notOnTheirDay.push({ weekend: weekend.start, id: pick.id, day });
+      }
+    }
+  }
+  weekendPicks = { weekends: Object.fromEntries([...picksFrom(raw)].map(([saturday, picks]) => [saturday, picks.map(pick => pick.id)])), notOnTheirDay };
+}
+// Review of API-BB-9: a web main that no longer exports the picks leaves an older data/weekend-picks.json that nothing
+// validates. It is reported (staleLocalFile), and --write removes it, so BayBay lifts only picks the web still publishes.
+const localPicks = path.join(root, 'data', PICKS);
+const stalePicks = !picksSnapshot && fs.existsSync(localPicks);
+if (stalePicks) weekendPicks = { staleLocalFile: `data/${PICKS}`, removed: args.includes('--write') };
 const identity = (rows, field) => { assert.ok(Array.isArray(rows)); const ids = rows.map(row => row[field]); assert.equal(new Set(ids).size, ids.length); return ids.sort(); };
 assert.deepEqual(identity(data('guide-catalog.json'), 'slug'), identity(data('guide-catalog.en.json'), 'slug'));
 assert.deepEqual(identity(data('guide-catalog.json'), 'slug'), identity(planner.guides, 'slug'));
@@ -115,10 +150,11 @@ for (const row of previous) {
 // Re-check sources immediately before writing to detect a concurrent generation.
 for (const row of [...snapshots, held]) assert.equal(hash(fs.readFileSync(row.source)), hash(row.bytes), `Source changed during validation: ${row.source}`);
 if (args.includes('--write')) for (const row of snapshots) fs.writeFileSync(row.destination, row.bytes);
+if (args.includes('--write') && stalePicks) { fs.rmSync(localPicks); assert.ok(!fs.existsSync(localPicks)); }
 const files = snapshots.map(row => ({ source: row.source, destination: row.destination, bytes: row.bytes.length,
-  sha256: hash(row.bytes), destinationMatches: hash(fs.readFileSync(row.destination)) === hash(row.bytes) }));
+  sha256: hash(row.bytes), destinationMatches: fs.existsSync(row.destination) && hash(fs.readFileSync(row.destination)) === hash(row.bytes) }));
 if (args.includes('--write')) assert.ok(files.every(row => row.destinationMatches));
 console.log(JSON.stringify({ mode: args.includes('--write') ? 'written-and-verified' : 'validated-without-writing',
   counts: { events: eventMap.size, places: planner.places.length, guides: planner.guides.length, discoveries: data('discoveries.json').items.length,
     sources: registry.length, retainedSourceIds: previous.length, opusBayEvents: held.data.events.length },
-  heldOutOfOpusBay, worldHeld, unusedWorldHolds, checkedOnly: { source: held.source, bytes: held.bytes.length, sha256: hash(held.bytes) }, files }, null, 2));
+  heldOutOfOpusBay, worldHeld, unusedWorldHolds, weekendPicks, checkedOnly: { source: held.source, bytes: held.bytes.length, sha256: hash(held.bytes) }, files }, null, 2));
