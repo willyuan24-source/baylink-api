@@ -452,7 +452,13 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   10/24 only); the weekend's other day offered as an alternative is part of the span ("周末 10/24 还是 10/25", "10/24、
   10/25"); "这周末 10/24 去 SJMA，10/25 去哪" asks about 10/25. Full-width separators ("这周末（10/24）", "，10/24", "：10/24")
   work: `blankSpan` blanks the span in the normalized text through any separator run. The older "10月24日那个周末或 10/31"
-  form is unchanged (it still reads 10/31).
+  form is unchanged (it still reads 10/31). Review round 2: a weekday label written beside the date ("这周末 10/24（周六）",
+  "10月24日 星期六", "10/24（六）", "This weekend (10/24, Saturday)", "weekend 10/24 (Sat)") or beside a paired day ("或
+  10/25（周日）") is part of the span when it matches the date; before, the leftover 周六 was read as this Saturday (10/17)
+  and replaced the span. A label that does not match ("10/24（周日）") leaves the ask to the one-date reading, which asks to
+  confirm; a part of the day after the label ("10/24 周六上午") keeps 10/24. A weekday, today or tomorrow anywhere else in
+  the ask ("这周末 10/24，周六或周日都行", "…还是明天") means the written-day span is not taken, so the ask reads exactly as on
+  main.
 - **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
   借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
   longer sets the institution's city as the destination: city and region stay empty and the home city stays the
@@ -475,7 +481,9 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   `；`-segment; the tier is written in the answer's locale (the evidence cost is the Chinese planner label in every locale)
   as its own sentence after the point's text and before its trailing markers, so a streamed point stays a prefix and the
   answer is not marked corrected. A point that already names an adult tier or price (`$8`, not `$80`), or a "$5–$8" range, is
-  left alone.
+  left alone. Review round 2: a floor price keeps its 起 / from ("成人 $32 起" → "成人 $32 起。", en "Adults: from $32."),
+  and a price that holds only before a deadline ("11/15 中午前报名 … 成人 $130 起": 前报名 / 截止 / before / until) counts as
+  a price period, so it is left alone rather than losing the condition.
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
