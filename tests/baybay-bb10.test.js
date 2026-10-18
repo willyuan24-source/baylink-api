@@ -547,3 +547,143 @@ test('review round 4: the adult tier is never added to a point that cites two re
   }
   assert.equal(tier('活动：4–14 岁 $5。[[e7]]', 'zh-Hans', () => '成人 $8，4–14 岁 $5；15–17 岁费用待核实').repaired, true);
 });
+// ---------------------------------------------------------------- review round 5 (verify2 of 34927987e): inverted rules
+
+test('review round 5: a written day that has passed, or a weekend already under way, is read as on main (zh-Hans, zh-Hant, en)', () => {
+  // Asked on Sunday 10/25: Saturday 10/24 has passed. Main's reading, with main's past-date clarification (no Sat..Sun range
+  // that starts yesterday, and the live Q5 ask never answers with yesterday's offers).
+  for (const message of ['这周末 10/24 带娃去哪', '这周末 10/24 周六去哪', '這週末 10/24 有什麼活動', 'weekend 10/24 events']) {
+    for (const extra of [{}, { searchContext: { date: '2026-10-25' } }, { previous: { goal: 'discover', date: '2026-10-31' } }]) {
+      const result = stateOn(message, { today: '2026-10-25', ...extra });
+      assert.equal(result.state.date, '2026-10-24', message); assert.equal(result.state.dateRange, undefined, message);
+      assert.match(result.clarification || '', /已经过去/, message);
+    }
+  }
+  // The written Sunday asked on that Sunday is today, one day, as on main.
+  for (const [today, message] of [['2026-10-25', '这周末 10/25 周日带娃去哪'], ['2026-10-25', '這週末 10/25（週日）帶小孩去哪'], ['2026-10-25', 'this weekend 10/25 kids events'],
+    ['2026-10-18', '这周末 10/18 带娃去哪'], ['2026-10-18', '這週末 10/18（週日）帶小孩去哪'], ['2026-10-18', 'this weekend 10/18 kids events']]) {
+    const result = stateOn(message, { today });
+    assert.equal(result.state.date, today, message); assert.equal(result.state.dateRange, undefined, message); assert.equal(result.clarification, undefined, message);
+  }
+  // On the Saturday itself the weekend still holds both days.
+  for (const message of ['这周末 10/24 带娃去哪', '這週末 10/25 帶娃去哪', 'weekend 10/24 events']) {
+    assert.deepEqual(stateOn(message, { today: '2026-10-24' }).state.dateRange, WEEKEND_1024, message);
+  }
+});
+
+test('review round 5: the weekend\'s other day written as a day of the month or as the next day keeps main\'s one day', () => {
+  for (const today of ['2026-10-17', '2026-10-22']) {
+    for (const [message, date] of [['这周末 10/24 出去玩，25号在家休息', '2026-10-24'], ['这周末 10/24 带娃，第二天要上中文课', '2026-10-24'], ['这周末 10/24 去玩，隔天休息', '2026-10-24'],
+      ['这周末 10/24 出门，次日在家', '2026-10-24'], ['這週末 10/24 出去，25號要上班', '2026-10-24'], ['這週末 10/24 帶娃，隔天在家', '2026-10-24'], ['weekend 10/24 out with kids, the 25th we rest', '2026-10-24'],
+      ['weekend 10/24, the next day is soccer', '2026-10-24'], ['这周末 10/25 带娃，24号有事', '2026-10-25']]) {
+      for (const extra of [{}, { searchContext: { date: '2026-10-31' } }, { previous: { goal: 'discover', date: '2026-10-31' } }]) {
+        const { state } = stateOn(message, { today, ...extra });
+        assert.equal(state.date, date, `${today} ${message}`); assert.equal(state.dateRange, undefined, `${today} ${message}`);
+      }
+    }
+  }
+  // An alternative written as 明日 or "tmrw" is not dropped into the weekend span either.
+  for (const message of ['這週末 10/24 還是明日比較好', 'weekend 10/24, or tmrw?']) assert.equal(stateOn(message).state.dateRange, undefined, message);
+});
+
+test('review round 5: whatever the planner itself reads as a time keeps the one day, with or without a word list entry', () => {
+  for (const message of ['这周末 10/24 当晚有什么演出', '这周末 10/24 一大早出发去海边', '这周末 10/24 一点钟出发，带娃去哪', '这周末 10/24 晚饭去哪吃', '这周末 10/24 夜间有什么活动', '这周末 10/24 午饭后去哪',
+    '这周末 10/24 早饭吃什么', '这周末 10/24 宵夜去哪', '这周末 10/24 晚间有烟火吗', '這週末 10/24 晚餐去哪吃', '這週末 10/24 當晚去哪', '這週末 10/24 一大早去爬山', '這週末 10/24 早餐去哪吃',
+    'weekend 10/24 midnight movie?', 'weekend 10/24 at dawn, birdwatching spots', 'weekend 10/24, just for the day, where to go', 'weekend 10/24, out from 2 to 5', 'this weekend 10/24, sundown hikes?',
+    // Read only by the planner's own parsers (the outing length), no list entry.
+    '这周末 10/24 带娃出去玩两小时', '這週末 10/24 帶娃出去玩兩小時']) {
+    for (const today of ['2026-10-17', '2026-10-22']) {
+      const { state } = stateOn(message, { today });
+      assert.equal(state.date, '2026-10-24', `${today} ${message}`); assert.equal(state.dateRange, undefined, `${today} ${message}`);
+    }
+  }
+  // Yesterday, which no list names, is another day too: never the weekend span.
+  for (const message of ['这周末 10/24 带娃去哪，昨天去过动物园了', 'weekend 10/24 with kids, we went to the zoo yesterday']) assert.equal(stateOn(message).state.dateRange, undefined, message);
+  // The rule is askedDateRange's otherTemporal: any time the caller reads in the rest of the ask leaves the span.
+  const { askedDateRange } = require('../lib/entityAliases');
+  assert.equal(askedDateRange('这周末 10/24 带娃去哪', '2026-10-17', { otherTemporal: () => false }).day, '2026-10-24');
+  assert.equal(askedDateRange('这周末 10/24 带娃去哪', '2026-10-17', { otherTemporal: rest => /带娃/.test(rest) })?.day, undefined);
+  // Still the weekend: nothing else in the ask names a time (the Sunset District is a place, not a sunset).
+  for (const message of ['这周末 10/24 带娃去哪', '這週末 10/24 帶娃去哪', 'weekend 10/24 with kids', '这周末 10/24 去 Sunset District 带娃', 'weekend 10/24 kids, Outer Sunset?']) {
+    assert.deepEqual(stateOn(message).state.dateRange, WEEKEND_1024, message);
+  }
+});
+
+test('review round 5: a carried day the ask writes beside 周末 / weekend is kept, never this weekend\'s 10/17-18', () => {
+  for (const previous of [{ goal: 'discover', date: '2026-10-24' }, { goal: 'information', date: '2026-10-24', city: 'San Francisco' }, { goal: 'day-plan', date: '2026-10-24' }]) {
+    for (const message of ['这周末 10/24 周六带娃去哪', '这周末 10/24 室内去哪', '這週末 10/24 有什麼免費活動', 'This weekend: 10/24. Ideas?', 'this weekend Oct 24 (Sat) with kids']) {
+      const { state } = stateOn(message, { previous });
+      assert.equal(state.date, '2026-10-24', `${previous.goal} ${message}`); assert.equal(state.dateRange, undefined, `${previous.goal} ${message}`);
+    }
+  }
+  assert.equal(stateOn('这个周末 10/25 周日带娃去哪', { previous: { goal: 'discover', date: '2026-10-25' } }).state.date, '2026-10-25');
+  // A carried day the ask only mentions apart from 周末 still gives way to this weekend, as on main.
+  assert.deepEqual(stateOn('10/24 那天有事，这周末呢', { previous: { goal: 'discover', date: '2026-10-24' } }).state.dateRange, { start: '2026-10-17', end: '2026-10-18' });
+});
+
+test('review round 5: after a home-city card question, any follow-up that names the library and is not a card or service ask is about the library\'s city', () => {
+  const followups = ['SFPL 总馆怎么走？', 'SFPL 总馆什么时候开？', 'SFPL 总馆在什么地方', 'SFPL 总馆的位置', 'SFPL 总馆周末开放吗', 'SFPL 总馆离 BART 近吗', 'SFPL 总馆几号线', 'SFPL 总馆附近有什么吃的',
+    'SFPL 總館附近有什麼好吃的', 'SFPL 總館怎麼走', 'SFPL Main Library location?', 'Any good food near SFPL Main Library?', 'What else is around SFPL Main?', 'SFPL 总馆在哪？能办卡吗'];
+  for (const first of [Q3['zh-Hans'].question, Q3['zh-Hant'].question, Q3.en.question]) {
+    const home = stateOf(first).state;
+    assert.equal(home.city, null, first); assert.equal(home.origin, 'Fremont', first);
+    for (const followup of followups) {
+      const { state } = stateOf(followup, home);
+      assert.equal(state.city, 'San Francisco', `${first} -> ${followup}`); assert.equal(state.region, 'sf', `${first} -> ${followup}`); assert.equal(state.origin, 'Fremont', `${first} -> ${followup}`);
+    }
+    // "How far is SFPL Main from BART?" reads BART as the start, as on main; the city is the library's.
+    assert.equal(stateOf('How far is SFPL Main from BART?', home).state.city, 'San Francisco');
+    // The card or service follow-up stays home; a general one is still ordered by nearness to home.
+    for (const followup of ['SFPL 借书证怎么办？', '附近有什么吃的', '那这周末附近有什么免费亲子活动？']) {
+      const { state } = stateOf(followup, home);
+      assert.equal(state.city, null, `${first} -> ${followup}`); assert.equal(state.origin, 'Fremont', `${first} -> ${followup}`);
+    }
+  }
+});
+
+test('review round 5: a first turn that asks the way or the hours beside the card question keeps the library\'s city', () => {
+  for (const message of ['我住 Fremont，SFPL 总馆怎么走？能办卡吗', '我住 Fremont，SFPL 总馆什么时候开，可以办借书证吗', '我住 Fremont，可以办 SFPL 卡吗？总馆在什么地方', '我住 Fremont，想办 SFPL 卡，总馆周末开放吗',
+    '我住 Fremont，SFPL 总馆离 BART 近吗？能办卡吗', '我住 Fremont，SFPL 總館怎麼走？能辦卡嗎', 'I live in Oakland. SFPL Main Library location for a library card?', 'I live in Fremont. How do I get to SFPL Main to get a library card?',
+    'I live in Fremont, can I get an SFPL card at the Main Library and where is it?']) {
+    assert.equal(stateOf(message).state.city, 'San Francisco', message);
+  }
+  // The service as the only question, with greetings around it, is still asked from home.
+  for (const message of ['你好，我住 Fremont，可以办 SFPL 卡吗？谢谢', '我住 Fremont，可以辦 SFPL 借書證嗎？', 'Hi! I live in Fremont. Can I get an SFPL card? Thanks.']) {
+    const { state } = stateOf(message);
+    assert.equal(state.city, null, message); assert.equal(state.origin, 'Fremont', message);
+  }
+});
+
+test('review round 5: card question -> "SFPL 总馆怎么走？" -> "附近有什么吃的" stays in San Francisco on turns 2 and 3 (v2 fast path)', async () => {
+  const first = await ask(Q3['zh-Hans'].question, q3Draft(Q3['zh-Hans']));
+  assert.equal(first.response.taskState.city, null); assert.equal(first.response.taskState.origin, 'Fremont');
+  const history = [{ role: 'user', content: Q3['zh-Hans'].question }, { role: 'assistant', content: first.response.answer || '好的。' }];
+  const second = await ask('SFPL 总馆怎么走？', () => ({ lead: '好的。' }), { history: [...history], assistantSessionToken: first.response.assistantSessionToken });
+  assert.equal(second.response.taskState.city, 'San Francisco'); assert.equal(second.response.taskState.origin, 'Fremont');
+  history.push({ role: 'user', content: 'SFPL 总馆怎么走？' }, { role: 'assistant', content: second.response.answer || '好的。' });
+  const third = await ask('附近有什么吃的', () => ({ lead: '好的。' }), { history: [...history], assistantSessionToken: second.response.assistantSessionToken });
+  assert.equal(third.response.taskState.city, 'San Francisco');
+  assert.ok(third.sent.length, 'the third turn asked the model with evidence');
+  assert.ok(!third.sent[0].evidence.some(row => /@(?:Emeryville|Santa Clara|Oakland)\b/.test(`${row.title}@${row.city || ''}`)), 'no East Bay or South Bay evidence on turn 3');
+});
+
+test('review round 5: the adult tier comes only from a cost line the allowlist grammar reads whole (zh-Hans, zh-Hant, en)', () => {
+  const { adultTierRepair } = require('../lib/baybayQuality');
+  const tier = (cost, text, locale = 'zh-Hans') => { const result = adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => cost, locale }); return result.repaired ? result.draft.points[0].text : null; };
+  // Every segment an age band with a price, a free band, or a below-18 unlisted note (optionally after a source lead).
+  assert.equal(tier('0–3 岁免费，4–14 岁 $5，18+ $8', '鬼屋 4–14 岁 $5 [[e7]]'), '鬼屋 4–14 岁 $5。18+ 成人 $8。 [[e7]]');
+  assert.equal(tier('成人 $12，3–12 岁 $6', '3–12 歲 $6 [[e7]]', 'zh-Hant'), '3–12 歲 $6。成人 $12。 [[e7]]');
+  assert.equal(tier('Adults (18+) $12, ages 4–17 $6, under 4 free', 'Ages 4–17 $6 [[e7]]', 'en'), 'Ages 4–17 $6. Adults 18+: $12. [[e7]]');
+  assert.equal(tier('官网列 成人 $12、儿童 $6；15–17 岁费用未注明，待核实', '活动：儿童 $6。[[e7]]'), '活动：儿童 $6。成人 $12。[[e7]]');
+  // Anything else in the line leaves the point alone: parking, a member note, a band above the children that is not the adult
+  // band, two adult prices, free adults, a note that reaches 18, a price period, an unknown lead.
+  for (const cost of ['成人 $12，3–12 岁 $6，停车 $10', '成人 $12，3–12 岁 $6，会员免费', '成人 $12，13 岁以上 $8，3–12 岁 $6', '成人 $12，成人 $15，3–12 岁 $6', '成人免费，3–12 岁 $6',
+    '成人 $12，3–12 岁 $6；13–20 岁费用未注明', '早鸟 成人 $12，3–12 岁 $6', '门票：成人 $12，3–12 岁 $6', '18 岁及以下 $6，成人 $12', 'Adults $12, kids $6 online', '成人 $12 起至 $20，3–12 岁 $6']) {
+    for (const [locale, text] of [['zh-Hans', '活动 3–12 岁 $6 [[e7]]'], ['zh-Hant', '活動 3–12 歲 $6 [[e7]]'], ['en', 'Ages 3–12 $6 [[e7]]']]) {
+      assert.equal(tier(cost, text, locale), null, `${locale} ${cost}`);
+    }
+  }
+  // Still skipped: a point citing two records, or talking about the parents.
+  assert.equal(tier('成人 $12，3–12 岁 $6', '3–12 岁 $6 [[e7]]；另一处免费 [[e6]]'), null);
+  for (const [locale, text] of [['zh-Hans', '3–12 岁 $6，父母陪同 [[e7]]'], ['zh-Hant', '3–12 歲 $6，家長陪同 [[e7]]'], ['en', 'Ages 3–12 $6; guardians stay with kids [[e7]]']]) assert.equal(tier('成人 $12，3–12 岁 $6', text, locale), null, text);
+});
