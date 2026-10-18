@@ -212,6 +212,22 @@ test('BayBay: "where to take" is an outing only with company as its object; serv
   }
 });
 
+// Review round 4 of API-BB-12: grandkids, grandchildren and little ones are children the planner's family flag does not read,
+// so "where to take" outings with them (and the sync's own "Things to do with the grandkids …" / 带孙子 asks) offered the
+// adults' pick 华埠分馆周六午后 first. They get the adult filters, as a baby or a stroller does (not the picks first).
+test('BayBay: grandkids, grandchildren and little-ones asks never offer the adults\' pick', () => {
+  for (const message of ['Where to take my grandkids this weekend in San Francisco', 'Where to take the grandchildren this Saturday in SF', 'Where to take the little ones on Saturday in San Francisco',
+    'Where to take my grandkids this Saturday in the Bay Area', 'Where to take my little ones this Saturday', 'Where to take the grandkids this Saturday?',
+    'Things to do with the grandkids this Saturday in San Francisco', '這週六帶孫子去舊金山哪裡玩', '这周六带孙子在旧金山去哪玩', '周末带外孙去旧金山玩什么', '這週末帶孫女去哪玩',
+    'Where can I take my grandson this Saturday in San Francisco?']) {
+    const result = evidence(message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), `${message}: ${itemIds(result).join(', ')}`);
+    assert.ok(!result.familyPicks, `${message}: ${result.familyPicks}`);
+  }
+  // An ask that is not about children keeps it.
+  assert.ok(candidateIds(evidence('这周末有什么好玩的')).includes('sfpl-chinatown-creative-saturdays-fall-2026'));
+});
+
 // Review of API-BB-12: a setting (室内, indoor) or 附近 with no home city is a constraint the picks may not meet, so those
 // asks keep their own order (indoor storytimes and museums first) rather than the outdoor LumaFest and Halloween Hoopla.
 test('BayBay: indoor and 附近 family asks keep their own order; no outdoor pick leads them', () => {
