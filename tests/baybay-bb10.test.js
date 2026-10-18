@@ -128,8 +128,9 @@ test('review round 1: full-width separators, a second date and a time of day bes
     assert.equal(result.state.date, null, message); assert.equal(result.state.dateRange, undefined, message); assert.match(result.clarification || '', /多个日期/, message);
   }
   assert.deepEqual(stateOf('这周末 10/24，下周末 10/31 都可以').state.dateRange, { start: '2026-10-24', end: '2026-10-25' });
-  // The weekend's other day asked on its own is that day ("这周末 10/24 去 SJMA，10/25 去哪").
-  assert.equal(stateOf('这周末 10/24 去 SJMA，10/25 去哪').state.date, '2026-10-25');
+  // Review round 4: the weekend's other day written apart ("这周末 10/24 去 SJMA，10/25 去哪") is read as on main; the span never
+  // hands the leftover day the whole date (it could be the busy day, see review round 4 below).
+  assert.deepEqual(resolveTaskState({ message: '这周末 10/24 去 SJMA，10/25 去哪', today: '2026-10-22', catalog, carry: true }).state.dateRange, { start: '2026-10-24', end: '2026-10-25' });
   // A clock time or part of the day right after the date asks about that one day.
   for (const message of ['这周末 10/24 下午3点有什么', '周末 10/24 晚上有什么演出']) assert.equal(stateOf(message).state.date, '2026-10-24', message);
 });
@@ -353,9 +354,11 @@ test('review round 3: one-day wording and times keep one day; a written year is 
     }
   }
   for (const [message, range] of [['2027年10月24日周末去哪', { start: '2027-10-23', end: '2027-10-24' }], ['weekend Oct 24, 2027', { start: '2027-10-23', end: '2027-10-24' }],
-    ['这周末 2027年10月23日 去哪', { start: '2027-10-23', end: '2027-10-24' }], ['2025年10月25日周末去了哪', { start: '2025-10-25', end: '2025-10-26' }]]) {
+    ['这周末 2027年10月23日 去哪', { start: '2027-10-23', end: '2027-10-24' }]]) {
     assert.deepEqual(stateOn(message).state.dateRange, range, message);
   }
+  // Review round 4: a weekend that has already ended is read as on main (the written day, with main's past-date handling).
+  assert.equal(stateOn('2025年10月25日周末去了哪').state.date, '2025-10-25');
   // A departure time main reads as no date stays so (no weekend span either).
   assert.equal(stateOn('weekend Oct 24 leaving at 10:30').state.dateRange, undefined);
   // A holiday's own weekend and a deadline before the weekend keep the written day, as on main.
@@ -434,5 +437,66 @@ test('review round 3: a branch\'s hours or address asked from home stays on the 
   for (const [message, home] of [['I live in Oakland. Can I use SFPL Discover & Go?', 'Oakland'], ['我住 Fremont，SFPL 可以免费打印吗', 'Fremont'], ['我住 Oakland，SFPL 的 eCard 能用 Kanopy 吗', 'Oakland']]) {
     const { state } = stateOf(message);
     assert.equal(state.city, null, message); assert.equal(state.origin, home, message);
+  }
+});
+
+// ---------------------------------------------------------------- review round 4 (verify of 4fccff6): narrowed to main's reading
+
+test('review round 4: a follow-up that drops the carried weekend for this or next weekend replaces the carried day (zh-Hans, zh-Hant, en)', () => {
+  const day = date => ({ goal: 'discover', date });
+  for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
+    for (const message of ['10/31 那个周末有事了，这周末呢', '10/31 那個週末沒空了，這週末有什麼', 'The 10/31 weekend is out, what about this weekend?', 'weekend 10/31 no longer works, this weekend instead',
+      '万圣节周末 10/31 有事，这周末去哪', 'Halloween weekend 10/31 we are away; this weekend?', '10/31 那个周末有事，这周末帮我排一天']) {
+      const { state } = stateOn(message, { today, previous: day('2026-10-31') });
+      assert.deepEqual(state.dateRange, weekend, `${today} ${message}`); assert.equal(state.date, null, `${today} ${message}`);
+    }
+  }
+  for (const message of ['10/24 那个周末有事，下周末呢', 'weekend 10/24 is out; what about next weekend?', '10/24 那個週末不行，下週末呢']) {
+    const { state } = stateOn(message, { today: '2026-10-22', previous: day('2026-10-24') });
+    assert.deepEqual(state.dateRange, { start: '2026-10-31', end: '2026-11-01' }, message); assert.equal(state.date, null, message);
+  }
+  // weekendDay: false (a follow-up inside the carried weekend, a day plan, a holiday's own weekend) is main's reading exactly.
+  const { askedDateRange } = require('../lib/entityAliases');
+  assert.deepEqual(askedDateRange('10/31 那个周末有事了，这周末呢', '2026-10-17', { weekendDay: false }), { start: '2026-10-17', end: '2026-10-18', kind: 'weekend' });
+});
+
+test('review round 4: a past weekend\'s date beside 周末 / weekend is a side remark when the ask names this weekend', () => {
+  for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
+    for (const message of ['That weekend, Oct 10, was rainy. What about this weekend?', 'The prior weekend (Oct 10) we hiked; this weekend?', 'We went to the zoo on the weekend, Oct 10. This weekend?',
+      'Weekend (Oct 10) was rainy, so this weekend?', 'Our weekend, Oct 10, was busy; this weekend?']) {
+      assert.deepEqual(stateOn(message, { today }).state.dateRange, weekend, `${today} ${message}`);
+    }
+    // zh wording ZH_NOT_LAST does not list reads 10/10 as main does; never the 10/10-11 weekend.
+    for (const message of ['上周的周末 10/10 去了动物园，这周末去哪', '10/10 那个周末去过了，这周末呢', '前個週末 10/10 去過了，這週末呢']) {
+      assert.notDeepEqual(stateOn(message, { today }).state.dateRange, { start: '2026-10-10', end: '2026-10-11' }, `${today} ${message}`);
+    }
+  }
+});
+
+test('review round 4: the weekend\'s other day written apart is read as on main, never as the only (busy) day', () => {
+  for (const message of ['这周末 10/24，10/25 都行', '這週末 10/24，10/25 都可以', '这周末 10/24 / 10/25 都行', '这周末 10/24 10/25 都可以',
+    '这周末 10/24 有空，10/25 要加班', '这周末 10/24 带娃，10/25 休息', '這週末 10/24 帶娃，10/25 要上班', 'This weekend 10/24, but 10/25 we are busy', '这周末 10/25 带娃，10/24 有事']) {
+    const { state } = stateOn(message, { today: '2026-10-22' });
+    assert.deepEqual(state.dateRange, WEEKEND_1024, message); assert.equal(state.date, null, message);
+    for (const searchContext of [undefined, { date: '2026-10-31' }]) {
+      const result = stateOn(message, { searchContext }).state;
+      assert.ok(!['2026-10-24', '2026-10-25'].includes(result.date), `10-17 ${message} ${result.date}`);
+    }
+  }
+  // The date bar on the free day keeps it, with main's "pick one day" note.
+  const hinted = stateOn('这周末 10/24 带娃出去，10/25 还要上中文学校', { today: '2026-10-22', searchContext: { date: '2026-10-24' } });
+  assert.equal(hinted.state.date, '2026-10-24'); assert.match(hinted.clarification || '', /多个日期/);
+});
+
+test('review round 4: more one-day wording keeps the one day, and a typed two-day span still beats the date bar as on main', () => {
+  for (const message of ['这周末 10/24 周六那天去哪', '这周末 10/24 带娃，晚饭前回来', '这周末 10/24 带娃去哪，天黑前回家', '这周末 10/24 早去早回', '这周末 10/24 出去玩几个小时',
+    '這週末 10/24 帶娃，晚飯前回來', 'weekend 10/24, just a few hours out', 'weekend 10/24, sunrise hike?', 'weekend 10/24, back before dark']) {
+    for (const today of ['2026-10-17', '2026-10-22']) {
+      const { state } = stateOn(message, { today });
+      assert.equal(state.date, '2026-10-24', `${today} ${message}`); assert.equal(state.dateRange, undefined, `${today} ${message}`);
+    }
+  }
+  for (const [message, date, typed] of [['12月5日，6日都可以，去哪', '2026-10-24', '2026-12-05'], ['12月5日，6日哪天都行', '2026-10-25', '2026-12-05'], ['11月21日，22日都可以，带娃去哪', '2026-10-31', '2026-11-21']]) {
+    assert.equal(stateOn(message, { searchContext: { date } }).state.date, typed, message);
   }
 });
