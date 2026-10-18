@@ -221,7 +221,6 @@ test('a point with an event\'s child prices keeps the adult tier its record list
     ['zh-Hans', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。[[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 岁免费，4–14 岁 $5。18+ 成人 $8。[[e7]]'],
     ['zh-Hant', 'alameda-haunted-house-2026', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5 [[e7]]', 'Alameda 青少年鬼屋 14:00–21:00，0–3 歲免費，4–14 歲 $5。18+ 成人 $8。 [[e7]]'],
     ['en', 'alameda-haunted-house-2026', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. [[e7]]', 'Alameda teen haunted house, 2–9 pm: free under 4, ages 4–14 $5. Adults 18+: $8. [[e7]]'],
-    ['en', 'sfzoo-zoolights-2026', 'ZooLights runs nightly; kids $21. [[e7]]', 'ZooLights runs nightly; kids $21. Adults: $30. [[e7]]'],
     ['en', 'pleasanton-pumpkins-after-dark-2026', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free [[e7]]', 'Pumpkins After Dark: ages 4–17 $22.80, under 4 free. Adults 18+: $28.80. [[e7]]'],
     ['zh-Hans', 'pleasanton-pumpkins-after-dark-2026', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。[[e7]]', '南瓜夜：4–17 岁 $22.80，3 岁及以下免费。18+ 成人 $28.80。[[e7]]'],
     // Review round 2: a floor price keeps its 起 / from.
@@ -291,4 +290,149 @@ for (const locale of ['zh-Hant', 'zh-Hans', 'en']) {
 test('a streamed draft that showed the address as text is continued, not corrected, by the linked result', () => {
   const { draftCorrected } = require('../lib/baybayProgress');
   assert.equal(draftCorrected({ lead: '报名页是 LoveBoatAlumni.org/roots2026', points: [] }, { lead: '报名页是 [LoveBoatAlumni.org/roots2026](https://LoveBoatAlumni.org/roots2026)。[1]', points: [] }), false);
+});
+
+// ---------------------------------------------------------------- review round 3 (review-1017d): the reviewers' regression cases
+
+const stateOn = (message, { today = '2026-10-17', previous, searchContext } = {}) => resolveTaskState({ message, today, catalog, carry: true, ...(previous ? { previous } : {}), ...(searchContext ? { searchContext } : {}) });
+const askedDateRangeOf = message => require('../lib/entityAliases').askedDateRange(message, '2026-10-17');
+const WEEKEND_1024 = { start: '2026-10-24', end: '2026-10-25' };
+
+test('review round 3: a typed weekend day beats the web date bar\'s day and a carried day outside it, in zh-Hans, zh-Hant and en', () => {
+  for (const today of ['2026-10-17', '2026-10-22']) {
+    for (const [message, date] of [['这周末 10/25 周日带娃去哪', '2026-10-24'], ['weekend 10/25 (Sun) with kids', '2026-10-24'], ['这周末 10/24 带娃去哪', '2026-10-25'], ['這週末 10/24 帶娃去哪', '2026-10-24']]) {
+      const { state } = stateOn(message, { today, searchContext: { date } });
+      assert.deepEqual(state.dateRange, WEEKEND_1024, `${today} ${message} (date bar ${date})`); assert.equal(state.date, null, `${today} ${message}`);
+    }
+    const { state } = stateOn('这周末 10/24 带娃去哪', { today, previous: { goal: 'discover', date: '2026-10-18' } });
+    assert.deepEqual(state.dateRange, WEEKEND_1024, `${today} carried 10/18`); assert.equal(state.date, null);
+  }
+});
+
+test('review round 3: a follow-up inside the weekend it carries keeps the day the user typed, and both written days are the weekend', () => {
+  const day = date => ({ goal: 'discover', date });
+  for (const today of ['2026-10-17', '2026-10-22']) {
+    for (const [message, previous, date] of [['这个周末 10/25 周日带娃去哪', day('2026-10-24'), '2026-10-25'], ['這個週末 10/25 週日帶娃去哪', day('2026-10-24'), '2026-10-25'],
+      ['This weekend Oct 25 (Sunday) where to go', day('2026-10-24'), '2026-10-25'], ['那这周末 10/25 呢', day('2026-10-24'), '2026-10-25'], ['这周末 10/24 带娃去哪', day('2026-10-25'), '2026-10-24'],
+      ['this weekend 10/24 (Sat) then?', day('2026-10-25'), '2026-10-24'], ['這週末 10/24 週六呢', day('2026-10-25'), '2026-10-24'],
+      ['这周末 10/25 周日呢', { goal: 'discover', dateRange: WEEKEND_1024 }, '2026-10-25']]) {
+      const { state } = stateOn(message, { today, previous });
+      assert.equal(state.date, date, `${today} ${message}`); assert.equal(state.dateRange, undefined, `${today} ${message}`);
+    }
+    for (const message of ['周末 10/24 跟 10/25 都行', 'weekend Oct 24-25 kids', '这周末 10/24（周六）和 10/25（周日）带娃去哪']) {
+      const { state } = stateOn(message, { today, previous: day('2026-10-24') });
+      assert.deepEqual(state.dateRange, WEEKEND_1024, `${today} ${message}`); assert.equal(state.date, null, `${today} ${message}`);
+    }
+  }
+});
+
+test('review round 3: a date labelled last / past / previous weekend or 上周末 never becomes the asked weekend', () => {
+  for (const [today, weekend] of [['2026-10-17', { start: '2026-10-17', end: '2026-10-18' }], ['2026-10-22', WEEKEND_1024]]) {
+    for (const message of ['Last weekend (Oct 10) we went to the zoo, what about this weekend?', 'last weekend, Oct 10, was rainy; what about this weekend?', 'Past weekend (Oct 10) was busy, this weekend free',
+      'previous weekend (Oct 10) was fun; this weekend?']) {
+      assert.deepEqual(stateOn(message, { today }).state.dateRange, weekend, `${today} ${message}`);
+    }
+  }
+  // zh: the past weekend's date is not the span (main read the one date 10/10 and asks whether that is meant).
+  for (const message of ['上周末 10/10 去了动物园，这周末去哪', '上個週末（10/10）去過了，這週末還有別的嗎', '上週末 10/10 去過了，這週末去哪', '上一个周末 10/10 去过了，这周末去哪']) {
+    const span = askedDateRangeOf(message);
+    assert.ok(!span || span.start !== '2026-10-10', message);
+    assert.notDeepEqual(stateOn(message).state.dateRange, { start: '2026-10-10', end: '2026-10-11' }, message);
+  }
+});
+
+test('review round 3: one-day wording and times keep one day; a written year is honoured', () => {
+  for (const message of ['这周末 10/24 周六有空，去哪玩', '这周末 10/24 周六一天，带娃去哪', '这周末 10/24 当天往返去哪', '这周末 10/24 一整天带娃去哪', '这周末 10/24，周六只有半天', '這週末 10/24 週六有空',
+    '這週末 10/24 週六一天就好', 'weekend 10/24, Saturday only', 'weekend 10/24 Saturday only, kids', 'weekend 10/24, one day only', 'this weekend 10/24, the whole day',
+    '这周末 10/24 早晨去爬山', '这周末 10/24 午后去哪', '这周末 10/24 凌晨看流星', '周末 10/24 半夜有什么', '周末 10/24 下班后去哪', 'weekend 10/24 at noon', 'weekend 10/24 for dinner',
+    '这周末 10/24 带娃 10:30 出发', '这周末 10/24 带娃去哪，下午三点出发', '這週末 10/24 帶娃，下午三點出發', 'weekend 10/24 Saturday, back by 5pm', '这周末 10/24 白天带娃去哪',
+    '这周末 10/24，周六去公园']) {
+    for (const today of ['2026-10-17', '2026-10-22']) {
+      const { state } = stateOn(message, { today });
+      assert.equal(state.date, '2026-10-24', `${today} ${message}`); assert.equal(state.dateRange, undefined, `${today} ${message}`);
+    }
+  }
+  for (const [message, range] of [['2027年10月24日周末去哪', { start: '2027-10-23', end: '2027-10-24' }], ['weekend Oct 24, 2027', { start: '2027-10-23', end: '2027-10-24' }],
+    ['这周末 2027年10月23日 去哪', { start: '2027-10-23', end: '2027-10-24' }], ['2025年10月25日周末去了哪', { start: '2025-10-25', end: '2025-10-26' }]]) {
+    assert.deepEqual(stateOn(message).state.dateRange, range, message);
+  }
+  // A departure time main reads as no date stays so (no weekend span either).
+  assert.equal(stateOn('weekend Oct 24 leaving at 10:30').state.dateRange, undefined);
+  // A holiday's own weekend and a deadline before the weekend keep the written day, as on main.
+  assert.equal(stateOn('感恩节周末 11/28 去哪').state.date, '2026-11-28');
+  assert.equal(stateOn('报名截止 10/24 周末前').state.date, '2026-10-24');
+});
+
+test('review round 3: weekday words inside ordinary words do not reject the span, and a rejected span never falls back to this weekend', () => {
+  for (const today of ['2026-10-17', '2026-10-22']) {
+    for (const message of ['the sun is out this weekend 10/24', '这周末 10/24 每周一次的亲子课', '这周末 10/24 每周三次的游泳课停了，去哪', 'we sat at home last time; weekend 10/24 ideas?', 'weekend 10/24 sat or sun']) {
+      const { state } = stateOn(message, { today });
+      assert.deepEqual(state.dateRange, WEEKEND_1024, `${today} ${message}`); assert.equal(state.date, null, `${today} ${message}`);
+    }
+  }
+  // On Saturday 10/17 the written 10/24 is not this weekend: no 10/17-18 span when the weekend-day reading steps aside.
+  for (const message of ['这周末 10/24 周六周日都行', 'This weekend 10/24 - Saturday or Sunday is fine', '这周末 10/24 或者 11/1 都可以', '这周末 10/24 周日带娃去哪']) {
+    const { state } = stateOn(message);
+    assert.notDeepEqual(state.dateRange, { start: '2026-10-17', end: '2026-10-18' }, message);
+    assert.notEqual(state.date, '2026-10-18', message);
+  }
+});
+
+test('review round 3: a museum-pass clause after a ； stays the pass\'s rule (shipped SMCL and SFPL sections, zh + en)', () => {
+  for (const [locale, file, marker, kanopyClaim, cardClaim, leak] of [
+    ['en', 'guide-catalog.en.json', 'SMCL: Kanopy allowances', 'SMCL Kanopy gives 30 tickets a month, but eCards are excluded.', 'SMCL eCards are excluded; apply for a physical card.', /two active reservations/],
+    ['zh-Hans', 'guide-catalog.json', 'SMCL：Kanopy 每月额度', 'SMCL 的 Kanopy 每月 30 tickets，但 eCard 不适用。', 'SMCL 的 eCard 不适用，需到馆申请图书证。', /最多同时保留两笔预约/]]) {
+    const guide = require(`../data/${file}`).find(row => row.slug === 'bay-area-everyday-free-perks');
+    const at = guide.content.indexOf(marker);
+    const text = guide.content.slice(at, guide.content.indexOf('\n\n', at));
+    const scopes = [{ id: 'smcl', heading: text.split('\n')[0], entity: 'SMCL', entityKey: 'smcl', text, sourceIds: ['s'] }];
+    for (const [id, summary] of [['kanopy', kanopyClaim], ['card_eligibility', cardClaim]]) {
+      const out = repairBenefitCoverage({ status: 'complete', items: [{ id, label: id, status: 'answered', summary, sourceIds: ['s'] }] }, scopes, locale, new Map());
+      assert.equal(out.changed, true, `${locale} ${id}`); assert.equal(out.coverage.items[0].status, 'unknown', `${locale} ${id}`);
+      assert.doesNotMatch(out.coverage.items[0].summary, leak, `${locale} ${id}`);
+    }
+  }
+  // The shipped SFPL Discover & Go paragraph: its reservation limit and the Bay Area Discovery Museum pass never become printing
+  // statements in a repaired SFPL printing item.
+  const starter = require('../data/guide-catalog.json').find(row => row.slug === 'bay-area-library-starter-guide');
+  const paragraph = starter.content.split(/\n\n+/).find(part => part.startsWith('旧金山 · SFPL Discover & Go'));
+  assert.match(paragraph, /同时最多 2 个预约/);
+  const scopes = [{ id: 'starter', heading: paragraph.split('\n')[0], entity: 'SFPL', entityKey: 'sfpl', text: `用图书馆卡借博物馆票和公园通行证\n${paragraph}`, sourceIds: [] }];
+  const out = repairBenefitCoverage({ status: 'complete', items: [{ id: 'printing', label: 'printing', status: 'answered', summary: 'SFPL 免费打印需旧金山市县居民。', sourceIds: [] }] }, scopes, 'zh-Hans', new Map());
+  assert.equal(out.changed, true);
+  assert.doesNotMatch(out.coverage.items[0].summary, /同时最多 2 个预约|Bay Area Discovery Museum/);
+});
+
+test('review round 3: the adult tier is added only from a cost line with no condition anywhere', () => {
+  const { adultTierRepair } = require('../lib/baybayQuality');
+  const events = require('../data/planner-catalog.json').events;
+  const costOf = id => events.find(row => row.id === id).costLabel;
+  const tier = (cost, text, locale = 'zh-Hans') => adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf: () => cost, locale });
+  // Rio Vista: a reference price for derby entry, the final price on the ticket page; ZooLights: a member discount.
+  assert.match(costOf('rio-vista-bass-derby-2026'), /参考/);
+  for (const [id, text] of [['rio-vista-bass-derby-2026', '钓鱼赛：儿童 $10。[[e7]]'], ['sfzoo-zoolights-2026', 'ZooLights 儿童 $21。[[e7]]']]) {
+    assert.equal(tier(costOf(id), text).repaired, false, id); assert.equal(tier(costOf(id), text.replace('儿童', 'kids'), 'en').repaired, false, id);
+  }
+  for (const cost of ['平日成人 $20、儿童 $10', '成人 $30+、儿童 $15', '成人 $30 左右，儿童 $15', '成人 $20+$3.18手续费、儿童 $10', '网购成人 $25、儿童 $12', '成人约 $25、儿童 $12',
+    '成人 $25、儿童 $12；会员免费', '居民成人 $10、儿童 $5', '成人 $25（周末）、儿童 $12', 'Adults $25, kids $12 online']) {
+    assert.equal(tier(cost, `活动：儿童 $${cost.match(/(?:儿童|kids) \$(\d+)/)[1]}。[[e7]]`).repaired, false, cost);
+  }
+  // A note that another age band's price is not listed says nothing about the adult price (the live Q5 Alameda row).
+  assert.match(costOf('alameda-haunted-house-2026'), /15–17 岁费用未注明，待核实/);
+  assert.equal(tier(costOf('alameda-haunted-house-2026'), '鬼屋：4–14 岁 $5。[[e7]]').draft.points[0].text, '鬼屋：4–14 岁 $5。18+ 成人 $8。[[e7]]');
+  // en: a point ending in a Chinese full stop gets no extra period; an adult price written as $8.00 is already given.
+  assert.equal(tier(costOf('alameda-haunted-house-2026'), 'Haunted house: ages 4–14 $5。[[e7]]', 'en').draft.points[0].text, 'Haunted house: ages 4–14 $5。 Adults 18+: $8.[[e7]]');
+  assert.equal(tier(costOf('alameda-haunted-house-2026'), 'Ages 4–14 $5, everyone else $8.00 [[e7]]', 'en').repaired, false);
+});
+
+test('review round 3: a branch\'s hours or address asked from home stays on the library\'s city; a card or service ask does not', () => {
+  for (const message of ['我住 Fremont，SFPL 总馆在哪里？', '我住 Fremont，SFPL 的 Mission Bay 分馆周末几点开门？', 'I live in Fremont. What time does SFPL Main Library open on Sunday?', 'I live in Fremont. Where is SFPL Main Library?',
+    '我住 Fremont，旧金山图书馆有什么亲子活动', '我住 Fremont，想去 SFPL 总馆借书']) {
+    const { state } = stateOf(message);
+    assert.equal(state.city, 'San Francisco', message); assert.equal(state.origin, 'Fremont', message);
+  }
+  for (const [message, home] of [['I live in Oakland. Can I use SFPL Discover & Go?', 'Oakland'], ['我住 Fremont，SFPL 可以免费打印吗', 'Fremont'], ['我住 Oakland，SFPL 的 eCard 能用 Kanopy 吗', 'Oakland']]) {
+    const { state } = stateOf(message);
+    assert.equal(state.city, null, message); assert.equal(state.origin, home, message);
+  }
 });
