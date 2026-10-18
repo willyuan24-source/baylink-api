@@ -430,28 +430,41 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
 ## API-BB-10: fixes from the #58 live check (degraded SFPL answer, record links)
 
 - **Benefit scope: a correct card answer is not "repaired"** (`lib/baybayBenefitScope.js` `scopeStatements`). The repair
-  reads each scope paragraph's statements to learn which service owns a restriction. Each sentence is still classified
-  whole and keeps its restrictions. Card-benefit sentences without restrictions no longer get the card topic: a sentence
-  that only uses the card ("持 SFPL 图书证借用", the radon-detector loan) is not a card rule, because the card topic needs
-  issuance wording, eCard / 实体卡, or a card next to a residence, age or ID word (zh 居民 / 年满 … 图书证, en residents /
-  age N … library card). A bare en "apply" / "application" still gives the card topic, as on main ("late, damage and
-  replacement fees apply"; follow-up lane API-BB-11).
-  - A clause of a sentence (split at `；` / `;`) that says how to get the card (`CARD_ISSUANCE`: 办卡, 办理…卡, 申请…卡,
-    领卡, apply for / sign up for / get a … card) is also a card rule of its own. So "须有有效 SFPL 图书证并完成 Kanopy
-    账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" stays a Kanopy statement and adds the card statement
-    "加州居民可免费办 SFPL 卡，…". 办/办理 must come directly before the card noun, with at most a library name or 一张
-    between, so 举办卡通 is not issuance. No clause leaves its sentence, and a card clause whose whole sentence is already a
-    repair row adds nothing.
-  - Review round 6 (`issuanceClause`): the added clause must name no other service (Discover & Go, printing, Kanopy) and
-    must not be a prerequisite (须 / 需 / 已 / 先 + 办 / 领 / 持, "who get … card first", "must have"). Otherwise a pass's,
-    printing's or Kanopy's residence or age rule ("…须年满 18 岁并已办 SFPL 卡") would become a card rule, and a false card
-    claim beside it would be kept, where main repairs it.
-  - Restriction ownership across the shipped guide catalogs is the same as on main. In the shipped data the live Q3 clause
-    is the only clause added.
+  reads each scope paragraph's statements to learn which service owns a restriction. Review round 7 keeps that reading
+  exactly as on main and changes only two things:
+  - Which service owns a rule is main's. `TOPICS` is main 8eec008's, and a sentence that states a restriction (a residence,
+    age or eCard rule) gets main's topic, from the sentence or from the heading fallback (`statementTopic`); the repair's
+    direct scopes use main's heading test too. So a card section headed "SMCL：半岛图书证" or "SJPL: Library cards" owns its
+    residence and age rules as on main, and a correct card claim is kept.
+  - Only a restriction-free sentence can lose the card topic (`scopeTopic`). It keeps it when the sentence or its heading
+    is about getting or holding the card (`CARD_RULE`: 办卡 / 办证 / 办理…借书证, 申请 / 获得 / 取得…图书证, 领卡, eCard,
+    实体卡, a card next to a residence, age or ID word, "get / getting / sign up for a … card", "library card(s)" next to
+    residents or an age, "cards are free / available to"; `CARD_HEADING`: a heading whose subject is the card, such as
+    "SMCL：半岛图书证"). A sentence that only uses the card ("持 SFPL 图书证借用", the radon-detector loan; the LinkedIn
+    login) is no longer quoted in a card repair. This changes what a repair cites, never the status: when no statement is
+    left, the repair cites exactly what main cites (main's statements, then main's direct scopes). A bare en "apply" /
+    "application" still keeps the card topic, as on main.
+  - One sentence of a named service (Kanopy, printing, Discover & Go) can also say, after a `；` / `;`, who can get the
+    library card. That clause is also a card rule of its own only when an allowlist grammar reads it whole
+    (`cardClause`): who (it must state a residence or age rule) + can + 办 / 办理 / 申请 / 领 / 获得 / get / apply for /
+    sign up for / qualify for + the LIBRARY card (图书证, 借书证, 办证, the scope's own acronym + 卡 or card, library
+    card(s); or "library cards are free / available for …" with who after it), then nothing but how to collect it (首次领卡,
+    到馆, 核验, 证件, 在线申请, at a branch, in person, with photo ID). A clause about another card (工具卡, a parking card,
+    LinkedIn), one that uses the card after getting it ("办卡后使用", "a library card and log in"), a negation, another
+    service's name, and a card the reader must already hold (持 / 须有 + a card noun, 须 / 需 / 已 / 先 + 办 / 领, "must
+    have a card", "who get a card first") are not card rules. "需持有效证件到馆办理" is how to collect the card.
+  - So "须有有效 SFPL 图书证并完成 Kanopy 账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" stays a Kanopy
+    statement and adds the card statement "加州居民可免费办 SFPL 卡，…"; in the shipped data it is the only clause added
+    (3 instances). A card clause whose whole sentence is already a repair row adds nothing.
+  - Over the shipped guide catalogs: restriction ownership is the same as on main, and a borrowing probe of 312 claims
+    gives the same changed flag and status as main; 6 summaries differ, each a subset of main's sentences (the SFPL card one
+    also cites the Q3 clause).
   - Live 10-17 Q3: the correct "加州居民可免费办 SFPL 卡" coverage claim looked borrowed from Kanopy. The repair replaced it
     with the radon paragraph and its sources (October freebies guide, SFPL press release), and the answer came back
-    `degraded: true`. Now it stays answered, keeps the Kanopy record the model cited, and the answer is not degraded. A real
-    error ("SFPL 要求旧金山居民才能办卡") is still repaired, from the card clause, never from the radon paragraph.
+    `degraded: true`. Now it stays answered, keeps the Kanopy record the model cited, and the answer is not degraded; the
+    same holds when the clause reads "需持有效证件到馆办理", "申请 SFPL 借书证", "均可免费办证" or "library cards are free for
+    California residents". A real error ("SFPL 要求旧金山居民才能办卡") is still repaired, from the card clause, never from the
+    radon paragraph.
 - **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
   `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
