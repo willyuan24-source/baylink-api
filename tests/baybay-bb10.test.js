@@ -516,3 +516,30 @@ test('review round 4: after a home-city card question, asking where a library is
     assert.notEqual(stateOf('那这周末附近有什么免费亲子活动？', home).state.city, 'San Francisco', first);
   }
 });
+
+test('review round 4: the adult tier is never added to a point that cites two records, talks about the parents, or has a date, tax or overlapping-band note', () => {
+  const { adultTierRepair } = require('../lib/baybayQuality');
+  const events = require('../data/planner-catalog.json').events;
+  const alameda = events.find(row => row.id === 'alameda-haunted-house-2026').costLabel;
+  const costs = { e7: alameda, e6: '展览免费开放。' };
+  const tier = (text, locale = 'zh-Hans', costOf = ref => costs[ref] ?? null) => adultTierRepair({ points: [{ text, cardIds: [] }] }, { costOf, locale });
+  // The live Q5 evidence: Alameda (e7) and the free Emeryville art show (e6) in one point, interleaved or with trailing markers.
+  for (const [locale, text] of [
+    ['zh-Hans', 'Alameda 青少年鬼屋 4–14 岁 $5 [[e7]]；Emeryville 艺术展闭幕周末，免费入场 [[e6]]'], ['zh-Hans', 'Alameda 青少年鬼屋 4–14 岁 $5；Emeryville 艺术展闭幕周末免费。[[e7]][[e6]]'],
+    ['zh-Hant', 'Alameda 青少年鬼屋 4–14 歲 $5 [[e7]]；Emeryville 藝術展閉幕週末，免費入場 [[e6]]'], ['zh-Hant', 'Alameda 青少年鬼屋 4–14 歲 $5；Emeryville 藝術展閉幕週末免費。[[e7]][[e6]]'],
+    ['en', 'Alameda teen haunted house: ages 4–14 $5 [[e7]]; the Emeryville art show closes this weekend, free [[e6]]'], ['en', 'Alameda haunted house, ages 4–14 $5; the Emeryville art show is free. [[e7]][[e6]]']]) {
+    const result = tier(text, locale);
+    assert.equal(result.repaired, false, text); assert.equal(result.draft.points[0].text, text);
+  }
+  // The same record cited twice is still one record.
+  assert.equal(tier('Alameda 鬼屋 4–14 岁 $5 [[e7]]，周六开放 [[e7]]').repaired, true);
+  // The point talks about the accompanying adults itself.
+  for (const [locale, text] of [['zh-Hans', '鬼屋：4–14 岁 $5，家长陪同免费 [[e7]]'], ['zh-Hant', '鬼屋：4–14 歲 $5，家長陪同 [[e7]]'], ['en', 'Kids 4–14 $5; parents get in free. [[e7]]']]) {
+    assert.equal(tier(text, locale).repaired, false, text);
+  }
+  // A date-dependent or tax note, or an unlisted band that reaches 18, conditions the whole line.
+  for (const cost of ['成人 $8，4–14 岁 $5（视日期而定）', '成人 $8，4–14 岁 $5，价格依日期调整', '成人 $8 (+tax)，4–14 岁 $5', '成人 $8（含税），4–14 岁 $5', '成人 $8，4–14 岁 $5；15–20 岁费用待核实']) {
+    assert.equal(tier('活动：4–14 岁 $5。[[e7]]', 'zh-Hans', () => cost).repaired, false, cost);
+  }
+  assert.equal(tier('活动：4–14 岁 $5。[[e7]]', 'zh-Hans', () => '成人 $8，4–14 岁 $5；15–17 岁费用待核实').repaired, true);
+});
