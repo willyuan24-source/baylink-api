@@ -89,8 +89,36 @@ test('BayBay leads with the senior transit guide for 老人卡 and senior fare a
 test('BayBay: "老人坐 BART 有优惠吗" leads with the senior transit guide', { todo: 'API-SYNC-3h follow-up: the commute guide\'s new holiday-transit link paragraph outranks the senior transit guide (next BayBay lane)' }, () => {
   assert.equal(itemIds(evidence('老人坐 BART 有优惠吗'))[0], `guide:${TRANSIT}`);
 });
-test('BayBay: "Senior discounts on BART and Muni" keeps BART\'s 62.5% Senior Clipper discount in the evidence', { todo: 'API-SYNC-3h follow-up: the English "Fares for 65+" section with the BART line drops out of the items since CNT-YEAREND lengthened it (next BayBay lane)' }, () => {
+// Why the fare lines fall out (measured on the Wave 7 A data with the senior transit guide varied): a guide gives at most
+// three paragraphs to a one-subject ask. CNT-YEAREND's "Fares for 65+" / "65 岁及以上的各家票价" section is longer (BART's
+// 2026–27 budget sentence, Muni's 2027 fares, the "as of 10/17" notes; English 777 → 1,442 characters), so it scores lower
+// and loses its paragraph to the paratransit or Clipper-card paragraph, or keeps it with a 400-character excerpt that ends
+// before the asked agency. The new link-only paragraph ("Getting around from Thanksgiving to New Year's" / "感恩节到元旦怎么
+// 坐车" + one line + its /guides/ URL, under the paratransit heading) also takes one of the three on some asks. With the
+// base section text every fare below comes back except on "Senior discounts on BART and Muni", which also needs the link
+// paragraph gone; without the link paragraph alone, only that ask's 62.5% line and "长者坐 Muni 多少钱" come back.
+const FARE_LOSS = 'API-SYNC-3h follow-up: CNT-YEAREND\'s longer fares section loses its paragraph slot or its excerpt ends before the asked agency, and the new holiday-transit link paragraph takes a slot; keep the asked agency\'s fare line in the senior transit guide\'s evidence (next BayBay lane)';
+test('BayBay: "Senior discounts on BART and Muni" keeps BART\'s 62.5% Senior Clipper discount in the evidence', { todo: FARE_LOSS }, () => {
   assert.ok(modelItems(evidence('Senior discounts on BART and Muni').items).some(view => /BART: 62\.5% off with a Senior Clipper card/.test(view.text)));
+});
+for (const [message, label, fact] of [['Senior discounts on BART and Muni', 'Muni\'s $1.40 senior fare', /Muni \(San Francisco\): single ride \$1\.40/],
+  ['How much is VTA for seniors?', 'VTA\'s $1 senior fare', /VTA \(South Bay\): single ride \$1;/], ['Senior fares in the Bay Area', 'AC Transit\'s $1.37 senior fare', /senior local single ride is \$1\.37 on Clipper/],
+  ['长者坐 Muni 多少钱', 'Muni\'s $1.40 senior fare', /Muni（旧金山）：[^\n]{0,20}单程 \$1\.40/], ['老人坐公交有什么优惠', 'BART\'s 62.5% senior discount', /BART：持 Senior Clipper 卡，票价减 62\.5%/],
+  ['老人坐公交有什么优惠', 'Muni\'s $1.40 senior fare', /Muni（旧金山）：[^\n]{0,20}单程 \$1\.40/]]) {
+  test(`BayBay: "${message}" keeps ${label} in the evidence`, { todo: FARE_LOSS }, () => {
+    const result = evidence(message);
+    assert.ok(modelItems(result.items).some(view => view.kind === 'guide' && fact.test(view.text)), itemIds(result).join(', '));
+  });
+}
+// Fairy Winterland (Oakland, 12/12–27, a children's event) gained the cost label "成人 $23、儿童 $21，会员和 Fairyland for All
+// 另有优惠价"; its 优惠价 is for members and the low-income Fairyland for All programme, not for seniors, yet senior discount
+// asks now offer it (5th item). A member-discount ask ("有什么会员优惠") may offer it: there the member price is the answer.
+test('BayBay: senior discount asks never offer Fairy Winterland\'s member price as a senior discount', { todo: 'API-SYNC-3h follow-up: a 优惠 / discount word in a family event\'s cost label matches a senior discount ask; an elder ask with no family context should not take family-only events (next BayBay lane)' }, () => {
+  for (const message of ['老人有什么优惠', '长者有什么优惠', '长者坐车有什么优惠', '老人坐 BART 有优惠吗', '長者坐車有什麼優惠？', 'Senior discounts in the Bay Area']) {
+    const result = evidence(message);
+    const offered = [...itemIds(result), ...(result.candidates || []).map(row => `candidate:${row.id}`)];
+    assert.ok(!offered.some(id => /fairyland-fairy-winterland-2026/.test(id)), `${message}: ${offered.join(', ')}`);
+  }
 });
 
 test('BayBay leads with the elder scam guide for 防诈骗 and impersonation-call asks', () => {

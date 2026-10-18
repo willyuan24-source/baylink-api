@@ -153,7 +153,7 @@ test('review: holiday weekends, background months, ages beside a date and Englis
   // API-SYNC-3h: web Wave 7 A gives Fairy Winterland (12/12–27) its ticket prices ("儿童 $21"), and the dateless English ask
   // now ranks it second of its candidates, so Dublin's Thanksgiving movies (10th item before) fall out; the TODO below.
   const thanksgiving = itemIds(evidence('Thanksgiving weekend things to do with kids'));
-  for (const id of ['event:sv-turkey-trot-2026']) assert.ok(thanksgiving.includes(id), thanksgiving.join(', '));
+  assert.ok(thanksgiving.includes('event:sv-turkey-trot-2026'), thanksgiving.join(', '));
   // The weekend before or after a holiday is that weekend (Christmas 2026 is a Friday, Thanksgiving 11/26).
   for (const [message, start, end] of [['the weekend before Christmas', '2026-12-19', '2026-12-20'], ['感恩节后的周末去哪玩', '2026-11-28', '2026-11-29'],
     ['聖誕節前的週末有什麼活動', '2026-12-19', '2026-12-20'], ['weekend after Thanksgiving, anything for the kids?', '2026-11-28', '2026-11-29']]) {
