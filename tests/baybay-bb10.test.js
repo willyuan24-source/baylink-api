@@ -114,6 +114,26 @@ test('a weekend word beside a written Saturday or Sunday is that whole weekend, 
   assert.equal(plan.goal, 'day-plan'); assert.equal(plan.date, '2026-10-24');
 });
 
+test('review round 1: full-width separators, a second date and a time of day beside "周末 10/24"', () => {
+  // Chinese keyboards type full-width punctuation: the span still covers the written day.
+  for (const message of ['这周末（10/24）带娃去哪', '周末（10/24）有什么活动', '这周末，10/24，带娃去哪', '这周末：10/24 带娃去哪',
+    // The weekend's other day offered beside it is the same span.
+    '周末 10/24 还是 10/25 去比较好', '这周末 10/24 或 10/25 带娃', '10/24 还是 10/25 周末去哪', '这周末 10/24、10/25 带娃去哪']) {
+    const { state } = stateOf(message);
+    assert.deepEqual(state.dateRange, { start: '2026-10-24', end: '2026-10-25' }, message); assert.equal(state.date, null, message);
+  }
+  // Another date outside that weekend: the ask names several days, as before this lane (no silent 10/31).
+  for (const message of ['周末 10/24 或 10/31 都行，去哪玩', 'weekend 10/24 or 10/31, where to go']) {
+    const result = stateOf(message);
+    assert.equal(result.state.date, null, message); assert.equal(result.state.dateRange, undefined, message); assert.match(result.clarification || '', /多个日期/, message);
+  }
+  assert.deepEqual(stateOf('这周末 10/24，下周末 10/31 都可以').state.dateRange, { start: '2026-10-24', end: '2026-10-25' });
+  // The weekend's other day asked on its own is that day ("这周末 10/24 去 SJMA，10/25 去哪").
+  assert.equal(stateOf('这周末 10/24 去 SJMA，10/25 去哪').state.date, '2026-10-25');
+  // A clock time or part of the day right after the date asks about that one day.
+  for (const message of ['这周末 10/24 下午3点有什么', '周末 10/24 晚上有什么演出']) assert.equal(stateOf(message).state.date, '2026-10-24', message);
+});
+
 // ---------------------------------------------------------------- 5. home city vs the service's city (live Q3)
 
 test('a library service asked from home keeps the home city as the origin and does not move the scope to the institution\'s city', () => {
