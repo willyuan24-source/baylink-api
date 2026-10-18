@@ -164,7 +164,9 @@ test('BayBay: the family picks lead in fresh wordings; the adults\' pick, Sunday
     assert.deepEqual(candidateIds(evidence(message, today)).slice(0, 3), FAMILY_1031, `${message} (${today})`);
   }
   // The adults' pick (华埠分馆周六午后, audience 成人) is neither a candidate nor an item on a family ask.
-  for (const message of ['这周六带娃去哪玩？', '周六带小朋友去哪里玩比较好', '这周六带孩子去旧金山玩', '周六遛娃去哪']) {
+  // Review of API-BB-12: nor on an ask with a baby or a stroller, which the planner's family flag does not read.
+  for (const message of ['这周六带娃去哪玩？', '周六带小朋友去哪里玩比较好', '这周六带孩子去旧金山玩', '周六遛娃去哪', 'Where can we go with a baby this weekend?',
+    'Stroller-friendly things to do this Saturday', '这周六推婴儿车能去哪']) {
     const result = evidence(message);
     assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), message);
   }
