@@ -71,8 +71,10 @@ test('on its own weekend a pick ranks higher for a generic family weekend ask, a
   const base = withPicks(absent, () => candidateIds(ASK));
   const boosted = withPicks(WEB_FIXTURE, () => candidateIds(ASK));
   // Before: the day's family records in id order (Cherryland storytime first). With the picks: Petaluma's LumaFest,
-  // Menlo Park's Halloween Hoopla, Cherryland and SJMA lead, in the editor's order.
-  assert.ok(!base.includes('r2-petaluma-lumafest-20261024') && !base.includes('menlo-park-halloween-hoopla-2026'), base.join(', '));
+  // Menlo Park's Halloween Hoopla, Cherryland and SJMA lead, in the editor's order. API-BB-12: with no picks file LumaFest
+  // can now come last, through the day recall (which no longer offers the adults' 华埠分馆周六午后 on a family ask); it does
+  // not lead, and Hoopla is still not offered.
+  assert.ok(!base.slice(0, 4).includes('r2-petaluma-lumafest-20261024') && !base.includes('menlo-park-halloween-hoopla-2026'), base.join(', '));
   assert.deepEqual(boosted.slice(0, 4), ['r2-petaluma-lumafest-20261024', 'menlo-park-halloween-hoopla-2026', 'acl-cherryland-chinese-storytimes-oct24-2026', 'san-jose-sjma-dia-muertos-community-2026'], boosted.join(', '));
   // The same picks filed under another weekend change nothing for the 10/24 ask.
   const elsewhere = fixture('picks-1031.json', { weekends: { '2026-10-31': loadWeekendPicks(WEB_FIXTURE).get('2026-10-24').map(pick => pick.id) } });
