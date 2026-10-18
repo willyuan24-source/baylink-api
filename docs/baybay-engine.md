@@ -426,3 +426,46 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   the stop order in the lead and each stop's time or hours in its point. Stop names: the title's and aliases' parts,
   their Latin names, a few Chinese names of Latin venues (Ferry Building / 渡轮大厦, Chinatown / 唐人街 / 华埠); a name two
   stops share names neither.
+
+## API-BB-10: fixes from the #58 live check (record links; the rest moved to API-BB-11)
+
+- **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
+  `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
+  ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
+  inline-link form the web already renders (`plannerWebAnswerParts` with `linkify`). Any other URL the model writes is
+  still removed by `renderCitations`, and an address no record gives stays plain text. `draftCorrected` reads a link as its
+  label, so a streamed draft with the plain address is continued, not corrected. The href keeps the record's spelling of
+  the address, and `answer_lead_long` is measured before linking. The model's address must equal a record's apart from
+  letter case, with a lowercase top-level domain: "LOVEBOATALUMNI.ORG/ROOTS2026" or an added trailing "/" stays plain
+  text. Web follow-up: `bayBayReadableText` (朗读) and `bayBayTextUnits` should read `[label](url)` as its label.
+- **Weekend picks** (a test only): with the synced picks file (fixture `tests/fixtures/weekend-picks-web.json`), "这周末
+  10/24 带娃去哪" has at least 4 of the editor's 5 picks for 10/24–25 among its first 8 candidates, on main's date reading.
+- **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
+  "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
+  (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
+- **Put back to main** (review round 6 and round 8 fallbacks; `lib/entityAliases.js`, `lib/baybayState.js`,
+  `lib/baybayQuality.js` and `lib/baybayBenefitScope.js` are exactly 8eec008's). Review rounds kept finding wordings that
+  these four features read worse than main, so they were reverted for the follow-up lane API-BB-11:
+  - the weekend-day span ("这周末 10/24" as Sat 10/24 + Sun 10/25). It missed the busy other day in many wordings
+    ("第2天要上课", "other day is busy", "其他时间没空"), widened one-day asks the planner does not parse ("周六晚", "周日上完中文
+    课", "after church", "till 4"), and moved weekends four or more months back into next year. Main reads the written day
+    alone;
+  - the home-city library reading ("我住 Fremont，可以办 SFPL 借书证…" with no destination city). After the card question it
+    lost San Francisco for the SFPL Richmond branch and for trips to the library ("drive to SFPL Main to get a card"). Main
+    scopes the ask to the library's city;
+  - the adult price tier repair (`adultTierRepair`). A free four-character lead before 页 / 网 / 官网 could drop a member,
+    weekday or early-bird condition, and a point's other record (in `cardIds`, or text after a mid-point marker) could take
+    the adult price. Main adds no tier;
+  - the benefit-scope card clause (live 10-17 Q3, "SFPL answer degraded"). Root cause, still main's behaviour: the repair
+    learns which service owns a residence or age rule from each scope sentence's topic. "须有有效 SFPL 图书证并完成 Kanopy
+    账户绑定；加州居民可免费办 SFPL 卡，首次领卡需到馆核验照片证件。" is one Kanopy statement, so the model's correct card claim
+    looks borrowed from Kanopy. The repair then quotes the radon-detector loan ("持 SFPL 图书证借用") as the card rule, and
+    the answer comes back `degraded: true` (zh-Hans and zh-Hant; en is not degraded). The lane read the clause after the
+    `；` as a card rule of its own, and in its last form through an allowlist grammar. Each verify still found made-up
+    clauses where it kept a false card claim that main repairs. Two shapes: a service clause with the service verb left
+    out ("年满 18 岁的旧金山居民办 SFPL 卡后到馆领取", "申请 SFPL 卡即可", "can get a library card, then pick up at any
+    branch"), and a bare 办证 under a parking-permit heading.
+- Tests: `tests/baybay-bb10.test.js` (live drafts through the v2 fast path and the reviewers' regression cases,
+  zh-Hans / zh-Hant / en). The tests of the reverted features stay there as `todo` naming API-BB-11, and so does the
+  round-1 timing test in `tests/redos.test.js`. A todo test that passes holds main's behaviour, for example the round-8
+  rows where main repairs a false card claim.
