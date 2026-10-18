@@ -136,3 +136,29 @@ test('after the Fremont SFPL question, a follow-up is not scoped to San Francisc
   assert.notEqual(state.city, 'San Francisco'); assert.notEqual(state.region, 'sf');
   assert.equal(state.origin, 'Fremont');
 });
+
+// ---------------------------------------------------------------- 6. the editor's 10/24–25 picks on the live Q5 ask
+
+test('with the synced picks file, "这周末 10/24 带娃去哪" leads with the editor\'s 10/24–25 picks (fixture = WEB-PICKS-EXPORT)', () => {
+  const path = require('path');
+  const { buildFastEvidence } = require('../lib/baybayEvidence');
+  const { normalizeGuideQuery } = require('../lib/guideLocale');
+  const { loadDiscoveryCatalog } = require('../lib/publicContext');
+  const discoveries = { ...loadDiscoveryCatalog(), english: loadDiscoveryCatalog(undefined, true) };
+  const message = '这周末 10/24 带娃去哪';
+  const candidateIds = () => buildFastEvidence({ query: normalizeGuideQuery(message), originalQuery: message, state: stateOf(message).state,
+    guideCatalog: guides, catalog, discoveries, today: '2026-10-17', locale: 'zh-Hans', audience: true }).candidates.map(row => row.id);
+  const before = process.env.BAYLINK_WEEKEND_PICKS_FILE;
+  let withPicks, without;
+  try {
+    process.env.BAYLINK_WEEKEND_PICKS_FILE = path.join(__dirname, 'fixtures', 'missing-weekend-picks.json');
+    without = candidateIds();
+    process.env.BAYLINK_WEEKEND_PICKS_FILE = path.join(__dirname, 'fixtures', 'weekend-picks-web.json');
+    withPicks = candidateIds();
+  } finally { if (before === undefined) delete process.env.BAYLINK_WEEKEND_PICKS_FILE; else process.env.BAYLINK_WEEKEND_PICKS_FILE = before; }
+  const PICKS = ['r2-petaluma-lumafest-20261024', 'menlo-park-halloween-hoopla-2026', 'sfpl-chinatown-creative-saturdays-fall-2026', 'acl-cherryland-chinese-storytimes-oct24-2026', 'san-jose-sjma-dia-muertos-community-2026'];
+  const shown = withPicks.slice(0, 8);
+  // The live answer (no file) had 1 of the 5; with the file at least 4 of them are among the first 8 candidates.
+  assert.ok(PICKS.filter(id => shown.includes(id)).length >= 4, shown.join());
+  assert.ok(PICKS.filter(id => without.slice(0, 8).includes(id)).length < PICKS.filter(id => shown.includes(id)).length);
+});
