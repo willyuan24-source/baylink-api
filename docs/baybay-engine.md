@@ -453,7 +453,7 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   Review round 1: every gap in these forms is bounded (`s{0,3}`; unbounded `s*` around optional separators backtracked on
   U+3000 runs, timed in `tests/redos.test.js`). The span gives way when another written date outside that weekend remains
   ("周末 10/24 或 10/31" asks to pick one day, as before); the weekend's other day offered as an alternative is part of the
-  span ("周末 10/24 还是 10/25", "10/24、10/25"); "这周末 10/24 去 SJMA，10/25 去哪" asks about 10/25. Full-width separators
+  span ("周末 10/24 还是 10/25", "10/24、10/25"). Full-width separators
   ("这周末（10/24）", "，10/24", "：10/24") work: `blankSpan` blanks the span in the normalized text through any separator
   run. Review round 2: a weekday label written beside the date ("这周末 10/24（周六）", "10/24（六）", "weekend 10/24 (Sat)")
   or beside a paired day is part of the span when it matches the date; one that does not ("10/24（周日）") leaves the ask to
@@ -474,8 +474,19 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   - 每周一次 / 每周三次 and a lower-case "sun" / "sat" elsewhere in the ask are not weekdays, in the span and in the analysis
     (no Monday 10/19 from 每周一次, no Sunday 10/18 from "the sun is out");
   - when the weekend-day reading steps aside, the ask never falls back to this weekend (10/17-18 on Saturday 10/17) for a
-    written day outside it: no span, so the written day or "pick one day" is read.
-  The base-vs-tip date suite (226 reviewer phrasings plus 50 more, 8 contexts, 2 days, 4,416 rows) has no regression.
+    written day outside it: no span; the planner reads what it can (the written day, "pick one day", or no date).
+  Review round 4 narrowed the span to main's reading wherever the ask is about more than that one weekend:
+  - `weekendDay: false` skips the weekend-day forms before anything else, so it is main's reading exactly ("10/31 那个周末
+    有事了，这周末呢" after 10/31 is this weekend again);
+  - a match is a side remark when its weekend has ended or another 周末 / weekend stays outside it ("10/24 那个周末有事，下周末
+    呢", "That weekend, Oct 10, was rainy. What about this weekend?"), and the ask is read as on main (a past weekend with
+    a written year too: "2025年10月25日周末去了哪" is 2025-10-25 as on main);
+  - any other written date, also the weekend's other day written apart ("这周末 10/24 有空，10/25 要加班", "这周末 10/24，
+    10/25 都行"), leaves the ask to main's reading, so the leftover day (possibly the busy one) never becomes the only date;
+  - more one-day wording keeps one day (那天, 晚饭前 / 天黑前, 早去早回, 几个小时, hours, sunrise, before dark);
+  - `blankSpan` is used only for a weekend-day span; other spans blank as on main ("12月5日，6日都可以" beats the date bar).
+  The base-vs-tip date suites (the round-3 suite of 276 phrasings × 8 contexts × 2 days, and the round-4 reviewer's 225 +
+  249 phrasings in up to 10 contexts) have no row that is worse than main.
 - **Home city vs a library's city** (`lib/baybayState.js` `HOME_CITY`, `homeLibraryAsk`). "我住 Fremont，可以办 SFPL
   借书证和用 Kanopy 吗？" (an information or newcomer ask that names a library institution and where the reader lives) no
   longer sets the institution's city as the destination: city and region stay empty and the home city stays the
@@ -483,7 +494,10 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   dropped: the region filter then removed the SFPL Kanopy record from the evidence. Review round 3: only a card or
   service ask (`LIBRARY_SERVICE_ASK`: 办卡 / 借书证 / Kanopy / eCard / Discover & Go / 打印 / "can I use"); a branch's hours or
   address ("我住 Fremont，SFPL 总馆在哪里？", "What time does SFPL Main Library open on Sunday?"), an events ask, or a trip to
-  the library (`LIBRARY_VISIT_ASK`: 想去 / 要去 …) still scopes to San Francisco, as on main.
+  the library (`LIBRARY_VISIT_ASK`: 想去 / 要去 …) still scopes to San Francisco, as on main. Review round 4: after the
+  home-city turn (no city carried, origin Fremont), a follow-up that names the library and asks where it is or when it opens
+  ("SFPL 总馆在哪里？", "那 SFPL 总馆周末开吗") sets the library's city again (`visitAfterHome`), so the next "附近有什么吃的"
+  stays in San Francisco as on main; a general follow-up ("那这周末附近有什么免费亲子活动？") is still not scoped to SF.
 - **A registration page a record writes out is a link** (`lib/baybayEngine/answer.js` `recordAddresses`,
   `linkRecordAddresses`). An address with a path found verbatim in the text of a record sent to the model
   ("LoveBoatAlumni.org/roots2026" in CHSA's plan line) becomes `[text](https://text)` in the v2 lead, points and gap: the
@@ -506,7 +520,11 @@ and L07 answers replayed as the model wrote them; "API-BB-8 review" blocks); `te
   a separator or a segment start may come before the adult word ("钓鱼赛成人 $55" is the derby entry). A note that only
   another age band's price is not listed ("15–17 岁费用未注明，待核实") is not a condition on the adult price. Over all 1,135
   cost labels in `data/*.json`, three rows get a tier (Pumpkins After Dark, Alameda, Lightscape); Rio Vista and ZooLights
-  do not.
+  do not. Review round 4: a point whose markers name more than one record is left alone (the tier would sit beside the other
+  record's citation: "Alameda 鬼屋 4–14 岁 $5 [[e7]]；Emeryville 艺术展免费 [[e6]]"), and so is a point that talks about the
+  accompanying adults (家长 / 父母 / 陪同 / parents / guardians); date or tax wording (而定 / 调整 / 含税 / tax) conditions the
+  cost line, and the unlisted-band note exempts only a band wholly below 18. `PRICE_CONDITION` is still a denylist; an
+  allowlist grammar for cost lines is a follow-up.
 - **Card labels are the web's** (not changed here): BayBay's card meta is computed on the web from its own catalog.
   "部分免费" is `eventPriceChip` for `cost: 'mixed'`, and "商家活动" is `offerKindLabel` when `isPublicBenefit` fails
   (brand "SFPL · KANOPY" does not match `PUBLIC_BRAND`). Both are web follow-ups.
