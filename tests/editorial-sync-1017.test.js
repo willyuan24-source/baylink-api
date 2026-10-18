@@ -249,7 +249,11 @@ test('a free-only 10/24 ask keeps the SJMA Día de los Muertos community day (fr
   assert.equal(require('../lib/planner').priceOf({ cost: 'mixed', costLabel: '居民免费入场；餐饮另计', planning: {} }), null);
 });
 
-test('a dated one-day event\'s when gives its session hours', { todo: 'API-SYNC-3g follow-up: a single-day event\'s model view gives only the date in when (San Leandro: "12月5日（周六）"); its 10:30–11:00 is in the text only. API-BB-7 added session hours for multi-date events' }, () => {
+// API-BB-9 (API-SYNC-3g follow-up): a single-day event's model view gave only the date in when (San Leandro: "12月5日（周六）"),
+// its 10:30–11:00 in the text only; API-BB-7 had added session hours for multi-date events. A one-day event's when has them now.
+test('a dated one-day event\'s when gives its session hours', () => {
   const item = evidence('12月5日有普通话故事会吗？').items.find(row => row.id === SAN_LEANDRO);
-  assert.match(modelItems([item])[0].when, /10:30–11:00/);
+  assert.equal(modelItems([item])[0].when, '12月5日（周六） 10:30–11:00');
+  const english = evidence('Is there a Mandarin storytime on December 5?', 'en').items.find(row => row.id === SAN_LEANDRO);
+  assert.match(modelItems([english])[0].when, /10:30–11am$/);
 });
