@@ -195,12 +195,20 @@ test('the sold-out Jack London Park author talk (11/15) is never a bookable opti
   }
 });
 
-// Follow-ups for the next BayBay lane, measured on this sync's data. Each is a TODO until fixed.
-test('a sold-out event asked about by its place and kind carries its sold-out note', { todo: 'API-SYNC-3g follow-up (the general named-recall rule of editorial-sync-1016): "Jack London 州立公园 11月15日的作家讲座还能去吗？" and the English ask do not name "Jack London 公园作家下午会：The Second Mrs. London", so the sold-out row is left out and the model cannot say it is sold out (before this sync it was the second item, with no status)' }, () => {
+// API-BB-9 (API-SYNC-3g follow-up): "Jack London 州立公园 11月15日的作家讲座还能去吗？" and the English ask do not name "Jack London
+// 公园作家下午会：The Second Mrs. London" in full, so the sold-out row was left out and the model could not say it is sold out
+// (before the sync it was the second item, with no status). A statused event on the asked day whose name shares two Latin
+// words in a row with the ask ("Jack London") is recalled as named, with its status; it never becomes a candidate.
+test('a sold-out event asked about by its place and kind carries its sold-out note', () => {
   for (const message of [JACK_LONDON_ASKS[0], JACK_LONDON_ASKS[2]]) {
-    const item = evidence(message).items.find(row => row.id === JACK_LONDON);
+    const result = evidence(message);
+    const item = result.items.find(row => row.id === JACK_LONDON);
     assert.equal(item?.mismatch, 'sold_out', message);
+    assert.match(modelItems([item])[0].note, /^Sold out: .*never recommend it/, message);
+    assert.ok(!result.candidates.some(row => row.id === JACK_LONDON), message);
   }
+  // Another day recalls nothing by this rule.
+  assert.ok(!itemIds(evidence('Jack London 州立公园 11月14日的作家讲座还能去吗？')).includes(`event:${JACK_LONDON}`));
 });
 
 // API-BB-9: an opening ask that names an opening by its title's first word recalls it with or without a city, and the

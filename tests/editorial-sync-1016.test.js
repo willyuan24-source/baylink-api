@@ -136,7 +136,9 @@ test('BayBay: the sold-out SJMA symposium is never a bookable option', () => {
 });
 
 // Follow-ups for the next BayBay lane (API-BB-6), measured on this sync's data. Each is a TODO until fixed.
-test('the English SJMA ask carries the symposium with its sold-out note', { todo: 'API-SYNC-3f follow-up: one case of the general English named-recall rule at the end of this file (the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José), so the model is not told it is sold out; this case matters until the 10/17 meeting' }, () => {
+// API-BB-9: the English alias keeps its ": From the Gallery to Coyote Creek" tail and the é of San José, so the ask named no
+// alias in full; the dated status recall (two Latin words in a row, "Climate Symposium") brings the sold-out row with its note.
+test('the English SJMA ask carries the symposium with its sold-out note', () => {
   const found = evidence('Can I still sign up for the San Jose Art and Climate Symposium on October 17?').items.find(row => row.id === SJMA);
   assert.equal(found?.mismatch, 'sold_out');
 });
