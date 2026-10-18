@@ -132,3 +132,35 @@ test('a full file that was not regenerated with the held one is refused, row by 
   assert.notEqual(order.status, 0, 'the held copy keeps the full catalog\'s order');
   assert.match(order.err, /regenerate both from one web build/);
 });
+
+// API-BB-9: the web's public/weekend-picks.json (WEB-PICKS-EXPORT) is copied when present; a web main without it still syncs.
+const PICKS_FIXTURE = fs.readFileSync(path.join(__dirname, 'fixtures', 'weekend-picks-web.json'));
+
+test('the weekend picks file is optional: absent, nothing about picks; present, it is copied and reported', t => {
+  const before = dataHashes();
+  const without = JSON.parse(sync(t).out);
+  assert.equal(without.weekendPicks, null);
+  assert.ok(!without.files.some(row => row.destination.endsWith(`${path.sep}weekend-picks.json`)));
+  const run = sync(t, files => { files['weekend-picks.json'] = PICKS_FIXTURE; });
+  assert.equal(run.status, 0, run.err);
+  const report = JSON.parse(run.out);
+  const copy = report.files.find(row => row.destination.endsWith(`${path.sep}data${path.sep}weekend-picks.json`));
+  assert.ok(copy && copy.source.endsWith(`${path.sep}public${path.sep}weekend-picks.json`), JSON.stringify(report.files));
+  assert.deepEqual(Object.keys(report.weekendPicks.weekends), ['2026-10-17', '2026-10-24', '2026-10-31']);
+  assert.equal(report.weekendPicks.weekends['2026-10-24'][0], 'r2-petaluma-lumafest-20261024');
+  assert.deepEqual(report.weekendPicks.notOnTheirDay, []);
+  assert.deepEqual(dataHashes(), before, 'validation never writes');
+});
+
+test('picks naming an event the catalog lacks, or a weekend that is not Saturday to Sunday, are refused', t => {
+  const picks = JSON.parse(PICKS_FIXTURE.toString('utf8'));
+  const unknown = sync(t, files => { files['weekend-picks.json'] = json({ ...picks, weekends: [{ ...picks.weekends[1], picks: [{ ...picks.weekends[1].picks[0], id: 'not-a-catalog-event-2026' }] }] }); });
+  assert.notEqual(unknown.status, 0);
+  assert.match(unknown.err, /pick not-a-catalog-event-2026 \(2026-10-24\) is not in public\/planner-catalog\.full\.json: stale picks/);
+  const friday = sync(t, files => { files['weekend-picks.json'] = json({ ...picks, weekends: [{ ...picks.weekends[1], start: '2026-10-23', end: '2026-10-24' }] }); });
+  assert.notEqual(friday.status, 0);
+  assert.match(friday.err, /weekend 2026-10-23 must start on a Saturday/);
+  const outside = sync(t, files => { files['weekend-picks.json'] = json({ ...picks, weekends: [{ ...picks.weekends[1], picks: [{ ...picks.weekends[1].picks[0], dates: ['2026-10-31'] }] }] }); });
+  assert.notEqual(outside.status, 0);
+  assert.match(outside.err, /lists 2026-10-31, outside its weekend 2026-10-24/);
+});
