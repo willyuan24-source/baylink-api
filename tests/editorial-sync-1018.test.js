@@ -121,9 +121,10 @@ test('BayBay: a 10/24 family ask on 10/22 or 10/23 offers the editor\'s 10/24 pi
 // words: on 10-22 the 带娃 asks above got all four family picks first, "这周六有什么活动" two, "这个周末湾区有什么亲子活动？"
 // only LumaFest, and the 带孩子 / 带小孩 / English asks below none (nor did the 10/31 weekend asked on 10-29). API-BB-12: on a
 // family outing ask (the planner's family flag or a child's age; goal discover or day-plan) the family picks come first.
+// "Where to take the kids this Saturday?" reads as information (base's "where to take"), so it is the TODO below.
 const GENERIC_1024 = [['这个周末湾区有什么亲子活动？', 'zh-Hans'], ['这周末带孩子去哪玩', 'zh-Hans'], ['周末带小孩去哪里玩', 'zh-Hans'], ['这周六带孩子去哪玩？', 'zh-Hans'],
   ['10月24号带孩子去哪玩', 'zh-Hans'], ['10月24号周末带孩子去哪玩', 'zh-Hans'], ['這個週末灣區有什麼親子活動？', 'zh-Hant'], ['週六帶小孩去哪裡玩？', 'zh-Hant'],
-  ['Family things to do in the Bay Area this weekend', 'en'], ['What should we do with the kids this Saturday?', 'en'], ['Where to take the kids this Saturday?', 'en'],
+  ['Family things to do in the Bay Area this weekend', 'en'], ['What should we do with the kids this Saturday?', 'en'],
   ['What can kids do on October 24?', 'en'], ['Things to do with kids on Saturday October 24', 'en']];
 test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers the editor\'s family picks first', () => {
   const misses = [];
@@ -136,6 +137,11 @@ test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers th
     if (JSON.stringify(cands.slice(0, 3)) !== JSON.stringify(FAMILY_1031)) misses.push(`${message} (10-29): ${cands.join(', ')}`);
   }
   assert.deepEqual(misses, []);
+});
+// Reverted in review round 4 of API-BB-12: reading "where to take <company>" as an outing made grandkids and little-ones asks
+// offer the adults' pick 华埠分馆周六午后 first, so "where to take" keeps base's reading (information) for now.
+test('BayBay: "Where to take the kids this Saturday?" offers the editor\'s family picks first', { todo: 'API-BB-13 follow-up: read "where to take <company>" as an outing, with every child companion (grandkids, little ones) a family ask for the adult filters' }, () => {
+  assert.deepEqual(candidateIds(evidence('Where to take the kids this Saturday?', TODAY, 'en')).slice(0, 4), FAMILY_1024);
 });
 
 // API-SYNC-3h loss, fixed by API-BB-12 (it passed on the api base data 3faef61 and failed on the Wave 7 A copy with the old
@@ -188,14 +194,14 @@ test('BayBay: the family picks lead in fresh wordings; the adults\' pick, Sunday
 
 // Review of API-BB-12: "where to take" read as an outing phrase for any object made every "Where to take X in <city>" ask an
 // outing ask, so service asks lost the guides that answer them (the HHW, ESL, driver's license and naturalization guides) to
-// outing records. It is an outing only when what it takes is company and nothing but a day, a time or a place follows.
+// outing records. Base's reading (kept since review round 4: "where to take" is not an outing phrase) keeps them.
 const TAKE_SERVICE = ['Where to take old batteries in San Jose', 'Where to take e-waste in Oakland this Saturday', 'Where to take a COVID test in San Francisco',
   'Where to take hazardous waste in Santa Clara County', 'Where to take English classes in Oakland', 'Where to take the DMV written test in Fremont',
   'Where to take a sick child at night in San Jose', 'Where to take a toddler with a high fever tonight in Fremont', 'Where to take my toddler to see a pediatrician in Oakland',
   'Where to take my grandma to the ER tonight in San Jose', 'Where to take a dog to the vet in Oakland', 'Where to take the citizenship test in San Francisco?',
   'Where to take a free English class in Oakland?', 'Where to take hazardous waste in San Mateo?', 'Where to take donated clothes this Saturday?', 'Where to take a blood test this Saturday',
   'Where to take my kids for flu shots this Saturday', 'Where to take the kids tonight with a fever', 'Where to take my son to the dentist in Fremont'];
-test('BayBay: "where to take" is an outing only with company as its object; service asks keep their reading and their guides', () => {
+test('BayBay: "where to take" service asks keep their reading and their guides', () => {
   const goal = message => resolveTaskState({ message, today: TODAY, catalog: planner, carry: true }).state.goal;
   for (const message of TAKE_SERVICE) {
     assert.notEqual(goal(message), 'discover', message);
@@ -207,6 +213,27 @@ test('BayBay: "where to take" is an outing only with company as its object; serv
     ['Where to take a free English class in Oakland?', 'bay-area-free-esl-adult-learning-guide'], ['Where to take the citizenship test in San Francisco?', 'bay-area-naturalization-official-path-guide']]) {
     assert.ok(itemIds(evidence(message)).includes(`guide:${slug}`), message);
   }
+});
+// Review round 4 of API-BB-12: with "where to take <company>" read as an outing, grandkids, grandchildren and little-ones asks
+// (no family flag, so no adult filter) offered the adults' pick 华埠分馆周六午后, item 1 on the first two. Base's reading
+// (information, as base and the sync) offers it on none.
+test('BayBay: "where to take" grandkids and little-ones asks never offer the adults\' pick', () => {
+  for (const message of ['Where to take my grandkids this weekend in San Francisco', 'Where to take the grandchildren this Saturday in SF', 'Where to take the little ones on Saturday in San Francisco',
+    'Where to take my grandkids this Saturday in the Bay Area', 'Where to take my little ones this Saturday', 'Where to take the grandkids this Saturday?']) {
+    const result = evidence(message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), `${message}: ${itemIds(result).join(', ')}`);
+  }
+});
+// A loss of the sync itself (old lib/ and new lib/ alike; base offered none): a grandchildren outing ask in SF offers the
+// adults' pick first, because 孙子 / grandkids is not a family audience for the planner or the adult filters.
+test('BayBay: grandchildren outing asks never offer the adults\' pick', { todo: 'API-BB-13 follow-up: grandkids / grandchildren / 孙子 / 孫子 / 孙女 / 外孙 as a family ask for the adult filters (a loss of the Wave 7 A sync)' }, () => {
+  for (const message of ['Things to do with the grandkids this Saturday in San Francisco', '這週六帶孫子去舊金山哪裡玩']) {
+    const result = evidence(message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), `${message}: ${itemIds(result).join(', ')}`);
+  }
+});
+test('BayBay: "where to take" with company as its object is an outing', { todo: 'API-BB-13 follow-up: "where to take <company>" as an outing (reverted in review round 4 of API-BB-12: grandkids and little-ones asks got the adults\' pick first)' }, () => {
+  const goal = message => resolveTaskState({ message, today: TODAY, catalog: planner, carry: true }).state.goal;
   for (const message of ['Where to take the kids this Saturday?', 'Where to take my parents in Oakland?', 'Where to take my 4 year old this Saturday', 'Where to take out-of-town guests in the Bay Area?']) {
     assert.equal(goal(message), 'discover', message);
   }
