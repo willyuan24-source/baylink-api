@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-15",
+  "checkedAt": "2026-10-21",
   "items": [
     {
       "kind": "offer",
@@ -466,7 +466,7 @@
       "dateLabel": "10/25 周日 · 10:00–17:00 · 门票提前两周开放",
       "costLabel": "需预约",
       "status": "dated",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.sfmoma.org/free-days/",
       "sourceLabel": "SFMOMA 免费家庭日与成人名额"
     },
@@ -986,7 +986,7 @@
       "dateLabel": "10/24–31 · 各分馆开放时段，送完为止",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-09-27",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.sjpl.org/news/halloween-booktacular-giveaway-2026/",
       "sourceLabel": "SJPL 2026 赠书公告与领取条件"
     },
@@ -1079,7 +1079,7 @@
       "dateLabel": "10/24 周六 · 07:30–10:30，发完即止",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-09-30",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.hayward-ca.gov/discover/events/compost-giveaway-oct-24-2026",
       "sourceLabel": "Hayward 市府 · 2026 秋季堆肥领取公告"
     },
@@ -2589,7 +2589,7 @@
       "dateLabel": "2026 年 10/24 · 10:00–12:00，按本店当地时间",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.michaels.com/class/lil%E2%80%99-witching-hours:-chenille-stem-ghost-or-spider-142265502677384",
       "sourceLabel": "Michaels 官方活动详情与 2026 场次"
     },
@@ -2607,7 +2607,7 @@
       "dateLabel": "2026 年 10/25 · 13:00–15:00，按本店当地时间",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.michaels.com/class/witching-hours:-last-minute-costume-demo-263698371328392",
       "sourceLabel": "Michaels 官方活动详情与 2026 场次"
     },
@@ -2643,7 +2643,7 @@
       "dateLabel": "10/24 · 11:00–15:00，本店确认后前往",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
       "sourceLabel": "Lakeshore 官方 2026 免费儿童活动日历（PDF）"
     },
@@ -3365,7 +3365,7 @@
       "dateLabel": "10/25–31 · 先向门店确认当天手作时间",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
       "sourceLabel": "Lakeshore 2026 门店活动日历"
     },
@@ -3502,7 +3502,7 @@
       "dateLabel": "2026/10/25 · 10:00–16:00",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.prnewswire.com/news-releases/petsmart-celebrates-halloween-with-free-in-store-events-including-new-meet-the-spooky-pets-experience-302895172.html",
       "sourceLabel": "PetSmart 官方 2026 万圣节门店活动公告"
     },
@@ -3730,7 +3730,7 @@
       "dateLabel": "10/25 周日 · 12:00–14:00 · 先到先得",
       "costLabel": "无需购物",
       "status": "dated",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.lego.com/en-us/stores/events/lbr-26mt-ghost-street",
       "sourceLabel": "LEGO 官方 Ghost Street 搭建活动与条款"
     },
@@ -4272,11 +4272,11 @@
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening、10/12 起按常规时间营业，现在只列常规营业时间；品牌首页的分店目录仍标 Coming Soon，两处说法不一。",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening，现在列常规营业时间；品牌首页现写 now open in BURLINGAME，但门店页下方的分店列表仍标 Coming Soon，两处说法不一。",
       "details": [
         "平日 14:00–17:00 不营业；周末 11:00–21:00 中午不休息。",
         "225 Lorton Ave, Burlingame, CA 94010",
-        "拉面"
+        "博多豚骨拉面"
       ],
       "region": "peninsula",
       "city": "Burlingame",
@@ -4296,7 +4296,7 @@
       "details": [
         "午餐周一至周五 11:30–14:00；早午餐周六、周日 11:00–14:00。官网此前写早午餐 10/18（周日）起，现在不再写起始日；10/17 周六想去吃早午餐，先打 650-502-1000 问是否已开始供应。午餐和早午餐都可在官网订位。",
         "222 Park Road, Burlingame, CA 94010",
-        "历史建筑里的新餐厅"
+        "法式风味加州菜"
       ],
       "region": "peninsula",
       "city": "Burlingame",
@@ -4316,7 +4316,7 @@
       "details": [
         "官网首页列营业时间：周一至周六 11:00–17:30。",
         "1160 4th Street, Santa Rosa, CA",
-        "零售迁址"
+        "家居艺术与首饰"
       ],
       "region": "north-bay",
       "city": "Santa Rosa",
@@ -4335,7 +4335,7 @@
       "details": [
         "官网写每天营业：秋季周一至周三只做晚餐 17:00–21:00，周四至周日 11:00–21:00 午餐晚餐都有。地址 7233 Healdsburg Avenue，官网可订位。",
         "7233 Healdsburg Avenue, Sebastopol, CA 95472",
-        "地中海餐厅"
+        "土耳其地中海菜"
       ],
       "region": "north-bay",
       "city": "Sebastopol",
@@ -4354,7 +4354,7 @@
       "details": [
         "官网当前列周三至周日7:00–13:00，周一、周二休息；把它安排在早段，出发前核对当天营业与售完情况。",
         "280 S Main Street, Sebastopol, CA",
-        "贝果与早餐"
+        "东岸风味贝果"
       ],
       "region": "north-bay",
       "city": "Sebastopol",
@@ -4373,7 +4373,7 @@
       "details": [
         "当前官网列17:00开始晚餐、周二休息，并建议预订；可结合市中心步行，临时到店须视空位安排。",
         "505 Mendocino Avenue, Santa Rosa, CA 95401",
-        "意大利餐厅"
+        "手工意面与披萨"
       ],
       "region": "north-bay",
       "city": "Santa Rosa",
@@ -4392,7 +4392,7 @@
       "details": [
         "取餐导航用159 Market Place，先核对所选门店再点单；套餐、外送费、会员优惠及当天营业时间以该门店结算页为准。",
         "159 Market Place, San Ramon, CA 94583",
-        "三明治、沙拉与汤"
+        "三明治与热汤"
       ],
       "region": "east-bay",
       "city": "San Ramon",
@@ -4411,7 +4411,7 @@
       "details": [
         "这里确认的是 10/2 官网所列营业状态，不把此前计划开业日当作实证首营业日；当日时间与菜单请再查商家。",
         "2360 Polk Street, San Francisco, CA",
-        "已营业 · 澳式寿司卷"
+        "寿司手卷"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4430,7 +4430,7 @@
       "details": [
         "贵重商品先核对完整报价、定制条款与退换条件，再决定是否下单；官网 New 标签不能推出某一天就是首日营业。",
         "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "培育钻石与珠宝"
+        "培育钻石珠宝"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4449,7 +4449,7 @@
       "details": [
         "先看当日咖啡店时段，再安排借书或讲座；庆典已结束，不推定仍有赠品。本文为官方开业资讯整理，非亲测食评。",
         "55 W. Third Avenue, San Mateo, CA 94402 · Main Library, third floor",
-        "图书馆咖啡"
+        "咖啡与茶饮"
       ],
       "region": "peninsula",
       "city": "San Mateo",
@@ -4487,7 +4487,7 @@
       "details": [
         "先核对鞋码库存与退换政策。庆典日不是已确认的首营业日；加入会员的饮品、满额礼和其他条款需分别向店员确认。",
         "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "鞋履"
+        "再生材料鞋履"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4506,7 +4506,7 @@
       "details": [
         "目前官网列周三至周日 17:00 开门，周一、周二休息；先查菜单价格与可订时段。本文是新店资讯，非亲测食评；9/1 是旅游局文章日期，不作开业日，也没有已核实开业折扣。",
         "101 E Napa Street, Sonoma, CA 95476",
-        "新餐厅 · 炭火加州料理"
+        "炭烤加州菜"
       ],
       "region": "north-bay",
       "city": "Sonoma",
@@ -4525,7 +4525,7 @@
       "details": [
         "10/11 的庆典开始时间与通常周日中午开门不同，先核当日安排。官网有试营业赠袋图片，但未核清有效期与领取门槛，不承诺十月到店有赠品；餐饮需付费。",
         "43571 Mission Blvd, Fremont, CA 94539",
-        "咖啡甜品与寿司 · 开业庆典"
+        "甜品饮品与寿司"
       ],
       "region": "east-bay",
       "city": "Fremont",
@@ -4544,7 +4544,7 @@
       "details": [
         "商品按店内标价；没有核实本店开业折扣。 营业和库存以门店为准。 开店日期由本地媒体报道，当前营业由品牌官网交叉确认；不是品牌首次创立。",
         "1366 N Main Street, Walnut Creek, CA 94596",
-        "零售新店"
+        "女装与鞋履"
       ],
       "region": "east-bay",
       "city": "Walnut Creek",
@@ -4564,7 +4564,7 @@
       "details": [
         "按单点菜单消费，价格见店内菜单。店方不接受预约；试营业阶段菜单和时段可能调整。试营业日期来自当地媒体报道。",
         "30 Fountain Alley, Suite 170, San Jose, CA 95113",
-        "咖啡、茶与烘焙"
+        "咖啡与苦味酒"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4584,7 +4584,7 @@
       "details": [
         "商品按标价；开幕赠品已结束。普通购物无需预约，营业时间以商场门店页为准。",
         "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
-        "零售新店"
+        "女装"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4604,7 +4604,7 @@
       "details": [
         "庆祝日音乐表演免费；饮品餐食另付。 庆祝活动已结束；今后到店先核实门店最新营业时间。 9/5是大开幕庆祝日，不认定为首次对外营业日；庆祝优惠已结束。日期依据演出方公告；营业安排请另向门店确认。",
         "1432 W San Carlos St, Suite 70, San Jose, CA 95126",
-        "印尼风味咖啡"
+        "印尼咖啡馆"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4623,7 +4623,7 @@
       "details": [
         "餐饮收费；尚未核得完整人均价格 官方建议预约",
         "1838 Union St, San Francisco, CA 94123",
-        "日秘融合手卷"
+        "日秘风味手卷"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4661,7 +4661,7 @@
       "details": [
         "商品按店内标价；未核实当地开业优惠。 常规到店规则请查门店；开业庆祝 RSVP 信息存在矛盾，暂不排入活动计划。 不是把公告日当作开业日。正文宣布 10/1 庆祝，但链接 RSVP 显示 Atlanta 9/29 等冲突元数据，故不单独确认庆祝场次。",
         "1619 Mount Diablo Boulevard, Walnut Creek, CA 94596",
-        "零售新店"
+        "床垫展示店"
       ],
       "region": "east-bay",
       "city": "Walnut Creek",
@@ -4680,7 +4680,7 @@
       "details": [
         "按餐饮菜单消费，未确认人均费用；不是固定门票价。 到访前查看营业与预约规则。 9 月新开的是餐厅/酒吧；咖啡、konbini 与市场此前春季已开，不能把整个 Yutori 写成 9 月首次开业。",
         "3375 El Camino Real, Palo Alto, CA 94306",
-        "新餐厅 · 日式晚餐"
+        "加州风味日本菜"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -4700,7 +4700,7 @@
       "details": [
         "报道列三明治 $20 及以下、半份 $10；税费未核，现价可能调整。 到访前核对最新营业时间；未推断免预约或随时有位。",
         "2618 Telegraph Ave, Berkeley, CA",
-        "餐饮新店"
+        "潜艇三明治"
       ],
       "region": "east-bay",
       "city": "Berkeley",
@@ -4720,7 +4720,7 @@
       "details": [
         "单点餐厅，完整人均预算尚未核实 建议官网预订；水岸休息区与正餐座位条件不同",
         "185 Berry Street, San Francisco, CA 94107",
-        "水岸餐厅"
+        "亚洲风味加州菜"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4740,7 +4740,7 @@
       "details": [
         "快闪设在 The Saap Avenue 店内；也卖糕点。这是快闪店，目前找不到官方页面确认仍在营业，出发前先看商家社交账号的最新公告。",
         "4395 Piedmont Ave, Oakland, CA",
-        "咖啡、茶与烘焙"
+        "咖啡与越式法包"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4759,7 +4759,7 @@
       "details": [
         "店在 Marin Country Mart 商场，对面就是 Larkspur 渡轮码头。",
         "2417 Larkspur Landing Circle, Larkspur, CA 94939",
-        "零售新店"
+        "定制礼品与皮包"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -4778,7 +4778,7 @@
       "details": [
         "9 月报道为每人 $175；饮品、税费、服务费是否包含须在预订页核对 官网提供预订入口；按可订座次确认时间和最终总价",
         "2600 Sutter Street, San Francisco, CA",
-        "餐饮新店"
+        "现代精致料理"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4793,15 +4793,15 @@
       "id": "berkeley-cere-tea-opening-2026",
       "title": "Ceré Tea",
       "path": "/openings/berkeley-cere-tea-opening-2026",
-      "summary": "新开茶饮店，提供抹茶、焙茶等饮品。",
+      "summary": "Berkeley 2106 Shattuck Ave 的新茶饮店，官网菜单以抹茶、焙茶饮品为主，另有果茶和汽水。",
       "details": [
         "开在原 Happy Lemon 店面；也有紫薯冰沙和咖啡。",
         "2106 Shattuck Ave, Berkeley, CA",
-        "咖啡、茶与烘焙"
+        "抹茶与焙茶饮品"
       ],
       "region": "east-bay",
       "city": "Berkeley",
-      "dateLabel": "日常营业时间及未来安排需查商家最新公告。",
+      "dateLabel": "试营业中 · 官网 Berkeley 店菜单仍列 Soft Opening Special",
       "status": "soft_open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.ceretea.com/",
@@ -4816,7 +4816,7 @@
       "details": [
         "只做晚餐，周二休息；官网可订位。",
         "6200 Claremont Ave, Oakland, CA",
-        "餐饮新店"
+        "韩式发酵料理"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4835,7 +4835,7 @@
       "details": [
         "电话 341-213-7494，可打电话或发短信。官网只列周一至周六的营业时间，周日没有列。报道列八道 omakase $150，点单菜单另计；报道没写是否含税和小费。商家提供预约入口。",
         "536 Ninth St, Oakland, CA",
-        "餐饮新店"
+        "寿司与主厨套餐"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4854,7 +4854,7 @@
       "details": [
         "官网写 2026 年 9 月开业，没写具体哪天；每个营业日从开门到 19:00 是 Happy Hour。按菜单点餐，人均价格官网没有写。",
         "26 N San Pedro Street, San Jose, CA 95113",
-        "新餐厅 · 烧烤与露台聚餐"
+        "烤串与鸡尾酒"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4873,7 +4873,7 @@
       "details": [
         "粤式美式菜；订位走官网的 Resy 入口。",
         "1231 Park St, Alameda, CA 94501",
-        "餐饮新店"
+        "新派粤菜"
       ],
       "region": "east-bay",
       "city": "Alameda",
@@ -4892,7 +4892,7 @@
       "details": [
         "鞋码 EU 33–44，有三种宽度；门店电话 (415) 306-7425。",
         "2207 Larkspur Landing Circle, Larkspur, CA 94939",
-        "零售新店"
+        "多尺码女鞋"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -4911,7 +4911,7 @@
       "details": [
         "按菜单点单；店家电话 (650) 534-6661。",
         "1663 El Camino Real, Millbrae, CA",
-        "咖啡、茶与烘焙"
+        "咖啡馆"
       ],
       "region": "peninsula",
       "city": "Millbrae",
@@ -4930,7 +4930,7 @@
       "details": [
         "除果汁和 smoothie 也有果碗和华夫饼；Fremont、Danville 另有分店。",
         "2261 W Leland Rd, B01, Pittsburg, CA 94565",
-        "餐饮新店"
+        "果汁与巴西莓碗"
       ],
       "region": "east-bay",
       "city": "Pittsburg",
@@ -4949,7 +4949,7 @@
       "details": [
         "与 Solano Avenue 的 O2 Eatery 同一团队；除寿司卷也有乌冬、拉面和便当。",
         "977 San Pablo Ave, Albany, CA",
-        "餐饮新店"
+        "寿司晚餐"
       ],
       "region": "east-bay",
       "city": "Albany",
@@ -4968,7 +4968,7 @@
       "details": [
         "在 Shattuck 与 University Avenue 路口的台球酒吧 The BreakRoom 里。",
         "2021 Shattuck Ave, Berkeley, CA",
-        "餐饮新店"
+        "热狗与香肠"
       ],
       "region": "east-bay",
       "city": "Berkeley",
@@ -4987,7 +4987,7 @@
       "details": [
         "在 Marin Country Mart 商场内；门店电话 (628) 229-2058。",
         "2409 Larkspur Landing Circle, Larkspur, CA 94939",
-        "零售新店"
+        "针织与运动女装"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -5006,7 +5006,7 @@
       "details": [
         "先从 Jefferson Street 门店页查当天营业与点餐；9/21 的排队抽奖和赠礼已结束。此店与仍标注 Coming Soon 的 Stonestown 新址不同，别混用地址。",
         "211 Jefferson Street, San Francisco, CA 94133",
-        "炸鸡快餐"
+        "炸鸡柳套餐"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5026,7 +5026,7 @@
       "details": [
         "官网目前列周二至周日 16:00–22:00 试营业，桌游费 $7/人，4 岁及以下免游戏费，餐饮另计；开业两周优惠已结束。多人同行先联系 Oakland 店，线上点餐仍标即将开放，别误点旧金山入口。",
         "2300 Valdez Street, Suite B, Oakland, CA 94612",
-        "桌游咖啡与华夫饼"
+        "桌游与华夫饼"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -5046,7 +5046,7 @@
       "details": [
         "官网现列周二至周六供应晚餐，周日、周一休息；先确认订位、当日菜单和露台座位，再安排 San Rafael 晚间聚餐。本文为重开资讯，非亲测食评。",
         "4 Bayview Street, San Rafael, CA 94901",
-        "重新开业 · 加州海岸风味"
+        "加州海岸风味菜"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5066,7 +5066,7 @@
       "details": [
         "品牌官网分别列出 San Rafael 与 Reno 门店，点单时认准 San Rafael；现列每日 10:00–17:00，临行复查。9/1 是商业区文章日期，不当作开业首日。",
         "1574 4th Street, San Rafael, CA 94901",
-        "新概念店 · 意式三明治与熟食"
+        "佛卡夏三明治"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5085,7 +5085,7 @@
       "details": [
         "这是六月已营业、九月重新核实的新选择。主餐厅、Ginza Social 与 BarLucy 各有菜单和订位入口，先选想体验的区域，再查看十月可订时段。",
         "2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "亚洲餐饮与零售空间"
+        "亚洲菜与食品店"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -5123,7 +5123,7 @@
       "details": [
         "8 月试营业赠饮与 9/1–3 的买一送一已经结束。十月可以收藏作甜品新选择，营业时间和当日菜单请查品牌门店页；9/1 是庆典日期。",
         "310 S San Mateo Drive, San Mateo, CA 94401",
-        "水果酸奶与甜品"
+        "酸奶冰沙与甜品"
       ],
       "region": "peninsula",
       "city": "San Mateo",
@@ -5142,7 +5142,7 @@
       "details": [
         "官网仍公告周末暂休；联系页正文写中午 12:00 开门，同页时间表写 11:00，都是 19:00 关门。出发前致电 510-250-7701 确认，别专程安排周末。",
         "1312 Broadway, Oakland, CA 94612",
-        "越南碎米饭"
+        "越式碎米饭"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -5162,7 +5162,7 @@
       "details": [
         "适合 Marina 街区散步时顺路喝咖啡；出发前看商家营业页面，历史庆典不代表仍有开业优惠。",
         "2300 Chestnut Street, San Francisco, CA 94123",
-        "咖啡烘焙"
+        "面包与早午餐"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5177,15 +5177,15 @@
       "id": "mess-hall-presidio-breadwinner",
       "title": "The Mess Hall · Breadwinner",
       "path": "/openings/mess-hall-presidio-breadwinner",
-      "summary": "Presidio Tunnel Tops 旁的新餐饮空间，官网已确认首期 Breadwinner 供应汉堡、三明治和沙拉。Boda 与 Dayboat Seafood 仍标记即将开放。",
+      "summary": "Presidio Tunnel Tops 旁的新餐饮空间。官网首页写 Breadwinner（汉堡）与 Dayboat Seafood（海鲜）已开始供应；Boda 仍标 Coming Soon。",
       "details": [
-        "适合公园散步后吃午餐，Breadwinner 从 11:00 供应至打烊。带狗可用露台；大楼内仅允许服务犬，其他档口先查开业更新。",
+        "Breadwinner 和 Dayboat 从 11:00 供应到打烊；Breadwinner 菜单页另列 7:00–10:00 早餐，但官网首页只写 11:00 起供应，别为早餐专程早到。带狗可坐露台；大楼内只允许服务犬。",
         "201 Halleck Street, San Francisco, CA 94129",
-        "公园餐饮新空间"
+        "汉堡与三明治"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "2026 年新开 · Breadwinner 已营业",
+      "dateLabel": "Breadwinner 与 Dayboat Seafood 已营业 · Boda 仍标即将开放",
       "status": "open",
       "verifiedAt": "2026-09-15",
       "sourceUrl": "https://www.messhallpresidio.com/",
@@ -5200,7 +5200,7 @@
       "details": [
         "10/6 的 Chronicle 报道预计十一月开业，仍以品牌后续公告为准。照片展示筹备中的建筑，不能据此判断已营业；不安排尚未确认的到店预约。",
         "1132 Fourth Street, San Rafael, CA 94901",
-        "开业预告 · 社区餐酒馆"
+        "啤酒馆与餐厅"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5219,7 +5219,7 @@
       "details": [
         "355 Santana Row #1060 为媒体报道地址。到访前等品牌确认开门日、时段与订位；目前没有核实到菜单价格或开业优惠。",
         "355 Santana Row #1060, San Jose, CA 95128",
-        "开业预告 · 季节美式餐厅"
+        "现代美式菜"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -5238,7 +5238,7 @@
       "details": [
         "想去先在 Shinka 官网的订位入口看能不能订到；酒店其他餐厅的营业时间不是 Shinka 的。",
         "433 Clay Street, San Francisco, CA 94111",
-        "开业预告 · 日法料理"
+        "日法融合料理"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5257,7 +5257,7 @@
       "details": [
         "出发前在酒店餐饮页看营业时间和订桌入口；秋季另有 Fall Harvest 下午茶，要预订。新闻稿里的室内图是效果图。",
         "The Ritz-Carlton, San Francisco, 600 Stockton Street, San Francisco, CA 94108",
-        "鸡尾酒酒廊"
+        "加州菜与鸡尾酒"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5276,7 +5276,7 @@
       "details": [
         "订阅开业更新后再安排专程；邮件订阅不是餐桌预约，也不能据媒体预告推定现已营业。可把 Ferry Building 其他行程作为尚未开门时的备选。",
         "Ferry Building, 1 Ferry Building, San Francisco, CA 94111",
-        "南意大利风味全天餐饮"
+        "南意大利菜"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5293,9 +5293,9 @@
       "path": "/openings/palo-alto-auntea-jenny-announced-2026",
       "summary": "果茶与奶茶品牌计划在 University Avenue 开店，当地媒体曾报道 9 月下旬开业。",
       "details": [
-        "按菜单点单；去之前先看店家公告，确认已经开门。",
+        "报道说品牌也在筹备 San Mateo 店（253 S. B St.）。去之前先看店家公告，确认 Palo Alto 店已经开门。",
         "328 University Avenue, Palo Alto, CA",
-        "咖啡、茶与烘焙"
+        "鲜果茶与奶茶"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -5312,9 +5312,9 @@
       "path": "/openings/palo-alto-bonbon-matcha-announced-2026",
       "summary": "抹茶饮品与甜点店计划进驻原 Gong Cha 空间，当地媒体曾报道 10 月上中旬开业。",
       "details": [
-        "按菜单点单；去之前先看店家公告，确认已经开门。",
+        "品牌先在 Cupertino 开店。去之前先看店家 Instagram，确认 Palo Alto 店已经开门。",
         "439 Waverley Street, Palo Alto, CA",
-        "餐饮新店"
+        "抹茶饮品与甜点"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -5333,7 +5333,7 @@
       "details": [
         "开门前想先喝，可去已营业的 Menlo Park 店：1149 Chestnut St.，每天 6:30–18:00。",
         "170 State Street, Los Altos, CA",
-        "餐饮新店"
+        "意式咖啡馆"
       ],
       "region": "south-bay",
       "city": "Los Altos",
@@ -5350,9 +5350,9 @@
       "path": "/openings/mountain-view-tong-sui-announced-2026",
       "summary": "供应椰子布丁、果昔与茶饮的本地品牌计划扩店，当地媒体报道 10 月开业。",
       "details": [
-        "按菜单点单；去之前先看店家公告，确认已经开门。",
+        "官网点单页 10/19 列出 7 家店，还没有 Mountain View；去之前先看品牌 Instagram，确认已经开门。",
         "747 W Dana Street, Mountain View, CA",
-        "餐饮新店"
+        "椰奶布丁与茶饮"
       ],
       "region": "south-bay",
       "city": "Mountain View",
@@ -5371,7 +5371,7 @@
       "details": [
         "旧微型店已在 8/29 结束营业；官网页脚还留着旧址 2050 Bryant St，新址是 3349 23rd Street。",
         "3349 23rd Street, San Francisco, CA 94110",
-        "迁址预告 · 墨西哥烘焙"
+        "墨西哥甜面包"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5390,7 +5390,7 @@
       "details": [
         "酒店能订房不代表餐厅已开放；先向酒店核实。另一个餐厅 Tejer 计划 12 月开，不属于本月。",
         "233 W Santa Clara Street, San Jose, CA 95113",
-        "重开预告 · 酒店餐酒馆"
+        "加州小馆与酒廊"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -5409,7 +5409,7 @@
       "details": [
         "这里指 2847 Taylor 新址，与 Alioto’s Plaza 的临时酒饮摊位不同。先等新址确认开放，再安排到店。",
         "2847 Taylor Street, San Francisco, CA 94133",
-        "长期快闪预告 · 酒吧"
+        "啤酒与葡萄酒"
       ],
       "region": "sf",
       "city": "San Francisco",
