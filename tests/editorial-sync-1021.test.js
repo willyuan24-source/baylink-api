@@ -168,13 +168,25 @@ test('BayBay: #54\'s shop signs and the guides\' new lines reach the model', () 
 
 // Measured losses of this sync (old lib/, new data), each passing on the api base data 83e8683 and failing here. They are the
 // picks' audience and price meeting asks lib/ does not read yet; left to API-BB-13 (no new BayBay feature in a sync lane).
+// Found by reading every record that left the evidence, then (review) every pick that newly rose into the first three events
+// and fresh grandparent and teen wordings.
 test('a free family weekend ask keeps a Sunday 10/25 family event', { todo: 'API-BB-13: the 10/24 family picks are not free (Cherryland: no price on its page; LumaFest: free entry, food extra; OMCA $10), so on 这周末有什么免费的亲子活动 no pick leads and the rule that keeps each other day\'s best family event never runs: Millbrae\'s Sunday Chinese storytime (item 3 on base) leaves the items and no Sunday event is left' }, () => {
   const sunday = itemIds(evidence('这周末有什么免费的亲子活动')).filter(id => id.startsWith('event:') && eventOccursOn(event(id.slice(6)), '2026-10-25'));
   assert.ok(sunday.length > 0);
 });
 
-test('a weekend ask with one\'s parents does not lead with a storytime for children 0–5', { todo: 'API-BB-13 (parents and grandparents as an older audience): 这周末带爸妈去哪玩 / 周末带父母去哪 is not a family ask, so the picks keep their lift in the editor\'s order and Cherryland\'s storytime (0–5 岁儿童与家长) is the first candidate and item 2; on base it was LumaFest (elder-friendly)' }, () => {
-  for (const message of ['这周末带爸妈去哪玩', '周末带父母去哪']) assert.notEqual(candidateIds(evidence(message))[0], CHERRYLAND, message);
+test('a weekend ask with one\'s parents or grandparents does not lead with a storytime for children 0–5', { todo: 'API-BB-13 (parents and grandparents as an older audience): 这周末带爸妈去哪玩 / 周末带父母去哪 / Things to do with grandparents this weekend / 这周末带爷爷奶奶去哪玩 are not family asks, so the picks keep their lift in the editor\'s order and Cherryland\'s storytime (0–5 岁儿童与家长) is the first event candidate and the first event item; on base it was LumaFest (elder-friendly)' }, () => {
+  // The first event among the candidates (a place such as the Presidio can come first).
+  const firstEvent = message => candidateIds(evidence(message)).find(id => event(id));
+  for (const message of ['这周末带爸妈去哪玩', '周末带父母去哪', '爸妈拿探亲签证来湾区玩一个月，周末带他们去哪？', '我爸没意识到今天是周末，带他去哪里玩',
+    'Things to do with grandparents this weekend', 'Things to do with my grandparents this weekend', '这周末带爷爷奶奶去哪玩', '這週末帶爺爺奶奶去哪玩', '这周末带外公外婆去哪玩']) {
+    assert.notEqual(firstEvent(message), CHERRYLAND, message);
+  }
+});
+
+test('a teen ask is not offered the storytime for children 0–5', { todo: 'API-BB-13 (a pick\'s audience ages vs the asked age): the picks keep their lift on 这周末湾区有什么活动适合青少年 (not a family ask), so Cherryland\'s storytime (0–5 岁儿童与家长) is candidate 2 and item 6 (base: candidate 6, not an item); on 周末带14岁孩子去哪玩 it is the first candidate and item 1 (base: LumaFest first, Cherryland item 5)' }, () => {
+  for (const message of ['这周末湾区有什么活动适合青少年', '這週末灣區有什麼活動適合青少年']) assert.ok(!itemIds(evidence(message)).includes(`event:${CHERRYLAND}`), message);
+  assert.notEqual(candidateIds(evidence('周末带14岁孩子去哪玩'))[0], CHERRYLAND);
 });
 
 test('an English free family weekend ask offers no paid pick', { todo: 'API-BB-13: "Free things to do with kids this weekend" does not set freeOnly (English "free" is read only in a few phrasings), so OMCA\'s $10 celebration is a family pick and item 4' }, () => {
