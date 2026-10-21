@@ -35,7 +35,7 @@
       ],
       "officialUrl": "https://www.thesocomarket.com/events-2/ross-st-sundays-10-4",
       "sourceLabel": "媒体报道 · thesocomarket.com",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "dek": "周日下午逛本地摊主和小吃摊",
       "sessions": [
@@ -605,7 +605,7 @@
       ],
       "officialUrl": "https://petalumapumpkinpatch.com/pricing-hours/",
       "sourceLabel": "petalumapumpkinpatch.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "dek": "挑南瓜、看农场动物，周五六还有夜迷宫",
       "shortTitle": "Petaluma 南瓜田与玉米迷宫",
@@ -741,7 +741,7 @@
       ],
       "officialUrl": "https://foodwise.org/markets/ferry-plaza-farmers-market/",
       "sourceLabel": "foodwise.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-ferry-plaza-farmers-market-2026-autumn",
       "shortTitle": "Ferry Plaza 农夫市集",
       "dek": "海湾边逛当季农产和熟食摊",
@@ -1437,7 +1437,7 @@
       ],
       "officialUrl": "https://danville.ca.gov/851/Scarecrow-Stroll",
       "sourceLabel": "danville.ca.gov",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-danville-scarecrow-stroll-2026",
       "dek": "沿老城商业街找创意稻草人",
       "shortTitle": "Danville 稻草人商圈漫步",
@@ -2367,7 +2367,7 @@
       ],
       "officialUrl": "https://alamedacountyfair.com/events/pumpkins-after-dark/var/ri-2.l-L1/",
       "sourceLabel": "alamedacountyfair.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-pleasanton-pumpkins-after-dark-2026",
       "shortTitle": "Pleasanton 南瓜灯夜游",
       "dek": "沿灯光步道看南瓜雕刻和主题装置",
@@ -3504,7 +3504,7 @@
       ],
       "officialUrl": "https://bayareadiscoverymuseum.org/events/goblin-jamboree/",
       "sourceLabel": "Bay Area Discovery Museum",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-sausalito-goblin-jamboree-2026",
       "shortTitle": "Goblin Jamboree 亲子万圣节",
       "dek": "动手做小怪物、挖虫子，温和不吓人",
@@ -6859,7 +6859,7 @@
       ],
       "officialUrl": "https://www.333arts.org/gem",
       "sourceLabel": "333arts.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-livermore-great-elephant-migration-2026",
       "dek": "27 头真人比例大象雕塑的户外展",
       "shortTitle": "Livermore 大象迁徙公共艺术展",
@@ -7261,8 +7261,8 @@
         "2026-11-21",
         "2026-11-28"
       ],
-      "verifiedAt": "2026-10-15",
-      "imageKey": "octnov-healdsburg-market-context",
+      "verifiedAt": "2026-10-21",
+      "imageKey": "official-november-north-healdsburg-market-2026",
       "title": "Healdsburg 周六农夫市集：新棚亭地址",
       "dateLabel": "10/10–11/28 · 每周六08:30–12:00",
       "region": "north-bay",
@@ -9423,7 +9423,7 @@
       ],
       "officialUrl": "https://www.sfopera.com/operas/manon/",
       "sourceLabel": "sfopera.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-sf-opera-manon-2026",
       "dek": "马斯内的法语歌剧，配英文字幕",
       "sessions": [
@@ -10150,7 +10150,7 @@
         "2026-12-05",
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-berkeley-downtown-saturday-farmers-market-2026",
       "region": "east-bay",
       "category": "food",
@@ -10862,7 +10862,7 @@
     {
       "kind": "event",
       "region": "north-bay",
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "relatedGuideSlug": "north-bay-markets-nature-culture-through-november-15-2026",
       "id": "november-north-eames-exhibition-2026",
       "title": "The MAC：Eames & Eames 现代设计展",
@@ -10884,7 +10884,7 @@
         "艺术爱好者",
         "亲子家庭"
       ],
-      "officialUrl": "https://napavalleymuseum.org/blogs/upcoming-exhibitions/eames-eames",
+      "officialUrl": "https://napavalleymuseum.org/blogs/exhibitions/eames-eames",
       "sourceLabel": "Napa Valley Museum 官方展览及参观页",
       "imageKey": "culture-visit",
       "shortTitle": "The MAC Eames 设计展",
@@ -11174,7 +11174,7 @@
         "2026-12-05",
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "east-bay",
       "category": "food",
@@ -12517,7 +12517,7 @@
         "2026-11-07",
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -12626,7 +12626,7 @@
         "2026-10-24",
         "2026-10-31"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "sf",
       "category": "outdoors",
@@ -12932,7 +12932,7 @@
         "2026-11-07",
         "2026-11-14"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -13338,7 +13338,7 @@
         "2026-12-06",
         "2026-12-13"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-fremont-irvington-farmers-market-2026",
       "region": "east-bay",
       "category": "food",
@@ -13740,7 +13740,7 @@
         "2026-10-18",
         "2026-10-25"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -14291,7 +14291,7 @@
       ],
       "officialUrl": "https://bayareamusicalimprov.com/festival",
       "sourceLabel": "bayareamusicalimprov.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "coverage-stage",
       "shortTitle": "Oakland 音乐即兴剧节",
       "dek": "现场看故事和歌曲即兴成形",
@@ -14524,7 +14524,7 @@
       ],
       "officialUrl": "https://sjsff.com/tickets/",
       "sourceLabel": "sjsff.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "cinema-night",
       "shortTitle": "圣何塞国际短片电影节",
       "dek": "四天看世界各地短片，一场多种故事",
@@ -14637,7 +14637,7 @@
       ],
       "officialUrl": "https://www.sfsymphony.org/getmedia/4732d38f-af5d-4aa2-8934-428420ff11fa/2026-27-Season-Calendar.pdf",
       "sourceLabel": "sfsymphony.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "久石让指挥久石让",
       "dek": "久石让亲自指挥旧金山交响乐团演奏自己的作品",
@@ -14695,7 +14695,7 @@
       ],
       "officialUrl": "https://www.sapcenter.com/events/detail/disney-on-ice-4",
       "sourceLabel": "sapcenter.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Disney On Ice 圣何塞场",
       "dek": "冰上歌舞和迪士尼角色，适合亲子外出",
@@ -14738,7 +14738,7 @@
       ],
       "officialUrl": "https://www.alamedaca.gov/Departments/Recreation-Parks/ARPD-Events",
       "sourceLabel": "alamedaca.gov",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Alameda 青少年鬼屋",
       "dek": "青少年志愿者做的第 21 届社区鬼屋",
@@ -14943,7 +14943,7 @@
       ],
       "officialUrl": "https://www.emeryarts.org/",
       "sourceLabel": "emeryarts.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "culture-visit",
       "shortTitle": "Emeryville 年度艺术展闭幕",
       "dek": "第 40 届年度艺术展的最后三天",
@@ -15281,7 +15281,7 @@
       "occurrenceDates": [
         "2026-10-24"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-acl-cherryland-chinese-storytimes-oct24-2026",
       "region": "east-bay",
       "category": "family",
@@ -15429,7 +15429,7 @@
       ],
       "officialUrl": "https://admissions.berkeley.edu/visit/events/",
       "sourceLabel": "admissions.berkeley.edu",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "UC Berkeley 大学信息日",
       "dek": "和大学代表聊申请、助学金和校园资源",
@@ -15468,7 +15468,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -15657,7 +15657,7 @@
       ],
       "officialUrl": "https://members.claytoncbca.org/cbca-events/Details/hay-day-trunk-or-treat-in-downtown-clayton-1910733?sourceTypeId=Website",
       "sourceLabel": "members.claytoncbca.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "dek": "在装饰车辆间讨糖，还有亲子游戏",
       "sessions": [
@@ -15705,7 +15705,7 @@
       ],
       "officialUrl": "https://www.cityofconcord.org/Calendar.aspx?EID=2756&calType=0&day=7&month=10&year=2026",
       "sourceLabel": "cityofconcord.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Concord 警局车尾讨糖",
       "dek": "警局停车场的讨糖、游戏和社区庆祝",
@@ -15739,11 +15739,11 @@
       "category": "family",
       "kind": "event",
       "cost": "paid",
-      "costLabel": "官网写10月19日前居民$17/非居民$21、之后$22/$26；每份登记含一名2岁以上儿童及两名成人，10月19日当天计价请看报名结算。",
+      "costLabel": "现在报名：居民 $22／非居民 $26（10/19 前的早鸟价已截止）；每份登记含一名 2 岁以上儿童和两名成人",
       "summary": "到 Quinlan Community Center 参加游戏、讨糖、手工和南瓜装饰。室外活动从傍晚开始，适合想在正式万圣节前先穿一次装扮的家庭。",
       "plan": [
         "儿童须报名并有成人陪同；每份登记含一名2岁以上儿童和两名成人，成人不另登记。",
-        "户外举行，雨天照常；10/19 起票价上调。"
+        "户外举行，雨天照常；早鸟价已在 10/19 截止，现在报名居民 $22、非居民 $26。"
       ],
       "audience": [
         "亲子家庭",
@@ -15751,7 +15751,7 @@
       ],
       "officialUrl": "https://www.cupertino.gov/Parks-Recreation/Events/Monster-Mash/Monster-Mash-Event",
       "sourceLabel": "cupertino.gov",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "shortTitle": "Cupertino 傍晚万圣节派对",
       "dek": "游戏、讨糖、手工和南瓜装饰",
@@ -15763,7 +15763,7 @@
         }
       ],
       "price": {
-        "min": 17,
+        "min": 22,
         "max": 26,
         "note": "一份登记含 1 名儿童和 2 名成人"
       },
@@ -15802,7 +15802,7 @@
       ],
       "officialUrl": "https://www.fostercity.org/1248/2026-Halloween-Festival",
       "sourceLabel": "fostercity.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "shortTitle": "Foster City 万圣节嘉年华",
       "dek": "给 2–12 岁孩子的讨糖、装扮赛和魔术",
@@ -15859,7 +15859,7 @@
       ],
       "officialUrl": "https://fogsv.com/event/fog-diwali/",
       "sourceLabel": "Festival of Globe / EventMozo",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "shortTitle": "Fremont 排灯节市集",
       "dek": "Ramayana 激光秀、Garba 舞蹈和印度市集",
       "sessions": [
@@ -15886,7 +15886,7 @@
         "reservation": "unknown",
         "schedule": {
           "sourceUrl": "https://fogsv.com/event/fog-diwali/",
-          "verifiedAt": "2026-10-15",
+          "verifiedAt": "2026-10-21",
           "validFrom": "2026-10-24",
           "validThrough": "2026-10-24",
           "dates": {
@@ -15926,7 +15926,7 @@
       ],
       "officialUrl": "https://haywardrec.org/377/Mobile-Recreation",
       "sourceLabel": "haywardrec.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Hayward 讨糖与流动攀岩墙",
       "dek": "万圣节社区活动，还能玩攀岩墙",
@@ -15965,7 +15965,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -16142,7 +16142,7 @@
       ],
       "officialUrl": "https://www.menlopark.gov/Citywide-calendar/Community-events/20261024-Halloween-Hoopla-Parade-and-Carnival",
       "sourceLabel": "menlopark.gov",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "shortTitle": "Menlo Park 万圣节游行",
       "dek": "装扮游行到 Fremont Park，接着玩嘉年华",
@@ -16253,7 +16253,7 @@
       "officialUrl": "https://donapa.com/event/heritage-halloween-tulocay-cemetery-tour/",
       "sourceLabel": "Downtown Napa · Napa County Historical Society",
       "imageKey": "official-napa-tulocay-heritage-halloween-tour-2026",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "shortTitle": "Napa 墓园历史导览",
       "dek": "90 分钟走读 Napa 的人物与城市记忆",
       "sessions": [
@@ -16280,7 +16280,7 @@
         "reservation": "required",
         "schedule": {
           "sourceUrl": "https://donapa.com/event/heritage-halloween-tulocay-cemetery-tour/",
-          "verifiedAt": "2026-10-15",
+          "verifiedAt": "2026-10-21",
           "validFrom": "2026-10-24",
           "validThrough": "2026-10-24",
           "sessions": [
@@ -16311,7 +16311,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "east-bay",
       "category": "family",
@@ -16482,7 +16482,7 @@
         "2026-12-26",
         "2027-01-02"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-opl-main-family-storytime-2026",
       "region": "east-bay",
       "category": "family",
@@ -16650,7 +16650,7 @@
         "2026-12-05",
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -16806,7 +16806,7 @@
       ],
       "officialUrl": "https://www.pollyklaastheater.org/event/coco/",
       "sourceLabel": "pollyklaastheater.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "shortTitle": "Petaluma 午场电影《寻梦环游记》",
       "dek": "5 美元在社区剧院看《寻梦环游记》",
@@ -16855,7 +16855,7 @@
       ],
       "officialUrl": "https://www.thefloathousepetaluma.org/events/witches-wizards-on-the-water-2026",
       "sourceLabel": "thefloathousepetaluma.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-petaluma-witches-wizards-water-2026",
       "shortTitle": "Petaluma 河上万圣节划船",
       "dek": "穿着装扮划船或桨板，沿河讨糖",
@@ -16902,7 +16902,7 @@
       ],
       "officialUrl": "https://www.marinhistory.org/events/",
       "sourceLabel": "marinhistory.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Boyd Gate House 历史导览",
       "dek": "讲解员带你认识这栋老宅和住过的人",
@@ -16951,7 +16951,7 @@
       ],
       "officialUrl": "https://www.bigwest.biz/cider-circus-petaluma",
       "sourceLabel": "bigwest.biz",
-      "verifiedAt": "2026-09-29",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-r2-petaluma-cider-circus-2026",
       "shortTitle": "Petaluma 苹果酒河畔节",
       "dek": "河畔苹果酒节：本地酒商、苹果活动和儿童游戏",
@@ -17004,7 +17004,7 @@
       ],
       "officialUrl": "https://lumafest.santarosa.edu/",
       "sourceLabel": "lumafest.santarosa.edu",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-r2-petaluma-lumafest-20261024",
       "shortTitle": "Petaluma LumaFest 亡灵节",
       "dek": "校园开放、科学展示和亡灵节文化表演",
@@ -17103,7 +17103,7 @@
       ],
       "officialUrl": "https://www.hiller.org/event/paint-a-plane/2026-10-24/",
       "sourceLabel": "hiller.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "verified-hiller-museum",
       "relatedGuideSlug": "san-carlos-hiller-aviation-half-day-guide",
       "shortTitle": "Hiller 万圣节画飞机",
@@ -17223,7 +17223,7 @@
       ],
       "officialUrl": "https://www.cityofsanmateo.org/4740/Boos-and-Brews-on-B-Street",
       "sourceLabel": "cityofsanmateo.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-san-mateo-boos-brews-2026",
       "shortTitle": "San Mateo B 街万圣节",
       "dek": "步行街商家讨糖、手作、音乐和拍照",
@@ -17313,7 +17313,7 @@
         "2026-12-19",
         "2026-12-26"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "south-bay",
       "category": "family",
@@ -17482,7 +17482,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "north-bay",
       "category": "family",
@@ -17616,7 +17616,7 @@
       ],
       "officialUrl": "https://illuminate.org/event/bay-beats-at-the-bandshell-october-24/",
       "sourceLabel": "Illuminate",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-sf-bay-beats-bandshell-oct24-2026",
       "shortTitle": "Bay Beats 金门公园音乐会",
       "dek": "露天音乐台听本地音乐人，一个免费的下午",
@@ -17660,7 +17660,7 @@
       "title": "Exploratorium 家庭科学日：蝴蝶手作与乐团排练",
       "startDate": "2026-10-24",
       "endDate": "2026-10-24",
-      "dateLabel": "10/24 · 蝴蝶彩绘 11:00–14:00；乐团 11:00–16:00；末节乐器体验 16:00–16:30",
+      "dateLabel": "10/24 · 蝴蝶彩绘 11:00–14:00；乐团 13:00–16:00；末节乐器体验 16:00–16:30",
       "region": "sf",
       "city": "San Francisco",
       "venue": "Exploratorium · Pier 15, Embarcadero at Green Street, San Francisco, CA 94111",
@@ -17671,7 +17671,7 @@
       "summary": "一天可参加帝王蝶主题创作及Awesöme Orchestra开放排练。",
       "plan": [
         "蝴蝶彩绘 11:00–14:00；Tinkering Studio 的蝴蝶翅膀和扑翼小机关 10:00–16:45。",
-        "Awesöme Orchestra 在 Gallery 3：馆方写 11:00–16:00，乐团自己的页面写合奏 13:00–16:00；乐器体验 12:30–13:00、14:00–14:20、15:00–15:15、16:00–16:30。",
+        "Awesöme Orchestra 在 Bechtel Gallery 3 合奏 13:00–16:00（馆方和乐团页面一致）；乐器体验 12:30–13:00、14:00–14:20、15:00–15:15、16:00–16:30。",
         "活动不另收费，但需持入馆票。"
       ],
       "audience": [
@@ -17689,7 +17689,7 @@
         "max": 39.95,
         "note": "3 岁及以下免费"
       },
-      "dateNote": "蝴蝶彩绘 11:00–14:00；翅膀手作 10:00–16:45；乐团 11:00–16:00",
+      "dateNote": "蝴蝶彩绘 11:00–14:00；翅膀手作 10:00–16:45；乐团 13:00–16:00",
       "venueShort": "Exploratorium",
       "address": "Pier 15, Embarcadero at Green Street, San Francisco, CA 94111",
       "aliases": [
@@ -17719,7 +17719,7 @@
       "costLabel": "主办方报名票价为 $0；免费 CFP 咨询需预留名额，现场候补不保证接待。",
       "summary": "参加投资、税务、房产传承与预算主题讲座，也可预约 CFP 专业人士的一对一咨询。",
       "plan": [
-        "线下讲座在 Koret Auditorium，无须预约、座位先到先得；参加 Zoom 直播须按具体讲座报名。 官网活动页的 Register 按钮通往免费预约页面；先选讲座或咨询，再确认参加方式。",
+        "讲座和咨询以英文进行（官网：除另注明外均用英文）。线下讲座在 Koret Auditorium，无须预约、座位先到先得；参加 Zoom 直播须按具体讲座报名。官网活动页的 Register 按钮通往免费预约页面；先选讲座或咨询，再确认参加方式。",
         "一对一咨询在 Main Library 的 Latino/Hispanic Meeting Room；预约于 10/22（周四）午夜截止，现场到访可候补但不保证有咨询时段。",
         "投资讲座 10:15–11:45；房产税与代际转移 11:55–12:35；税务更新 12:45–14:15；经济公平资源 14:25–15:05；预算讲座 15:15–16:45。"
       ],
@@ -17729,8 +17729,8 @@
       ],
       "officialUrl": "https://sfpl.org/events/2026/10/24/workshops-financial-planning-day",
       "sourceLabel": "San Francisco Public Library",
-      "verifiedAt": "2026-10-15",
-      "imageKey": "verified-sf-main-library",
+      "verifiedAt": "2026-10-21",
+      "imageKey": "official-sf-financial-planning-day-oct24-2026",
       "shortTitle": "免费理财讲座与一对一咨询",
       "dek": "投资、税务、预算讲座，还能约 CFP 一对一",
       "sessions": [
@@ -17791,7 +17791,7 @@
       ],
       "officialUrl": "https://www.fishermanswharf.org/chowderfest/",
       "sourceLabel": "fishermanswharf.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "verified-fishermans-wharf",
       "shortTitle": "渔人码头浓汤节",
       "dek": "蛤蜊浓汤比赛、酸面包示范和海边市集",
@@ -17841,7 +17841,7 @@
       ],
       "officialUrl": "https://presidio.gov/explore/events/artspan-sf-open-studios-at-sports-basement/2026-10-24",
       "sourceLabel": "Presidio Trust",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "culture-visit",
       "shortTitle": "Presidio 艺术开放日",
       "dek": "看本地艺术家作品，和创作者聊聊",
@@ -17911,7 +17911,7 @@
     {
       "id": "sfpl-western-addition-open-house-oct24-2026",
       "kind": "event",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "startDate": "2026-10-24",
       "endDate": "2026-10-24",
       "occurrenceDates": [
@@ -17957,7 +17957,7 @@
         "reservation": "optional",
         "schedule": {
           "sourceUrl": "https://sfpl.org/events/2026/10/24/celebration-western-addition-open-house",
-          "verifiedAt": "2026-10-15",
+          "verifiedAt": "2026-10-21",
           "validFrom": "2026-10-24",
           "validThrough": "2026-10-24",
           "dates": {
@@ -17999,7 +17999,7 @@
       ],
       "officialUrl": "https://www.symphonysanjose.org/attend/2026-2027-season/concerts/symphonic-spooktacular/",
       "sourceLabel": "symphonysanjose.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-sj-symphonic-spooktacular-2026",
       "shortTitle": "Symphony San Jose 万圣节音乐会",
       "dek": "英雄与反派主题音乐迎万圣节",
@@ -18041,7 +18041,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -18201,7 +18201,7 @@
         "2026-12-12",
         "2026-12-19"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "family",
@@ -18359,7 +18359,7 @@
         "2026-12-05",
         "2026-12-12"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
@@ -18510,7 +18510,7 @@
       ],
       "officialUrl": "https://www.townofwindsor.com/trickortreat",
       "sourceLabel": "townofwindsor.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-windsor-trick-or-treat-trail-2026",
       "shortTitle": "Windsor 预约讨糖步道",
       "dek": "四分之一英里的短讨糖步道，人少不挤",
@@ -18548,13 +18548,13 @@
       "imageKey": "official-ameswell-barks-boos-2026",
       "officialUrl": "https://www.theameswellhotel.com/experiences/happenings/barks-boos/",
       "sourceLabel": "The Ameswell Hotel",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "title": "Ameswell Barks & Boos：宠物巡游、装扮与市集",
       "dateLabel": "10 月 25 日 · 11:00–14:00",
-      "costLabel": "入场免费 · 建议领免费到场票，装扮比赛须另行登记",
+      "costLabel": "入场免费 · 建议领免费到场票；装扮比赛登记已在 10/16 截止",
       "summary": "在酒店户外场地逛本地摊位、看宠物巡游与装扮比赛，也可认识 Pets In Need 带来的待领养犬只。奖品属于获胜者，购物和餐饮另付。",
       "plan": [
-        "观看无需票，主办方建议领免费到场票；装扮比赛须在 10/16 前另行登记。",
+        "观看无需票，主办方建议领免费到场票；装扮比赛登记已在 10/16 截止。",
         "宠物全程牵绳；停车前 3 小时免费，之后按 $10/天收费。",
         "宠物巡游为 12:00–12:30，获奖公布为 12:30–13:00；领养费用和资格向 Pets In Need 核对。"
       ],
@@ -18626,7 +18626,7 @@
       ],
       "officialUrl": "https://www.burlingamedowntown.org/events/fall-fest-1",
       "sourceLabel": "burlingamedowntown.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-burlingame-downtown-fall-fest-2026",
       "shortTitle": "Burlingame 市中心秋日节",
       "dek": "手作、美食、音乐、装扮赛和小动物",
@@ -18671,7 +18671,7 @@
       ],
       "officialUrl": "https://museumca.org/press/omca-announces-public-programs-and-events-for-october-2026/",
       "sourceLabel": "museumca.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-oakland-omca-dia-muertos-2026",
       "shortTitle": "OMCA 亡灵节社区庆典",
       "dek": "巡游、音乐、手工和社区祭坛",
@@ -18747,7 +18747,7 @@
       ],
       "officialUrl": "https://www.bishopranch.com/br-event/howl-o-ween/",
       "sourceLabel": "bishopranch.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-san-ramon-howl-o-ween-2026",
       "shortTitle": "San Ramon 宠物万圣节巡游",
       "dek": "带狗穿装扮巡游，广场部分免费",
@@ -18797,7 +18797,7 @@
       ],
       "officialUrl": "https://www.chasecenter.com/news/doja-cat-announcement-20261019/",
       "sourceLabel": "chasecenter.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "occurrenceDates": [
         "2026-10-25"
@@ -18845,7 +18845,7 @@
       ],
       "officialUrl": "https://chasecenter.com/events/football-sundays-20261025/",
       "sourceLabel": "chasecenter.com",
-      "verifiedAt": "2026-09-28",
+      "verifiedAt": "2026-10-21",
       "imageKey": "weekend",
       "shortTitle": "Thrive City 橄榄球观赛",
       "dek": "户外大屏看橄榄球转播，不是现场比赛",
@@ -18889,7 +18889,7 @@
       ],
       "officialUrl": "https://www.eventbrite.com/e/world-of-dumplings-2026-tickets-1997773482264",
       "sourceLabel": "eventbrite.com",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "official-sf-world-of-dumplings-2026",
       "shortTitle": "旧金山世界饺子节",
       "dek": "25 家以上摊位的各地饺子和包馅食物",
@@ -18921,7 +18921,7 @@
         "2026-11-15",
         "2026-12-13"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "sf",
       "category": "culture",
@@ -19017,7 +19017,7 @@
         "2026-12-20",
         "2026-12-27"
       ],
-      "verifiedAt": "2026-10-16",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "south-bay",
       "category": "culture",
@@ -19182,7 +19182,7 @@
       "occurrenceDates": [
         "2026-10-25"
       ],
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "",
       "region": "peninsula",
       "category": "culture",
@@ -19269,7 +19269,7 @@
       ],
       "officialUrl": "https://www.srsymphony.org/event/boo-lets-dance/",
       "sourceLabel": "srsymphony.org",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "imageKey": "autumn-neighbors",
       "shortTitle": "和 Snoopy 听交响乐",
       "dek": "交响乐、芭蕾和 Snoopy 同台的家庭场",
@@ -23550,7 +23550,7 @@
         "2027-01-31"
       ],
       "verifiedAt": "2026-10-15",
-      "imageKey": "",
+      "imageKey": "official-oakland-zoo-glowfari-2026",
       "region": "east-bay",
       "category": "family",
       "cost": "paid",
@@ -27044,7 +27044,7 @@
         "2027-01-24"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-curiodyssey-illuminodyssey-2026",
       "region": "peninsula",
       "category": "family",
       "cost": "paid",
@@ -27847,7 +27847,7 @@
       ],
       "officialUrl": "https://www.renegadecraft.com/event/san-francisco-winter/",
       "sourceLabel": "Renegade Craft",
-      "imageKey": "octnov-festival-pavilion-context",
+      "imageKey": "official-nov2026-sf-renegade-craft-winter",
       "startDate": "2026-11-14",
       "endDate": "2026-11-15",
       "shortTitle": "Renegade 冬季手作市集",
@@ -28297,7 +28297,7 @@
         "2026-11-14"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sfpl-visitacion-valley-calligraphy-chess-nov14-2026",
       "region": "sf",
       "category": "culture",
       "cost": "free",
@@ -29102,7 +29102,7 @@
         "2026-11-15"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sjpl-berryessa-diwali-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "free",
@@ -30016,7 +30016,7 @@
         "2026-12-23"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-meritage-gingerbread-house-workshop-2026",
       "region": "north-bay",
       "category": "family",
       "cost": "paid",
@@ -31370,7 +31370,7 @@
         "2026-11-20"
       ],
       "verifiedAt": "2026-10-12",
-      "imageKey": "",
+      "imageKey": "official-sjpl-village-square-thanksgiving-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "free",
@@ -32312,7 +32312,7 @@
         "2026-12-30"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-gilroy-gardens-north-pole-nights-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "paid",
@@ -33604,7 +33604,7 @@
         "2026-11-21"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sjpl-calabazas-chinese-tea-hour-nov21-2026",
       "region": "south-bay",
       "category": "culture",
       "cost": "free",
@@ -34462,7 +34462,7 @@
         "2026-12-27"
       ],
       "verifiedAt": "2026-10-15",
-      "imageKey": "",
+      "imageKey": "official-acl-fremont-funday-family-board-games-2026",
       "region": "east-bay",
       "category": "family",
       "cost": "unknown",
@@ -34797,7 +34797,7 @@
         "2026-12-27"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sjpl-educational-park-lego-club-winter-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "free",
@@ -35204,7 +35204,7 @@
         "2027-01-03"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sjpl-joyce-ellington-game-on-winter-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "free",
@@ -35342,7 +35342,7 @@
         "2026-12-27"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sjpl-seven-trees-board-game-zone-winter-2026",
       "region": "south-bay",
       "category": "family",
       "cost": "free",
@@ -36596,7 +36596,7 @@
         "2026-12-23"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-meritage-building-with-ember-the-elf-2026",
       "region": "north-bay",
       "category": "family",
       "cost": "paid",
@@ -37383,7 +37383,7 @@
         "2026-11-28"
       ],
       "verifiedAt": "2026-10-16",
-      "imageKey": "",
+      "imageKey": "official-sfpl-sunset-mahjong-nov28-2026",
       "region": "sf",
       "category": "culture",
       "cost": "free",
@@ -45796,7 +45796,7 @@
       "title": "Marufuku Ramen · Burlingame",
       "region": "peninsula",
       "city": "Burlingame",
-      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening、10/12 起按常规时间营业，现在只列常规营业时间；品牌首页的分店目录仍标 Coming Soon，两处说法不一。",
+      "summary": "Marufuku 拉面的 Burlingame 分店，地址 225 Lorton Avenue。门店页此前写 10/11 Grand Opening，现在列常规营业时间；品牌首页现写 now open in BURLINGAME，但门店页下方的分店列表仍标 Coming Soon，两处说法不一。",
       "guideSlug": "",
       "path": "/openings/marufuku-burlingame-announced",
       "officialUrl": "https://www.marufukuramen.com/burlingame",
@@ -45871,7 +45871,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "7233 Healdsburg Avenue, Sebastopol, CA 95472",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-roundup-alesta-sebastopol-2026",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -45893,7 +45893,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "280 S Main Street, Sebastopol, CA",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-roundup-bonnie-bagels-sebastopol-2026",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -45915,7 +45915,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "505 Mendocino Avenue, Santa Rosa, CA 95401",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-roundup-capriciano-santarosa-2026",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -45937,7 +45937,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "159 Market Place, San Ramon, CA 94583",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-eriks-delicafe-san-ramon-relocation",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -45981,7 +45981,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-jean-dousset-valley-fair",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -46003,7 +46003,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "55 W. Third Avenue, San Mateo, CA 94402 · Main Library, third floor",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-plur-cafe-san-mateo-library",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -46025,7 +46025,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-thirdlove-valley-fair",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -46047,7 +46047,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-vivaia-valley-fair",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -46233,7 +46233,7 @@
       "cost": "unknown",
       "category": "cafe",
       "address": "1432 W San Carlos St, Suite 70, San Jose, CA 95126",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-hijau-san-jose-storefront",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -46418,7 +46418,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "185 Berry Street, San Francisco, CA 94107",
-      "imageKey": "sep26-open-sergeant-ma",
+      "imageKey": "official-opening-sergeant-ma",
       "openingStatus": "open",
       "openedOn": "2026-09-09",
       "planning": {
@@ -46509,7 +46509,7 @@
       "cost": "unknown",
       "category": "shop",
       "address": "2417 Larkspur Landing Circle, Larkspur, CA 94939",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-anya-gifting-larkspur",
       "openingStatus": "open",
       "location": {
         "lat": 37.947038,
@@ -46589,7 +46589,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "2600 Sutter Street, San Francisco, CA",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-sf-athanor-new-restaurant-2026",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null,
@@ -46645,14 +46645,14 @@
       "title": "Ceré Tea",
       "region": "east-bay",
       "city": "Berkeley",
-      "summary": "新开茶饮店，提供抹茶、焙茶等饮品。",
+      "summary": "Berkeley 2106 Shattuck Ave 的新茶饮店，官网菜单以抹茶、焙茶饮品为主，另有果茶和汽水。",
       "guideSlug": "",
       "path": "/openings/berkeley-cere-tea-opening-2026",
       "officialUrl": "https://www.ceretea.com/",
       "cost": "unknown",
       "category": "cafe",
       "address": "2106 Shattuck Ave, Berkeley, CA",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-berkeley-cere-tea-opening-2026",
       "openingStatus": "soft_open",
       "planning": {
         "admissionUsd": null
@@ -46696,7 +46696,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "536 Ninth St, Oakland, CA",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-oakland-delage-reopening-2026",
       "openingStatus": "open",
       "location": {
         "lat": 37.8017048,
@@ -46794,7 +46794,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "26 N San Pedro Street, San Jose, CA 95113",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-ignite-san-pedro-square",
       "openingStatus": "open",
       "location": {
         "lat": 37.3365,
@@ -46823,7 +46823,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "1231 Park St, Alameda, CA 94501",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-alameda-juxi-soft-opening-2026",
       "openingStatus": "soft_open",
       "planning": {
         "admissionUsd": null,
@@ -46884,7 +46884,7 @@
       "cost": "unknown",
       "category": "shop",
       "address": "2207 Larkspur Landing Circle, Larkspur, CA 94939",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-margaux-larkspur",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null,
@@ -46979,7 +46979,7 @@
       "cost": "unknown",
       "category": "cafe",
       "address": "2261 W Leland Rd, B01, Pittsburg, CA 94565",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-pittsburg-nekter-opening-2026",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -47045,7 +47045,7 @@
       "cost": "unknown",
       "category": "shop",
       "address": "2409 Larkspur Landing Circle, Larkspur, CA 94939",
-      "imageKey": "autumn-new-shops",
+      "imageKey": "official-opening-varley-larkspur",
       "openingStatus": "open",
       "location": {
         "lat": 37.9468868,
@@ -47125,7 +47125,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "211 Jefferson Street, San Francisco, CA 94133",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-raising-canes-jefferson-sf",
       "openingStatus": "open",
       "openedOn": "2026-09-21",
       "planning": {
@@ -47148,7 +47148,7 @@
       "cost": "unknown",
       "category": "cafe",
       "address": "2300 Valdez Street, Suite B, Oakland, CA 94612",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-game-parlour-oakland",
       "openingStatus": "soft_open",
       "openedOn": "2026-09-08",
       "planning": {
@@ -47194,7 +47194,7 @@
       "cost": "unknown",
       "category": "restaurant",
       "address": "1574 4th Street, San Rafael, CA 94901",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-aliotos-focacceria-san-rafael",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null
@@ -47331,14 +47331,14 @@
       "title": "The Mess Hall · Breadwinner",
       "region": "sf",
       "city": "San Francisco",
-      "summary": "Presidio Tunnel Tops 旁的新餐饮空间，官网已确认首期 Breadwinner 供应汉堡、三明治和沙拉。Boda 与 Dayboat Seafood 仍标记即将开放。",
+      "summary": "Presidio Tunnel Tops 旁的新餐饮空间。官网首页写 Breadwinner（汉堡）与 Dayboat Seafood（海鲜）已开始供应；Boda 仍标 Coming Soon。",
       "guideSlug": "",
       "path": "/openings/mess-hall-presidio-breadwinner",
       "officialUrl": "https://www.messhallpresidio.com/",
       "cost": "unknown",
       "category": "restaurant",
       "address": "201 Halleck Street, San Francisco, CA 94129",
-      "imageKey": "neighborhood-table",
+      "imageKey": "official-opening-mess-hall-presidio-breadwinner",
       "openingStatus": "open",
       "planning": {
         "admissionUsd": null

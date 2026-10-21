@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-15",
+  "checkedAt": "2026-10-21",
   "items": [
     {
       "kind": "offer",
@@ -466,7 +466,7 @@
       "dateLabel": "Sunday Oct 25 · 10am–5pm · Tickets open two weeks ahead",
       "costLabel": "Reservation required",
       "status": "dated",
-      "verifiedAt": "2026-10-02",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.sfmoma.org/free-days/",
       "sourceLabel": "SFMOMA Free Family Day and Adult Admission Limit"
     },
@@ -986,7 +986,7 @@
       "dateLabel": "October 24–31 · during branch hours, while supplies last",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-09-27",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.sjpl.org/news/halloween-booktacular-giveaway-2026/",
       "sourceLabel": "SJPL 2026 giveaway announcement and eligibility"
     },
@@ -1079,7 +1079,7 @@
       "dateLabel": "Sat October 24 · 7:30–10:30 AM, while supplies last",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-09-30",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.hayward-ca.gov/discover/events/compost-giveaway-oct-24-2026",
       "sourceLabel": "City of Hayward · Fall 2026 compost giveaway notice"
     },
@@ -2589,7 +2589,7 @@
       "dateLabel": "Oct 24, 2026 · 10am–noon, local store time",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.michaels.com/class/lil%E2%80%99-witching-hours:-chenille-stem-ghost-or-spider-142265502677384",
       "sourceLabel": "Michaels official event details and 2026 schedule"
     },
@@ -2607,7 +2607,7 @@
       "dateLabel": "Oct 25, 2026 · 1–3pm, local store time",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.michaels.com/class/witching-hours:-last-minute-costume-demo-263698371328392",
       "sourceLabel": "Michaels official event details and 2026 schedule"
     },
@@ -2643,7 +2643,7 @@
       "dateLabel": "Oct 24 · 11 AM–3 PM; confirm locally",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-04",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
       "sourceLabel": "Lakeshore official 2026 free kids’ event calendar (PDF)"
     },
@@ -3365,7 +3365,7 @@
       "dateLabel": "Oct 25–31 · confirm daily craft hours with the store",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://img.lakeshorelearning.com/is/content/OCProduction/pdf/8597056_LE%20Year%20Calendar_2026_No%20Crop.pdf",
       "sourceLabel": "Lakeshore 2026 in-store event calendar"
     },
@@ -3502,7 +3502,7 @@
       "dateLabel": "Oct 25, 2026 · 10 AM–4 PM",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-05",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.prnewswire.com/news-releases/petsmart-celebrates-halloween-with-free-in-store-events-including-new-meet-the-spooky-pets-experience-302895172.html",
       "sourceLabel": "PetSmart official 2026 in-store Halloween announcement"
     },
@@ -3730,7 +3730,7 @@
       "dateLabel": "Sun Oct 25 · Noon–2 PM · First come, first served",
       "costLabel": "No purchase required",
       "status": "dated",
-      "verifiedAt": "2026-10-15",
+      "verifiedAt": "2026-10-21",
       "sourceUrl": "https://www.lego.com/en-us/stores/events/lbr-26mt-ghost-street",
       "sourceLabel": "LEGO Ghost Street build event and terms"
     },
@@ -4272,11 +4272,11 @@
       "id": "marufuku-burlingame-announced",
       "title": "Marufuku Ramen · Burlingame",
       "path": "/openings/marufuku-burlingame-announced",
-      "summary": "Marufuku Ramen's Burlingame location at 225 Lorton Avenue. The store page earlier announced a Oct 11 Grand Opening with regular hours from Oct 12 and now lists only the regular hours; the location list on the brand's homepage still says Coming Soon, so the two pages disagree.",
+      "summary": "Marufuku Ramen’s Burlingame branch at 225 Lorton Avenue. The store page earlier gave Oct 11 as the Grand Opening and now lists regular hours; the brand’s home page now says “now open in BURLINGAME”, but the location list lower on the store page still says Coming Soon, so the two disagree.",
       "details": [
         "Closed 2–5 pm on weekdays; open straight through 11 am–9 pm on weekends.",
         "225 Lorton Ave, Burlingame, CA 94010",
-        "Ramen"
+        "Hakata tonkotsu ramen"
       ],
       "region": "peninsula",
       "city": "Burlingame",
@@ -4296,7 +4296,7 @@
       "details": [
         "Lunch Mon–Fri 11:30am–2pm; brunch Sat–Sun 11am–2pm. The site earlier said brunch starts Sunday, Oct 18 and now gives no start date; for brunch on Saturday, Oct 17, call 650-502-1000 first to ask whether it has begun. Lunch and brunch can be booked on the website.",
         "222 Park Road, Burlingame, CA 94010",
-        "New restaurant in a historic building"
+        "French-style California food"
       ],
       "region": "peninsula",
       "city": "Burlingame",
@@ -4316,7 +4316,7 @@
       "details": [
         "The official homepage lists hours: Monday–Saturday, 11 am–5:30 pm.",
         "1160 4th Street, Santa Rosa, CA",
-        "Retail relocation"
+        "Home decor, art and jewelry"
       ],
       "region": "north-bay",
       "city": "Santa Rosa",
@@ -4335,7 +4335,7 @@
       "details": [
         "Open every day, says its site: fall hours are dinner only Mon–Wed 5–9pm, and lunch and dinner Thu–Sun 11am–9pm. 7233 Healdsburg Avenue; book on the website.",
         "7233 Healdsburg Avenue, Sebastopol, CA 95472",
-        "Mediterranean restaurant"
+        "Turkish and Mediterranean"
       ],
       "region": "north-bay",
       "city": "Sebastopol",
@@ -4354,7 +4354,7 @@
       "details": [
         "The website currently lists Wednesday–Sunday, 7 a.m.–1 p.m., closed Mondays and Tuesdays. Plan an early stop and recheck opening and availability that day.",
         "280 S Main Street, Sebastopol, CA",
-        "Bagels and breakfast"
+        "East Coast-style bagels"
       ],
       "region": "north-bay",
       "city": "Sebastopol",
@@ -4373,7 +4373,7 @@
       "details": [
         "The website currently lists dinner from 5 p.m., closed Tuesdays, and recommends reservations. Combine it with a downtown walk; walk-ins depend on availability.",
         "505 Mendocino Avenue, Santa Rosa, CA 95401",
-        "Italian restaurant"
+        "Handmade pasta and pizza"
       ],
       "region": "north-bay",
       "city": "Santa Rosa",
@@ -4392,7 +4392,7 @@
       "details": [
         "Navigate to 159 Market Place for pickup and confirm the selected branch before ordering. Check that store’s checkout for combos, delivery charges, rewards and current hours.",
         "159 Market Place, San Ramon, CA 94583",
-        "Sandwiches, salads and soups"
+        "Sandwiches and soups"
       ],
       "region": "east-bay",
       "city": "San Ramon",
@@ -4411,7 +4411,7 @@
       "details": [
         "This confirms the operating information displayed on October 2, not the previously planned date as a proven first day of service. Recheck current hours and the menu with the business.",
         "2360 Polk Street, San Francisco, CA",
-        "Open · Australian-style sushi rolls"
+        "Sushi hand rolls"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4430,7 +4430,7 @@
       "details": [
         "Review the complete quote, customization terms and return conditions before ordering. A New label does not establish a particular first opening day.",
         "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "Lab-grown diamonds and jewelry"
+        "Lab-grown diamond jewelry"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4449,7 +4449,7 @@
       "details": [
         "Check café hours before planning borrowing or a talk. The celebration is over, so do not expect continuing giveaways. This is an official-source opening update, not a firsthand food review.",
         "55 W. Third Avenue, San Mateo, CA 94402 · Main Library, third floor",
-        "Library café"
+        "Coffee and tea"
       ],
       "region": "peninsula",
       "city": "San Mateo",
@@ -4487,7 +4487,7 @@
       "details": [
         "Check size availability and return policies. Celebration dates are not verified first-service dates; confirm the membership drink, purchase gifts and other terms separately.",
         "Westfield Valley Fair · 2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "Footwear"
+        "Recycled-material shoes"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4506,7 +4506,7 @@
       "details": [
         "The site currently lists opening at 5 PM Wednesday–Sunday, closed Monday–Tuesday. Check menu prices and reservations. This is opening news, not a firsthand review. September 1 is the article date, not an opening date; no opening discount is verified.",
         "101 E Napa Street, Sonoma, CA 95476",
-        "New restaurant · Charcoal-fired California cooking"
+        "California charcoal grill"
       ],
       "region": "north-bay",
       "city": "Sonoma",
@@ -4525,7 +4525,7 @@
       "details": [
         "The October 11 celebration starts earlier than the usual Sunday noon opening; check that day's arrangements. Soft-opening bag-giveaway images lack verified dates and conditions, so no October gift is promised. Food and drinks cost extra.",
         "43571 Mission Blvd, Fremont, CA 94539",
-        "Café, desserts and sushi · Opening celebration"
+        "Desserts, drinks and sushi"
       ],
       "region": "east-bay",
       "city": "Fremont",
@@ -4544,7 +4544,7 @@
       "details": [
         "Merchandise is priced as marked in-store; no opening discount at this location has been verified. Hours and inventory are subject to the store. Local media reported the opening date, and the brand's official website corroborates current operation; this is not the founding of the brand.",
         "1366 N Main Street, Walnut Creek, CA 94596",
-        "New retail store"
+        "Women's wear and shoes"
       ],
       "region": "east-bay",
       "city": "Walnut Creek",
@@ -4564,7 +4564,7 @@
       "details": [
         "Order from the menu; prices are posted in the shop. No reservations; the menu and hours may change during the soft opening. The soft-opening date comes from local news coverage.",
         "30 Fountain Alley, Suite 170, San Jose, CA 95113",
-        "Coffee, tea and baked goods"
+        "Coffee and amaro"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4584,7 +4584,7 @@
       "details": [
         "Regular prices; the opening giveaways have ended. No booking needed to shop; see the mall store page for hours.",
         "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
-        "New retail store"
+        "Women's clothing"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -4604,7 +4604,7 @@
       "details": [
         "Music at the opening celebration was free; drinks and food cost extra. The celebration has ended; check the store's latest hours before a future visit. Sep 5 was the grand-opening celebration, not a confirmed first day of public service. Celebration offers have ended. The store's own website could not be retrieved during this check; the date is based on the performer's official page.",
         "1432 W San Carlos St, Suite 70, San Jose, CA 95126",
-        "Indonesian coffee"
+        "Indonesian coffee shop"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4623,7 +4623,7 @@
       "details": [
         "Food and drinks are paid; a complete per-person price has not been verified. The official site recommends reservations.",
         "1838 Union St, San Francisco, CA 94123",
-        "Japanese-Peruvian handrolls"
+        "Peruvian-Japanese rolls"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4661,7 +4661,7 @@
       "details": [
         "Merchandise is priced as marked in-store; local opening offers have not been verified. Check the store for regular visit arrangements. The grand-opening RSVP information conflicts, so the celebration is not included in event plans. The announcement date is not treated as the opening date. The article announces an October 1 celebration, but the linked RSVP shows conflicting metadata such as Atlanta on September 29, so no separate celebration session is confirmed.",
         "1619 Mount Diablo Boulevard, Walnut Creek, CA 94596",
-        "New retail store"
+        "Mattress showroom"
       ],
       "region": "east-bay",
       "city": "Walnut Creek",
@@ -4680,7 +4680,7 @@
       "details": [
         "Pay according to the food and drink menu. A per-person budget has not been confirmed; this is not a fixed admission price. Check hours and reservation rules before visiting. The restaurant/bar opened in September; the cafe, konbini, and market had already opened in spring. The entire Yutori venue should not be described as opening for the first time in September.",
         "3375 El Camino Real, Palo Alto, CA 94306",
-        "New restaurant · Japanese dinner"
+        "California-style Japanese food"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -4700,7 +4700,7 @@
       "details": [
         "The report lists sandwiches at $20 or less and half sandwiches at $10. Taxes have not been verified and current prices may change. Check the latest hours before visiting; no assumption is made that reservations are unnecessary or seats are always available.",
         "2618 Telegraph Ave, Berkeley, CA",
-        "New dining spot"
+        "Hoagies"
       ],
       "region": "east-bay",
       "city": "Berkeley",
@@ -4720,7 +4720,7 @@
       "details": [
         "An a la carte restaurant; a complete per-person budget has not been verified. Booking through the official site is recommended. Waterfront lounge and dining-room seating have different conditions.",
         "185 Berry Street, San Francisco, CA 94107",
-        "Waterfront dining"
+        "Asian-inspired California food"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4740,7 +4740,7 @@
       "details": [
         "The pop-up runs inside The Saap Avenue; it also sells pastries. It is a pop-up and no current official page confirms it is still running, so check the business’s latest social posts before you go.",
         "4395 Piedmont Ave, Oakland, CA",
-        "Coffee, tea and baked goods"
+        "Coffee and banh mi"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4759,7 +4759,7 @@
       "details": [
         "Inside Marin Country Mart, across from the Larkspur Ferry Terminal.",
         "2417 Larkspur Landing Circle, Larkspur, CA 94939",
-        "New retail store"
+        "Personalized gifts and bags"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -4778,7 +4778,7 @@
       "details": [
         "A September report lists $175 per person. Check the reservation page to see whether drinks, tax, and service charges are included. The official site provides a booking link; confirm the time and final total for an available seating.",
         "2600 Sutter Street, San Francisco, CA",
-        "New dining spot"
+        "Modern fine dining"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -4793,15 +4793,15 @@
       "id": "berkeley-cere-tea-opening-2026",
       "title": "Ceré Tea",
       "path": "/openings/berkeley-cere-tea-opening-2026",
-      "summary": "A newly opened tea shop serving matcha, hojicha and other drinks.",
+      "summary": "A new tea shop at 2106 Shattuck Ave in Berkeley. Its online menu is mostly matcha and hojicha drinks, plus fruit teas and sodas.",
       "details": [
         "In the former Happy Lemon storefront; it also serves blended ube drinks and coffee.",
         "2106 Shattuck Ave, Berkeley, CA",
-        "Coffee, tea and baked goods"
+        "Matcha and hojicha drinks"
       ],
       "region": "east-bay",
       "city": "Berkeley",
-      "dateLabel": "Check the business's latest announcements for regular hours and future plans.",
+      "dateLabel": "Soft opening · the Berkeley store’s online menu still lists a Soft Opening Special",
       "status": "soft_open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://www.ceretea.com/",
@@ -4816,7 +4816,7 @@
       "details": [
         "Dinner only, closed Tuesdays; reservations on its website.",
         "6200 Claremont Ave, Oakland, CA",
-        "New dining spot"
+        "Fermented Korean food"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4835,7 +4835,7 @@
       "details": [
         "Phone 341-213-7494, call or text. The site lists hours for Monday to Saturday only; Sunday is not listed. Press reports list an eight-course omakase at $150, with an à la carte menu as well; they do not say whether tax and tip are included. Reservations are available.",
         "536 Ninth St, Oakland, CA",
-        "New dining spot"
+        "Sushi and omakase"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -4854,7 +4854,7 @@
       "details": [
         "The site says it opened in September 2026 without naming the day; Happy Hour runs from opening until 7pm on open days. Order from the menu; the site gives no typical spend per person.",
         "26 N San Pedro Street, San Jose, CA 95113",
-        "New restaurant · Grilled food and patio dining"
+        "Skewers and cocktails"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -4873,7 +4873,7 @@
       "details": [
         "Cantonese American cooking; book through the Resy link on its website.",
         "1231 Park St, Alameda, CA 94501",
-        "New dining spot"
+        "Modern Cantonese food"
       ],
       "region": "east-bay",
       "city": "Alameda",
@@ -4892,7 +4892,7 @@
       "details": [
         "Sizes EU 33–44 in three widths; store phone (415) 306-7425.",
         "2207 Larkspur Landing Circle, Larkspur, CA 94939",
-        "New retail store"
+        "Women's shoes in many sizes"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -4911,7 +4911,7 @@
       "details": [
         "Order from the menu; the café's phone is (650) 534-6661.",
         "1663 El Camino Real, Millbrae, CA",
-        "Coffee, tea and baked goods"
+        "Coffee shop"
       ],
       "region": "peninsula",
       "city": "Millbrae",
@@ -4930,7 +4930,7 @@
       "details": [
         "Besides juices and smoothies it serves bowls and waffles; there are also branches in Fremont and Danville.",
         "2261 W Leland Rd, B01, Pittsburg, CA 94565",
-        "New dining spot"
+        "Juices and acai bowls"
       ],
       "region": "east-bay",
       "city": "Pittsburg",
@@ -4949,7 +4949,7 @@
       "details": [
         "From the team behind O2 Eatery on Solano Avenue; besides sushi rolls it serves udon, ramen and bento boxes.",
         "977 San Pablo Ave, Albany, CA",
-        "New dining spot"
+        "Sushi dinners"
       ],
       "region": "east-bay",
       "city": "Albany",
@@ -4968,7 +4968,7 @@
       "details": [
         "Inside The BreakRoom, a billiards hall and cocktail bar at Shattuck and University Avenue.",
         "2021 Shattuck Ave, Berkeley, CA",
-        "New dining spot"
+        "Hot dogs and sausages"
       ],
       "region": "east-bay",
       "city": "Berkeley",
@@ -4987,7 +4987,7 @@
       "details": [
         "Inside Marin Country Mart; store phone (628) 229-2058.",
         "2409 Larkspur Landing Circle, Larkspur, CA 94939",
-        "New retail store"
+        "Women's knits and activewear"
       ],
       "region": "north-bay",
       "city": "Larkspur",
@@ -5006,7 +5006,7 @@
       "details": [
         "Check today’s hours and ordering on the Jefferson Street location page. September 21 giveaways have ended. This is separate from the Stonestown location, which is still marked Coming Soon.",
         "211 Jefferson Street, San Francisco, CA 94133",
-        "Chicken finger restaurant"
+        "Chicken finger combos"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5026,7 +5026,7 @@
       "details": [
         "Current soft-opening hours are Tuesday–Sunday, 4–10pm. Gaming is $7 per person, free for ages 4 and under; food costs extra. The two-week opening offer has ended. Contact Oakland for larger groups. Its online ordering is still coming soon, so avoid the San Francisco ordering link.",
         "2300 Valdez Street, Suite B, Oakland, CA 94612",
-        "Board-game café and waffles"
+        "Board games and waffles"
       ],
       "region": "east-bay",
       "city": "Oakland",
@@ -5046,7 +5046,7 @@
       "details": [
         "The hotel currently lists dinner Tuesday–Saturday and closure Sunday–Monday. Check reservations, the current menu and patio seating before planning dinner in San Rafael. This is reopening news, not a firsthand review.",
         "4 Bayview Street, San Rafael, CA 94901",
-        "Reopening · California coastal cuisine"
+        "California coastal cuisine"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5066,7 +5066,7 @@
       "details": [
         "The brand lists separate San Rafael and Reno locations: select San Rafael when ordering. Current listed hours are 10 am–5 pm daily; recheck before visiting. September 1 is the district article date, not a verified opening date.",
         "1574 4th Street, San Rafael, CA 94901",
-        "New concept · Italian sandwiches and deli"
+        "Focaccia sandwiches"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5085,7 +5085,7 @@
       "details": [
         "This venue was operating by June and was rechecked in September. The main restaurant, Ginza Social and BarLucy have separate menus and reservation links. Choose your dining area before checking October availability.",
         "2855 Stevens Creek Boulevard, Santa Clara, CA 95050",
-        "Asian dining and retail destination"
+        "Asian dining and food shop"
       ],
       "region": "south-bay",
       "city": "Santa Clara",
@@ -5123,7 +5123,7 @@
       "details": [
         "The August giveaways and September 1–3 BOGO have ended. Save the shop as an October dessert option and check its location page for current hours and menu. September 1 was the celebration date.",
         "310 S San Mateo Drive, San Mateo, CA 94401",
-        "Fruit yogurt and desserts"
+        "Yogurt drinks and desserts"
       ],
       "region": "peninsula",
       "city": "San Mateo",
@@ -5162,7 +5162,7 @@
       "details": [
         "A coffee stop to pair with a Marina neighborhood walk. Check the official hours before leaving; the past celebration does not mean an opening offer is still available.",
         "2300 Chestnut Street, San Francisco, CA 94123",
-        "Coffee and bakery"
+        "Bakery and brunch"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5177,15 +5177,15 @@
       "id": "mess-hall-presidio-breadwinner",
       "title": "The Mess Hall · Breadwinner",
       "path": "/openings/mess-hall-presidio-breadwinner",
-      "summary": "The new dining space beside Presidio Tunnel Tops confirms that its first phase, Breadwinner, is serving burgers, sandwiches and salads. Boda and Dayboat Seafood are still marked coming soon.",
+      "summary": "A new food hall next to the Presidio Tunnel Tops. Its home page says Breadwinner (burgers) and Dayboat Seafood are now serving; Boda still says Coming Soon.",
       "details": [
-        "A lunch stop after a park walk, with Breadwinner serving from 11 AM until closing. Dogs are welcome on the patio; only service animals may enter the building. Check updates for the other food counters.",
+        "Breadwinner and Dayboat serve from 11 a.m. to close. The Breadwinner menu page also lists breakfast 7–10 a.m., but the home page only says service starts at 11 a.m., so don’t make an early trip just for breakfast. Dogs are welcome on the patio; only service animals are allowed inside the building.",
         "201 Halleck Street, San Francisco, CA 94129",
-        "New park dining space"
+        "Burgers and sandwiches"
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "New in 2026 · Breadwinner is open",
+      "dateLabel": "Breadwinner and Dayboat Seafood are open · Boda still says coming soon",
       "status": "open",
       "verifiedAt": "2026-09-15",
       "sourceUrl": "https://www.messhallpresidio.com/",
@@ -5200,7 +5200,7 @@
       "details": [
         "The Chronicle's Oct 6 report forecasts November, subject to the brand's updates. The photo shows the future premises and does not prove the pub is open; no unconfirmed booking is suggested.",
         "1132 Fourth Street, San Rafael, CA 94901",
-        "Upcoming · Neighborhood pub and restaurant"
+        "Pub and restaurant"
       ],
       "region": "north-bay",
       "city": "San Rafael",
@@ -5219,7 +5219,7 @@
       "details": [
         "355 Santana Row #1060 is the reported address. Wait for the brand to confirm its opening date, hours and reservations; menu prices and opening offers are unverified.",
         "355 Santana Row #1060, San Jose, CA 95128",
-        "Upcoming · Seasonal American restaurant"
+        "Modern American food"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -5238,7 +5238,7 @@
       "details": [
         "If you want to go, check for a table through Shinka's own reservations link first; the hours of the hotel's other restaurants are not Shinka's.",
         "433 Clay Street, San Francisco, CA 94111",
-        "Upcoming · Japanese-French dining"
+        "Japanese-French cuisine"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5257,7 +5257,7 @@
       "details": [
         "Before you go, check the hotel's dining page for hours and table bookings; there is also a Fall Harvest Afternoon Tea this autumn, booking required. The interior images in the press release are renderings.",
         "The Ritz-Carlton, San Francisco, 600 Stockton Street, San Francisco, CA 94108",
-        "Cocktail lounge"
+        "California food and cocktails"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5276,7 +5276,7 @@
       "details": [
         "Subscribe for opening updates before making a special trip. The mailing list is not a table reservation, and media previews do not establish that it is open. Other Ferry Building stops can be a backup.",
         "Ferry Building, 1 Ferry Building, San Francisco, CA 94111",
-        "All-day Southern Italian dining"
+        "Southern Italian food"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5293,9 +5293,9 @@
       "path": "/openings/palo-alto-auntea-jenny-announced-2026",
       "summary": "A fruit-tea and milk-tea brand plans a shop on University Avenue; local media reported a late-September opening.",
       "details": [
-        "Order from the menu; check the shop’s own posts to confirm it is open before you go.",
+        "The report says the brand is also preparing a San Mateo store (253 S. B St.). Check the shop’s announcements before you go to make sure the Palo Alto store is open.",
         "328 University Avenue, Palo Alto, CA",
-        "Coffee, tea and baked goods"
+        "Fruit tea and milk tea"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -5312,9 +5312,9 @@
       "path": "/openings/palo-alto-bonbon-matcha-announced-2026",
       "summary": "A matcha drinks and dessert shop is moving into the former Gong Cha space; local media reported an early-to-mid-October opening.",
       "details": [
-        "Order from the menu; check the shop’s own posts to confirm it is open before you go.",
+        "The brand opened first in Cupertino. Check its Instagram before you go to make sure the Palo Alto store is open.",
         "439 Waverley Street, Palo Alto, CA",
-        "New dining spot"
+        "Matcha drinks and desserts"
       ],
       "region": "peninsula",
       "city": "Palo Alto",
@@ -5333,7 +5333,7 @@
       "details": [
         "To try it before this one opens, the Menlo Park shop at 1149 Chestnut St. is open daily 6:30 am–6 pm.",
         "170 State Street, Los Altos, CA",
-        "New dining spot"
+        "Italian-style café"
       ],
       "region": "south-bay",
       "city": "Los Altos",
@@ -5350,9 +5350,9 @@
       "path": "/openings/mountain-view-tong-sui-announced-2026",
       "summary": "A local brand serving coconut pudding, smoothies and tea plans a new shop; local media report an October opening.",
       "details": [
-        "Order from the menu; check the shop’s own posts to confirm it is open before you go.",
+        "Its online ordering page listed 7 stores on Oct 19, none in Mountain View yet; check the brand’s Instagram before you go to make sure it is open.",
         "747 W Dana Street, Mountain View, CA",
-        "New dining spot"
+        "Coconut pudding and tea"
       ],
       "region": "south-bay",
       "city": "Mountain View",
@@ -5371,7 +5371,7 @@
       "details": [
         "The old micro-bakery closed on Aug 29; the site's footer still shows the old 2050 Bryant St address, and the new one is 3349 23rd Street.",
         "3349 23rd Street, San Francisco, CA 94110",
-        "Relocation preview · Mexican bakery"
+        "Mexican sweet bread"
       ],
       "region": "sf",
       "city": "San Francisco",
@@ -5390,7 +5390,7 @@
       "details": [
         "Hotel room availability does not confirm restaurant service; check with the hotel first. The separate Tejer restaurant is planned for December, not this month.",
         "233 W Santa Clara Street, San Jose, CA 95113",
-        "Reopening preview · Hotel bistro & lounge"
+        "California bistro and lounge"
       ],
       "region": "south-bay",
       "city": "San Jose",
@@ -5409,7 +5409,7 @@
       "details": [
         "This is the planned 2847 Taylor location, separate from the temporary drinks concession at Alioto’s Plaza. Wait for this venue's opening confirmation before visiting.",
         "2847 Taylor Street, San Francisco, CA 94133",
-        "Extended pop-up preview · Bar"
+        "Beer and wine"
       ],
       "region": "sf",
       "city": "San Francisco",

@@ -32,7 +32,7 @@ test('the picks file is optional: absent, malformed or empty files give no picks
   assert.equal(loadWeekendPicks(path.join(dir, 'missing.json')).size, 0);
   assert.equal(loadWeekendPicks(fixture('broken.json', '{ not json')).size, 0);
   assert.equal(loadWeekendPicks(fixture('empty.json', { generatedAt: TODAY, weekends: [] })).size, 0);
-  // The shipped data has no picks file yet (WEB-PICKS-EXPORT, then API-SYNC-3H): the default load is empty too.
+  // Without data/weekend-picks.json (shipped since API-SYNC-3H) the default load is empty too; checked only where it is absent.
   if (!process.env.BAYLINK_WEEKEND_PICKS_FILE && !fs.existsSync(path.join(__dirname, '..', 'data', 'weekend-picks.json'))) assert.deepEqual(withPicks(absent, () => candidateIds(ASK)), candidateIds(ASK));
 });
 

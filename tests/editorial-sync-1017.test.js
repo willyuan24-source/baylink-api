@@ -56,8 +56,10 @@ test('the Dec–Jan Chinese-language events are in every catalog copy, with the 
   assert.deepEqual(discoveriesZh.items.map(row => `${row.kind}:${row.id}`).sort(), discoveriesEn.items.map(row => `${row.kind}:${row.id}`).sort());
 });
 
-test('the editor\'s 10/24–25 and 10/31 picks are catalog events on their days', () => {
-  // web src/data/weekend-picks.ts (not copied to the API; the picks' events are).
+test('the editor\'s 10/17-era picks for 10/24–25 and 10/31 are still catalog events on their days', () => {
+  // web src/data/weekend-picks.ts as of 10/17. The 10/24–25 picks have since changed (web #56, CNT-W1024): the shipped
+  // data/weekend-picks.json is pinned in editorial-sync-1018 and -1021. This only checks that the earlier picks' events
+  // still run on those days.
   for (const [day, ids] of [['2026-10-24', ['r2-petaluma-lumafest-20261024', 'menlo-park-halloween-hoopla-2026', 'sfpl-chinatown-creative-saturdays-fall-2026', 'acl-cherryland-chinese-storytimes-oct24-2026', 'san-jose-sjma-dia-muertos-community-2026']],
     ['2026-10-31', ['mcm-halloween-spectacular-20261031', 'sfpl-chinatown-creative-saturdays-fall-2026', 'san-jose-avenida-altares-2026']],
     ['2026-11-01', ['nov2026-fruitvale-dia-muertos', 'smcl-foster-city-nidhi-chanani-2026']]]) {
@@ -73,7 +75,10 @@ test('the elder and library guide fixes cite only registered sources', () => {
       const guide = catalog.find(row => row.slug === slug);
       assert.ok(guide, slug);
       // API-SYNC-3h: web Wave 7 A (CNT-YEAREND) adds the 2027 fares to the senior transit guide (updatedAt 2026-10-17).
-      assert.equal(guide.updatedAt, slug === 'bay-area-senior-transit-clipper-discounts-guide' ? '2026-10-17' : '2026-10-16', slug);
+      // API-SYNC-3i: web #54 adds VTA ACCESS to its paratransit paragraph (2026-10-20) and Alameda County's senior information
+      // and assistance line to the resource map (2026-10-19).
+      const updated = { 'bay-area-senior-transit-clipper-discounts-guide': '2026-10-20', 'bay-area-chinese-language-resource-map': '2026-10-19' };
+      assert.equal(guide.updatedAt, updated[slug] || '2026-10-16', slug);
       for (const source of guide.sources) assert.ok(registry.some(row => row.url === source.url && row.contentIds.includes(slug)), `${slug}: ${source.url}`);
     }
   }

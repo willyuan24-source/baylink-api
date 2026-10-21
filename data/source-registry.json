@@ -9660,6 +9660,15 @@
     "endDate": "2026-10-11"
   },
   {
+    "id": "source-9368d0dd4809829a",
+    "title": "湾区长者坐车省钱指南",
+    "url": "https://www.vta.org/programs/access",
+    "kind": "guide",
+    "contentIds": [
+      "bay-area-senior-transit-clipper-discounts-guide"
+    ]
+  },
+  {
     "id": "source-93747e1e9e131710",
     "title": "湾区免费生活清单：从图书馆到周末小旅行",
     "url": "https://sfpl.org/welcome-new-cardholders/kiosk-application",
@@ -13171,6 +13180,17 @@
       "smcl-brisbane-puzzle-swap-2026"
     ],
     "endDate": "2026-11-08"
+  },
+  {
+    "id": "source-c6b4b1af03d4e696",
+    "title": "北湾秋日怎么选：市集、自然与文化，看到11月15日",
+    "url": "https://napavalleymuseum.org/blogs/exhibitions/eames-eames",
+    "kind": "guide",
+    "contentIds": [
+      "north-bay-markets-nature-culture-through-november-15-2026",
+      "november-north-eames-exhibition-2026"
+    ],
+    "endDate": "2026-11-15"
   },
   {
     "id": "source-c6be23257388f3e3",
