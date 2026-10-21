@@ -111,12 +111,13 @@ test('BayBay: birthday-perk asks lead with the birthday guide and see the new pe
   for (const id of ['guide:bay-area-birthday-perks', 'offer:benihana-kabuki-kids-birthday']) assert.ok(kids.includes(id), kids.join(', '));
 });
 
-test('BayBay: an East Bay farmers\' market ask on Saturday 10/17 sees Downtown Berkeley and Grand Lake (re-checked 10/15)', () => {
+test('BayBay: an East Bay farmers\' market ask on Saturday 10/17 sees Downtown Berkeley and Grand Lake (re-checked 10/15, again 10/21)', () => {
   for (const message of ['这周六东湾有什么农夫市集？', 'Any farmers markets in the East Bay on Saturday morning?']) {
     const found = itemIds(evidence(message));
     for (const id of ['event:berkeley-downtown-saturday-farmers-market-2026', 'event:oakland-grand-lake-farmers-market-2026']) assert.ok(found.includes(id), `${message}: ${found.join(', ')}`);
   }
-  for (const id of ['berkeley-downtown-saturday-farmers-market-2026', 'oakland-grand-lake-farmers-market-2026']) assert.equal(event(id).verifiedAt, '2026-10-15', id);
+  // API-SYNC-3i: web #56 (CNT-W1024) read both markets' official pages again on 10/21.
+  for (const id of ['berkeley-downtown-saturday-farmers-market-2026', 'oakland-grand-lake-farmers-market-2026']) assert.equal(event(id).verifiedAt, '2026-10-21', id);
 });
 
 test('BayBay: the sold-out SJMA symposium is never a bookable option', () => {

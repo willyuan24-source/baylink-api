@@ -41,9 +41,21 @@ const NEW_EVENTS = ['smcl-portola-valley-sewing-machine-basics-2026', 'sunnyvale
   'sf-lunar-new-year-basketball-jamboree-2027', 'sunnyvale-lakewood-aimusic-lunar-new-year-2027', 'sj-cpaa-spring-festival-gala-2027', 'sf-miss-chinatown-usa-pageant-2027',
   'sf-chinese-new-year-community-fair-2027', 'sf-chinese-new-year-parade-2027'];
 const HOLIDAY = 'bay-area-holiday-hours-thanksgiving-new-year-2026';
-const PICKS_1024 = ['r2-petaluma-lumafest-20261024', 'menlo-park-halloween-hoopla-2026', 'sfpl-chinatown-creative-saturdays-fall-2026', 'acl-cherryland-chinese-storytimes-oct24-2026', 'san-jose-sjma-dia-muertos-community-2026'];
-// Chinatown Creative Saturdays (3rd pick) is for adults, so a family ask never offers it.
-const FAMILY_1024 = PICKS_1024.filter(id => id !== 'sfpl-chinatown-creative-saturdays-fall-2026');
+// API-SYNC-3i (web #56, CNT-W1024's review of 10/21): the editor's 10/24–25 picks are now Cherryland's Chinese-language
+// storytimes, LumaFest and SFPL's Financial Planning Day (Saturday 10/24), with World of Dumplings and OMCA's Día de los
+// Muertos as the Sunday 10/25 standbys. The pins below follow the web data, the source of truth; the rules they pin are
+// API-BB-12's. (Until this sync: LumaFest, Halloween Hoopla, Chinatown Creative Saturdays, Cherryland and SJMA, all Saturday.)
+const PICKS_1024 = ['acl-cherryland-chinese-storytimes-oct24-2026', 'r2-petaluma-lumafest-20261024', 'sf-financial-planning-day-oct24-2026', 'sf-world-of-dumplings-2026', 'oakland-omca-dia-muertos-2026'];
+// The Saturday picks; the Financial Planning Day (3rd pick, audience 成人) is for adults, so a family ask never offers it.
+const SATURDAY_1024 = PICKS_1024.slice(0, 3);
+const ADULTS_1024 = 'sf-financial-planning-day-oct24-2026';
+const ADULT_PICKS = /chinatown-creative-saturdays|financial-planning-day/;
+// A Saturday 10/24 family ask: the Saturday picks for children and families, in the editor's order.
+const FAMILY_1024 = ['acl-cherryland-chinese-storytimes-oct24-2026', 'r2-petaluma-lumafest-20261024'];
+// A 10/24–25 weekend family ask: OMCA (Sunday, 社区文化 / 亲子家庭) follows them; World of Dumplings (美食与文化 / 亲友出游) is
+// not a family pick and keeps only the lift.
+const OMCA = 'oakland-omca-dia-muertos-2026';
+const FAMILY_WEEKEND_1024 = [...FAMILY_1024, OMCA];
 // 10/31–11/1: the picks for children and families, in the editor's order (Fruitvale's Día de los Muertos is for "湾区居民与
 // 访客", Chinatown Creative Saturdays for adults).
 const FAMILY_1031 = ['mcm-halloween-spectacular-20261031', 'san-jose-avenida-altares-2026', 'smcl-foster-city-nidhi-chanani-2026'];
@@ -70,9 +82,10 @@ test('the Wave 7 A events and the holiday hours guide are in every catalog copy,
     'november-north-jack-london-author-2026:sold_out', 'san-jose-waterways-art-climate-2026:sold_out', 'south-sf-state-of-city-2026:postponed']);
 });
 
-test('the shipped weekend picks file: three weekends, editor order, every pick a catalog event on its listed days', () => {
+test('the shipped weekend picks file: its weekends, editor order, every pick a catalog event on its listed days', () => {
   const picks = loadWeekendPicks();
-  assert.deepEqual([...picks.keys()], ['2026-10-17', '2026-10-24', '2026-10-31']);
+  // API-SYNC-3i: the web no longer exports the past 10/17–18 weekend.
+  assert.deepEqual([...picks.keys()], ['2026-10-24', '2026-10-31']);
   assert.deepEqual(picks.get('2026-10-24').map(pick => pick.id), PICKS_1024);
   for (const weekend of picksFile.weekends) {
     for (const pick of weekend.picks) {
@@ -80,9 +93,10 @@ test('the shipped weekend picks file: three weekends, editor order, every pick a
       for (const day of pick.dates) assert.ok(eventOccursOn(event(pick.id), day), `${pick.id} on ${day}`);
     }
   }
-  // The 10/24 picks run on Saturday only, so a Sunday 10/25 ask lifts none of them; a month span lifts none (API-BB-9).
-  assert.deepEqual([...picksForAsk({ date: '2026-10-24' })].map(([id]) => id), PICKS_1024);
-  assert.equal(picksForAsk({ date: '2026-10-25' }).size, 0);
+  // A Saturday 10/24 ask lifts the three Saturday picks, a Sunday 10/25 ask only the two Sunday standbys (each with its rank);
+  // a month span lifts none (API-BB-9).
+  assert.deepEqual([...picksForAsk({ date: '2026-10-24' })].map(([id]) => id), SATURDAY_1024);
+  assert.deepEqual([...picksForAsk({ date: '2026-10-25' })], [['sf-world-of-dumplings-2026', 3], [OMCA, 4]]);
   assert.deepEqual([...picksForAsk({ date: '2026-11-01' })], [['nov2026-fruitvale-dia-muertos', 1], ['smcl-foster-city-nidhi-chanani-2026', 4]]);
   assert.equal(picksForAsk({ dateRange: { start: '2026-10-22', end: '2026-10-31' } }).size, 0);
 });
@@ -92,44 +106,48 @@ test('the shipped weekend picks file: three weekends, editor order, every pick a
 test('BayBay: a 10/24 family ask on 10/22 or 10/23 offers the editor\'s 10/24 picks first, in the editor\'s order', () => {
   for (const today of ['2026-10-22', '2026-10-23']) {
     const result = evidence('10月24号周末带娃去哪玩', today);
-    assert.deepEqual(candidateIds(result).slice(0, 4), FAMILY_1024, today);
-    // Among the model items (API-BB-12): the four family picks, in the editor's order, right after the records the ask names
-    // by its date (two craft offers on 10/24); with the old lib/ Cherryland and SJMA reached the model only as candidates.
+    assert.deepEqual(candidateIds(result).slice(0, 2), FAMILY_1024, today);
+    // Among the model items (API-BB-12): the family picks, in the editor's order, right after the records the ask names
+    // by its date (two craft offers on 10/24).
     assert.ok(itemIds(result).slice(0, 5).includes('event:r2-petaluma-lumafest-20261024'), `${today}: ${itemIds(result).join(', ')}`);
-    // "这个周末" on Thursday or Friday is 10/24–25: the first pick is among the first two candidates (none before this sync).
+    // "这个周末" on Thursday or Friday is 10/24–25: the first pick is among the first two candidates (none before API-SYNC-3h).
     const weekend = evidence('这个周末湾区有什么亲子活动？', today);
     assert.ok(candidateIds(weekend).slice(0, 2).includes('r2-petaluma-lumafest-20261024'), `${today}: ${candidateIds(weekend).join(', ')}`);
   }
-  // The same for the 带娃 wording with or without a date, in zh-Hans and zh-Hant (before this sync: Cherryland first and
-  // no other pick among the first four candidates).
-  for (const [message, locale] of [['这周末带娃去哪玩', 'zh-Hans'], ['10/24 带娃去哪玩？', 'zh-Hans'], ['10月24号带娃去哪玩', 'zh-Hans'], ['这周六带娃去哪玩？', 'zh-Hans'], ['這週六帶娃去哪玩？', 'zh-Hant']]) {
-    assert.deepEqual(candidateIds(evidence(message, TODAY, locale)).slice(0, 4), FAMILY_1024, message);
+  // The same for the 带娃 wording with or without a date, in zh-Hans and zh-Hant: a Saturday ask takes the Saturday family
+  // picks, a weekend ask also Sunday's OMCA.
+  for (const [message, locale, picks] of [['这周末带娃去哪玩', 'zh-Hans', FAMILY_WEEKEND_1024], ['10/24 带娃去哪玩？', 'zh-Hans', FAMILY_1024], ['10月24号带娃去哪玩', 'zh-Hans', FAMILY_1024],
+    ['这周六带娃去哪玩？', 'zh-Hans', FAMILY_1024], ['這週六帶娃去哪玩？', 'zh-Hant', FAMILY_1024]]) {
+    assert.deepEqual(candidateIds(evidence(message, TODAY, locale)).slice(0, picks.length), picks, message);
   }
   // An ask that is not about children keeps the adults' pick, in the editor's order.
   assert.deepEqual(candidateIds(evidence('这周末有什么好玩的')).slice(0, 4), PICKS_1024.slice(0, 4));
   // The next weekend asked on Thursday 10-29: its family picks first, in the editor's order.
   assert.deepEqual(candidateIds(evidence('这周末带娃去哪玩', '2026-10-29')).slice(0, 3), FAMILY_1031);
-  // A Sunday ask and a month ask take no 10/24 pick.
-  for (const message of ['10月25号周日带娃去哪玩', '10月带娃去哪玩']) {
-    const state = resolveTaskState({ message, today: TODAY, catalog: planner, carry: true }).state;
-    assert.equal(picksForAsk(state).size, 0, message);
-  }
-  assert.ok(!candidateIds(evidence('10月25号周日带娃去哪玩')).some(id => PICKS_1024.includes(id)));
+  // A Sunday ask takes only the Sunday standbys (API-SYNC-3i: OMCA leads it; no Saturday pick), a month ask none.
+  const sunday = resolveTaskState({ message: '10月25号周日带娃去哪玩', today: TODAY, catalog: planner, carry: true }).state;
+  assert.deepEqual([...picksForAsk(sunday).keys()], ['sf-world-of-dumplings-2026', OMCA]);
+  assert.equal(picksForAsk(resolveTaskState({ message: '10月带娃去哪玩', today: TODAY, catalog: planner, carry: true }).state).size, 0);
+  const sundayCandidates = candidateIds(evidence('10月25号周日带娃去哪玩'));
+  assert.equal(sundayCandidates[0], OMCA, sundayCandidates.join(', '));
+  assert.ok(!sundayCandidates.some(id => SATURDAY_1024.includes(id)), sundayCandidates.join(', '));
 });
 
 // With the old lib/ the pick lift was a fifth of the best text score, so whether the picks surfaced depended on the ask's
 // words: on 10-22 the 带娃 asks above got all four family picks first, "这周六有什么活动" two, "这个周末湾区有什么亲子活动？"
 // only LumaFest, and the 带孩子 / 带小孩 / English asks below none (nor did the 10/31 weekend asked on 10-29). API-BB-12: on a
 // family outing ask (the planner's family flag or a child's age; goal discover or day-plan) the family picks come first.
-const GENERIC_1024 = [['这个周末湾区有什么亲子活动？', 'zh-Hans'], ['这周末带孩子去哪玩', 'zh-Hans'], ['周末带小孩去哪里玩', 'zh-Hans'], ['这周六带孩子去哪玩？', 'zh-Hans'],
-  ['10月24号带孩子去哪玩', 'zh-Hans'], ['10月24号周末带孩子去哪玩', 'zh-Hans'], ['這個週末灣區有什麼親子活動？', 'zh-Hant'], ['週六帶小孩去哪裡玩？', 'zh-Hant'],
-  ['Family things to do in the Bay Area this weekend', 'en'], ['What should we do with the kids this Saturday?', 'en'], ['Where to take the kids this Saturday?', 'en'],
-  ['What can kids do on October 24?', 'en'], ['Things to do with kids on Saturday October 24', 'en']];
+// API-SYNC-3i: the weekend wordings (这个周末, 周末, this weekend) also take Sunday's OMCA; the Saturday ones do not.
+const GENERIC_1024 = [['这个周末湾区有什么亲子活动？', 'zh-Hans', FAMILY_WEEKEND_1024], ['这周末带孩子去哪玩', 'zh-Hans', FAMILY_WEEKEND_1024], ['周末带小孩去哪里玩', 'zh-Hans', FAMILY_WEEKEND_1024],
+  ['这周六带孩子去哪玩？', 'zh-Hans', FAMILY_1024], ['10月24号带孩子去哪玩', 'zh-Hans', FAMILY_1024], ['10月24号周末带孩子去哪玩', 'zh-Hans', FAMILY_1024],
+  ['這個週末灣區有什麼親子活動？', 'zh-Hant', FAMILY_WEEKEND_1024], ['週六帶小孩去哪裡玩？', 'zh-Hant', FAMILY_1024], ['Family things to do in the Bay Area this weekend', 'en', FAMILY_WEEKEND_1024],
+  ['What should we do with the kids this Saturday?', 'en', FAMILY_1024], ['Where to take the kids this Saturday?', 'en', FAMILY_1024], ['What can kids do on October 24?', 'en', FAMILY_1024],
+  ['Things to do with kids on Saturday October 24', 'en', FAMILY_1024]];
 test('BayBay: every family wording of a 10/24–25 or 10/31–11/1 ask offers the editor\'s family picks first', () => {
   const misses = [];
-  for (const [message, locale] of GENERIC_1024) {
+  for (const [message, locale, picks] of GENERIC_1024) {
     const cands = candidateIds(evidence(message, TODAY, locale));
-    if (JSON.stringify(cands.slice(0, 4)) !== JSON.stringify(FAMILY_1024)) misses.push(`${message}: ${cands.join(', ')}`);
+    if (JSON.stringify(cands.slice(0, picks.length)) !== JSON.stringify(picks)) misses.push(`${message}: ${cands.join(', ')}`);
   }
   for (const [message, locale] of [['这个周末湾区有什么亲子活动？', 'zh-Hans'], ['Family things to do in the Bay Area this weekend', 'en']]) {
     const cands = candidateIds(evidence(message, '2026-10-29', locale));
@@ -145,7 +163,7 @@ test('BayBay: the 10/24 family ask keeps Cherryland\'s Chinese-language storytim
   for (const today of ['2026-10-22', '2026-10-23']) {
     const result = evidence('10月24号周末带娃去哪玩', today);
     assert.ok(itemIds(result).includes('event:acl-cherryland-chinese-storytimes-oct24-2026'), `${today}: ${itemIds(result).join(', ')}`);
-    // All four family picks are model items, in the editor's order.
+    // All the Saturday family picks are model items, in the editor's order (API-SYNC-3i: Cherryland now leads them).
     assert.deepEqual(itemIds(result).filter(id => FAMILY_1024.some(pick => id === `event:${pick}`)), FAMILY_1024.map(id => `event:${id}`), itemIds(result).join(', '));
   }
 });
@@ -155,30 +173,36 @@ test('BayBay: the 10/24 family ask keeps Cherryland\'s Chinese-language storytim
 // lifts none, an ask that is not about children keeps its order, and a service or Chinese-language programme ask with a
 // child, or a stated home city, keeps its own order first.
 test('BayBay: the family picks lead in fresh wordings; the adults\' pick, Sunday, month, service and home-city rules hold', () => {
-  for (const [message, today] of [['周六带小朋友去哪里玩比较好', TODAY], ['周末有啥亲子活动推荐', TODAY], ['这周末适合儿童的活动', TODAY], ['周六遛娃去哪', TODAY],
-    ['這週末帶孩子去哪玩？', TODAY], ['這個週末有什麼親子活動', TODAY], ['What can we do with the kids this weekend?', TODAY], ['Kids activities this weekend?', TODAY],
-    ['Where should I take my kids on Saturday?', TODAY], ['这周末带孩子去哪玩', '2026-10-23'], ['明天带孩子去哪玩', '2026-10-23']]) {
-    assert.deepEqual(candidateIds(evidence(message, today)).slice(0, 4), FAMILY_1024, `${message} (${today})`);
+  // API-SYNC-3i: Saturday asks take the Saturday family picks, weekend asks also Sunday's OMCA.
+  for (const [message, today, picks] of [['周六带小朋友去哪里玩比较好', TODAY, FAMILY_1024], ['周末有啥亲子活动推荐', TODAY, FAMILY_WEEKEND_1024], ['这周末适合儿童的活动', TODAY, FAMILY_WEEKEND_1024],
+    ['周六遛娃去哪', TODAY, FAMILY_1024], ['這週末帶孩子去哪玩？', TODAY, FAMILY_WEEKEND_1024], ['這個週末有什麼親子活動', TODAY, FAMILY_WEEKEND_1024],
+    ['What can we do with the kids this weekend?', TODAY, FAMILY_WEEKEND_1024], ['Kids activities this weekend?', TODAY, FAMILY_WEEKEND_1024], ['Where should I take my kids on Saturday?', TODAY, FAMILY_1024],
+    ['这周末带孩子去哪玩', '2026-10-23', FAMILY_WEEKEND_1024], ['明天带孩子去哪玩', '2026-10-23', FAMILY_1024]]) {
+    assert.deepEqual(candidateIds(evidence(message, today)).slice(0, picks.length), picks, `${message} (${today})`);
   }
   for (const [message, today] of [['这周末带孩子去哪玩', '2026-10-29'], ['這週末帶小孩去哪', '2026-10-29'], ['Family things to do this weekend', '2026-10-29']]) {
     assert.deepEqual(candidateIds(evidence(message, today)).slice(0, 3), FAMILY_1031, `${message} (${today})`);
   }
-  // The adults' pick (华埠分馆周六午后, audience 成人) is neither a candidate nor an item on a family ask.
-  // Review of API-BB-12: nor on an ask with a baby or a stroller, which the planner's family flag does not read.
+  // The adults' pick (华埠分馆周六午后 until API-SYNC-3i, now the Financial Planning Day; audience 成人) is neither a candidate
+  // nor an item on a family ask. Review of API-BB-12: nor on an ask with a baby or a stroller, which the planner's family
+  // flag does not read.
   for (const message of ['这周六带娃去哪玩？', '周六带小朋友去哪里玩比较好', '这周六带孩子去旧金山玩', '周六遛娃去哪', 'Where can we go with a baby this weekend?',
     'Stroller-friendly things to do this Saturday', '这周六推婴儿车能去哪']) {
     const result = evidence(message);
-    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => ADULT_PICKS.test(id)), message);
   }
-  // Sunday 10/25: the 10/24 picks run on Saturday only.
+  // Sunday 10/25: the Saturday picks run on Saturday only; Sunday's family standby (OMCA) leads (API-SYNC-3i).
   for (const message of ['这周日带孩子去哪玩', '週日帶小孩去哪裡玩？', 'What can kids do on Sunday October 25?']) {
     const result = evidence(message);
-    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => PICKS_1024.some(pick => id.endsWith(pick))), message);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => SATURDAY_1024.some(pick => id.endsWith(pick))), message);
+    assert.equal(candidateIds(result)[0], OMCA, `${message}: ${candidateIds(result).join(', ')}`);
   }
-  // A service ask with a child and a Chinese-language programme ask keep their own order (no pick leads, no pick item).
+  // A service ask with a child and a Chinese-language programme ask keep their own order (no pick leads; the picks keep
+  // their lift, so Cherryland, a Cantonese and Mandarin storytime, can still come first on the Chinese-language ask).
   for (const message of ['这周六带孩子去哪里打疫苗', '这周末湾区有粤语或国语的亲子活动吗？']) {
     const result = evidence(message);
-    assert.notDeepEqual(candidateIds(result).slice(0, 4), FAMILY_1024, message);
+    assert.ok(!result.familyPicks, `${message}: ${result.familyPicks}`);
+    assert.notDeepEqual(candidateIds(result).slice(0, FAMILY_1024.length), FAMILY_1024, message);
   }
   // A stated home city orders by nearness first: Fremont's own records lead.
   assert.ok(!FAMILY_1024.includes(candidateIds(evidence('我们住 Fremont，这周末带孩子去哪玩'))[0]));
@@ -221,11 +245,11 @@ test('BayBay: grandkids, grandchildren and little-ones asks never offer the adul
     'Things to do with the grandkids this Saturday in San Francisco', '這週六帶孫子去舊金山哪裡玩', '这周六带孙子在旧金山去哪玩', '周末带外孙去旧金山玩什么', '這週末帶孫女去哪玩',
     'Where can I take my grandson this Saturday in San Francisco?']) {
     const result = evidence(message);
-    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => /chinatown-creative-saturdays/.test(id)), `${message}: ${itemIds(result).join(', ')}`);
+    assert.ok(![...itemIds(result), ...candidateIds(result)].some(id => ADULT_PICKS.test(id)), `${message}: ${itemIds(result).join(', ')}`);
     assert.ok(!result.familyPicks, `${message}: ${result.familyPicks}`);
   }
-  // An ask that is not about children keeps it.
-  assert.ok(candidateIds(evidence('这周末有什么好玩的')).includes('sfpl-chinatown-creative-saturdays-fall-2026'));
+  // An ask that is not about children keeps it (API-SYNC-3i: the 10/24 adults' pick is now the Financial Planning Day).
+  assert.ok(candidateIds(evidence('这周末有什么好玩的')).includes(ADULTS_1024));
 });
 
 // Review of API-BB-12: a setting (室内, indoor) or 附近 with no home city is a constraint the picks may not meet, so those

@@ -73,7 +73,10 @@ test('the elder and library guide fixes cite only registered sources', () => {
       const guide = catalog.find(row => row.slug === slug);
       assert.ok(guide, slug);
       // API-SYNC-3h: web Wave 7 A (CNT-YEAREND) adds the 2027 fares to the senior transit guide (updatedAt 2026-10-17).
-      assert.equal(guide.updatedAt, slug === 'bay-area-senior-transit-clipper-discounts-guide' ? '2026-10-17' : '2026-10-16', slug);
+      // API-SYNC-3i: web #54 adds VTA ACCESS to its paratransit paragraph (2026-10-20) and Alameda County's senior information
+      // and assistance line to the resource map (2026-10-19).
+      const updated = { 'bay-area-senior-transit-clipper-discounts-guide': '2026-10-20', 'bay-area-chinese-language-resource-map': '2026-10-19' };
+      assert.equal(guide.updatedAt, updated[slug] || '2026-10-16', slug);
       for (const source of guide.sources) assert.ok(registry.some(row => row.url === source.url && row.contentIds.includes(slug)), `${slug}: ${source.url}`);
     }
   }
