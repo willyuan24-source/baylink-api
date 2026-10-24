@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { loadPlannerCatalog, priceOf, admissionLowerBound } = require('../lib/planner');
 const { loadDiscoveryCatalog, createPublicContext } = require('../lib/publicContext');
 const { resolveTaskState } = require('../lib/baybayState');
-const { buildFastEvidence, modelItems } = require('../lib/baybayEvidence');
+const { buildFastEvidence, buildSiteEvidence, modelItems } = require('../lib/baybayEvidence');
 const { normalizeGuideQuery } = require('../lib/guideLocale');
 const { loadWeekendPicks, picksForAsk } = require('../lib/weekendPicks');
 const { createBayBayAssistant } = require('../lib/baybayAgent');
@@ -118,20 +118,28 @@ test('BayBay\'s cards name the record the web pins its picture on, and carry no 
   ];
   for (const [message, nowIso, key] of cases) {
     const now = Date.parse(nowIso), today = nowIso.slice(0, 10), [kind, id] = key.split(':');
-    // The model picks the record's evidence item, as a real answer recommending it would.
+    // The model picks the record's evidence item, as a real answer recommending it would. The engine catches a provider
+    // error and falls back (lib/baybayEngine/stream.js), so the mock only records what it saw; the checks run after `run`.
+    let calls = 0, found = false;
     const assistant = createBayBayAssistant({ config, guideCatalog: guides, now: () => now, isTest: false, Quota: quota,
       fetchImpl: async (url, init) => {
+        calls++;
         const body = JSON.parse(init.body);
         const input = body.messages.filter(row => row.role === 'user').map(row => typeof row.content === 'string' ? row.content : row.content.map(part => part.text || '').join('\n')).join('\n');
         const item = (JSON.parse(input.split('\n---\n').at(-1)).evidence || []).find(row => String(row.page || '').endsWith(`/${id}`));
-        assert.ok(item, `${message}: ${key} reaches the model`);
+        found = Boolean(item);
         const value = { type: 'message', id: 'msg-sync-1023', model: 'claude-sonnet-5-5', role: 'assistant', stop_reason: 'end_turn', usage: { input_tokens: 40, output_tokens: 60 },
-          content: [{ type: 'text', text: JSON.stringify({ lead: '站内有这一条。', points: [{ text: '详见卡片。', cardIds: [item.ref] }], candidateIds: [item.ref], followups: [], coverage: [], gap: '' }) }] };
+          content: [{ type: 'text', text: JSON.stringify({ lead: '站内有这一条。', points: [{ text: '详见卡片。', cardIds: item ? [item.ref] : [] }], candidateIds: item ? [item.ref] : [], followups: [], coverage: [], gap: '' }) }] };
         return { ok: true, status: 200, json: async () => value, clone() { return this; }, text: async () => JSON.stringify(value) };
       } });
     const preview = [];
     const result = await assistant.run({ message, locale: 'zh-Hans', currentPath: '/', history: [], searchMode: 'site', webAccess: { allowed: false },
       pageContext: context.resolve({ context: { currentPath: '/' }, currentPath: '/', today, locale: 'zh-Hans' }), onQuickCard: cards => preview.push(...cards) });
+    // One model call, the record in its evidence, and no failed response: a fallback answer cannot pass.
+    assert.equal(calls, 1, `${message}: model calls`);
+    assert.ok(found, `${message}: ${key} reaches the model`);
+    const responses = result.research?.modelResponses || [];
+    assert.ok(responses.length >= 1 && responses.every(row => !row.failure), `${message}: model responses ${JSON.stringify(responses.map(row => row.failure || row.status))}`);
     assert.ok(preview.some(card => `${card.kind}:${card.id}` === key), `${message}: preview ${preview.map(card => `${card.kind}:${card.id}`).join(', ')}`);
     assert.deepEqual(result.localMatches.map(card => `${card.kind}:${card.id}`), [key], message);
     if (kind === 'event') assert.equal(result.localMatches[0].url, `/events/${id}`, message);
@@ -164,9 +172,8 @@ test('the typography pass: spaced titles, tiers and dates reach the model, read 
   const market = event('nov2026-fort-mason-farmers-market');
   assert.equal(market.dateLabel, '11/1、11/8、11/15、11/22、11/29 9:30–13:30');
   assert.ok(itemIds(evidence('11月15日 Fort Mason 有农夫市集吗', WED)).includes('event:nov2026-fort-mason-farmers-market'));
-  // The Medicare guide's titles write Medi-Cal with a non-breaking hyphen (U+2011). English asks typed with "-" still lead
-  // with it; Chinese ones still reach it. BayBay's professional-topic route boosts this pillar guide, so on every Medi-Cal
-  // ask the model reads the same items in the same order as before the sync (lanes/API-SYNC-3J/work/cmp-medical.log).
+  // The Medicare guide's titles write Medi-Cal with a non-breaking hyphen (U+2011); the search text folds it to "-"
+  // (lib/baybayEvidence.js normalize), so asks typed with "-" lead with the guide as before the sync (next test).
   assert.equal(guidesEn.find(row => row.slug === 'bay-area-medicare-hicap-medi-cal-guide').title, 'Understanding Medicare and Medi\u2011Cal in the Bay Area: start with free HICAP counseling');
   assert.equal(guides.find(row => row.slug === 'bay-area-medicare-hicap-medi-cal-guide').title, '在湾区弄清 Medicare、Medi\u2011Cal：先找免费 HICAP 咨询');
   for (const message of ['How do I apply for Medi-Cal?', 'Medicare and Medi-Cal help for my parents']) {
@@ -175,6 +182,22 @@ test('the typography pass: spaced titles, tiers and dates reach the model, read 
   for (const message of ['Medi-Cal 怎么申请', '白卡怎么申请']) assert.ok(itemIds(evidence(message, FRI)).includes('guide:bay-area-medicare-hicap-medi-cal-guide'), message);
 });
 
-test('site search without the professional boost: a Chinese Medi-Cal ask still leads with the Medicare guide', { todo: 'API-BB-13: web #73 wrote the zh guide title\'s Medi-Cal with U+2011, so the title no longer matches an ask typed with "-" and the dental guide (Medi-Cal in its text) ranks first in buildFastEvidence. Production is unchanged (the professional-topic route boosts the pillar guide); fold U+2010/U+2011 to "-" in the search text' }, () => {
-  assert.equal(itemIds(evidence('Medi-Cal 怎么申请', FRI))[0], 'guide:bay-area-medicare-hicap-medi-cal-guide');
+const MEDICARE_GUIDE = 'bay-area-medicare-hicap-medi-cal-guide';
+// search_site, the v2 research tool, as lib/baybayEngine/research.js calls it: the model's query, the reader's guides.
+const siteSearch = (query, today = FRI) => buildSiteEvidence({ query, state: resolveTaskState({ message: query, today, catalog: planner, carry: true }).state,
+  guideCatalog: /[㐀-鿿]/.test(query) ? guides : guidesEn, catalog: planner, today, v2: true });
+const siteGuides = result => (result.sources || []).map(row => String(row.url || '').replace(/^\/guides\//, '').replace(/#.*$/, ''));
+
+test('Medi\u2011Cal written with U+2011 searches as Medi-Cal: the first evidence gather and search_site lead with the Medicare guide as before the sync', () => {
+  // On the synced titles without the fold, these asks led with the dental guide (Medi-Cal in its text) or lost the
+  // Medicare guide from search_site's first four results; with base b2ba941 data they led with it (lanes/API-SYNC-3J/work/probe-site-*.txt).
+  for (const message of ['Medi-Cal 怎么申请', 'Medi-Cal 申请', '白卡怎么申请', 'Medi-Cal application', 'Medi\u2011Cal 怎么申请']) {
+    assert.equal(itemIds(evidence(message, FRI))[0], `guide:${MEDICARE_GUIDE}`, message);
+  }
+  for (const query of ['Medi-Cal 申请', 'Medi-Cal 怎么申请', 'Medi-Cal application', 'How do I apply for Medi-Cal?', '白卡怎么申请']) {
+    assert.equal(siteGuides(siteSearch(query))[0], MEDICARE_GUIDE, query);
+  }
+  assert.ok(siteGuides(siteSearch('白卡 Medi-Cal 老人')).slice(0, 4).includes(MEDICARE_GUIDE));
+  // A dental ask still leads with the dental guide.
+  assert.equal(siteGuides(siteSearch('Medi-Cal 牙医'))[0], 'bay-area-dental-care-insurance-low-cost-guide');
 });
