@@ -41,7 +41,8 @@ const EXPLORATORIUM = 'sf-exploratorium-family-science-oct24-2026';
 const MONSTER_MASH = 'cupertino-monster-mash-2026';
 
 test('the 10/24–25 picks: Cherryland, LumaFest and the Financial Planning Day on Saturday; World of Dumplings and OMCA on Sunday', () => {
-  assert.equal(picksFile.generatedAt, '2026-10-21');
+  // API-SYNC-3j: web #73 exported the same picks again on 10/23 (only generatedAt changed; editorial-sync-1023 pins it).
+  assert.equal(picksFile.generatedAt, '2026-10-23');
   assert.deepEqual([...loadWeekendPicks().keys()], ['2026-10-24', '2026-10-31']);
   const weekend = picksFile.weekends.find(row => row.start === '2026-10-24');
   assert.equal(weekend.end, '2026-10-25');
