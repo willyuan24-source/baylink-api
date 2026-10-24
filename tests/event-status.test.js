@@ -358,9 +358,10 @@ test('BayBay on a sold-out or postponed page: the model sees the status, the gua
     // [page, locale, model answer, answer pattern, no dates, now]
     [NAPA, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「21\+ · Napa Harvest After Dark 面具晚宴」（10月30日（周五）），已售罄。请以项目页/, false, NOW],
     [NAPA, 'en', 'There is no published record of this event.', /^The site has a record for .+ \(Fri, Oct 30\); sold out\. Check the published/, false, NOW],
-    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco城市近况交流会」，已延期，新日期未公布。请以项目页/, true, NOW],
+    // API-SYNC-3j (web #58–#73 typography pass): the title now has a space between the Latin name and the Chinese words.
+    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco 城市近况交流会」，已延期，新日期未公布。请以项目页/, true, NOW],
     // After its original 10/27 it is still postponed, never "ended".
-    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco城市近况交流会」，已延期，新日期未公布。请以项目页/, true, Date.parse('2026-10-28T19:00:00Z')],
+    [SOUTH_SF, 'zh-Hans', '站内没有收录这个活动。', /^站内已收录「South San Francisco 城市近况交流会」，已延期，新日期未公布。请以项目页/, true, Date.parse('2026-10-28T19:00:00Z')],
   ];
   for (const [id, locale, lead, pattern, undated, now] of cases) {
     const sent = [];

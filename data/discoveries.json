@@ -96,7 +96,7 @@
       "region": "south-bay",
       "startDate": "2026-09-01",
       "endDate": "2026-09-30",
-      "dateLabel": "9/1–9/30 · 9/1–9/30/2026；门店营业时间内，按App券有效时间核销。",
+      "dateLabel": "9/1–9/30 · 9/1–9/30/2026；门店营业时间内，按 App 券有效时间核销。",
       "costLabel": "需消费",
       "status": "dated",
       "verifiedAt": "2026-09-29",
@@ -254,7 +254,7 @@
       "region": "sf",
       "startDate": "2026-10-04",
       "endDate": "2026-10-04",
-      "dateLabel": "10/4 · 馆时10:00–17:00；麻将10:30–16:00、手作10:00–16:00；其他节目分时进行",
+      "dateLabel": "10/4 · 馆时 10:00–17:00；麻将 10:30–16:00、手作 10:00–16:00；其他节目分时进行",
       "costLabel": "无需购物",
       "status": "dated",
       "verifiedAt": "2026-09-29",
@@ -273,7 +273,7 @@
       "region": "sf",
       "startDate": "2026-10-06",
       "endDate": "2026-10-06",
-      "dateLabel": "10/6 · 10:00–16:30；16:00停止入场",
+      "dateLabel": "10/6 · 10:00–16:30；16:00 停止入场",
       "costLabel": "无需购物",
       "status": "dated",
       "verifiedAt": "2026-09-29",
@@ -292,7 +292,7 @@
       "region": "sf",
       "startDate": "2026-10-13",
       "endDate": "2026-10-13",
-      "dateLabel": "10/13 · 07:30–18:00；十月17:00停止入场",
+      "dateLabel": "10/13 · 07:30–18:00；十月 17:00 停止入场",
       "costLabel": "无需购物",
       "status": "dated",
       "verifiedAt": "2026-09-29",
@@ -361,7 +361,7 @@
         "每周一、三、五 09:00–10:00 免费入园，对所有人开放，无需消费或 SF 居民资格；茶点和特别项目另付。出发前核对票务及临时开放调整。"
       ],
       "region": "sf",
-      "dateLabel": "周一、三、五09:00–10:00免费入场",
+      "dateLabel": "周一、三、五 09:00–10:00 免费入场",
       "costLabel": "无需购物",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -683,7 +683,7 @@
         "出示照片证件及 EBT／CalFresh／SNAP、WIC、Medicaid、Medi-Cal 等官网认可项目凭证，每天最多四人免费；现场柜台核验，停车另计。"
       ],
       "region": "peninsula",
-      "dateLabel": "开放日适用；10/19闭馆维护，10/31提前15:00闭馆。",
+      "dateLabel": "开放日适用；10/19 闭馆维护，10/31 提前 15:00 闭馆。",
       "costLabel": "无需购物",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -700,7 +700,7 @@
         "EBT／SNAP／CalFresh、Medi-Cal、WIC 或 Lifeline Pass 加本人同名照片证件，最多四张每张 $5；P-EBT 与 EBT Sun Bucks 不适用。仅现场购买。"
       ],
       "region": "sf",
-      "dateLabel": "白天开放时段及18+ After Dark；按当天安排",
+      "dateLabel": "白天开放时段及 18+ After Dark；按当天安排",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1038,7 +1038,7 @@
       "region": "north-bay",
       "startDate": "2026-10-03",
       "endDate": "2026-10-03",
-      "dateLabel": "10 月 3 日 · 10:00–14:00 消防开放日内",
+      "dateLabel": "10/3 · 10:00–14:00 消防开放日内",
       "costLabel": "无需购物",
       "status": "dated",
       "verifiedAt": "2026-09-27",
@@ -1196,11 +1196,11 @@
     {
       "kind": "offer",
       "id": "san-jose-airport-coffee-day-2026",
-      "title": "SJC旅客咖啡日：买两份点心赠中杯滴滤咖啡",
+      "title": "SJC 旅客咖啡日：买两份点心赠中杯滴滤咖啡",
       "path": "/offers/san-jose-airport-coffee-day-2026",
-      "summary": "机场官方公布的咖啡日福利，适合当天经过对应登机口的旅客；赠饮需要先完成指定消费。 机场版福利与Peet's直营店25美分规则不同。官方未列赠饮上限/叠加细则，现场核实；不建议仅为此优惠专程进机场。",
+      "summary": "机场官方公布的咖啡日福利，适合当天经过对应登机口的旅客；赠饮需要先完成指定消费。 机场版福利与 Peet's 直营店 25 美分规则不同。官方未列赠饮上限/叠加细则，现场核实；不建议仅为此优惠专程进机场。",
       "details": [
-        "Gate 11 Einstein Bros.买任意2个贝果赠中杯滴滤咖啡；Gate 25 Peet's买任意2件糕点赠中杯滴滤咖啡。 仅9/29、SJC指定两家安检后门店，各自满足购买条件。 在对应登机口门店下单；店铺位于安检后区域，须具备进入该区域资格。"
+        "Gate 11 Einstein Bros.买任意 2 个贝果赠中杯滴滤咖啡；Gate 25 Peet's 买任意 2 件糕点赠中杯滴滤咖啡。 仅 9/29、SJC 指定两家安检后门店，各自满足购买条件。 在对应登机口门店下单；店铺位于安检后区域，须具备进入该区域资格。"
       ],
       "region": "south-bay",
       "startDate": "2026-09-29",
@@ -1252,11 +1252,11 @@
     {
       "kind": "offer",
       "id": "pixels-thirsty-thursday-20261001",
-      "title": "Pixels Arcade Taproom 周四饮品85折",
+      "title": "Pixels Arcade Taproom 周四饮品 85 折",
       "path": "/offers/pixels-thirsty-thursday-20261001",
-      "summary": "21岁以上的街机酒吧优惠；饮品折扣不包含门票，也未承诺可叠加其他优惠。",
+      "summary": "21 岁以上的街机酒吧优惠；饮品折扣不包含门票，也未承诺可叠加其他优惠。",
       "details": [
-        "饮品15% off；平日入场1小时$12／全日$16，部分弹球每次另$1。 到店前核对当日门票与饮品规则。"
+        "饮品 15% off；平日入场 1 小时 $12／全日 $16，部分弹球每次另 $1。 到店前核对当日门票与饮品规则。"
       ],
       "region": "north-bay",
       "startDate": "2026-10-01",
@@ -1273,7 +1273,7 @@
       "id": "sf-moad-free-thursday-oct1-2026",
       "title": "MoAD 10月首周四免费夜场",
       "path": "/offers/sf-moad-free-thursday-oct1-2026",
-      "summary": "参观展览并听DJ音乐，可与附近的街区夜市顺路安排。 这是MoAD馆内活动，与街上的Downtown First Thursdays分开记录；场馆9/30重开。",
+      "summary": "参观展览并听 DJ 音乐，可与附近的街区夜市顺路安排。 这是 MoAD 馆内活动，与街上的 Downtown First Thursdays 分开记录；场馆 9/30 重开。",
       "details": [
         "免费入馆 官网有预约入口；容量和当晚安排以场馆为准。"
       ],
@@ -1313,7 +1313,7 @@
       "path": "/offers/station-house-happy-hour-20261002",
       "summary": "可作为 Point Reyes 出游后的酒吧停留点，餐厅也接受订位。",
       "details": [
-        "饮品按店内Happy Hour菜单；具体折扣未公布。 以官方页面的报名与入场要求为准。"
+        "饮品按店内 Happy Hour 菜单；具体折扣未公布。 以官方页面的报名与入场要求为准。"
       ],
       "region": "north-bay",
       "startDate": "2026-10-02",
@@ -1351,7 +1351,7 @@
       "path": "/offers/pacific-catch-aloha-corte-madera-20261005",
       "summary": "旅游局十月专页列出本分店 Aloha Hour；实际菜品和价格须按 Corte Madera 店菜单确认。",
       "details": [
-        "优惠菜单付费；未采用链接指向的南加州旧PDF作为本店价格表。 以官方页面的报名与入场要求为准。"
+        "优惠菜单付费；未采用链接指向的南加州旧 PDF 作为本店价格表。 以官方页面的报名与入场要求为准。"
       ],
       "region": "north-bay",
       "startDate": "2026-10-05",
@@ -1386,7 +1386,7 @@
       "id": "sf-moad-thrive-second-saturday-oct2026",
       "title": "MoAD THRIVE：十月第二周六免费参观",
       "path": "/offers/sf-moad-thrive-second-saturday-oct2026",
-      "summary": "利用每月免费开放日参观非洲离散文化艺术展览。 馆方9/30重开，因此不据持续政策补造9/12场次。出发前复查临时闭馆。",
+      "summary": "利用每月免费开放日参观非洲离散文化艺术展览。 馆方 9/30 重开，因此不据持续政策补造 9/12 场次。出发前复查临时闭馆。",
       "details": [
         "每月第二周六免费入馆 按官方页面选择日期或确认预约要求。"
       ],
@@ -1477,12 +1477,12 @@
       "id": "r2-santarosa-capriciano-corkage-policy-2026",
       "title": "Capriciano 买店内葡萄酒抵开瓶费",
       "path": "/offers/r2-santarosa-capriciano-corkage-policy-2026",
-      "summary": "适合计划自带葡萄酒用餐的人，先核清酒款及抵免条件。 店铺7月已开；此条是截至9/29可见的持续优惠政策，不是9月新店。",
+      "summary": "适合计划自带葡萄酒用餐的人，先核清酒款及抵免条件。 店铺 7 月已开；此条是截至 9/29 可见的持续优惠政策，不是 9 月新店。",
       "details": [
-        "通常开瓶费$25/瓶；每购买一瓶酒单酒抵免一瓶自带酒费用。餐饮酒款另计。 营业时段每买一瓶店内酒可免一瓶自带酒开瓶费；每桌最多自带3瓶且酒款不可已在酒单上。 建议订位；5人及以上官网写含20%小费，计算预算时须留意。"
+        "通常开瓶费 $25/瓶；每购买一瓶酒单酒抵免一瓶自带酒费用。餐饮酒款另计。 营业时段每买一瓶店内酒可免一瓶自带酒开瓶费；每桌最多自带 3 瓶且酒款不可已在酒单上。 建议订位；5 人及以上官网写含 20%小费，计算预算时须留意。"
       ],
       "region": "north-bay",
-      "dateLabel": "周二休息；周日/一/三/四17:00–21:30，周五六17:00–22:00",
+      "dateLabel": "周二休息；周日/一/三/四 17:00–21:30，周五六 17:00–22:00",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1494,12 +1494,12 @@
       "id": "r2-kenwood-stella-weekly-offers-2026",
       "title": "Kenwood Stella 每周餐饮优惠",
       "path": "/offers/r2-kenwood-stella-weekly-offers-2026",
-      "summary": "官网当前列明的每周套餐及自带酒安排，适合提前估算用餐费用。 持续政策，截至2026-09-29官网可见，未确认截止；不编码为整段9–10月确定有效期。",
+      "summary": "官网当前列明的每周套餐及自带酒安排，适合提前估算用餐费用。 持续政策，截至 2026-09-29 官网可见，未确认截止；不编码为整段 9–10 月确定有效期。",
       "details": [
-        "周一自带酒免开瓶费、不限瓶数；午餐组合$16；周日晚三道式$49/人。税、小费及其他消费另核。 每周一免开瓶费；周五至周日11:30–14:00午餐组合；每周日晚三道式晚餐。 建议订位；截至9/28可见政策，官网未公布截止日期。"
+        "周一自带酒免开瓶费、不限瓶数；午餐组合 $16；周日晚三道式 $49/人。税、小费及其他消费另核。 每周一免开瓶费；周五至周日 11:30–14:00 午餐组合；每周日晚三道式晚餐。 建议订位；截至 9/28 可见政策，官网未公布截止日期。"
       ],
       "region": "north-bay",
-      "dateLabel": "按每项每周规则；午餐优惠11:30–14:00，晚餐自16:30起",
+      "dateLabel": "按每项每周规则；午餐优惠 11:30–14:00，晚餐自 16:30 起",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1511,12 +1511,12 @@
       "id": "san-mateo-curiodyssey-teacher-military-ongoing",
       "title": "CuriOdyssey：教师免费与军人家庭半价",
       "path": "/offers/san-mateo-curiodyssey-teacher-military-ongoing",
-      "summary": "两种身份福利分别适用，不能理解为所有同行者都跟教师免费；官网未说明军人同行人数上限。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "两种身份福利分别适用，不能理解为所有同行者都跟教师免费；官网未说明军人同行人数上限。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "有效教师证持有人免费；军人家庭凭有效军人证享50%优惠。 开放日柜台10:00–16:00兑换；停车费不包含。 优惠票现场办理，带有效证件；具体同行范围由柜台核验。"
+        "有效教师证持有人免费；军人家庭凭有效军人证享 50%优惠。 开放日柜台 10:00–16:00 兑换；停车费不包含。 优惠票现场办理，带有效证件；具体同行范围由柜台核验。"
       ],
       "region": "peninsula",
-      "dateLabel": "开放日柜台10:00–16:00兑换；停车费不包含。",
+      "dateLabel": "开放日柜台 10:00–16:00 兑换；停车费不包含。",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1528,12 +1528,12 @@
       "id": "san-mateo-jacks-happy-hour-ongoing",
       "title": "Jack’s San Mateo：工作日饮品 Happy Hour",
       "path": "/offers/san-mateo-jacks-happy-hour-ongoing",
-      "summary": "San Mateo分店工作日15:00–18:00的饮品优惠；精酿不在扎啤减额内，Martini/Manhattan另加$2。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "San Mateo 分店工作日 15:00–18:00 的饮品优惠；精酿不在扎啤减额内，Martini/Manhattan 另加 $2。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "well drinks $6；非精酿扎啤减$2，瓶装啤酒减$1，杯装葡萄酒减$2。税费另计。 周一至周五15:00–18:00；限官网列出的饮品。 到店按Happy Hour菜单点单，饮酒须21岁以上。"
+        "well drinks $6；非精酿扎啤减 $2，瓶装啤酒减 $1，杯装葡萄酒减 $2。税费另计。 周一至周五 15:00–18:00；限官网列出的饮品。 到店按 Happy Hour 菜单点单，饮酒须 21 岁以上。"
       ],
       "region": "peninsula",
-      "dateLabel": "周一至周五15:00–18:00；限官网列出的饮品。",
+      "dateLabel": "周一至周五 15:00–18:00；限官网列出的饮品。",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1545,7 +1545,7 @@
       "id": "cupertino-eureka-wednesday-burger-ongoing",
       "title": "Eureka Cupertino：周三汉堡薯条半价",
       "path": "/offers/cupertino-eureka-wednesday-burger-ongoing",
-      "summary": "Cupertino分店官网公布的周三全天指定汉堡配薯条优惠，适合工作日朋友简餐。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "Cupertino 分店官网公布的周三全天指定汉堡配薯条优惠，适合工作日朋友简餐。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
         "每周三 Double Smash Burger & Fries 半价；税费及其他消费另计。 每周三营业时间内；限指定套餐。 到店点指定套餐，核对当天菜单；未确认外送或其他分店同样适用。"
       ],
@@ -1560,14 +1560,14 @@
     {
       "kind": "offer",
       "id": "mountain-view-pacific-catch-aloha-hour-ongoing",
-      "title": "Pacific Catch Mountain View：Aloha Hour与周二半价瓶装酒",
+      "title": "Pacific Catch Mountain View：Aloha Hour 与周二半价瓶装酒",
       "path": "/offers/mountain-view-pacific-catch-aloha-hour-ongoing",
-      "summary": "门店有平日下午与周末较短的Aloha时段；周二瓶装葡萄酒优惠按独立Wine Tuesday规则。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "门店有平日下午与周末较短的 Aloha 时段；周二瓶装葡萄酒优惠按独立 Wine Tuesday 规则。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "Aloha Hour指定鸡尾酒$9；每周二瓶装葡萄酒50% off。北加州3%附加费另计，非小费。 Aloha Hour周一至周五15:00–18:00、周六日15:00–17:00；瓶装葡萄酒优惠每周二。 到店按当日指定菜单点单；酒类须21岁以上。"
+        "Aloha Hour 指定鸡尾酒 $9；每周二瓶装葡萄酒 50% off。北加州 3%附加费另计，非小费。 Aloha Hour 周一至周五 15:00–18:00、周六日 15:00–17:00；瓶装葡萄酒优惠每周二。 到店按当日指定菜单点单；酒类须 21 岁以上。"
       ],
       "region": "south-bay",
-      "dateLabel": "Aloha Hour周一至周五15:00–18:00、周六日15:00–17:00；瓶装葡萄酒优惠每周二。",
+      "dateLabel": "Aloha Hour 周一至周五 15:00–18:00、周六日 15:00–17:00；瓶装葡萄酒优惠每周二。",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1579,12 +1579,12 @@
       "id": "sunnyvale-st-johns-happy-hour-ongoing",
       "title": "St. John’s Sunnyvale：周二至周五饮品 Happy Hour",
       "path": "/offers/sunnyvale-st-johns-happy-hour-ongoing",
-      "summary": "官方公布的15:00–18:00饮品时段价。此条仅收已证实饮品优惠，不包含旧网帖流传的半价汉堡。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "官方公布的 15:00–18:00 饮品时段价。此条仅收已证实饮品优惠，不包含旧网帖流传的半价汉堡。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "Bud/Coors Light 扎啤壶$9.99；well drinks $3.99，税费另计。 周二至周五15:00–18:00；非所有啤酒/鸡尾酒通用。 到店点适用饮品；饮酒须21岁以上及有效证件。"
+        "Bud/Coors Light 扎啤壶 $9.99；well drinks $3.99，税费另计。 周二至周五 15:00–18:00；非所有啤酒/鸡尾酒通用。 到店点适用饮品；饮酒须 21 岁以上及有效证件。"
       ],
       "region": "south-bay",
-      "dateLabel": "周二至周五15:00–18:00；非所有啤酒/鸡尾酒通用。",
+      "dateLabel": "周二至周五 15:00–18:00；非所有啤酒/鸡尾酒通用。",
       "costLabel": "需消费",
       "status": "ongoing",
       "verifiedAt": "2026-09-29",
@@ -1596,9 +1596,9 @@
       "id": "san-jose-tech-military-admission-ongoing",
       "title": "The Tech：军人及退伍军人展厅入场福利",
       "path": "/offers/san-jose-tech-military-admission-ongoing",
-      "summary": "覆盖现役、退伍军人、国民警卫队、预备役及退休军人；只含展厅普通入场，其他项目另付。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "覆盖现役、退伍军人、国民警卫队、预备役及退休军人；只含展厅普通入场，其他项目另付。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "持有效军人证件本人展厅普通入场免费；同行成人减$5，儿童/学生/长者减$3。 开放日现场兑换；身份条件适用。 带有效军人证件到票务柜台，不能线上兑换。"
+        "持有效军人证件本人展厅普通入场免费；同行成人减 $5，儿童/学生/长者减 $3。 开放日现场兑换；身份条件适用。 带有效军人证件到票务柜台，不能线上兑换。"
       ],
       "region": "south-bay",
       "dateLabel": "开放日现场兑换；身份条件适用。",
@@ -1613,9 +1613,9 @@
       "id": "san-jose-tech-second-half-off-ongoing",
       "title": "The Tech：第二张普通门票半价",
       "path": "/offers/san-jose-tech-second-half-off-ongoing",
-      "summary": "官网在线购买普通门票，结账自动应用，无需代码；不等于全单半价。 截至2026-09-29官网可见；未公布有效期，不保证未来不变，不代表9月新推出的优惠。",
+      "summary": "官网在线购买普通门票，结账自动应用，无需代码；不等于全单半价。 截至 2026-09-29 官网可见；未公布有效期，不保证未来不变，不代表 9 月新推出的优惠。",
       "details": [
-        "第二张普通门票半价；最多8张票，按官网结账规则计算。 开放日；线上结账兑换。 普通门票在线购买；以结账页仍显示优惠为准。"
+        "第二张普通门票半价；最多 8 张票，按官网结账规则计算。 开放日；线上结账兑换。 普通门票在线购买；以结账页仍显示优惠为准。"
       ],
       "region": "south-bay",
       "dateLabel": "开放日；线上结账兑换。",
@@ -1904,40 +1904,40 @@
       "path": "/offers/roundup-starbucks-free-mod-2026",
       "summary": "这是加料优惠，不是整杯免费。品牌自行指定每月周一日期，结账选券或先告知店员；未看到有效券时不要假定每个周一可用。",
       "details": [
-        "Rewards会员购买饮品，使用当次券；一次加料税前价值上限$2，不与其他Rewards叠加。"
+        "Rewards 会员购买饮品，使用当次券；一次加料税前价值上限 $2，不与其他 Rewards 叠加。"
       ],
       "dateLabel": "每月指定周一一次 · 具体日期看账户",
       "costLabel": "需消费",
       "status": "check-local",
       "verifiedAt": "2026-10-02",
       "sourceUrl": "https://www.starbucks.com/terms/rewards/",
-      "sourceLabel": "Starbucks Rewards 2026现行条款"
+      "sourceLabel": "Starbucks Rewards 2026 现行条款"
     },
     {
       "kind": "offer",
       "id": "roundup-mcdonalds-medium-fries-oct4-2026",
-      "title": "McDonald's 满$1领中薯，每周一次至10/4",
+      "title": "McDonald's 满 $1 领中薯，每周一次至 10/4",
       "path": "/offers/roundup-mcdonalds-medium-fries-oct4-2026",
-      "summary": "先选门店，在App中确认免费中薯券并应用到订单。截止日后的延长没有官方确认，不把它写成全年每周固定福利。",
+      "summary": "先选门店，在 App 中确认免费中薯券并应用到订单。截止日后的延长没有官方确认，不把它写成全年每周固定福利。",
       "details": [
-        "App加入Rewards、参与门店税前消费至少$1；不适用McDelivery。"
+        "App 加入 Rewards、参与门店税前消费至少 $1；不适用 McDelivery。"
       ],
       "endDate": "2026-10-04",
-      "dateLabel": "截至2026/10/4 · 每周一次",
+      "dateLabel": "截至 2026/10/4 · 每周一次",
       "costLabel": "需消费",
       "status": "dated",
       "verifiedAt": "2026-10-02",
       "sourceUrl": "https://www.mcdonalds.com/us/en-us/deals.html",
-      "sourceLabel": "McDonald's 美国官方Deals页"
+      "sourceLabel": "McDonald's 美国官方 Deals 页"
     },
     {
       "kind": "offer",
       "id": "roundup-krispy-kreme-welcome-2026",
       "title": "Krispy Kreme 新会员甜甜圈：需下一次购买",
       "path": "/offers/roundup-krispy-kreme-welcome-2026",
-      "summary": "官方Rewards页写一只喜爱的甜甜圈随下一次购买赠送。先确认券已到帐、可选产品与当地门店，不套用旧版免费整盒或即时领取说法。",
+      "summary": "官方 Rewards 页写一只喜爱的甜甜圈随下一次购买赠送。先确认券已到帐、可选产品与当地门店，不套用旧版免费整盒或即时领取说法。",
       "details": [
-        "注册Rewards后，在参与门店下一次购买时使用欢迎礼；不是无购买门槛。"
+        "注册 Rewards 后，在参与门店下一次购买时使用欢迎礼；不是无购买门槛。"
       ],
       "dateLabel": "新会员欢迎礼 · 看账户券到期日",
       "costLabel": "需消费",
@@ -1965,18 +1965,18 @@
     {
       "kind": "offer",
       "id": "roundup-wendys-weekly-app-offers-2026",
-      "title": "Wendy's 周三鸡块、周五薯条：都需满$5",
+      "title": "Wendy's 周三鸡块、周五薯条：都需满 $5",
       "path": "/offers/roundup-wendys-weekly-app-offers-2026",
       "summary": "官网没有公布统一结束日，选湾区具体门店后先检查账户券、税费与订单条件。两种优惠在不同星期使用，不是同一单同时领取。",
       "details": [
-        "使用App优惠并购买满$5；周三赠6块鸡块，周五赠任意尺寸薯条；优惠不可叠加。"
+        "使用 App 优惠并购买满 $5；周三赠 6 块鸡块，周五赠任意尺寸薯条；优惠不可叠加。"
       ],
-      "dateLabel": "官网当前周三／周五券 · 以App当地门店为准",
+      "dateLabel": "官网当前周三／周五券 · 以 App 当地门店为准",
       "costLabel": "需消费",
       "status": "check-local",
       "verifiedAt": "2026-10-02",
       "sourceUrl": "https://www.wendys.com/offers-coupons",
-      "sourceLabel": "Wendy's 官方Offers & Coupons页"
+      "sourceLabel": "Wendy's 官方 Offers & Coupons 页"
     },
     {
       "kind": "offer",
@@ -1999,11 +1999,11 @@
       "id": "roundup-ihop-birthday-pancoins-2026",
       "title": "IHOP 生日煎饼：别等生日月才注册",
       "path": "/offers/roundup-ihop-birthday-pancoins-2026",
-      "summary": "官方生日页说明月初发5 PanCoins，可兑换一份Original Buttermilk全份煎饼。建议提前一个月办理；实际到账、有效期和可兑换门店以账户为准，不把饮料或其他餐点算免费。",
+      "summary": "官方生日页说明月初发 5 PanCoins，可兑换一份 Original Buttermilk 全份煎饼。建议提前一个月办理；实际到账、有效期和可兑换门店以账户为准，不把饮料或其他餐点算免费。",
       "details": [
-        "加入International Bank of Pancakes并填生日；须在生日月1日前入会，条款另要求至少生日前7天。"
+        "加入 International Bank of Pancakes 并填生日；须在生日月 1 日前入会，条款另要求至少生日前 7 天。"
       ],
-      "dateLabel": "生日月发放5 PanCoins · 提前满足入会期限",
+      "dateLabel": "生日月发放 5 PanCoins · 提前满足入会期限",
       "costLabel": "无需购物",
       "status": "ongoing",
       "verifiedAt": "2026-10-02",
@@ -4352,7 +4352,7 @@
       "path": "/openings/roundup-bonnie-bagels-sebastopol-2026",
       "summary": "Sonoma County Tourism 初秋新店文章确认开业，主打现场制作、水煮再烤的贝果、抹酱与早餐三明治。店家官网确认 S Main Street 店址及早间营业时段。",
       "details": [
-        "官网当前列周三至周日7:00–13:00，周一、周二休息；把它安排在早段，出发前核对当天营业与售完情况。",
+        "官网当前列周三至周日 7:00–13:00，周一、周二休息；把它安排在早段，出发前核对当天营业与售完情况。",
         "280 S Main Street, Sebastopol, CA",
         "东岸风味贝果"
       ],
@@ -4371,7 +4371,7 @@
       "path": "/openings/roundup-capriciano-santarosa-2026",
       "summary": "县旅游机构列为初秋新餐厅，主打手工意面、木烧披萨与海鲜，位于 Santa Rosa 市中心 Mendocino Avenue。店家官网提供晚餐与预订入口。",
       "details": [
-        "当前官网列17:00开始晚餐、周二休息，并建议预订；可结合市中心步行，临时到店须视空位安排。",
+        "当前官网列 17:00 开始晚餐、周二休息，并建议预订；可结合市中心步行，临时到店须视空位安排。",
         "505 Mendocino Avenue, Santa Rosa, CA 95401",
         "手工意面与披萨"
       ],
@@ -4388,9 +4388,9 @@
       "id": "eriks-delicafe-san-ramon-relocation",
       "title": "Erik’s DeliCafé — San Ramon",
       "path": "/openings/eriks-delicafe-san-ramon-relocation",
-      "summary": "Erik’s 官方门店页已邀请顾客到 The Marketplace Shopping Center 的 San Ramon 新家，并列出159 Market Place、营业时间及线上点餐。此项是搬迁后的营业更新，不把旧址历史或新闻发布日期写成新址开门日。",
+      "summary": "Erik’s 官方门店页已邀请顾客到 The Marketplace Shopping Center 的 San Ramon 新家，并列出 159 Market Place、营业时间及线上点餐。此项是搬迁后的营业更新，不把旧址历史或新闻发布日期写成新址开门日。",
       "details": [
-        "取餐导航用159 Market Place，先核对所选门店再点单；套餐、外送费、会员优惠及当天营业时间以该门店结算页为准。",
+        "取餐导航用 159 Market Place，先核对所选门店再点单；套餐、外送费、会员优惠及当天营业时间以该门店结算页为准。",
         "159 Market Place, San Ramon, CA 94583",
         "三明治与热汤"
       ],
@@ -4560,7 +4560,7 @@
       "id": "san-jose-bitterbuck-soft-opening-2026",
       "title": "BitterBuck",
       "path": "/openings/san-jose-bitterbuck-soft-opening-2026",
-      "summary": "白天手冲咖啡、傍晚转为amaro与spritz的小店，为Fountain Alley补充早间和晚间聚会选择。",
+      "summary": "白天手冲咖啡、傍晚转为 amaro 与 spritz 的小店，为 Fountain Alley 补充早间和晚间聚会选择。",
       "details": [
         "按单点菜单消费，价格见店内菜单。店方不接受预约；试营业阶段菜单和时段可能调整。试营业日期来自当地媒体报道。",
         "30 Fountain Alley, Suite 170, San Jose, CA 95113",
@@ -4569,7 +4569,7 @@
       "region": "south-bay",
       "city": "San Jose",
       "startDate": "2026-09-04",
-      "dateLabel": "当地报道明确9/4/2026试营业；官网咖啡服务至16:00，晚间及各日时段请再核实。",
+      "dateLabel": "当地报道明确 9/4/2026 试营业；官网咖啡服务至 16:00，晚间及各日时段请再核实。",
       "status": "soft_open",
       "verifiedAt": "2026-09-29",
       "sourceUrl": "https://www.bitterbucksj.com/",
@@ -4580,7 +4580,7 @@
       "id": "santa-clara-cider-valley-fair-opening-2026",
       "title": "Cider at Westfield Valley Fair",
       "path": "/openings/santa-clara-cider-valley-fair-opening-2026",
-      "summary": "服装品牌在Valley Fair开设美国第二家常设店，包含试衣与数字互动空间。",
+      "summary": "服装品牌在 Valley Fair 开设美国第二家常设店，包含试衣与数字互动空间。",
       "details": [
         "商品按标价；开幕赠品已结束。普通购物无需预约，营业时间以商场门店页为准。",
         "2855 Stevens Creek Blvd, Space 2411, Santa Clara, CA 95050",
@@ -4589,7 +4589,7 @@
       "region": "south-bay",
       "city": "Santa Clara",
       "startDate": "2026-08-29",
-      "dateLabel": "品牌新闻稿称8/29/2026正式营业；大开幕庆祝为9/4/2026。",
+      "dateLabel": "品牌新闻稿称 8/29/2026 正式营业；大开幕庆祝为 9/4/2026。",
       "status": "open",
       "verifiedAt": "2026-09-29",
       "sourceUrl": "https://au.shopcider.com/stores/bay-area-valley-fair",
@@ -4600,15 +4600,15 @@
       "id": "hijau-san-jose-storefront",
       "title": "Hijau Coffee",
       "path": "/openings/hijau-san-jose-storefront",
-      "summary": "San Carlos街的新咖啡空间，以印尼咖啡及文化活动为特色；这条保留9月大开幕活动作为新店档案。",
+      "summary": "San Carlos 街的新咖啡空间，以印尼咖啡及文化活动为特色；这条保留 9 月大开幕活动作为新店档案。",
       "details": [
-        "庆祝日音乐表演免费；饮品餐食另付。 庆祝活动已结束；今后到店先核实门店最新营业时间。 9/5是大开幕庆祝日，不认定为首次对外营业日；庆祝优惠已结束。日期依据演出方公告；营业安排请另向门店确认。",
+        "庆祝日音乐表演免费；饮品餐食另付。 庆祝活动已结束；今后到店先核实门店最新营业时间。 9/5 是大开幕庆祝日，不认定为首次对外营业日；庆祝优惠已结束。日期依据演出方公告；营业安排请另向门店确认。",
         "1432 W San Carlos St, Suite 70, San Jose, CA 95126",
         "印尼咖啡馆"
       ],
       "region": "south-bay",
       "city": "San Jose",
-      "dateLabel": "9/5庆祝日营业08:00–17:00；甘美兰演出13:00–13:30。现日常营业时间另查。",
+      "dateLabel": "9/5 庆祝日营业 08:00–17:00；甘美兰演出 13:00–13:30。现日常营业时间另查。",
       "status": "open",
       "verifiedAt": "2026-09-29",
       "sourceUrl": "https://pusakasunda.org/show/hijau-coffee-grand-opening/",
@@ -4627,7 +4627,7 @@
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "开业活动 9 月 11 日 16:00；日常订位时间以门店新站为准",
+      "dateLabel": "开业活动 9/11 16:00；日常订位时间以门店新站为准",
       "status": "open",
       "verifiedAt": "2026-09-29",
       "sourceUrl": "https://www.kaiyosf.com/archive",
@@ -4638,7 +4638,7 @@
       "id": "santa-clara-rhone-valley-fair-new-store-2026",
       "title": "Rhone at Westfield Valley Fair",
       "path": "/openings/santa-clara-rhone-valley-fair-new-store-2026",
-      "summary": "运动与日常服装品牌新店位于Valley Fair一层Bloomingdale’s附近，可作为零售探索补充。",
+      "summary": "运动与日常服装品牌新店位于 Valley Fair 一层 Bloomingdale’s 附近，可作为零售探索补充。",
       "details": [
         "商品按标价；按商场营业时间到店。",
         "2855 Stevens Creek Blvd Suite 1611, Santa Clara, CA 95050",
@@ -4763,7 +4763,7 @@
       ],
       "region": "north-bay",
       "city": "Larkspur",
-      "dateLabel": "周一至五11–18，周六11–17，周日12–17",
+      "dateLabel": "周一至五 11–18，周六 11–17，周日 12–17",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://marincountrymart.com/anya-hindmarch-gifting-agency",
@@ -4896,7 +4896,7 @@
       ],
       "region": "north-bay",
       "city": "Larkspur",
-      "dateLabel": "周一至六10–18，周日11–17",
+      "dateLabel": "周一至六 10–18，周日 11–17",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://marincountrymart.com/margaux",
@@ -4991,7 +4991,7 @@
       ],
       "region": "north-bay",
       "city": "Larkspur",
-      "dateLabel": "周一至六10–18，周日11–17",
+      "dateLabel": "周一至六 10–18，周日 11–17",
       "status": "open",
       "verifiedAt": "2026-09-28",
       "sourceUrl": "https://marincountrymart.com/varley",
@@ -5011,7 +5011,7 @@
       "region": "sf",
       "city": "San Francisco",
       "startDate": "2026-09-21",
-      "dateLabel": "9 月 21 日已开业 · Jefferson Street 店",
+      "dateLabel": "9/21 已开业 · Jefferson Street 店",
       "status": "open",
       "verifiedAt": "2026-09-27",
       "sourceUrl": "https://locations.raisingcanes.com/ca/san-francisco/211-jefferson-st",
@@ -5031,7 +5031,7 @@
       "region": "east-bay",
       "city": "Oakland",
       "startDate": "2026-09-08",
-      "dateLabel": "9 月 8 日开始试营业 · Oakland 新店",
+      "dateLabel": "9/8 开始试营业 · Oakland 新店",
       "status": "soft_open",
       "verifiedAt": "2026-09-27",
       "sourceUrl": "https://www.thegameparlour.com/",
@@ -5051,7 +5051,7 @@
       "region": "north-bay",
       "city": "San Rafael",
       "startDate": "2026-09-01",
-      "dateLabel": "9 月 1 日正式重开 · 官网 9/2 确认",
+      "dateLabel": "9/1 正式重开 · 官网 9/2 确认",
       "status": "open",
       "verifiedAt": "2026-09-27",
       "sourceUrl": "https://panamahotel.com/a-new-chapter-begins-at-the-historic-panama-hotel-restaurant/",
@@ -5166,7 +5166,7 @@
       ],
       "region": "sf",
       "city": "San Francisco",
-      "dateLabel": "已营业 · 9 月 12 日庆典已结束",
+      "dateLabel": "已营业 · 9/12 庆典已结束",
       "status": "open",
       "verifiedAt": "2026-09-15",
       "sourceUrl": "https://www.laboulangeriesf.com/locations-hours",

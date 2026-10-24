@@ -34,7 +34,8 @@ test('dated candidate admission labels are citable editorial snapshots even when
   assert.ok(event);
   const source = [...store.sources.values()].find(row => row.url === 'https://sugarloafpark.org/event/public-star-party-46');
   assert.ok(source);
-  for (const expected of ['成人$15', '5岁及以下免费', '$10/车停车', '11/7', '19:00–22:00']) assert.ok(source.text.includes(expected), expected);
+  // API-SYNC-3j (web #58–#73 typography pass): the price tiers now have a space between the Chinese words and the numbers.
+  for (const expected of ['成人 $15', '5 岁及以下免费', '$10/车停车', '11/7', '19:00–22:00']) assert.ok(source.text.includes(expected), expected);
   assert.equal(source.verification, 'catalog');
   assert.equal(source.verifiedLive, false);
   assert.equal(source.checkedAt, '2026-10-16'); // the row's own read date (API-SYNC-3g: web #48 re-read it 10-16; it was 10-05)
@@ -70,7 +71,7 @@ test('the initial model context receives the missing eligibility, both city scop
     ['Belvedere跟Tiburon有啥值得看的？各给点，不要把附近地方都说成在城里。', ['China Cabin [city]', 'Belvedere Community Park [city]', '它不在 Belvedere 市内', 'Railroad & Ferry Depot Museum [city]']],
     ['Dixon和Rio Vista哪儿适合带娃在水边转转？不想钓鱼，也别给我已经结束的节。', ['Hall Memorial Park [city]', 'Jepson Prairie Preserve [nearby]', 'Waterfront Promenade [city]', 'Bruning Park [city]']],
     ['Compare Dixon and Rio Vista for a short waterfront walk with a child. No fishing or already-ended festivals.', ['City guide: Dixon', 'Hall Memorial Park [city]', 'City guide: Rio Vista', 'Waterfront Promenade [city]', 'Bruning Park [city]', 'county prohibits swimming'], 'en'],
-    ['11月7、8号在北湾，带5岁孩子想看看自然，别推酒庄。Sugarloaf那边有合适的吗？', ['成人$15', '5岁及以下免费', '$10/车停车']],
+    ['11月7、8号在北湾，带5岁孩子想看看自然，别推酒庄。Sugarloaf那边有合适的吗？', ['成人 $15', '5 岁及以下免费', '$10/车停车']], // spacing: API-SYNC-3j
   ];
   for (const [message, expected, locale = 'zh-Hans'] of questions) {
     let first;
